@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>CSVana</title>
+        <script type="text/javascript" src="main.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>CSVana</h1>
+            <div id="App"></div>
+        </div>
+    </body>
+    <script type="text/javascript">
+var node = document.getElementById('App');
+var app = Elm.Main.embed(node);
+
+app.ports.readFile.subscribe(function(fileInfo) {
+    readFile(fileInfo.blob);
+});
+
+function readFile(file) {
+    console.log("Reading file: ", file);
+    var fileSize = file.size;
+    var chunkSize = 1024 * 1024;
+    var offset = 0;
+
+    readChunk();
+
+    function readChunk() {
+        console.log("Reading chunk: ", offset);
+        var reader = new FileReader();
+        var blob = file.slice(offset, length + chunkSize);
+        reader.onload = chunkReceived;
+        reader.readAsText(blob);
+        console.log(reader);
+    }
+
+    function chunkReceived(e) {
+        console.log("Got chunk: ", e);
+        if (e.target.error == null) {
+            offset += e.target.result.length;
+            app.ports.fileChunk.send(e.target.result);
+        } else {
+            console.error("Error reading file: " + e.target.error);
+            return;
+        }
+
+        if (offset < fileSize) {
+            readChunk();
+        }
+    }
+}
+    </script>
+</html>
