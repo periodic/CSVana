@@ -1,10 +1,10 @@
-module View.Asana exposing (..)
+module Components.Asana.View exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
-import Asana exposing (Workspace)
+import Components.Asana.Model exposing (Workspace, toInt)
 import App exposing (..)
 
 apiResource : (a -> Html Msg) -> ApiStatus a -> Html Msg
@@ -27,4 +27,4 @@ renderWorkspaces workspaces =
 
 workspaceOption : Workspace -> Html Msg
 workspaceOption {id, name} =
-    option [ value (toString id) ] [ text name ]
+    option [ value <| toString <| toInt id ] [ text name ]

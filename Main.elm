@@ -7,7 +7,7 @@ import Csv
 import FileReader exposing (..)
 import View
 import OAuth
-import Asana exposing (ApiResult(..), me)
+import Components.Asana.Model as Asana
 
 authUrl = "https://app.asana.com/-/oauth_authorize?response_type=token&client_id=192968333753040&redirect_uri=https%3A%2F%2Flocalhost%3A8000%2F"
 
@@ -25,7 +25,7 @@ init location =
            Nothing ->
                (model, oauthCmd)
            Just token ->
-               (model, Cmd.map ApiMsg <| Asana.me token)
+               (model, Cmd.map ApiMe <| Asana.me token)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -38,13 +38,13 @@ update msg model =
                         (model, readFile file)
                     Nothing ->
                         (model, Cmd.none)
-            ApiMsg (ApiMe user) ->
+            ApiMe (Ok user) ->
                 case user.workspaces of
                     Just workspaces ->
                         ({ model | workspaces = Loaded workspaces }, Cmd.none)
                     Nothing -> 
                         (model, Cmd.none)
-            ApiMsg _ ->
+            ApiMe (Err _) ->
                 (model, Cmd.none)
 
 subscriptions :  Model -> Sub Msg

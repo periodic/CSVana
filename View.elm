@@ -7,7 +7,7 @@ import Html.Events exposing (..)
 import App exposing (..)
 import FileReader exposing (onFileInput)
 import Maybe
-import View.Asana exposing (..)
+import Components.Asana.View as Asana
 
 view : Model -> Html Msg
 view {csvData, workspaces} =
@@ -17,7 +17,10 @@ view {csvData, workspaces} =
              ] ++
              List.filterMap identity [ Maybe.map (.headers >> renderHeaders) csvData ])
         , div [ class "Asana" ]
-            [ apiResource renderWorkspaces workspaces ]
+            [ Asana.apiResource Asana.renderWorkspaces workspaces
+            , maybeRenderProjectSelect 
+            ]
+
         ]
 
 renderHeaders : List String -> Html Msg
