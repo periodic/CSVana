@@ -4,3 +4,5 @@ elm-stuff/
 repl-temp-*
 main.js
 test.txt
+# Generated files for tests.
+*_test.js
