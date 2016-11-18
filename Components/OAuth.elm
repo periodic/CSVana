@@ -1,4 +1,13 @@
-port module Components.OAuth exposing (Msg, AuthState(..), Model, init, subscriptions, getState, authenticate, update)
+port module Components.OAuth exposing
+    ( Msg
+    , AuthState(..)
+    , Model
+    , init
+    , subscriptions
+    , getState
+    , authenticate
+    , update
+    )
 
 import String exposing (..)
 import Navigation exposing (Location)
@@ -36,8 +45,17 @@ subscriptions { state } =
             Sub.none
 
 init : String -> String -> String -> (Model, Cmd Msg)
-init baseAuthUrl clientId redirectUrl =
-    ({ baseAuthUrl = baseAuthUrl, redirectUrl = redirectUrl, clientId = clientId, state = Uninitialized }, initAuth ())
+init baseAuthUrl clientId baseUrl =
+    let
+        redirectUrl = baseUrl ++ "/oauth_success.html"
+        model =
+            { baseAuthUrl = baseAuthUrl
+            , redirectUrl = redirectUrl
+            , clientId = clientId
+            , state = Uninitialized
+            }
+    in
+        (model, initAuth ())
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =

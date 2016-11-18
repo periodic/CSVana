@@ -3,14 +3,13 @@ module OAuthTest exposing (main)
 import Components.OAuth as OAuth
 import Html exposing (..)
 import Html.App exposing (..)
-import Html.Attributes exposing (..)
 
 type alias Msg = OAuth.Msg
 type alias Model = OAuth.Model
 
 init : (Model, Cmd Msg)
 init =
-    OAuth.init "https://app.asana.com/-/oauth_authorize" "192968333753040" "https://localhost:8000/oauth_success.html"
+    OAuth.init "https://app.asana.com/-/oauth_authorize" "192968333753040" "https://localhost:8000"
 
 
 view : Model -> Html Msg
