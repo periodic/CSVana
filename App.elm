@@ -15,14 +15,15 @@ type alias Model =
     -- Asana
     , oauth : OAuth.Model
     , workspaces : ApiStatus (List Asana.Resource)
-    , projectTypeahead : TypeAhead.TypeAhead Asana.Project
-    , projectTypeaheadString : String
+    , selectedWorkspace : Maybe Asana.Workspace
+    , projectTypeahead : Maybe (TypeAhead.TypeAhead Asana.Project)
     }
 
 type Msg
     = NewFiles (List FileInfo)
     | MoreData String
     | ApiMe (Asana.ApiResult Asana.User)
+    | WorkspaceSelection Asana.Workspace
     | ProjectTypeaheadMsg (Typeahead.Msg Asana.Project)
     | ProjectTypeaheadInput String
 

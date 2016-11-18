@@ -1,0 +1,26 @@
+<html>
+    <body>
+    <script>
+var hash = window.location.hash.slice(1);
+var pairs = hash.split("&").map(function (pair) { return pair.split("="); });
+var token = pairs.find(function (pair) {
+    return pair[0] === "access_token" && pair[1];
+});
+
+if (token) {
+    console.log("Found token: ", token[1]);
+    window.opener.postMessage({
+        status: "success",
+        access_token: token[1],
+    }, window.location.origin);
+    window.close();
+} else {
+    console.warn("No access token found.");
+    window.opener.postMessage({
+        status: "No token found",
+        access_token: token[1],
+    }, window.location.origin);
+}
+    </script>
+    </body>
+</html>

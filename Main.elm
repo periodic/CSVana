@@ -19,6 +19,7 @@ init location =
             { csvData = Nothing
             , oauth = oauthModel
             , workspaces = Loading
+            , projectTypeahead = Nothing
             }
     in
        case oauthModel.token of
@@ -46,6 +47,8 @@ update msg model =
                         (model, Cmd.none)
             ApiMe (Err _) ->
                 (model, Cmd.none)
+
+        [ input [ onInput NewInput, value fragment ] []
 
 subscriptions :  Model -> Sub Msg
 subscriptions model = fileChunk MoreData
