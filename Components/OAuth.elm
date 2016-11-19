@@ -5,6 +5,7 @@ port module Components.OAuth exposing
     , init
     , subscriptions
     , getState
+    , getToken
     , authenticate
     , update
     )

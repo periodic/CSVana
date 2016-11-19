@@ -1,23 +1,16 @@
 module Components.Asana.Model exposing (..)
 
 import Json.Decode exposing (..)
-import Http
-import Task
 
-apiRoot = "https://app.asana.com/api/1.0"
-
-type Id = Id Int
-
-toInt : Id -> Int
-toInt (Id i) = i
-
-type alias ApiResult a = (Result Http.Error a)
+type alias Id = String
 
 type alias Resource =
     { id: Id
     , name: String
     }
 
+type alias UserId = Id
+type alias UserResource = Resource
 type alias User =
   { id: Id
   , name: String
@@ -27,7 +20,7 @@ type alias User =
   }
 
 userDecoder = object5 User
-  ("id" := map Id int)
+  ("id" := map toString int)
   ("name" := string)
   (maybe <| "email" := string)
   (maybe <| "photo" := photosDecoder)
@@ -48,80 +41,25 @@ photosDecoder = object5 Photos
   (maybe <| "image_60x60" := string)
   (maybe <| "image_128x128" := string)
 
+type alias WorkspaceId = Id
+type alias WorkspaceResource = Resource
 type alias Workspace =
   { id: Id
   , name: String
   }
 
 workspaceDecoder = object2 Workspace
-  ("id" := map Id int)
+  ("id" := map toString int)
   ("name" := string)
 
+type alias ProjectId = Id
+type alias ProjectResource = Resource
 type alias Project =
     { id: Id
     , name: String
     }
 
 projectDecoder = object2 Project
-  ("id" := map Id int)
+  ("id" := map toString int)
   ("name" := string)
 
-
-
-type alias Query = List (String, String)
-
-apiGetRequest : String -> Query -> Decoder a -> String -> Cmd (ApiResult a)
-apiGetRequest path query decoder token =
-  let
-      url = Http.url (apiRoot ++ path) query
-      headers = [("Authorization", "Bearer " ++ token)]
-      request =
-          { url = url
-          , headers = headers
-          , verb = "GET"
-          , body = Http.empty
-          }
-      httpRequest =
-          Http.send Http.defaultSettings request
-          |> Http.fromJson ("data" := decoder)
-  in
-      Task.perform Err Ok httpRequest
-
-
-me : String -> Cmd (ApiResult User)
-me =
-    apiGetRequest "/users/me" [] userDecoder
---  let
---      url = apiRoot ++ "/users/me"
---      headers = [("Authorization", "Bearer " ++ token)]
---      request =
---        { url = url
---        , headers = headers
---        , verb = "GET"
---        , body = Http.empty
---        }
---  in
---      Task.perform ApiFail ApiMe
---        (Http.send Http.defaultSettings request
---        |> Http.fromJson ("data" := userDecoder))
-
-users : Int -> String -> Cmd (ApiResult (List User))
-users workspaceId =
-    let
-        path = "/workspaces/" ++ toString workspaceId ++ "/users"
-        query = [("opt_fields", "email,name,photo.image_128x128")]
-    in
-        apiGetRequest path query (list userDecoder)
---  let
---      url = apiRoot ++ "/workspaces/" ++ toString workspaceId ++ "/users?opt_fields=email,name,photo.image_128x128"
---      headers = [("Authorization", "Bearer " ++ token)]
---      request =
---        { url = url
---        , headers = headers
---        , verb = "GET"
---        , body = Http.empty
---        }
---  in
---      Task.perform ApiFail ApiUsers
---        (Http.send Http.defaultSettings request
---        |> Http.fromJson ("data" := list userDecoder))
