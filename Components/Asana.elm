@@ -4,10 +4,13 @@ import Components.Asana.Model as Asana
 import Components.Asana.ApiResource as ApiResource
 import Components.Asana.Api as Api
 import Components.OAuth as OAuth
+import Components.Asana.WorkspaceSelector as WorkspaceSelector
 
 type Msg
     = OAuthMsg OAuth.Msg
+    -- TODO These should really be in a form component
     | CurrentUser (ApiResource.Msg Asana.User)
+    | WorkspaceSelectorMsg WorkspaceSelector.Msg
 
 
 type alias Model =
@@ -69,6 +72,8 @@ processMessage msg model =
                 (currentUser', cmd) = ApiResource.update msg' model.currentUser
             in
                 ({ model | currentUser = currentUser' }, cmd)
+        WorkspaceSelectorMsg _ ->
+            (model, Cmd.none)
 
 bootstrap : Model -> (Model, Cmd Msg)
 bootstrap model =

@@ -1,30 +1,65 @@
 module Components.Asana.View exposing (..)
 
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Http
 
-import Components.Asana.Model exposing (Workspace, toInt)
-import App exposing (..)
+import Components.OAuth as OAuth
+import Components.Asana exposing (Msg(..), Model)
+import Components.Asana.Model exposing (..)
+import Components.Asana.ApiResource as ApiResource
+import Components.Asana.ApiResource exposing (ApiResource)
+import Components.Asana.WorkspaceSelector as WorkspaceSelector
 
-apiResource : (a -> Html Msg) -> ApiStatus a -> Html Msg
-apiResource subRenderer status =
-    case status of
-        Loading ->
-            renderLoadingIndicator
-        Loaded a ->
-            subRenderer a
+view : Model -> Html Msg
+view model =
+    case OAuth.getState model.oauth of
+        OAuth.Success _ ->
+            viewOAuthSuccess model
+        OAuth.Failure msg ->
+            viewOAuthError msg
+        _ ->
+            viewOAuthLoading
 
-renderLoadingIndicator : Html Msg
-renderLoadingIndicator =
-    text "Loading..."
+viewOAuthSuccess model =
+    div [ class "OAuth--success" ]
+        [ projectForm model.currentUser ]
 
-renderWorkspaces : List Workspace -> Html Msg
-renderWorkspaces workspaces =
-    select
-        [ class "Workspaces" ]
-        (List.map workspaceOption workspaces)
+projectForm : ApiResource User -> Html Msg
+projectForm currentUserResource =
+    apiResource
+        (.workspaces
+            >> Maybe.withDefault []
+            >> (\ws -> { selected = Nothing, workspaces = ws })
+            >> WorkspaceSelector.view
+            >> Html.App.map WorkspaceSelectorMsg)
+        currentUserResource
 
-workspaceOption : Workspace -> Html Msg
-workspaceOption {id, name} =
-    option [ value <| toString <| toInt id ] [ text name ]
+
+apiResource : (a -> Html Msg) -> ApiResource a -> Html Msg
+apiResource subView =
+    let
+        unloaded = div [] []
+    in
+        ApiResource.view unloaded loadingIndicator errorView subView
+
+loadingIndicator : Html Msg
+loadingIndicator =
+    div [ class "LoadingIndicator" ]
+        [ text "Loading..." ]
+
+errorView : Http.Error -> Html Msg
+errorView error =
+    div [ class "ApiError" ]
+        [ text <| toString error ]
+
+
+viewOAuthLoading =
+    div [ class "OAuth--loading" ]
+        [ loadingIndicator ]
+
+viewOAuthError msg =
+    div [ class "OAuth--error" ]
+        [ text msg ]
