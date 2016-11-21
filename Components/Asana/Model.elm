@@ -2,6 +2,8 @@ module Components.Asana.Model exposing (..)
 
 import Json.Decode exposing (..)
 
+-- TODO: move decoders to Api.elm.
+
 type alias Id = String
 
 type alias Resource =

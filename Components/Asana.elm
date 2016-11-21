@@ -1,90 +1,72 @@
 module Components.Asana exposing (..)
 
+import Html exposing (Html, div)
+import Html.Attributes exposing (class)
+
+import Base exposing (..)
 import Components.Asana.Model as Asana
 import Components.Asana.ApiResource as ApiResource
 import Components.Asana.Api as Api
-import Components.OAuth as OAuth
+import Components.OAuthBoundary as OAuthBoundary
 import Components.Asana.Form as Form
+import Components.Asana.UserLoader as UserLoader
 
-type Msg
-    = OAuthMsg OAuth.Msg
-    | FormMsg (ApiResource.Msg Asana.User Form.Msg)
-
-
-type alias FormResource = ApiResource.ApiResource Asana.User Form.Model Form.Msg
-
-type alias Model =
-    { oauth: OAuth.Model
-    , form: FormResource
+type alias Props =
+    { baseUrl : String
     }
 
-init : String -> (Model, Cmd Msg)
-init baseUrl =
-    let
-        (oauthModel, oauthCmd) =
-            OAuth.init
-                "https://app.asana.com/-/oauth_authorize"
-                "192968333753040"
-                baseUrl
-        (form, _) = ApiResource.init Form.init Form.update
-        model =
-            { oauth = oauthModel
-            , form = form
-            }
-        cmd = Cmd.batch [ Cmd.map OAuthMsg oauthCmd ]
-    in
-        (model, cmd)
+type alias Msg = OAuthBoundary.Msg (UserLoader.Msg (Form.Msg))
+type alias ChildModel = OAuthBoundary.Model (UserLoader.Model Form.Model Form.Msg)
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    let
-        oauthSubs = OAuth.subscriptions (model.oauth)
-        subs = Sub.batch [ Sub.map OAuthMsg oauthSubs ]
-    in
-        subs
+type alias Model =
+    { oauthBoundary : ChildModel
+    , oauthComponent : Component ChildModel Msg
+    }
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+init : Props -> (Model, Cmd Msg)
+init props =
     let
-        (model2, msgCmd) = processMessage msg model
-        (model3, bootstrapCmd) = bootstrap model2
-        cmd = Cmd.batch [msgCmd, bootstrapCmd]
+        form token user =
+            Form.component
+                { token = token
+                , user = user
+                }
+        userLoader token =
+            UserLoader.component
+                { childComponent = form token
+                , token = token
+                }
+        oauthProps =
+                { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
+                , clientId = "192968333753040"
+                , baseRedirectUrl = props.baseUrl
+                , childComponent = userLoader
+                }
+        oauthComponent = OAuthBoundary.component oauthProps
+        (boundary, boundaryCmd) = oauthComponent.init
     in
-        (model3, cmd)
+        ({ oauthBoundary = boundary, oauthComponent = oauthComponent }, boundaryCmd)
 
-processMessage : Msg -> Model -> (Model, Cmd Msg)
-processMessage msg model =
-    case msg of
-        OAuthMsg msg' ->
-            let
-                (oauthModel, cmd1) = OAuth.update msg' model.oauth
-                (oauthModel', cmd2) =
-                    case OAuth.getState oauthModel of
-                        OAuth.Ready ->
-                            OAuth.authenticate oauthModel
-                        _ ->
-                            (oauthModel, Cmd.none)
-                cmd = Cmd.map OAuthMsg <| Cmd.batch [cmd1, cmd2]
-            in
-                ({model | oauth = oauthModel'}, cmd)
-        FormMsg msg' ->
-            let
-                (form', formCmd) = ApiResource.update msg' model.form
-                cmd = Cmd.map FormMsg formCmd
-            in
-                ({ model | form = form' }, cmd)
+subscriptions : Props -> Model -> Sub Msg
+subscriptions _ { oauthBoundary, oauthComponent } =
+    oauthComponent.subscriptions oauthBoundary
 
-bootstrap : Model -> (Model, Cmd Msg)
-bootstrap model =
+update : Props -> Msg -> Model -> (Model, Cmd Msg)
+update _ msg model =
     let
-        oauthToken = OAuth.getToken model.oauth
-        formUnloaded = ApiResource.isUnloaded model.form
+        (oauthBoundary', cmd) = model.oauthComponent.update msg model.oauthBoundary
     in
-        case (oauthToken, formUnloaded) of
-            (Just token, True) ->
-                let
-                    (form', cmd) = ApiResource.load (Api.me token) model.form
-                in
-                    ({ model | form = form' }, Cmd.map FormMsg cmd)
-            _ ->
-                (model, Cmd.none)
+        ({ model | oauthBoundary = oauthBoundary' }, cmd)
+
+view : Props -> Model -> Html Msg
+view _ model =
+    div [ class "Asana" ]
+        [ div [ class "Asana-form" ]
+            [ model.oauthComponent.view model.oauthBoundary ]
+        ]
+
+getSelectedProject : Model -> Maybe Asana.Project
+getSelectedProject model =
+    OAuthBoundary.getChild model.oauthBoundary
+        `Maybe.andThen` UserLoader.getChild
+        `Maybe.andThen` Form.getSelectedProject

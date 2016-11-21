@@ -1,4 +1,4 @@
-module Components.Asana.WorkspaceSelector exposing (Model, Msg, init, update, view)
+module Components.Asana.WorkspaceSelector exposing (Model, Msg, init, update, view, getValue)
 
 import Components.Asana.Model as Asana
 import Json.Decode as Json

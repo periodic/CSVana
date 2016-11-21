@@ -1,9 +1,14 @@
-module Components.Asana.ApiResource exposing (ApiResource, Msg, init, update, view, isLoaded, isUnloaded, load)
+module Components.Asana.ApiResource exposing (ApiResource, Msg, init, update, view, isLoaded, isUnloaded, load, getChild)
 
+import Base exposing (..)
 import Components.Asana.Api exposing (ApiResult)
 import Html exposing (Html)
 import Html.App as App exposing (map)
 import Http
+
+type alias Props data submodel submsg =
+    { child : data -> Component submodel submsg
+    }
 
 type ResourceState a
     = Unloaded
@@ -12,20 +17,18 @@ type ResourceState a
     | Loaded a
 
 type alias ApiResource data submodel submsg =
-    { state : ResourceState submodel
-    , subinit : data -> (submodel, Cmd submsg)
-    , subupdate : submsg -> submodel -> (submodel, Cmd submsg)
+    { state : ResourceState (data, submodel)
+    , child : data -> Component submodel submsg
     }
 
 type Msg data submsg
     = ApiMsg (ApiResult data)
     | SubMsg submsg
 
-init : (data -> (submodel, Cmd submsg))
-    -> (submsg -> submodel -> (submodel, Cmd submsg))
+init : Props data submodel submsg
     -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
-init subinit subupdate =
-    ({ state = Unloaded, subinit = subinit, subupdate = subupdate }, Cmd.none)
+init props =
+    ({ state = Unloaded, child = props.child }, Cmd.none)
 
 -- Note, the type of the resource currently doesn't matter because it gets replaced...
 update : Msg data submsg -> ApiResource data submodel submsg -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
@@ -34,20 +37,20 @@ update msg model =
         -- TODO: Should only log an error if we aren't expecting an API message.
         ApiMsg apiResult ->
             case apiResult of 
-                Ok a ->
+                Ok data ->
                     let
-                        (submodel, subcmd) = model.subinit a
+                        (submodel, subcmd) = model.child data |> .init
                     in
-                        ({ model | state = Loaded submodel }, Cmd.map SubMsg subcmd)
+                        ({ model | state = Loaded (data, submodel) }, Cmd.map SubMsg subcmd)
                 Err msg ->
                     ({ model | state = Error msg }, Cmd.none)
         SubMsg submsg ->
             case model.state of
-                Loaded submodel ->
+                Loaded (data, submodel) ->
                     let
-                        (submodel', subcmd) = model.subupdate submsg submodel
+                        (submodel', subcmd) = model.child data |> \comp -> comp.update submsg submodel
                     in
-                        ({ model | state = Loaded submodel' }, Cmd.map SubMsg subcmd)
+                        ({ model | state = Loaded (data, submodel') }, Cmd.map SubMsg subcmd)
                 _ ->
                     -- TODO: Log something here.
                     (model, Cmd.none)
@@ -55,10 +58,9 @@ update msg model =
 view : Html (Msg data submsg)
     -> Html (Msg data submsg)
     -> (Http.Error -> Html (Msg data submsg))
-    -> (submodel -> Html submsg)
     -> ApiResource data submodel submsg
     -> Html (Msg data submsg)
-view unloaded loading error subView model =
+view unloaded loading error model =
     case model.state of
         Unloaded ->
             unloaded
@@ -66,16 +68,13 @@ view unloaded loading error subView model =
             loading
         Error msg ->
             error msg
-        Loaded submodel ->
-            App.map SubMsg <| subView submodel
+        Loaded (data, submodel) ->
+            App.map SubMsg <| (\comp -> comp.view submodel) <| model.child data
 
-getState : ApiResource data submodel submsg -> ResourceState submodel
-getState = .state
-
-getValue : ApiResource data submodel submsg -> Maybe submodel
-getValue model =
+getChild : ApiResource data submodel submsg -> Maybe submodel
+getChild model =
     case model.state of
-        Loaded submodel ->
+        Loaded (_, submodel) ->
             Just submodel
         _ ->
             Nothing
