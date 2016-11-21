@@ -65,7 +65,7 @@ view _ model =
             [ model.oauthComponent.view model.oauthBoundary ]
         ]
 
-getSelectedProject : Model -> Maybe Asana.Project
+getSelectedProject : Model -> Maybe Asana.ProjectResource
 getSelectedProject model =
     OAuthBoundary.getChild model.oauthBoundary
         `Maybe.andThen` UserLoader.getChild

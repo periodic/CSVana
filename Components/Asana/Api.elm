@@ -1,4 +1,4 @@
-module Components.Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead)
+module Components.Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list)
@@ -33,19 +33,6 @@ apiGetRequest path query decoder token =
 me : Token -> Cmd (ApiResult Asana.User)
 me =
     apiGetRequest "/users/me" [] Asana.userDecoder
---  let
---      url = apiRoot ++ "/users/me"
---      headers = [("Authorization", "Bearer " ++ token)]
---      request =
---        { url = url
---        , headers = headers
---        , verb = "GET"
---        , body = Http.empty
---        }
---  in
---      Task.perform ApiFail ApiMe
---        (Http.send Http.defaultSettings request
---        |> Http.fromJson ("data" := userDecoder))
 
 users : Asana.WorkspaceId -> Token -> Cmd (ApiResult (List Asana.User))
 users workspaceId =
@@ -85,6 +72,15 @@ getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
     in
        apiGetRequest path query (Json.Decode.list decoder)
 
-projectTypeahead : Asana.WorkspaceId -> String -> Token -> Cmd (ApiResult (List Asana.Project))
+projectTypeahead : Asana.WorkspaceId -> String -> Token -> Cmd (ApiResult (List Asana.ProjectResource))
 projectTypeahead =
-    getTypeaheadOptions TypeaheadProject Asana.projectDecoder
+    getTypeaheadOptions TypeaheadProject Asana.resourceDecoder
+
+project : Asana.ProjectId -> Token -> Cmd (ApiResult Asana.Project)
+project projectId =
+    let
+        path = "/projects/" ++ projectId
+        query = []
+    in
+        apiGetRequest path query Asana.projectDecoder
+

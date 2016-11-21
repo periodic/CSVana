@@ -11,6 +11,10 @@ type alias Resource =
     , name: String
     }
 
+resourceDecoder = object2 Resource
+  ("id" := map toString int)
+  ("name" := string)
+
 type alias UserId = Id
 type alias UserResource = Resource
 type alias User =
@@ -57,11 +61,52 @@ workspaceDecoder = object2 Workspace
 type alias ProjectId = Id
 type alias ProjectResource = Resource
 type alias Project =
-    { id: Id
-    , name: String
+    { id : Id
+    , name : String
+    , customFieldSettings : List CustomFieldSetting
     }
 
-projectDecoder = object2 Project
+projectDecoder = object3 Project
   ("id" := map toString int)
   ("name" := string)
+  ("custom_field_settings" := list customFieldSettingDecoder)
 
+type alias CustomFieldSettingId = Id
+type alias CustomFieldSetting =
+    { id : Id
+    , customField : CustomField
+    }
+
+customFieldSettingDecoder = object2 CustomFieldSetting
+    ("id" := map toString int)
+    ("custom_field" := customFieldDecoder)
+
+type CustomFieldType
+    = CustomText
+    | CustomNumber
+    | CustomEnum
+    | CustomUnknown
+
+customFieldTypeDecoder = 
+    map (\str -> case str of
+            "text" ->
+                CustomText
+            "number" ->
+                CustomNumber
+            "enum" ->
+                CustomEnum
+            _ ->
+                CustomUnknown)
+        string
+
+type alias CustomFieldId = Id
+type alias CustomField =
+    { id : Id
+    , fieldType : CustomFieldType
+    , name : String
+    }
+
+customFieldDecoder = object3 CustomField
+    ("id" := map toString int)
+    ("type" := customFieldTypeDecoder)
+    ("name" := string)
