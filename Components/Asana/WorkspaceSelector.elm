@@ -36,6 +36,12 @@ view { workspaces, selected } =
     in
         select attrs options
 
+getValue : Model -> Maybe Asana.WorkspaceId
+getValue = .selected
+
+--------------------------------------------------------------------------------
+-- Private
+
 onChange : Json.Decoder Msg
 onChange =
     let

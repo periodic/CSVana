@@ -4,18 +4,18 @@ import Components.Asana.Model as Asana
 import Components.Asana.ApiResource as ApiResource
 import Components.Asana.Api as Api
 import Components.OAuth as OAuth
-import Components.Asana.WorkspaceSelector as WorkspaceSelector
+import Components.Asana.Form as Form
 
 type Msg
     = OAuthMsg OAuth.Msg
-    -- TODO These should really be in a form component
-    | CurrentUser (ApiResource.Msg Asana.User)
-    | WorkspaceSelectorMsg WorkspaceSelector.Msg
+    | FormMsg (ApiResource.Msg Asana.User Form.Msg)
 
+
+type alias FormResource = ApiResource.ApiResource Asana.User Form.Model Form.Msg
 
 type alias Model =
     { oauth: OAuth.Model
-    , currentUser: ApiResource.ApiResource Asana.User
+    , form: FormResource
     }
 
 init : String -> (Model, Cmd Msg)
@@ -26,10 +26,10 @@ init baseUrl =
                 "https://app.asana.com/-/oauth_authorize"
                 "192968333753040"
                 baseUrl
-        (currentUser, _) = ApiResource.init
+        (form, _) = ApiResource.init Form.init Form.update
         model =
             { oauth = oauthModel
-            , currentUser = currentUser
+            , form = form
             }
         cmd = Cmd.batch [ Cmd.map OAuthMsg oauthCmd ]
     in
@@ -67,25 +67,24 @@ processMessage msg model =
                 cmd = Cmd.map OAuthMsg <| Cmd.batch [cmd1, cmd2]
             in
                 ({model | oauth = oauthModel'}, cmd)
-        CurrentUser msg' ->
+        FormMsg msg' ->
             let
-                (currentUser', cmd) = ApiResource.update msg' model.currentUser
+                (form', formCmd) = ApiResource.update msg' model.form
+                cmd = Cmd.map FormMsg formCmd
             in
-                ({ model | currentUser = currentUser' }, cmd)
-        WorkspaceSelectorMsg _ ->
-            (model, Cmd.none)
+                ({ model | form = form' }, cmd)
 
 bootstrap : Model -> (Model, Cmd Msg)
 bootstrap model =
     let
         oauthToken = OAuth.getToken model.oauth
-        userUnloaded = ApiResource.isUnloaded model.currentUser
+        formUnloaded = ApiResource.isUnloaded model.form
     in
-        case (oauthToken, userUnloaded) of
+        case (oauthToken, formUnloaded) of
             (Just token, True) ->
                 let
-                    (currentUser, cmd) = ApiResource.load (Api.me token)
+                    (form', cmd) = ApiResource.load (Api.me token) model.form
                 in
-                    ({ model | currentUser = currentUser }, Cmd.map CurrentUser cmd)
+                    ({ model | form = form' }, Cmd.map FormMsg cmd)
             _ ->
                 (model, Cmd.none)

@@ -7,11 +7,11 @@ import Html.Events exposing (..)
 import Http
 
 import Components.OAuth as OAuth
-import Components.Asana exposing (Msg(..), Model)
+import Components.Asana exposing (Msg(..), Model, FormResource)
 import Components.Asana.Model exposing (..)
 import Components.Asana.ApiResource as ApiResource
 import Components.Asana.ApiResource exposing (ApiResource)
-import Components.Asana.WorkspaceSelector as WorkspaceSelector
+import Components.Asana.Form as Form
 
 view : Model -> Html Msg
 view model =
@@ -23,38 +23,27 @@ view model =
         _ ->
             viewOAuthLoading
 
+viewOAuthSuccess : Model -> Html Msg
 viewOAuthSuccess model =
     div [ class "OAuth--success" ]
-        [ projectForm model.currentUser ]
+        [ viewForm model.form ]
 
-projectForm : ApiResource User -> Html Msg
-projectForm currentUserResource =
-    apiResource
-        (.workspaces
-            >> Maybe.withDefault []
-            >> (\ws -> { selected = Nothing, workspaces = ws })
-            >> WorkspaceSelector.view
-            >> Html.App.map WorkspaceSelectorMsg)
-        currentUserResource
-
-
-apiResource : (a -> Html Msg) -> ApiResource a -> Html Msg
-apiResource subView =
+viewForm : FormResource -> Html Msg
+viewForm =
     let
         unloaded = div [] []
     in
-        ApiResource.view unloaded loadingIndicator errorView subView
+        Html.App.map FormMsg << ApiResource.view unloaded loadingIndicator errorView Form.view
 
-loadingIndicator : Html Msg
+loadingIndicator : Html msg
 loadingIndicator =
     div [ class "LoadingIndicator" ]
         [ text "Loading..." ]
 
-errorView : Http.Error -> Html Msg
+errorView : Http.Error -> Html msg
 errorView error =
     div [ class "ApiError" ]
         [ text <| toString error ]
-
 
 viewOAuthLoading =
     div [ class "OAuth--loading" ]
