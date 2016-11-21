@@ -1,7 +1,9 @@
 module Components.Asana.FieldOptions exposing (Props, Model, Msg, component)
 
+import Array exposing (Array)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events as Events
 import Json.Decode as Json
 
 import Base exposing (..)
@@ -22,11 +24,11 @@ type alias Props =
     }
 
 type alias Model =
-    { targets : List Target
+    { targets : Array Target
     }
 
 type Msg =
-    TargetUpdated Index Target
+    TargetUpdated Int Target
 
 component : Props -> Component Model Msg
 component props =
@@ -39,20 +41,22 @@ component props =
 init : Props -> (Model, Cmd Msg)
 init { maxValues } =
     let
-        targets = List.repeat maxValues NoTarget
+        targets = Array.repeat maxValues NoTarget
     in
         ({ targets = targets }, Cmd.none)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
-    (model, Cmd.none)
+    case msg of
+        TargetUpdated index target ->
+            ({ model | targets = Array.set index target model.targets }, Cmd.none)
 
 view : Props -> Model -> Html Msg
 view props {targets} =
     div [ class "FieldOptions" ]
-        (List.indexedMap (viewSelect props.customFields) targets)
+        (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
 
-getTargets : Model -> List Target
+getTargets : Model -> Array Target
 getTargets = .targets
 
 --------------------------------------------------------------------------------
@@ -77,9 +81,9 @@ viewSelect customFields index selectedTarget =
         targets = allTargets customFields
         options = List.map (viewOption selectedTarget) targets
     in
-        select [ class "FieldOptions-select", on "change" (onChange index customFields) ] options
+        select [ class "FieldOptions-select", Events.on "change" (onChange index customFields) ] options
 
-onChange : Index -> List Asana.CustomField -> Json.Decoder Msg
+onChange : Int -> List Asana.CustomField -> Json.Decoder Msg
 onChange index customFields =
     Json.map (TargetUpdated index) <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
 
