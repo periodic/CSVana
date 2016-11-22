@@ -1,5 +1,6 @@
 module Components.Asana.Model exposing (..)
 
+import Date exposing (Date)
 import Json.Decode exposing (..)
 
 -- TODO: move decoders to Api.elm.
@@ -110,3 +111,17 @@ customFieldDecoder = object3 CustomField
     ("id" := map toString int)
     ("type" := customFieldTypeDecoder)
     ("name" := string)
+
+type alias TaskId = Id
+type alias Task =
+    { id : Id
+    , name : String
+    , description : String
+    , dueDate : String
+    }
+
+taskDecoder = object4 Task
+    ("id" := map toString int)
+    ("name" := string)
+    ("description" := string)
+    ("due_date" := string)

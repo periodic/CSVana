@@ -1,7 +1,8 @@
-module Components.Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project)
+module Components.Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask, NewTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list)
+import Json.Encode as Encode exposing (Value)
 import Task
 
 import Components.Asana.Model as Asana
@@ -22,6 +23,23 @@ apiGetRequest path query decoder token =
           , headers = headers
           , verb = "GET"
           , body = Http.empty
+          }
+      httpRequest =
+          Http.send Http.defaultSettings request
+          |> Http.fromJson ("data" := decoder)
+  in
+      Task.perform Err Ok httpRequest
+
+apiPostRequest : String -> Query -> Value -> Decoder a -> Token -> Cmd (ApiResult a)
+apiPostRequest path query body decoder token =
+  let
+      url = Http.url (apiRoot ++ path) query
+      headers = [("Authorization", "Bearer " ++ token)]
+      request =
+          { url = url
+          , headers = headers
+          , verb = "POST"
+          , body = Http.string <| Encode.encode 4 <| Encode.object [("data", body)]
           }
       httpRequest =
           Http.send Http.defaultSettings request
@@ -83,4 +101,38 @@ project projectId =
         query = []
     in
         apiGetRequest path query Asana.projectDecoder
+
+type alias NewTask =
+    { name : Maybe String
+    , dueDate : Maybe String
+    , description : Maybe String
+    , projects : Maybe (List Asana.ProjectId)
+    }
+
+encodeResource : Asana.Resource -> Value
+encodeResource {id, name} =
+    Encode.object
+        [ ("id", Encode.string id)
+        , ("name", Encode.string name)
+        ]
+
+encodeTask : NewTask -> Value
+encodeTask { name, dueDate, description, projects } =
+    Encode.object <| List.filterMap identity
+        [ Maybe.map (Encode.string >> (,) "name") name
+        , Maybe.map (Encode.string >> (,) "description") description
+        , Maybe.map (Encode.string >> (,) "due_date") dueDate
+        , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") projects
+        ]
+
+createTask : NewTask -> Token -> Cmd (ApiResult Asana.Task)
+createTask newTask =
+    let
+        path = "/tasks"
+        query = []
+        body = encodeTask newTask
+    in
+       apiPostRequest path query body Asana.taskDecoder
+
+
 

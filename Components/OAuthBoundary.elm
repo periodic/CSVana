@@ -1,4 +1,4 @@
-module Components.OAuthBoundary exposing (Model, Msg, Props, component, getChild)
+module Components.OAuthBoundary exposing (Model, Msg, Props, component, getChild, updateChild)
 
 import Base exposing (..)
 import Components.Asana.Api exposing (Token)
@@ -85,8 +85,28 @@ view {childComponent} model =
                 [ text "Authorizing" ]
 
 subscriptions : Props model msg -> Model model -> Sub (Msg msg)
-subscriptions _ model =
-    Sub.map OAuthMsg <| OAuth.subscriptions model.oauth
+subscriptions {childComponent} {oauth, child} =
+    let
+        oauthSubs = Sub.map OAuthMsg <| OAuth.subscriptions oauth
+        childSubs =
+            case (OAuth.getToken oauth, child) of
+                (Just token, Just child) ->
+                    Sub.map ChildMsg <| .subscriptions (childComponent token) child
+                _ ->
+                    Sub.none
+    in
+        Sub.batch [oauthSubs, childSubs]
 
 getChild : Model model -> Maybe model
 getChild = .child
+
+updateChild : (model -> (model, Cmd msg)) -> Model model -> (Model model, Cmd (Msg msg))
+updateChild updater model =
+    case model.child of
+        Just child ->
+            let
+                (child', childCmd) = updater child
+            in
+                ({ model | child = Just child' }, Cmd.map ChildMsg childCmd)
+        Nothing ->
+            (model, Cmd.none)

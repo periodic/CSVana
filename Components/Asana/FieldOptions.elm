@@ -1,4 +1,4 @@
-module Components.Asana.FieldOptions exposing (Props, Model, Msg, component)
+module Components.Asana.FieldOptions exposing (Target(..), Props, Model, Msg, component, setNumFields)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -20,7 +20,7 @@ type Target
 
 type alias Props =
     { customFields : List Asana.CustomField
-    , maxValues : Int
+    , numFields : Int
     }
 
 type alias Model =
@@ -39,9 +39,9 @@ component props =
     }
 
 init : Props -> (Model, Cmd Msg)
-init { maxValues } =
+init { numFields } =
     let
-        targets = Array.repeat maxValues NoTarget
+        targets = Array.repeat numFields NoTarget
     in
         ({ targets = targets }, Cmd.none)
 
@@ -57,7 +57,23 @@ view props {targets} =
         (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
 
 getTargets : Model -> Array Target
-getTargets = .targets
+getTargets =
+    .targets
+
+setNumFields : Int -> Model -> (Model, Cmd Msg)
+setNumFields numFields model =
+    let
+        targets = model.targets
+        targets' =
+            Debug.log "setting targets:" <|
+            if (numFields <= Array.length targets)
+                then
+                    Array.slice 0 numFields targets
+                else
+                    Array.append targets <| Array.repeat (Array.length targets - numFields) NoTarget
+    in
+        ({ model | targets = targets' }, Cmd.none)
+
 
 --------------------------------------------------------------------------------
 -- Private

@@ -1,4 +1,4 @@
-module Components.Asana.ProjectLoader exposing (Props, Model, Msg, component, getChild, load)
+module Components.Asana.ProjectLoader exposing (Props, Model, Msg, component, getChild, updateChild, load)
 
 import Html exposing (Html)
 
@@ -24,7 +24,7 @@ component props =
     { init = init props
     , update = update props
     , view = view props
-    , subscriptions = always Sub.none
+    , subscriptions = always Sub.none -- TODO should be child subscriptions.
     }
 
 init : Props model msg -> (ApiResource Asana.Project model msg, Cmd (Msg msg))
@@ -41,6 +41,10 @@ view _ model =
 getChild : Model model msg -> Maybe model
 getChild =
     ApiResource.getChild
+
+updateChild : (model -> (model, Cmd msg)) -> Model model msg -> (Model model msg, Cmd (Msg msg))
+updateChild =
+    ApiResource.updateChild
 
 load : Asana.ProjectId -> Api.Token -> Model model msg -> (Model model msg, Cmd (Msg msg))
 load projectId token model =

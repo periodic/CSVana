@@ -39,7 +39,7 @@ type Msg a
 
 update : Msg { a | name : String } -> Model { a | name : String } -> (Model { a | name : String }, Cmd (Msg { a | name : String }))
 update msg model =
-    case (Debug.log "Typeahead update: " msg) of
+    case msg of
         NewTypeaheadOptions (Ok items) ->
             ({model | options = Loaded items}, Cmd.none)
         NewTypeaheadOptions (Err items) ->

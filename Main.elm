@@ -5,73 +5,52 @@ import Html.App
 import Html.Attributes exposing (..)
 import Navigation
 
-import Components.Csv as Csv
+import Base exposing (..)
 import Components.Asana as Asana
+import Components.OAuthBoundary as OAuthBoundary
 
+type alias Msg = OAuthBoundary.Msg Asana.Msg
 type alias Model =
-    { asana : Asana.Model
-    , csv : Csv.Model
-    , baseUrl : String
+    { oauthBoundary : OAuthBoundary.Model Asana.Model
+    , oauthComponent : Component (OAuthBoundary.Model Asana.Model) (OAuthBoundary.Msg Asana.Msg)
     }
-
-type Msg
-    = AsanaMsg Asana.Msg
-    | CsvMsg Csv.Msg
 
 init : Navigation.Location -> (Model, Cmd Msg)
 init location =
     let
-        (asana, asanaCmd) =
-            Asana.init { baseUrl = location.origin }
-        (csv, csvCmd) =
-            Csv.init {}
-        model =
-            { asana = asana
-            , csv = csv
-            , baseUrl = location.origin
-            }
-        cmd = Cmd.batch
-            [ Cmd.map AsanaMsg asanaCmd
-            , Cmd.map CsvMsg csvCmd
-            ]
+        asanaComponent = \token ->
+            Asana.component { token = token }
+        baseUrl = location.origin
+        oauthProps =
+                { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
+                , clientId = "192968333753040"
+                , baseRedirectUrl = baseUrl
+                , childComponent = asanaComponent
+                }
+        oauthComponent = OAuthBoundary.component oauthProps
+        (boundary, boundaryCmd) = oauthComponent.init
     in
-        (model, cmd)
+        ({ oauthBoundary = boundary, oauthComponent = oauthComponent }, boundaryCmd)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-        case msg of
-            AsanaMsg msg' ->
-                let
-                    (asana', asanaCmd) =
-                         -- TODO: Bind the props in init.
-                         Asana.update { baseUrl = model.baseUrl } msg' model.asana
-                in
-                    ({ model | asana = asana' }, Cmd.map AsanaMsg asanaCmd)
-            CsvMsg msg' ->
-                let
-                    (csv', csvCmd) =
-                        Csv.update {} msg' model.csv
-                in
-                    ({ model | csv = csv' }, Cmd.map CsvMsg csvCmd)
+    let
+        (oauthBoundary', cmd) = model.oauthComponent.update msg model.oauthBoundary
+    in
+        ({ model | oauthBoundary = oauthBoundary' }, cmd)
 
-
-subscriptions :  Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Sub.map AsanaMsg <| Asana.subscriptions { baseUrl = model.baseUrl } model.asana
-        , Sub.map CsvMsg <| Csv.subscriptions {} model.csv
-        ]
+subscriptions : Model -> Sub Msg
+subscriptions {oauthComponent, oauthBoundary} =
+    oauthComponent.subscriptions oauthBoundary
 
 urlUpdate : Navigation.Location -> Model -> (Model, Cmd Msg)
 urlUpdate location model =
     (model, Cmd.none)
 
 view model =
-    div [ class "Main" ]
-        [ div [ class "Main-asana" ]
-            [ Html.App.map AsanaMsg <| Asana.view { baseUrl = model.baseUrl } model.asana ]
-        , div [ class "Main-csv" ]
-            [ Html.App.map CsvMsg <| Csv.view {} model.csv ]
+    div [ class "Asana" ]
+        [ div [ class "Asana-form" ]
+            [ model.oauthComponent.view model.oauthBoundary ]
         ]
 
 main =

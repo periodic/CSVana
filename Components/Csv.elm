@@ -1,4 +1,4 @@
-module Components.Csv exposing (Props, Model, Msg, init, update, view, subscriptions, getRecords)
+module Components.Csv exposing (Props, Model, Msg, init, update, view, subscriptions, getRecords, getHeaders, getNumFields)
 
 import Csv
 import FileReader
@@ -31,7 +31,7 @@ init _ =
 update _ msg model =
     case msg of
         MoreData chunk ->
-            ({model | csvData = Just (Csv.parse chunk) }, Cmd.none)
+            ({model | csvData = Just (Csv.parse chunk) }, Debug.log "Got CsvData" Cmd.none)
         NewFiles files ->
             case List.head files of
                 Just file ->
@@ -52,6 +52,14 @@ view _ model =
 getRecords : Model -> Maybe (List (List String))
 getRecords { csvData } =
     Maybe.map (.records) csvData
+
+getHeaders : Model -> Maybe (List String)
+getHeaders { csvData } =
+    Maybe.map (.headers) csvData
+
+getNumFields : Model -> Maybe Int
+getNumFields =
+    .csvData >> Maybe.map (.headers >> List.length)
 
 --------------------------------------------------------------------------------
 -- Private

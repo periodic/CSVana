@@ -1,4 +1,4 @@
-module Components.Asana.ApiResource exposing (ApiResource, Msg, init, update, view, isLoaded, isUnloaded, load, getChild)
+module Components.Asana.ApiResource exposing (ApiResource, Msg, init, update, view, isLoaded, isUnloaded, load, getChild, updateChild)
 
 import Base exposing (..)
 import Components.Asana.Api exposing (ApiResult)
@@ -78,6 +78,19 @@ getChild model =
             Just submodel
         _ ->
             Nothing
+
+updateChild : (submodel -> (submodel, Cmd submsg))
+        -> ApiResource data submodel submsg
+        -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
+updateChild updater model =
+    case model.state of
+        Loaded (data, child) ->
+            let
+                (child', childCmd) = updater child
+            in
+                ({ model | state = Loaded (data, child') }, Cmd.map SubMsg childCmd)
+        _ ->
+            (model, Cmd.none)
 
 isLoaded : ApiResource data submodel submsg -> Bool
 isLoaded resource =

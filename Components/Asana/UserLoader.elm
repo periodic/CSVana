@@ -1,4 +1,4 @@
-module Components.Asana.UserLoader exposing (Model, Msg, Props, component, getChild)
+module Components.Asana.UserLoader exposing (Model, Msg, Props, component, getChild, updateChild)
 
 import Http
 import Html exposing (Html)
@@ -47,3 +47,8 @@ view _ model =
 getChild : Model model msg -> Maybe model
 getChild =
     ApiResource.getChild
+
+updateChild : (model -> (model, Cmd msg)) -> Model model msg -> (Model model msg, Cmd (Msg msg))
+updateChild =
+    ApiResource.updateChild
+
