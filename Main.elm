@@ -1,64 +1,78 @@
+module Main exposing (main)
+
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (..)
-import Navigation exposing (Location, program)
+import Navigation
 
-import App exposing (..)
-import Csv
-import FileReader exposing (..)
-import View
-import OAuth
-import Components.Asana.Model as Asana
+import Components.Csv as Csv
+import Components.Asana as Asana
 
-authUrl = "https://app.asana.com/-/oauth_authorize?response_type=token&client_id=192968333753040&redirect_uri=https%3A%2F%2Flocalhost%3A8000%2F"
+type alias Model =
+    { asana : Asana.Model
+    , csv : Csv.Model
+    , baseUrl : String
+    }
 
-init : Location -> (Model, Cmd Msg)
+type Msg
+    = AsanaMsg Asana.Msg
+    | CsvMsg Csv.Msg
+
+init : Navigation.Location -> (Model, Cmd Msg)
 init location =
     let
-        (oauthModel, oauthCmd) = OAuth.init authUrl location
-        model = 
-            { csvData = Nothing
-            , oauth = oauthModel
-            , workspaces = Loading
-            , projectTypeahead = Nothing
+        (asana, asanaCmd) =
+            Asana.init { baseUrl = location.origin }
+        (csv, csvCmd) =
+            Csv.init {}
+        model =
+            { asana = asana
+            , csv = csv
+            , baseUrl = location.origin
             }
+        cmd = Cmd.batch
+            [ Cmd.map AsanaMsg asanaCmd
+            , Cmd.map CsvMsg csvCmd
+            ]
     in
-       case oauthModel.token of
-           Nothing ->
-               (model, oauthCmd)
-           Just token ->
-               (model, Cmd.map ApiMe <| Asana.me token)
+        (model, cmd)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
         case msg of
-            MoreData chunk ->
-                ({model | csvData = Just (Csv.parse chunk) }, Cmd.none)
-            NewFiles files ->
-                case List.head files of
-                    Just file ->
-                        (model, readFile file)
-                    Nothing ->
-                        (model, Cmd.none)
-            ApiMe (Ok user) ->
-                case user.workspaces of
-                    Just workspaces ->
-                        ({ model | workspaces = Loaded workspaces }, Cmd.none)
-                    Nothing -> 
-                        (model, Cmd.none)
-            ApiMe (Err _) ->
-                (model, Cmd.none)
+            AsanaMsg msg' ->
+                let
+                    (asana', asanaCmd) =
+                         -- TODO: Bind the props in init.
+                         Asana.update { baseUrl = model.baseUrl } msg' model.asana
+                in
+                    ({ model | asana = asana' }, Cmd.map AsanaMsg asanaCmd)
+            CsvMsg msg' ->
+                let
+                    (csv', csvCmd) =
+                        Csv.update {} msg' model.csv
+                in
+                    ({ model | csv = csv' }, Cmd.map CsvMsg csvCmd)
 
-        [ input [ onInput NewInput, value fragment ] []
 
 subscriptions :  Model -> Sub Msg
-subscriptions model = fileChunk MoreData
+subscriptions model =
+    Sub.batch
+        [ Sub.map AsanaMsg <| Asana.subscriptions { baseUrl = model.baseUrl } model.asana
+        , Sub.map CsvMsg <| Csv.subscriptions {} model.csv
+        ]
 
-urlUpdate : Location -> Model -> (Model, Cmd Msg)
+urlUpdate : Navigation.Location -> Model -> (Model, Cmd Msg)
 urlUpdate location model =
-  let
-      (oauthModel, cmd) = OAuth.urlUpdate location (model.oauth)
-  in
-      ({ model | oauth = oauthModel }, cmd)
+    (model, Cmd.none)
+
+view model =
+    div [ class "Main" ]
+        [ div [ class "Main-asana" ]
+            [ Html.App.map AsanaMsg <| Asana.view { baseUrl = model.baseUrl } model.asana ]
+        , div [ class "Main-csv" ]
+            [ Html.App.map CsvMsg <| Csv.view {} model.csv ]
+        ]
 
 main =
     Navigation.program
@@ -67,5 +81,5 @@ main =
         , update = update
         , urlUpdate = urlUpdate
         , subscriptions = subscriptions
-        , view = View.view
+        , view = view
         }
