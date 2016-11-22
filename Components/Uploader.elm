@@ -14,7 +14,7 @@ type alias Record = List String
 
 type alias Props =
     { token : Api.Token
-    , project : Asana.ProjectResource
+    , projectId : Asana.ProjectId
     , records : List Record
     , fieldTargets : List FieldOptions.Target
     }
@@ -49,7 +49,7 @@ init props =
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
-    case msg of
+    case Debug.log "Updater msg" msg of
         RecordProcessed (Ok _) ->
             ({ model | recordsProcessed = model.recordsProcessed + 1 }, Cmd.none)
         RecordProcessed (Err _) ->
@@ -69,9 +69,9 @@ uploadRecord : Props -> Record -> Cmd Msg
 uploadRecord props record =
     let
         fieldSpecs = List.map2 (,) record props.fieldTargets
-        newTask = List.foldr addRecordToTask (emptyTask props.project) fieldSpecs
+        newTask = List.foldr addRecordToTask (emptyTask props.projectId) fieldSpecs
     in
-        Cmd.map RecordProcessed <| Api.createTask newTask props.token
+        Cmd.map RecordProcessed <| Api.createTask (Debug.log "Creating task" newTask) props.token
 
 addRecordToTask : (String, FieldOptions.Target) -> Api.NewTask -> Api.NewTask
 addRecordToTask (value, target) task =
@@ -85,11 +85,11 @@ addRecordToTask (value, target) task =
         _ ->
             task
 
-emptyTask : Asana.ProjectResource -> Api.NewTask
-emptyTask project =
+emptyTask : Asana.ProjectId -> Api.NewTask
+emptyTask projectId =
     { name = Nothing
     , description = Nothing
     , dueDate = Nothing
-    , projects = Just [project.id]
+    , projects = Just [projectId]
     }
 

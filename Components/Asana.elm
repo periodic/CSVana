@@ -13,7 +13,6 @@ import Components.Asana.ProjectLoader as ProjectLoader
 import Components.Asana.UserLoader as UserLoader
 import Components.Csv as Csv
 import Components.FieldMatcher as FieldMatcher
-import Components.Uploader as Uploader
 
 type alias Props =
     { token : Api.Token
@@ -23,7 +22,6 @@ type Msg
     = FormMsg (UserLoader.Msg Form.Msg)
     | CsvMsg Csv.Msg
     | FieldMatcherMsg (ProjectLoader.Msg FieldMatcher.Msg)
-    | StartUpload
 
 type alias Model =
     { form : UserLoader.Model Form.Model Form.Msg
@@ -33,7 +31,6 @@ type alias Model =
         ( ProjectLoader.Model FieldMatcher.Model FieldMatcher.Msg
         , Component (ProjectLoader.Model FieldMatcher.Model FieldMatcher.Msg) (ProjectLoader.Msg FieldMatcher.Msg)
         )
-    , uploader : Maybe Uploader
     }
 
 component : Props -> Component Model Msg
@@ -69,7 +66,6 @@ init {token} =
         , formComponent = userLoaderComponent
         , csv = csv
         , fieldMatcher = Nothing
-        , uploader = Nothing
         }, cmd)
 
 subscriptions : Props -> Model -> Sub Msg
@@ -90,7 +86,6 @@ view props model =
     div [ class "Main" ]
         [ viewInputs props model
         , viewMatcher props model
-        , uploadButton
         ]
 
 --------------------------------------------------------------------------------
@@ -136,8 +131,8 @@ processMessage props msg model =
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
 updateMatcher {token} (model, cmd) =
-    case (Debug.log "Project" <| getSelectedProject model, Debug.log "Headers" <| Csv.getHeaders model.csv) of
-        (Just project, Just headers) ->
+    case ( getSelectedProject model, Csv.getHeaders model.csv, Csv.getRecords model.csv) of
+        (Just project, Just headers, Just records) ->
             let
                 matcherComponent =
                     ProjectLoader.component
@@ -148,8 +143,11 @@ updateMatcher {token} (model, cmd) =
                                 numFields = List.length headers
                             in
                                 FieldMatcher.component
-                                    { customFields = customFields
-                                    , csvFields = headers
+                                    { token = token
+                                    , projectId = project.id
+                                    , csvHeaders = headers
+                                    , csvRecords = records
+                                    , customFields = customFields
                                     }
                         }
                 (matcher, matcherCmd1) = matcherComponent.init
@@ -182,7 +180,3 @@ viewMatcher props { fieldMatcher } =
                 [ Html.App.map FieldMatcherMsg <| component.view model ]
         Nothing ->
             div [ class "Main-matcher--disabled" ] []
-
-uploadButton =
-    div [ class "Main-upload" ]
-        [ button [ value "Upload", onClick StartUpload ] [ text "Upload" ] ]

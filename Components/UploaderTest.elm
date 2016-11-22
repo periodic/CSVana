@@ -26,10 +26,7 @@ props =
     , childComponent = \token ->
         Uploader.component
             { token = token
-            , project = 
-                { id = "216637505526884"
-                , name = "CSV Import Test"
-                }
+            , projectId = "216637505526884"
             , records = records
             , fieldTargets = fieldTargets
             }

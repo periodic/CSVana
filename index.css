@@ -1,0 +1,69 @@
+
+.Main {
+    display: flex;
+    flex-direction: column;
+    align-elements: center
+}
+
+.Main-inputs {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #eee;
+}
+
+.Main-form, .Main-csv {
+    width: 400px;
+    padding: 15px;
+}
+
+.AsanaForm-workspaces, .AsanaForm-projects {
+    display: flex;
+    justify-content: space-between;
+}
+
+.FieldMatcher {
+    display: flex;
+    justify-content: center;
+    border: 1px solid #eee;
+    margin-top: 15px;
+}
+
+.FieldMatcher-csv, .FieldMatcher-targets {
+    width: 400px;
+    padding: 15px;
+}
+
+
+.FieldOptions {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+.Typeahead {
+    display: inline;
+    position: relative;
+}
+
+.Typeahead-options {
+    position: absolute;
+    left: 0;
+    top: 20px;
+    width: 200px;
+    background-color: #fff;
+    border: 1px solid #eee;
+}
+
+.Typeahead-options--empty {
+    display: none;
+}
+
+.Typeahead-option {
+    padding: 5px 10px;
+}
+
+.Typeahead-option:hover {
+    background-color: #eee;
+}

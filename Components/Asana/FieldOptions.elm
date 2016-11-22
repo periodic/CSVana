@@ -1,4 +1,4 @@
-module Components.Asana.FieldOptions exposing (Target(..), Props, Model, Msg, component, setNumFields)
+module Components.Asana.FieldOptions exposing (Target(..), Props, Model, Msg, component, setNumFields, getTargets)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -56,9 +56,9 @@ view props {targets} =
     div [ class "FieldOptions" ]
         (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
 
-getTargets : Model -> Array Target
+getTargets : Model -> List Target
 getTargets =
-    .targets
+    .targets >> Array.toList
 
 setNumFields : Int -> Model -> (Model, Cmd Msg)
 setNumFields numFields model =

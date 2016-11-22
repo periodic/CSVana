@@ -45,9 +45,7 @@ subscriptions _ _ = FileReader.fileChunk MoreData
 
 view _ model =
     div [ class "Csv" ] 
-        ([ div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
-         ] ++
-         List.filterMap identity [ Maybe.map (.headers >> renderHeaders) model.csvData ])
+        [ div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ] ]
 
 getRecords : Model -> Maybe (List (List String))
 getRecords { csvData } =
@@ -59,17 +57,4 @@ getHeaders { csvData } =
 
 getNumFields : Model -> Maybe Int
 getNumFields =
-    .csvData >> Maybe.map (.headers >> List.length)
-
---------------------------------------------------------------------------------
--- Private
-
-renderHeaders : List String -> Html Msg
-renderHeaders headers =
-    div [ class "CsvHeaders" ]
-        (List.map renderHeader headers)
-
-renderHeader : String -> Html Msg
-renderHeader header =
-    div [ class "CsvHeaders-header" ]
-        [ text header ]
+    getHeaders >> Maybe.map List.length

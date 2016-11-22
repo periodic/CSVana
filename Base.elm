@@ -2,6 +2,10 @@ module Base exposing (..)
 
 import Html exposing (Html)
 
+-- TODO: Bundle with the model, create easy functions.
+-- create : Props -> ComponentSpec -> Component
+-- update : Msg -> Component -> (Component, Cmd Msg)
+-- view : Component -> Html Msg
 type alias Component model msg =
     { init : (model, Cmd msg)
     , update : msg -> model -> (model, Cmd msg)

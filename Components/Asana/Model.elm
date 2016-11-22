@@ -115,13 +115,13 @@ customFieldDecoder = object3 CustomField
 type alias TaskId = Id
 type alias Task =
     { id : Id
-    , name : String
-    , description : String
-    , dueDate : String
+    , name : Maybe String
+    , description : Maybe String
+    , dueDate : Maybe String
     }
 
 taskDecoder = object4 Task
     ("id" := map toString int)
-    ("name" := string)
-    ("description" := string)
-    ("due_date" := string)
+    (maybe <| "name" := string)
+    (maybe <| "description" := string)
+    (maybe <| "due_date" := string)
