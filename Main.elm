@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.App
 import Html.Attributes exposing (..)
 import Navigation
+import String
 
 import Base exposing (..)
 import Components.Asana as Asana
@@ -20,11 +21,14 @@ init location =
     let
         asanaComponent = \token ->
             Asana.component { token = token }
-        baseUrl = location.href
+        (clientId, baseRedirectUrl) =
+            if String.contains "localhost" location.origin
+                then ("192968333753040", "https://localhost:8000")
+                else ("217803124707970", "https://periodic.github.io/CSVana")
         oauthProps =
                 { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
-                , clientId = "217803124707970"
-                , baseRedirectUrl = baseUrl
+                , clientId = clientId
+                , baseRedirectUrl = baseRedirectUrl
                 , childComponent = asanaComponent
                 }
         oauthComponent = OAuthBoundary.component oauthProps

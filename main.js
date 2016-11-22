@@ -11648,7 +11648,7 @@ var _user$project$Components_OAuth$init = F3(
 				[
 					baseUrl,
 					A2(_elm_lang$core$String$endsWith, '/', baseUrl) ? '' : '/',
-					'/oauth_success.html'
+					'oauth_success.html'
 				]));
 		var model = {baseAuthUrl: baseAuthUrl, redirectUrl: redirectUrl, clientId: clientId, state: _user$project$Components_OAuth$Uninitialized};
 		return {
@@ -11955,16 +11955,18 @@ var _user$project$Main$update = F2(
 		};
 	});
 var _user$project$Main$init = function (location) {
-	var baseUrl = location.href;
+	var _p3 = A2(_elm_lang$core$String$contains, 'localhost', location.origin) ? {ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'} : {ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'};
+	var clientId = _p3._0;
+	var baseRedirectUrl = _p3._1;
 	var asanaComponent = function (token) {
 		return _user$project$Components_Asana$component(
 			{token: token});
 	};
-	var oauthProps = {baseAuthUrl: 'https://app.asana.com/-/oauth_authorize', clientId: '217803124707970', baseRedirectUrl: baseUrl, childComponent: asanaComponent};
+	var oauthProps = {baseAuthUrl: 'https://app.asana.com/-/oauth_authorize', clientId: clientId, baseRedirectUrl: baseRedirectUrl, childComponent: asanaComponent};
 	var oauthComponent = _user$project$Components_OAuthBoundary$component(oauthProps);
-	var _p3 = oauthComponent.init;
-	var boundary = _p3._0;
-	var boundaryCmd = _p3._1;
+	var _p4 = oauthComponent.init;
+	var boundary = _p4._0;
+	var boundaryCmd = _p4._1;
 	return {
 		ctor: '_Tuple2',
 		_0: {oauthBoundary: boundary, oauthComponent: oauthComponent},

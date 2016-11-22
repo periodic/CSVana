@@ -53,7 +53,7 @@ init baseAuthUrl clientId baseUrl =
             , if endsWith "/" baseUrl
                 then ""
                 else "/"
-            , "/oauth_success.html"
+            , "oauth_success.html"
             ]
         model =
             { baseAuthUrl = baseAuthUrl
