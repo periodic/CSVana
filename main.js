@@ -11949,12 +11949,12 @@ var _user$project$Main$update = F2(
 		};
 	});
 var _user$project$Main$init = function (location) {
-	var baseUrl = location.origin;
+	var baseUrl = location.href;
 	var asanaComponent = function (token) {
 		return _user$project$Components_Asana$component(
 			{token: token});
 	};
-	var oauthProps = {baseAuthUrl: 'https://app.asana.com/-/oauth_authorize', clientId: '192968333753040', baseRedirectUrl: baseUrl, childComponent: asanaComponent};
+	var oauthProps = {baseAuthUrl: 'https://app.asana.com/-/oauth_authorize', clientId: '217803124707970', baseRedirectUrl: baseUrl, childComponent: asanaComponent};
 	var oauthComponent = _user$project$Components_OAuthBoundary$component(oauthProps);
 	var _p3 = oauthComponent.init;
 	var boundary = _p3._0;
