@@ -20,10 +20,10 @@ init location =
     let
         asanaComponent = \token ->
             Asana.component { token = token }
-        baseUrl = location.origin
+        baseUrl = location.href
         oauthProps =
                 { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
-                , clientId = "192968333753040"
+                , clientId = "217803124707970"
                 , baseRedirectUrl = baseUrl
                 , childComponent = asanaComponent
                 }

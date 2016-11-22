@@ -41,8 +41,7 @@ init props =
             { recordsProcessed = 0
             }
         cmd =
-            Cmd.batch
-            <| List.map (uploadRecord props) props.records
+            Cmd.batch <| List.map (uploadRecord props) props.records
     in
         (model, cmd)
 
