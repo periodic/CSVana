@@ -48,7 +48,13 @@ subscriptions { state } =
 init : String -> String -> String -> (Model, Cmd Msg)
 init baseAuthUrl clientId baseUrl =
     let
-        redirectUrl = baseUrl ++ "/oauth_success.html"
+        redirectUrl = String.concat
+            [ baseUrl
+            , if endsWith "/" baseUrl
+                then ""
+                else "/"
+            , "/oauth_success.html"
+            ]
         model =
             { baseAuthUrl = baseAuthUrl
             , redirectUrl = redirectUrl

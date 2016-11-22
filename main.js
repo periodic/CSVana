@@ -11643,7 +11643,13 @@ var _user$project$Components_OAuth$Failure = function (a) {
 var _user$project$Components_OAuth$Uninitialized = {ctor: 'Uninitialized'};
 var _user$project$Components_OAuth$init = F3(
 	function (baseAuthUrl, clientId, baseUrl) {
-		var redirectUrl = A2(_elm_lang$core$Basics_ops['++'], baseUrl, '/oauth_success.html');
+		var redirectUrl = _elm_lang$core$String$concat(
+			_elm_lang$core$Native_List.fromArray(
+				[
+					baseUrl,
+					A2(_elm_lang$core$String$endsWith, '/', baseUrl) ? '' : '/',
+					'/oauth_success.html'
+				]));
 		var model = {baseAuthUrl: baseAuthUrl, redirectUrl: redirectUrl, clientId: clientId, state: _user$project$Components_OAuth$Uninitialized};
 		return {
 			ctor: '_Tuple2',
