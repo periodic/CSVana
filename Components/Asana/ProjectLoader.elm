@@ -1,52 +1,75 @@
-module Components.Asana.ProjectLoader exposing (Props, Model, Msg, component, getChild, updateChild, load)
+module Components.Asana.ProjectLoader exposing (Props, Model, Msg, component, getChild, load)
 
 import Html exposing (Html)
+import Html.App
 
-import Base exposing (..)
+import Base exposing (initC, updateC, viewC, subscriptionsC, stateC, mapCmd)
 import Components.Asana.Api as Api
 import Components.Asana.Model as Asana
-import Components.Asana.ApiResource as ApiResource exposing (ApiResource)
+import Components.Asana.ApiResource as ApiResource
 import Components.Asana.CommonViews exposing (..)
+
+-- TODO: remove?
 
 type alias Props model msg =
     { token : Api.Token
-    , childComponent : Asana.Project -> Component model msg
+    , childSpec : Asana.Project -> Base.Spec model msg
     }
 
+type Msg msg
+    = ApiResourceMsg (ApiResource.Msg Asana.Project msg)
+    | Load Asana.ProjectId
+
 type alias Model model msg =
-    ApiResource.ApiResource Asana.Project model msg
+    ApiResource.Component Asana.Project model msg
 
-type alias Msg msg =
-    ApiResource.Msg Asana.Project msg
+type alias Component model msg =
+    Base.Component (Model model msg) (Msg msg)
 
-component : Props model msg -> Component (Model model msg) (Msg msg)
+type alias Spec model msg =
+    Base.Spec (Model model msg) (Msg msg)
+
+component : Props model msg -> Base.Spec (Model model msg) (Msg msg)
 component props =
     { init = init props
     , update = update props
     , view = view props
-    , subscriptions = always Sub.none -- TODO should be child subscriptions.
+    , subscriptions = subscriptions props
     }
 
-init : Props model msg -> (ApiResource Asana.Project model msg, Cmd (Msg msg))
-init { token, childComponent } =
-    ApiResource.init { child = childComponent }
-
-update : Props model msg -> Msg msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
-update props = ApiResource.update
-
-view : Props model msg -> Model model msg -> Html (Msg msg)
-view _ model =
-    ApiResource.view unloadedView loadingIndicator errorView model
-
-getChild : Model model msg -> Maybe model
+getChild : Model model msg -> Maybe (Base.Component model msg)
 getChild =
     ApiResource.getChild
 
-updateChild : (model -> (model, Cmd msg)) -> Model model msg -> (Model model msg, Cmd (Msg msg))
-updateChild =
-    ApiResource.updateChild
+load : Asana.ProjectId -> Component model msg -> (Component model msg, Cmd (Msg msg))
+load =
+    updateC << Load
 
-load : Asana.ProjectId -> Api.Token -> Model model msg -> (Model model msg, Cmd (Msg msg))
-load projectId token model =
-    -- TODO: Only load the project if the project ID has changed.
-    ApiResource.load (Api.project projectId token) model
+--------------------------------------------------------------------------------
+-- Private
+
+init : Props model msg -> (Model model msg, Cmd (Msg msg))
+init { childSpec } =
+    mapCmd ApiResourceMsg <| initC <| ApiResource.component
+        { childSpec = childSpec
+        , unloadedView = unloadedView
+        , loadingView = loadingIndicator
+        , errorView = errorView
+        }
+
+update : Props model msg -> Msg msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
+update {token} msg model =
+    case msg of
+        ApiResourceMsg msg ->
+            mapCmd ApiResourceMsg <| updateC msg model
+        Load projectId ->
+            mapCmd ApiResourceMsg <| ApiResource.load (Api.project projectId token) model
+
+view : Props model msg -> Model model msg -> Html (Msg msg)
+view _ model =
+    Html.App.map ApiResourceMsg <| viewC model
+
+subscriptions : Props model msg -> Model model msg -> Sub (Msg msg)
+subscriptions props model =
+    Sub.map ApiResourceMsg <| subscriptionsC model
+

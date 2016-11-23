@@ -1,4 +1,4 @@
-module Components.Asana.FieldOptions exposing (Target(..), Props, Model, Msg, component, setNumFields, getTargets)
+module Components.Asana.FieldOptions exposing (Target(..), Props, Msg, Component, component, setNumFields, getTargets)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -6,10 +6,8 @@ import Html.Attributes exposing (..)
 import Html.Events as Events
 import Json.Decode as Json
 
-import Base exposing (..)
-import Components.Asana.Api as Api
+import Base
 import Components.Asana.Model as Asana
-import Components.Asana.ApiResource as ApiResource
 
 type Target
     = NoTarget
@@ -27,16 +25,32 @@ type alias Model =
     { targets : Array Target
     }
 
-type Msg =
-    TargetUpdated Int Target
+type Msg
+    = TargetUpdated Int Target
+    | UpdateNumFields Int
 
-component : Props -> Component Model Msg
+type alias Spec = Base.Spec Model Msg
+type alias Component = Base.Component Model Msg
+
+component : Props -> Spec
 component props =
     { init = init props
     , update = update props
     , view = view props
     , subscriptions = always Sub.none
     }
+
+getTargets : Component -> List Target
+getTargets =
+    Array.toList << .targets << Base.stateC
+
+setNumFields : Int -> Component -> (Component, Cmd Msg)
+setNumFields =
+    Base.updateC << UpdateNumFields
+
+
+--------------------------------------------------------------------------------
+-- Private
 
 init : Props -> (Model, Cmd Msg)
 init { numFields } =
@@ -50,33 +64,22 @@ update props msg model =
     case msg of
         TargetUpdated index target ->
             ({ model | targets = Array.set index target model.targets }, Cmd.none)
+        UpdateNumFields numFields -> 
+            let
+                targets = model.targets
+                targets' =
+                    if (numFields <= Array.length targets)
+                        then
+                            Array.slice 0 numFields targets
+                        else
+                            Array.append targets <| Array.repeat (Array.length targets - numFields) NoTarget
+            in
+                ({ model | targets = targets' }, Cmd.none)
 
 view : Props -> Model -> Html Msg
 view props {targets} =
     div [ class "FieldOptions" ]
         (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
-
-getTargets : Model -> List Target
-getTargets =
-    .targets >> Array.toList
-
-setNumFields : Int -> Model -> (Model, Cmd Msg)
-setNumFields numFields model =
-    let
-        targets = model.targets
-        targets' =
-            Debug.log "setting targets:" <|
-            if (numFields <= Array.length targets)
-                then
-                    Array.slice 0 numFields targets
-                else
-                    Array.append targets <| Array.repeat (Array.length targets - numFields) NoTarget
-    in
-        ({ model | targets = targets' }, Cmd.none)
-
-
---------------------------------------------------------------------------------
--- Private
 
 allTargets : List Asana.CustomField -> List Target
 allTargets customFields =

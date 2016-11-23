@@ -1,5 +1,6 @@
-module Components.Csv exposing (Props, Model, Msg, init, update, view, subscriptions, getRecords, getHeaders, getNumFields)
+module Components.Csv exposing (Props, Msg, Component, Spec, spec, getRecords, getHeaders, getNumFields)
 
+import Base
 import Csv
 import FileReader
 import Html exposing (..)
@@ -19,6 +20,35 @@ type Msg
     | MoreData String
     | HasHeader Bool
 
+type alias Spec =
+    Base.Spec Model Msg
+type alias Component =
+    Base.Component Model Msg
+
+spec : Props -> Spec
+spec props =
+    { init = init props
+    , update = update props
+    , subscriptions = subscriptions props
+    , view = view props
+    }
+
+getRecords : Component -> Maybe (List (List String))
+getRecords =
+    Maybe.map (.records) << .csvData << Base.stateC
+
+getHeaders : Component -> Maybe (List String)
+getHeaders  =
+    Maybe.map (.headers) << .csvData << Base.stateC
+
+getNumFields : Component -> Maybe Int
+getNumFields =
+    getHeaders >> Maybe.map List.length
+
+--------------------------------------------------------------------------------
+-- Private
+
+init : Props -> (Model, Cmd Msg)
 init _ =
     let
         model =
@@ -28,6 +58,7 @@ init _ =
     in
         (model, Cmd.none)
 
+update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update _ msg model =
     case msg of
         MoreData chunk ->
@@ -41,22 +72,13 @@ update _ msg model =
         HasHeader hasHeader ->
             ({ model | hasHeader = hasHeader }, Cmd.none)
 
+subscriptions : Props -> Model -> Sub Msg
 subscriptions _ _ = FileReader.fileChunk MoreData
 
+view : Props -> Model -> Html Msg
 view _ model =
     div [ class "Csv" ] 
         [ h3 [] [ text "Upload a CSV file:"]
         , div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
         ]
 
-getRecords : Model -> Maybe (List (List String))
-getRecords { csvData } =
-    Maybe.map (.records) csvData
-
-getHeaders : Model -> Maybe (List String)
-getHeaders { csvData } =
-    Maybe.map (.headers) csvData
-
-getNumFields : Model -> Maybe Int
-getNumFields =
-    getHeaders >> Maybe.map List.length

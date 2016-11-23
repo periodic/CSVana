@@ -1,113 +1,111 @@
-module Components.Asana.ApiResource exposing (ApiResource, Msg, init, update, view, isLoaded, isUnloaded, load, getChild, updateChild)
+module Components.Asana.ApiResource exposing (Component, Spec, Msg, component, isLoaded, isUnloaded, getChild)
 
-import Base exposing (..)
+import Base exposing (initC, updateC, viewC, subscriptionsC, stateC)
 import Components.Asana.Api exposing (ApiResult)
 import Html exposing (Html)
 import Html.App as App exposing (map)
 import Http
 
-type alias Props data submodel submsg =
-    { child : data -> Component submodel submsg
+type alias Props data model msg =
+    { childSpec : data -> Base.Spec model msg
+    , fetch : Cmd (ApiResult data)
+    , unloadedView : Html (Msg data msg)
+    , loadingView : Html (Msg data msg)
+    , errorView : Http.Error -> Html (Msg data msg)
     }
 
-type ResourceState a
-    = Unloaded
-    | Loading
-    | Error Http.Error
-    | Loaded a
-
-type alias ApiResource data submodel submsg =
-    { state : ResourceState (data, submodel)
-    , child : data -> Component submodel submsg
-    }
-
-type Msg data submsg
+type Msg data msg
     = ApiMsg (ApiResult data)
-    | SubMsg submsg
+    | ChildMsg msg
 
-init : Props data submodel submsg
-    -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
-init props =
-    ({ state = Unloaded, child = props.child }, Cmd.none)
+type alias Spec data model msg = Base.Spec (Model model msg) (Msg data msg)
+type alias Component data model msg = Base.Component (Model model msg) (Msg data msg)
 
--- Note, the type of the resource currently doesn't matter because it gets replaced...
-update : Msg data submsg -> ApiResource data submodel submsg -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
-update msg model =
-    case msg of
-        -- TODO: Should only log an error if we aren't expecting an API message.
-        ApiMsg apiResult ->
-            case apiResult of 
-                Ok data ->
-                    let
-                        (submodel, subcmd) = model.child data |> .init
-                    in
-                        ({ model | state = Loaded (data, submodel) }, Cmd.map SubMsg subcmd)
-                Err msg ->
-                    ({ model | state = Error msg }, Cmd.none)
-        SubMsg submsg ->
-            case model.state of
-                Loaded (data, submodel) ->
-                    let
-                        (submodel', subcmd) = model.child data |> \comp -> comp.update submsg submodel
-                    in
-                        ({ model | state = Loaded (data, submodel') }, Cmd.map SubMsg subcmd)
-                _ ->
-                    -- TODO: Log something here.
-                    (model, Cmd.none)
+component : Props data model msg -> Spec data model msg
+component props =
+    { init = init props
+    , update = update props
+    , subscriptions = subscriptions props
+    , view = view props
+    }
 
-view : Html (Msg data submsg)
-    -> Html (Msg data submsg)
-    -> (Http.Error -> Html (Msg data submsg))
-    -> ApiResource data submodel submsg
-    -> Html (Msg data submsg)
-view unloaded loading error model =
-    case model.state of
-        Unloaded ->
-            unloaded
-        Loading ->
-            loading
-        Error msg ->
-            error msg
-        Loaded (data, submodel) ->
-            App.map SubMsg <| (\comp -> comp.view submodel) <| model.child data
-
-getChild : ApiResource data submodel submsg -> Maybe submodel
-getChild model =
-    case model.state of
-        Loaded (_, submodel) ->
-            Just submodel
+getChild : Component data model msg -> Maybe (Base.Component model msg)
+getChild resource =
+    case stateC resource of
+        Loaded child ->
+            Just child
         _ ->
             Nothing
 
-updateChild : (submodel -> (submodel, Cmd submsg))
-        -> ApiResource data submodel submsg
-        -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
-updateChild updater model =
-    case model.state of
-        Loaded (data, child) ->
-            let
-                (child', childCmd) = updater child
-            in
-                ({ model | state = Loaded (data, child') }, Cmd.map SubMsg childCmd)
-        _ ->
-            (model, Cmd.none)
-
-isLoaded : ApiResource data submodel submsg -> Bool
+isLoaded : Component data model msg -> Bool
 isLoaded resource =
-    case resource.state of
+    case stateC resource of
         Loaded _ ->
             True
         _ ->
             False
 
-isUnloaded : ApiResource data submodel submsg -> Bool
+isUnloaded : Component data model msg -> Bool
 isUnloaded resource =
-    case resource.state of
+    case stateC resource of
         Unloaded ->
             True
         _ ->
             False
 
-load : Cmd (ApiResult data) -> ApiResource data submodel submsg -> (ApiResource data submodel submsg, Cmd (Msg data submsg))
-load fetch model =
-    ({ model | state = Loading }, Cmd.map ApiMsg fetch)
+--------------------------------------------------------------------------------
+-- Private
+
+type Model model msg
+    = Unloaded
+    | Loading
+    | Error Http.Error
+    | Loaded (Base.Component model msg)
+
+init : Props data model msg -> (Model model msg, Cmd (Msg data msg))
+init { fetch } =
+    (Unloaded, Cmd.map ApiMsg fetch)
+
+-- Note, the type of the resource currently doesn't matter because it gets replaced...
+update : Props data model msg -> Msg data msg -> Model model msg -> (Model model msg, Cmd (Msg data msg))
+update props msg model =
+    case msg of
+        ApiMsg apiResult ->
+            case apiResult of 
+                Ok data ->
+                    let
+                        (child, childCmd) = initC <| props.childSpec data
+                    in
+                        (Loaded child, Cmd.map ChildMsg childCmd)
+                Err msg ->
+                    (Error (Debug.log "ApiResource received an HTTP error" msg), Cmd.none)
+        ChildMsg msg ->
+            case model of
+                Loaded child ->
+                    let
+                        (child', childCmd) = updateC msg child
+                    in
+                        (Loaded child', Cmd.map ChildMsg childCmd)
+                _ ->
+                    -- TODO: Log something here.
+                    (model, Cmd.none)
+
+subscriptions : Props data model msg -> Model model msg -> Sub (Msg data msg)
+subscriptions _ model =
+    case model of
+        Loaded child ->
+            Sub.map ChildMsg <| subscriptionsC child
+        _ ->
+            Sub.none
+
+view : Props data model msg -> Model model msg -> Html (Msg data msg)
+view props resource =
+    case resource of
+        Unloaded ->
+            props.unloadedView
+        Loading ->
+            props.loadingView
+        Error error ->
+            props.errorView error
+        Loaded child ->
+            App.map ChildMsg <| viewC child

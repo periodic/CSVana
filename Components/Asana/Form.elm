@@ -9,7 +9,6 @@ import Components.Asana.Model as Asana
 import Components.Asana.Api as Api
 import Components.Asana.WorkspaceSelector as WorkspaceSelector
 import Components.Asana.Typeahead as Typeahead
-import Components.Asana.ProjectLoader as ProjectLoader
 
 type alias Props =
     { token : Api.Token
@@ -26,13 +25,20 @@ type Msg
     = WorkspaceSelectorMsg WorkspaceSelector.Msg
     | ProjectTypeaheadMsg (Typeahead.Msg Asana.ProjectResource)
 
-component : Props -> Component Model Msg
+component : Props -> Spec Model Msg
 component props =
     { init = init props
     , update = update props
     , view = view props
     , subscriptions = always Sub.none
     }
+
+getSelectedProject : Component Model Msg -> Maybe Asana.ProjectResource
+getSelectedProject =
+    Base.stateC >> .projectTypeahead >> (\typeahead -> typeahead `Maybe.andThen` Typeahead.getSelection)
+
+--------------------------------------------------------------------------------
+-- Private
 
 init : Props -> (Model, Cmd Msg)
 init {token, user} =
@@ -105,11 +111,3 @@ view _ model =
                 , projects
                 ]
             ]
-
-getSelectedProject : Model -> Maybe Asana.ProjectResource
-getSelectedProject { projectTypeahead }=
-    case projectTypeahead of
-        Just typeahead ->
-            Typeahead.getSelection typeahead
-        Nothing ->
-            Nothing

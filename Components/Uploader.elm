@@ -1,4 +1,4 @@
-module Components.Uploader exposing (Props, Model, Msg, component)
+module Components.Uploader exposing (Props, Msg, Component, component)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -26,13 +26,19 @@ type alias Model =
 type Msg =
     RecordProcessed (Api.ApiResult Asana.Task)
 
-component : Props -> Component Model Msg
+type alias Spec = Base.Spec Model Msg
+type alias Component = Base.Component Model Msg
+
+component : Props -> Spec
 component props =
     { init = init props
     , update = update props
     , view = view props
     , subscriptions = always Sub.none
     }
+
+--------------------------------------------------------------------------------
+-- Private
 
 init : Props -> (Model, Cmd Msg)
 init props =
@@ -60,9 +66,6 @@ view : Props -> Model -> Html Msg
 view { records } { recordsProcessed } =
     div [ class "Uploader" ]
         [ text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
-
---------------------------------------------------------------------------------
--- Private
 
 uploadRecord : Props -> Record -> Cmd Msg
 uploadRecord props record =

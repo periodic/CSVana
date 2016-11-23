@@ -1,26 +1,21 @@
 module Main exposing (main)
 
 import Html exposing (..)
-import Html.App
 import Html.Attributes exposing (..)
 import Navigation
 import String
 
-import Base exposing (..)
+import Base
 import Components.Asana as Asana
 import Components.OAuthBoundary as OAuthBoundary
 
 type alias Msg = OAuthBoundary.Msg Asana.Msg
 type alias Model =
-    { oauthBoundary : OAuthBoundary.Model Asana.Model
-    , oauthComponent : Component (OAuthBoundary.Model Asana.Model) (OAuthBoundary.Msg Asana.Msg)
-    }
+    OAuthBoundary.Component Asana.Model Asana.Msg
 
 init : Navigation.Location -> (Model, Cmd Msg)
 init location =
     let
-        asanaComponent = \token ->
-            Asana.component { token = token }
         (clientId, baseRedirectUrl) =
             if String.contains "localhost" location.origin
                 then ("192968333753040", "https://localhost:8000")
@@ -29,36 +24,33 @@ init location =
                 { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
                 , clientId = clientId
                 , baseRedirectUrl = baseRedirectUrl
-                , childComponent = asanaComponent
+                , childSpec = \token ->
+                    Asana.spec { token = token }
                 }
-        oauthComponent = OAuthBoundary.component oauthProps
-        (boundary, boundaryCmd) = oauthComponent.init
+        oauthSpec = OAuthBoundary.spec oauthProps
     in
-        ({ oauthBoundary = boundary, oauthComponent = oauthComponent }, boundaryCmd)
+        Base.initC oauthSpec
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-    let
-        (oauthBoundary', cmd) = model.oauthComponent.update msg model.oauthBoundary
-    in
-        ({ model | oauthBoundary = oauthBoundary' }, cmd)
+update = Base.updateC 
 
 subscriptions : Model -> Sub Msg
-subscriptions {oauthComponent, oauthBoundary} =
-    oauthComponent.subscriptions oauthBoundary
+subscriptions = Base.subscriptionsC
 
 urlUpdate : Navigation.Location -> Model -> (Model, Cmd Msg)
 urlUpdate location model =
     (model, Cmd.none)
 
+view : Model -> Html Msg
 view model =
     div [ class "Main" ]
         [ div [ class "Main-header" ]
             [ h1 [] [ text "CSVana : CSV → Asana" ] ]
         , div [ class "Main-form" ]
-            [ model.oauthComponent.view model.oauthBoundary ]
+            [ Base.viewC model ]
         ]
 
+main : Program Never
 main =
     Navigation.program
         (Navigation.makeParser identity)

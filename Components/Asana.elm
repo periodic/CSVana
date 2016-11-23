@@ -1,78 +1,71 @@
-module Components.Asana exposing (Props, Msg, Model, component)
+module Components.Asana exposing (Props, Msg, Model, spec)
 
 import Html exposing (Html, div)
 import Html.App
 import Html.Attributes exposing (class)
 
-import Base exposing (..)
+import Base
 import Components.Asana.Api as Api
 import Components.Asana.ApiResource as ApiResource
 import Components.Asana.Form as Form
 import Components.Asana.Model as Asana
-import Components.Asana.ProjectLoader as ProjectLoader
-import Components.Asana.UserLoader as UserLoader
 import Components.Csv as Csv
 import Components.FieldMatcher as FieldMatcher
+import Components.Asana.CommonViews as CommonViews
 
 type alias Props =
     { token : Api.Token
     }
 
 type Msg
-    = FormMsg (UserLoader.Msg Form.Msg)
+    = FormMsg (ApiResource.Msg Asana.User Form.Msg)
     | CsvMsg Csv.Msg
-    | FieldMatcherMsg (ProjectLoader.Msg FieldMatcher.Msg)
+    | FieldMatcherMsg (ApiResource.Msg Asana.Project FieldMatcher.Msg)
 
 type alias Model =
-    { form : UserLoader.Model Form.Model Form.Msg
-    , formComponent : Component (UserLoader.Model Form.Model Form.Msg) (UserLoader.Msg Form.Msg)
-    , csv : Csv.Model
-    , fieldMatcher : Maybe
-        ( ProjectLoader.Model FieldMatcher.Model FieldMatcher.Msg
-        , Component (ProjectLoader.Model FieldMatcher.Model FieldMatcher.Msg) (ProjectLoader.Msg FieldMatcher.Msg)
-        )
+    { form : ApiResource.Component Asana.User Form.Model Form.Msg
+    , csv : Csv.Component
+    , fieldMatcher : Maybe (ApiResource.Component Asana.Project FieldMatcher.Model FieldMatcher.Msg)
     }
 
-component : Props -> Component Model Msg
-component props =
+spec : Props -> Base.Spec Model Msg
+spec props =
     { init = init props
     , update = update props
     , view = view props
     , subscriptions = subscriptions props
     }
 
+--------------------------------------------------------------------------------
+-- Private
+
 init : Props -> (Model, Cmd Msg)
 init {token} =
     let
-        form user =
-            Form.component
-                { token = token
-                , user = user
-                }
-        userLoaderComponent =
-            UserLoader.component
-                { childComponent = form
-                , token = token
-                }
-        (userLoader, userLoaderCmd) = userLoaderComponent.init
-        (csv, csvCmd) =
-            Csv.init {}
-        cmd = Cmd.batch
-            [ Cmd.map FormMsg userLoaderCmd
-            , Cmd.map CsvMsg csvCmd
-            ]
+        (form, formCmd) = Base.mapCmd FormMsg <| Base.initC <| ApiResource.component
+            { childSpec = \user ->
+                Form.component
+                    { token = token
+                    , user = user
+                    }
+            , fetch = Api.me token
+            , unloadedView = CommonViews.unloadedView
+            , loadingView = CommonViews.loadingIndicator
+            , errorView = CommonViews.errorView
+            }
+        (csv, csvCmd) = Base.mapCmd CsvMsg <| Base.initC <| Csv.spec {}
+        cmd = Cmd.batch [formCmd, csvCmd ]
     in
-        ({ form = userLoader
-        , formComponent = userLoaderComponent
+        ({ form = form
         , csv = csv
         , fieldMatcher = Nothing
         }, cmd)
 
 subscriptions : Props -> Model -> Sub Msg
-subscriptions _ { form, formComponent, csv } =
+subscriptions _ { form, csv } =
     let
-        formSubs = Sub.map FormMsg <| formComponent.subscriptions form
-        csvSubs = Sub.map CsvMsg <| Csv.subscriptions {} csv
+        formSubs = Sub.map FormMsg <| Base.subscriptionsC form
+        csvSubs = Sub.map CsvMsg <| Base.subscriptionsC csv
     in
         Sub.batch [formSubs, csvSubs]
 
@@ -81,24 +74,12 @@ update =
     processMessage
 
 
-view : Props -> Model -> Html Msg
-view props model =
-    div [ class "Asana" ]
-        [ viewInputs props model
-        , viewMatcher props model
-        ]
-
---------------------------------------------------------------------------------
--- Private
-
 processMessage : Props -> Msg -> Model -> (Model, Cmd Msg)
 processMessage props msg model =
     case msg of
         FormMsg msg' ->
             let
-                (form', formCmd) =
-                     -- TODO: Bind the props in init.
-                     model.formComponent.update msg' model.form
+                (form', formCmd) = Base.updateC msg' model.form
                 model' = { model | form = form' }
                 cmd = Cmd.map FormMsg formCmd
                 project = getSelectedProject model
@@ -109,7 +90,7 @@ processMessage props msg model =
                     else (model', cmd)
         CsvMsg msg' ->
             let
-                (csv', csvCmd) = Csv.update {} msg' model.csv
+                (csv', csvCmd) = Base.updateC msg' model.csv
                 model' = { model | csv = csv' }
                 cmd = Cmd.map CsvMsg csvCmd
                 headers = Csv.getHeaders model.csv
@@ -120,12 +101,12 @@ processMessage props msg model =
                     else (model', cmd)
         FieldMatcherMsg msg' ->
             case model.fieldMatcher of
-                Just (matcher, matcherComponent) ->
+                Just matcher ->
                     let
-                        (matcher', matcherCmd) = matcherComponent.update msg' matcher
+                        (matcher', matcherCmd) = Base.updateC msg' matcher
                         cmd = Cmd.map FieldMatcherMsg matcherCmd
                     in
-                        ({ model | fieldMatcher = Just (matcher', matcherComponent) }, cmd)
+                        ({ model | fieldMatcher = Just matcher' }, cmd)
                 Nothing ->
                     (model, Cmd.none)
 
@@ -134,10 +115,9 @@ updateMatcher {token} (model, cmd) =
     case ( getSelectedProject model, Csv.getHeaders model.csv, Csv.getRecords model.csv) of
         (Just project, Just headers, Just records) ->
             let
-                matcherComponent =
-                    ProjectLoader.component
-                        { token = token
-                        , childComponent = \project ->
+                (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg <| Base.initC <|
+                    ApiResource.component
+                        { childSpec = \project ->
                             let
                                 customFields = List.map .customField project.customFieldSettings
                                 numFields = List.length headers
@@ -149,34 +129,43 @@ updateMatcher {token} (model, cmd) =
                                     , csvRecords = records
                                     , customFields = customFields
                                     }
+                        , fetch = Api.project project.id token
+                        , unloadedView = CommonViews.unloadedView
+                        , loadingView = CommonViews.loadingIndicator
+                        , errorView = CommonViews.errorView
                         }
-                (matcher, matcherCmd1) = matcherComponent.init
-                (matcher', matcherCmd2) = ProjectLoader.load project.id token matcher
-                cmd = Cmd.batch <| List.map (Cmd.map FieldMatcherMsg) [matcherCmd1, matcherCmd2]
             in
-                ({ model | fieldMatcher = Just (matcher', matcherComponent) }, cmd)
+                ({ model | fieldMatcher = Just matcher }, matcherCmd)
         _ ->
             ({ model | fieldMatcher = Nothing }, Cmd.none)
 
 
 getSelectedProject : Model -> Maybe Asana.ProjectResource
 getSelectedProject model =
-        UserLoader.getChild model.form
-        `Maybe.andThen` Form.getSelectedProject
+        ApiResource.getChild model.form
+            `Maybe.andThen` Form.getSelectedProject
 
+view : Props -> Model -> Html Msg
+view props model =
+    div [ class "Asana" ]
+        [ viewInputs props model
+        , viewMatcher props model
+        ]
 
+viewInputs : Props -> Model -> Html Msg
 viewInputs props model =
     div [ class "Asana-inputs" ]
         [ div [ class "Asana-form" ]
-            [ Html.App.map FormMsg <| model.formComponent.view model.form ]
+            [ Html.App.map FormMsg <| Base.viewC model.form ]
         , div [ class "Asana-csv" ]
-            [ Html.App.map CsvMsg <| Csv.view {} model.csv ]
+            [ Html.App.map CsvMsg <| Base.viewC model.csv ]
         ]
 
+viewMatcher : Props -> Model -> Html Msg
 viewMatcher props { fieldMatcher } =
     case fieldMatcher of
-        Just (model, component) ->
+        Just matcher ->
             div [ class "Asana-matcher" ]
-                [ Html.App.map FieldMatcherMsg <| component.view model ]
+                [ Html.App.map FieldMatcherMsg <| Base.viewC matcher ]
         Nothing ->
             div [ class "Asana-matcher--disabled" ] []

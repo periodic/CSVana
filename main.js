@@ -9503,6 +9503,10 @@ var _user$project$Base$mapSnd = F2(
 			_1: f(_p1._1)
 		};
 	});
+var _user$project$Base$mapCmd = function (f) {
+	return _user$project$Base$mapSnd(
+		_elm_lang$core$Platform_Cmd$map(f));
+};
 var _user$project$Base$mapFst = F2(
 	function (f, _p2) {
 		var _p3 = _p2;
@@ -9512,9 +9516,48 @@ var _user$project$Base$mapFst = F2(
 			_1: _p3._1
 		};
 	});
-var _user$project$Base$Component = F4(
+var _user$project$Base$stateC = function (_p4) {
+	var _p5 = _p4;
+	return _p5.state;
+};
+var _user$project$Base$viewC = function (_p6) {
+	var _p7 = _p6;
+	return _p7.spec.view(_p7.state);
+};
+var _user$project$Base$subscriptionsC = function (_p8) {
+	var _p9 = _p8;
+	return _p9.spec.subscriptions(_p9.state);
+};
+var _user$project$Base$updateC = F2(
+	function (msg, _p10) {
+		var _p11 = _p10;
+		var _p13 = _p11.spec;
+		var _p12 = A2(_p13.update, msg, _p11.state);
+		var state$ = _p12._0;
+		var cmd = _p12._1;
+		return {
+			ctor: '_Tuple2',
+			_0: {spec: _p13, state: state$},
+			_1: cmd
+		};
+	});
+var _user$project$Base$initC = function (spec) {
+	var _p14 = spec.init;
+	var state = _p14._0;
+	var cmd = _p14._1;
+	return {
+		ctor: '_Tuple2',
+		_0: {spec: spec, state: state},
+		_1: cmd
+	};
+};
+var _user$project$Base$Spec = F4(
 	function (a, b, c, d) {
 		return {init: a, update: b, view: c, subscriptions: d};
+	});
+var _user$project$Base$Component = F2(
+	function (a, b) {
+		return {spec: a, state: b};
 	});
 
 var _user$project$Components_Asana_Model$Resource = F2(
@@ -9866,7 +9909,7 @@ var _user$project$Components_Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProje
 var _user$project$Components_Asana_Api$projectTypeahead = A2(_user$project$Components_Asana_Api$getTypeaheadOptions, _user$project$Components_Asana_Api$TypeaheadProject, _user$project$Components_Asana_Model$resourceDecoder);
 
 var _user$project$Components_Asana_ApiResource$isUnloaded = function (resource) {
-	var _p0 = resource.state;
+	var _p0 = _user$project$Base$stateC(resource);
 	if (_p0.ctor === 'Unloaded') {
 		return true;
 	} else {
@@ -9874,159 +9917,123 @@ var _user$project$Components_Asana_ApiResource$isUnloaded = function (resource) 
 	}
 };
 var _user$project$Components_Asana_ApiResource$isLoaded = function (resource) {
-	var _p1 = resource.state;
+	var _p1 = _user$project$Base$stateC(resource);
 	if (_p1.ctor === 'Loaded') {
 		return true;
 	} else {
 		return false;
 	}
 };
-var _user$project$Components_Asana_ApiResource$getChild = function (model) {
-	var _p2 = model.state;
-	if ((_p2.ctor === 'Loaded') && (_p2._0.ctor === '_Tuple2')) {
-		return _elm_lang$core$Maybe$Just(_p2._0._1);
+var _user$project$Components_Asana_ApiResource$getChild = function (resource) {
+	var _p2 = _user$project$Base$stateC(resource);
+	if (_p2.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(_p2._0);
 	} else {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Components_Asana_ApiResource$Props = function (a) {
-	return {child: a};
-};
-var _user$project$Components_Asana_ApiResource$ApiResource = F2(
-	function (a, b) {
-		return {state: a, child: b};
+var _user$project$Components_Asana_ApiResource$Props = F5(
+	function (a, b, c, d, e) {
+		return {childSpec: a, fetch: b, unloadedView: c, loadingView: d, errorView: e};
 	});
+var _user$project$Components_Asana_ApiResource$ChildMsg = function (a) {
+	return {ctor: 'ChildMsg', _0: a};
+};
+var _user$project$Components_Asana_ApiResource$subscriptions = F2(
+	function (_p3, model) {
+		var _p4 = model;
+		if (_p4.ctor === 'Loaded') {
+			return A2(
+				_elm_lang$core$Platform_Sub$map,
+				_user$project$Components_Asana_ApiResource$ChildMsg,
+				_user$project$Base$subscriptionsC(_p4._0));
+		} else {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	});
+var _user$project$Components_Asana_ApiResource$view = F2(
+	function (props, resource) {
+		var _p5 = resource;
+		switch (_p5.ctor) {
+			case 'Unloaded':
+				return props.unloadedView;
+			case 'Loading':
+				return props.loadingView;
+			case 'Error':
+				return props.errorView(_p5._0);
+			default:
+				return A2(
+					_elm_lang$html$Html_App$map,
+					_user$project$Components_Asana_ApiResource$ChildMsg,
+					_user$project$Base$viewC(_p5._0));
+		}
+	});
+var _user$project$Components_Asana_ApiResource$ApiMsg = function (a) {
+	return {ctor: 'ApiMsg', _0: a};
+};
 var _user$project$Components_Asana_ApiResource$Loaded = function (a) {
 	return {ctor: 'Loaded', _0: a};
 };
 var _user$project$Components_Asana_ApiResource$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
-var _user$project$Components_Asana_ApiResource$Loading = {ctor: 'Loading'};
-var _user$project$Components_Asana_ApiResource$Unloaded = {ctor: 'Unloaded'};
-var _user$project$Components_Asana_ApiResource$init = function (props) {
-	return {
-		ctor: '_Tuple2',
-		_0: {state: _user$project$Components_Asana_ApiResource$Unloaded, child: props.child},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
-};
-var _user$project$Components_Asana_ApiResource$SubMsg = function (a) {
-	return {ctor: 'SubMsg', _0: a};
-};
-var _user$project$Components_Asana_ApiResource$update = F2(
-	function (msg, model) {
-		var _p3 = msg;
-		if (_p3.ctor === 'ApiMsg') {
-			var _p4 = _p3._0;
-			if (_p4.ctor === 'Ok') {
-				var _p6 = _p4._0;
-				var _p5 = function (_) {
-					return _.init;
-				}(
-					model.child(_p6));
-				var submodel = _p5._0;
-				var subcmd = _p5._1;
+var _user$project$Components_Asana_ApiResource$update = F3(
+	function (props, msg, model) {
+		var _p6 = msg;
+		if (_p6.ctor === 'ApiMsg') {
+			var _p7 = _p6._0;
+			if (_p7.ctor === 'Ok') {
+				var _p8 = _user$project$Base$initC(
+					props.childSpec(_p7._0));
+				var child = _p8._0;
+				var childCmd = _p8._1;
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							state: _user$project$Components_Asana_ApiResource$Loaded(
-								{ctor: '_Tuple2', _0: _p6, _1: submodel})
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$SubMsg, subcmd)
+					_0: _user$project$Components_Asana_ApiResource$Loaded(child),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$ChildMsg, childCmd)
 				};
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							state: _user$project$Components_Asana_ApiResource$Error(_p4._0)
-						}),
+					_0: _user$project$Components_Asana_ApiResource$Error(
+						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p7._0)),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			}
 		} else {
-			var _p7 = model.state;
-			if ((_p7.ctor === 'Loaded') && (_p7._0.ctor === '_Tuple2')) {
-				var _p9 = _p7._0._0;
-				var _p8 = function (comp) {
-					return A2(comp.update, _p3._0, _p7._0._1);
-				}(
-					model.child(_p9));
-				var submodel$ = _p8._0;
-				var subcmd = _p8._1;
+			var _p9 = model;
+			if (_p9.ctor === 'Loaded') {
+				var _p10 = A2(_user$project$Base$updateC, _p6._0, _p9._0);
+				var child$ = _p10._0;
+				var childCmd = _p10._1;
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							state: _user$project$Components_Asana_ApiResource$Loaded(
-								{ctor: '_Tuple2', _0: _p9, _1: submodel$})
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$SubMsg, subcmd)
+					_0: _user$project$Components_Asana_ApiResource$Loaded(child$),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$ChildMsg, childCmd)
 				};
 			} else {
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		}
 	});
-var _user$project$Components_Asana_ApiResource$view = F4(
-	function (unloaded, loading, error, model) {
-		var _p10 = model.state;
-		switch (_p10.ctor) {
-			case 'Unloaded':
-				return unloaded;
-			case 'Loading':
-				return loading;
-			case 'Error':
-				return error(_p10._0);
-			default:
-				return A2(
-					_elm_lang$html$Html_App$map,
-					_user$project$Components_Asana_ApiResource$SubMsg,
-					function (comp) {
-						return comp.view(_p10._0._1);
-					}(
-						model.child(_p10._0._0)));
-		}
-	});
-var _user$project$Components_Asana_ApiResource$updateChild = F2(
-	function (updater, model) {
-		var _p11 = model.state;
-		if ((_p11.ctor === 'Loaded') && (_p11._0.ctor === '_Tuple2')) {
-			var _p12 = updater(_p11._0._1);
-			var child$ = _p12._0;
-			var childCmd = _p12._1;
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						state: _user$project$Components_Asana_ApiResource$Loaded(
-							{ctor: '_Tuple2', _0: _p11._0._0, _1: child$})
-					}),
-				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$SubMsg, childCmd)
-			};
-		} else {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-		}
-	});
-var _user$project$Components_Asana_ApiResource$ApiMsg = function (a) {
-	return {ctor: 'ApiMsg', _0: a};
+var _user$project$Components_Asana_ApiResource$Loading = {ctor: 'Loading'};
+var _user$project$Components_Asana_ApiResource$Unloaded = {ctor: 'Unloaded'};
+var _user$project$Components_Asana_ApiResource$init = function (_p11) {
+	var _p12 = _p11;
+	return {
+		ctor: '_Tuple2',
+		_0: _user$project$Components_Asana_ApiResource$Unloaded,
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$ApiMsg, _p12.fetch)
+	};
 };
-var _user$project$Components_Asana_ApiResource$load = F2(
-	function (fetch, model) {
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{state: _user$project$Components_Asana_ApiResource$Loading}),
-			_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_ApiResource$ApiMsg, fetch)
-		};
-	});
+var _user$project$Components_Asana_ApiResource$component = function (props) {
+	return {
+		init: _user$project$Components_Asana_ApiResource$init(props),
+		update: _user$project$Components_Asana_ApiResource$update(props),
+		subscriptions: _user$project$Components_Asana_ApiResource$subscriptions(props),
+		view: _user$project$Components_Asana_ApiResource$view(props)
+	};
+};
 
 var _user$project$Components_Asana_WorkspaceSelector$workspaceOption = function (_p0) {
 	var _p1 = _p0;
@@ -10314,78 +10321,14 @@ var _user$project$Components_Asana_Typeahead$update = F2(
 		}
 	});
 
-var _user$project$Components_Asana_CommonViews$errorView = function (error) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('ApiError')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(error))
-			]));
-};
-var _user$project$Components_Asana_CommonViews$loadingIndicator = A2(
-	_elm_lang$html$Html$div,
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html_Attributes$class('LoadingIndicator')
-		]),
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html$text('Loading...')
-		]));
-var _user$project$Components_Asana_CommonViews$unloadedView = A2(
-	_elm_lang$html$Html$div,
-	_elm_lang$core$Native_List.fromArray(
-		[]),
-	_elm_lang$core$Native_List.fromArray(
-		[]));
-
-var _user$project$Components_Asana_ProjectLoader$load = F3(
-	function (projectId, token, model) {
-		return A2(
-			_user$project$Components_Asana_ApiResource$load,
-			A2(_user$project$Components_Asana_Api$project, projectId, token),
-			model);
-	});
-var _user$project$Components_Asana_ProjectLoader$updateChild = _user$project$Components_Asana_ApiResource$updateChild;
-var _user$project$Components_Asana_ProjectLoader$getChild = _user$project$Components_Asana_ApiResource$getChild;
-var _user$project$Components_Asana_ProjectLoader$view = F2(
-	function (_p0, model) {
-		return A4(_user$project$Components_Asana_ApiResource$view, _user$project$Components_Asana_CommonViews$unloadedView, _user$project$Components_Asana_CommonViews$loadingIndicator, _user$project$Components_Asana_CommonViews$errorView, model);
-	});
-var _user$project$Components_Asana_ProjectLoader$update = function (props) {
-	return _user$project$Components_Asana_ApiResource$update;
-};
-var _user$project$Components_Asana_ProjectLoader$init = function (_p1) {
-	var _p2 = _p1;
-	return _user$project$Components_Asana_ApiResource$init(
-		{child: _p2.childComponent});
-};
-var _user$project$Components_Asana_ProjectLoader$component = function (props) {
-	return {
-		init: _user$project$Components_Asana_ProjectLoader$init(props),
-		update: _user$project$Components_Asana_ProjectLoader$update(props),
-		view: _user$project$Components_Asana_ProjectLoader$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
-};
-var _user$project$Components_Asana_ProjectLoader$Props = F2(
-	function (a, b) {
-		return {token: a, childComponent: b};
-	});
-
 var _user$project$Components_Asana_Form$getSelectedProject = function (_p0) {
-	var _p1 = _p0;
-	var _p2 = _p1.projectTypeahead;
-	if (_p2.ctor === 'Just') {
-		return _user$project$Components_Asana_Typeahead$getSelection(_p2._0);
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
+	return function (typeahead) {
+		return A2(_elm_lang$core$Maybe$andThen, typeahead, _user$project$Components_Asana_Typeahead$getSelection);
+	}(
+		function (_) {
+			return _.projectTypeahead;
+		}(
+			_user$project$Base$stateC(_p0)));
 };
 var _user$project$Components_Asana_Form$Props = F2(
 	function (a, b) {
@@ -10399,13 +10342,13 @@ var _user$project$Components_Asana_Form$ProjectTypeaheadMsg = function (a) {
 	return {ctor: 'ProjectTypeaheadMsg', _0: a};
 };
 var _user$project$Components_Asana_Form$updateProject = F3(
-	function (_p3, msg, model) {
-		var _p4 = _p3;
-		var _p5 = model.projectTypeahead;
-		if (_p5.ctor === 'Just') {
-			var _p6 = A2(_user$project$Components_Asana_Typeahead$update, msg, _p5._0);
-			var typeahead$ = _p6._0;
-			var typeaheadCmd = _p6._1;
+	function (_p1, msg, model) {
+		var _p2 = _p1;
+		var _p3 = model.projectTypeahead;
+		if (_p3.ctor === 'Just') {
+			var _p4 = A2(_user$project$Components_Asana_Typeahead$update, msg, _p3._0);
+			var typeahead$ = _p4._0;
+			var typeaheadCmd = _p4._1;
 			var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana_Form$ProjectTypeaheadMsg, typeaheadCmd);
 			var model$ = _elm_lang$core$Native_Utils.update(
 				model,
@@ -10420,16 +10363,16 @@ var _user$project$Components_Asana_Form$updateProject = F3(
 var _user$project$Components_Asana_Form$WorkspaceSelectorMsg = function (a) {
 	return {ctor: 'WorkspaceSelectorMsg', _0: a};
 };
-var _user$project$Components_Asana_Form$init = function (_p7) {
-	var _p8 = _p7;
-	var _p9 = _user$project$Components_Asana_WorkspaceSelector$init(
+var _user$project$Components_Asana_Form$init = function (_p5) {
+	var _p6 = _p5;
+	var _p7 = _user$project$Components_Asana_WorkspaceSelector$init(
 		A2(
 			_elm_lang$core$Maybe$withDefault,
 			_elm_lang$core$Native_List.fromArray(
 				[]),
-			_p8.user.workspaces));
-	var wss = _p9._0;
-	var wsscmd = _p9._1;
+			_p6.user.workspaces));
+	var wss = _p7._0;
+	var wsscmd = _p7._1;
 	var model = {workspaceSelector: wss, projectTypeahead: _elm_lang$core$Maybe$Nothing};
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
@@ -10439,24 +10382,24 @@ var _user$project$Components_Asana_Form$init = function (_p7) {
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
 var _user$project$Components_Asana_Form$updateWorkspace = F3(
-	function (_p10, msg, model) {
-		var _p11 = _p10;
-		var _p12 = A2(_user$project$Components_Asana_WorkspaceSelector$update, msg, model.workspaceSelector);
-		var wss$ = _p12._0;
-		var wsscmd = _p12._1;
-		var _p13 = function () {
-			var _p14 = _user$project$Components_Asana_WorkspaceSelector$getValue(wss$);
-			if (_p14.ctor === 'Just') {
+	function (_p8, msg, model) {
+		var _p9 = _p8;
+		var _p10 = A2(_user$project$Components_Asana_WorkspaceSelector$update, msg, model.workspaceSelector);
+		var wss$ = _p10._0;
+		var wsscmd = _p10._1;
+		var _p11 = function () {
+			var _p12 = _user$project$Components_Asana_WorkspaceSelector$getValue(wss$);
+			if (_p12.ctor === 'Just') {
 				return A2(
 					_user$project$Base$mapFst,
 					_elm_lang$core$Maybe$Just,
-					A3(_user$project$Components_Asana_Typeahead$init, _p11.token, _p14._0, _user$project$Components_Asana_Api$projectTypeahead));
+					A3(_user$project$Components_Asana_Typeahead$init, _p9.token, _p12._0, _user$project$Components_Asana_Api$projectTypeahead));
 			} else {
 				return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		}();
-		var typeahead = _p13._0;
-		var typeaheadCmd = _p13._1;
+		var typeahead = _p11._0;
+		var typeaheadCmd = _p11._1;
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[
@@ -10473,22 +10416,22 @@ var _user$project$Components_Asana_Form$updateWorkspace = F3(
 	});
 var _user$project$Components_Asana_Form$update = F3(
 	function (props, msg, model) {
-		var _p15 = msg;
-		if (_p15.ctor === 'WorkspaceSelectorMsg') {
-			return A3(_user$project$Components_Asana_Form$updateWorkspace, props, _p15._0, model);
+		var _p13 = msg;
+		if (_p13.ctor === 'WorkspaceSelectorMsg') {
+			return A3(_user$project$Components_Asana_Form$updateWorkspace, props, _p13._0, model);
 		} else {
-			return A3(_user$project$Components_Asana_Form$updateProject, props, _p15._0, model);
+			return A3(_user$project$Components_Asana_Form$updateProject, props, _p13._0, model);
 		}
 	});
 var _user$project$Components_Asana_Form$view = F2(
-	function (_p16, model) {
+	function (_p14, model) {
 		var projects = function () {
-			var _p17 = model.projectTypeahead;
-			if (_p17.ctor === 'Just') {
+			var _p15 = model.projectTypeahead;
+			if (_p15.ctor === 'Just') {
 				return A2(
 					_elm_lang$html$Html_App$map,
 					_user$project$Components_Asana_Form$ProjectTypeaheadMsg,
-					_user$project$Components_Asana_Typeahead$view(_p17._0));
+					_user$project$Components_Asana_Typeahead$view(_p15._0));
 			} else {
 				return A2(
 					_elm_lang$html$Html$div,
@@ -10576,45 +10519,6 @@ var _user$project$Components_Asana_Form$component = function (props) {
 	};
 };
 
-var _user$project$Components_Asana_UserLoader$updateChild = _user$project$Components_Asana_ApiResource$updateChild;
-var _user$project$Components_Asana_UserLoader$getChild = _user$project$Components_Asana_ApiResource$getChild;
-var _user$project$Components_Asana_UserLoader$view = F2(
-	function (_p0, model) {
-		return A4(_user$project$Components_Asana_ApiResource$view, _user$project$Components_Asana_CommonViews$unloadedView, _user$project$Components_Asana_CommonViews$loadingIndicator, _user$project$Components_Asana_CommonViews$errorView, model);
-	});
-var _user$project$Components_Asana_UserLoader$update = function (props) {
-	return _user$project$Components_Asana_ApiResource$update;
-};
-var _user$project$Components_Asana_UserLoader$init = function (_p1) {
-	var _p2 = _p1;
-	var _p3 = _user$project$Components_Asana_ApiResource$init(
-		{child: _p2.childComponent});
-	var resource = _p3._0;
-	var cmd1 = _p3._1;
-	var _p4 = A2(
-		_user$project$Components_Asana_ApiResource$load,
-		_user$project$Components_Asana_Api$me(_p2.token),
-		resource);
-	var resource$ = _p4._0;
-	var cmd2 = _p4._1;
-	var cmd = _elm_lang$core$Platform_Cmd$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[cmd1, cmd2]));
-	return {ctor: '_Tuple2', _0: resource$, _1: cmd};
-};
-var _user$project$Components_Asana_UserLoader$component = function (props) {
-	return {
-		init: _user$project$Components_Asana_UserLoader$init(props),
-		update: _user$project$Components_Asana_UserLoader$update(props),
-		view: _user$project$Components_Asana_UserLoader$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
-};
-var _user$project$Components_Asana_UserLoader$Props = F2(
-	function (a, b) {
-		return {token: a, childComponent: b};
-	});
-
 var _user$project$FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
 	'readFile',
 	function (v) {
@@ -10647,34 +10551,10 @@ var _user$project$FileReader$onFileInput = function (wrapper) {
 		A2(_elm_lang$core$Json_Decode$map, wrapper, _user$project$FileReader$parseFiles));
 };
 
-var _user$project$Components_Csv$getHeaders = function (_p0) {
-	var _p1 = _p0;
-	return A2(
-		_elm_lang$core$Maybe$map,
-		function (_) {
-			return _.headers;
-		},
-		_p1.csvData);
-};
-var _user$project$Components_Csv$getNumFields = function (_p2) {
-	return A2(
-		_elm_lang$core$Maybe$map,
-		_elm_lang$core$List$length,
-		_user$project$Components_Csv$getHeaders(_p2));
-};
-var _user$project$Components_Csv$getRecords = function (_p3) {
-	var _p4 = _p3;
-	return A2(
-		_elm_lang$core$Maybe$map,
-		function (_) {
-			return _.records;
-		},
-		_p4.csvData);
-};
 var _user$project$Components_Csv$update = F3(
-	function (_p5, msg, model) {
-		var _p6 = msg;
-		switch (_p6.ctor) {
+	function (_p0, msg, model) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'MoreData':
 				return {
 					ctor: '_Tuple2',
@@ -10682,17 +10562,17 @@ var _user$project$Components_Csv$update = F3(
 						model,
 						{
 							csvData: _elm_lang$core$Maybe$Just(
-								_lovasoa$elm_csv$Csv$parse(_p6._0))
+								_lovasoa$elm_csv$Csv$parse(_p1._0))
 						}),
 					_1: A2(_elm_lang$core$Debug$log, 'Got CsvData', _elm_lang$core$Platform_Cmd$none)
 				};
 			case 'NewFiles':
-				var _p7 = _elm_lang$core$List$head(_p6._0);
-				if (_p7.ctor === 'Just') {
+				var _p2 = _elm_lang$core$List$head(_p1._0);
+				if (_p2.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$FileReader$readFile(_p7._0)
+						_1: _user$project$FileReader$readFile(_p2._0)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -10702,14 +10582,42 @@ var _user$project$Components_Csv$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{hasHeader: _p6._0}),
+						{hasHeader: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
-var _user$project$Components_Csv$init = function (_p8) {
+var _user$project$Components_Csv$init = function (_p3) {
 	var model = {csvData: _elm_lang$core$Maybe$Nothing, hasHeader: true};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _user$project$Components_Csv$getHeaders = function (_p4) {
+	return A2(
+		_elm_lang$core$Maybe$map,
+		function (_) {
+			return _.headers;
+		},
+		function (_) {
+			return _.csvData;
+		}(
+			_user$project$Base$stateC(_p4)));
+};
+var _user$project$Components_Csv$getNumFields = function (_p5) {
+	return A2(
+		_elm_lang$core$Maybe$map,
+		_elm_lang$core$List$length,
+		_user$project$Components_Csv$getHeaders(_p5));
+};
+var _user$project$Components_Csv$getRecords = function (_p6) {
+	return A2(
+		_elm_lang$core$Maybe$map,
+		function (_) {
+			return _.records;
+		},
+		function (_) {
+			return _.csvData;
+		}(
+			_user$project$Base$stateC(_p6)));
 };
 var _user$project$Components_Csv$Props = {};
 var _user$project$Components_Csv$Model = F2(
@@ -10723,14 +10631,14 @@ var _user$project$Components_Csv$MoreData = function (a) {
 	return {ctor: 'MoreData', _0: a};
 };
 var _user$project$Components_Csv$subscriptions = F2(
-	function (_p10, _p9) {
+	function (_p8, _p7) {
 		return _user$project$FileReader$fileChunk(_user$project$Components_Csv$MoreData);
 	});
 var _user$project$Components_Csv$NewFiles = function (a) {
 	return {ctor: 'NewFiles', _0: a};
 };
 var _user$project$Components_Csv$view = F2(
-	function (_p11, model) {
+	function (_p9, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -10765,6 +10673,14 @@ var _user$project$Components_Csv$view = F2(
 						]))
 				]));
 	});
+var _user$project$Components_Csv$spec = function (props) {
+	return {
+		init: _user$project$Components_Csv$init(props),
+		update: _user$project$Components_Csv$update(props),
+		subscriptions: _user$project$Components_Csv$subscriptions(props),
+		view: _user$project$Components_Csv$view(props)
+	};
+};
 
 var _user$project$Components_Asana_FieldOptions$targetString = function (target) {
 	var _p0 = target;
@@ -10802,21 +10718,9 @@ var _user$project$Components_Asana_FieldOptions$getTargets = function (_p1) {
 	return _elm_lang$core$Array$toList(
 		function (_) {
 			return _.targets;
-		}(_p1));
+		}(
+			_user$project$Base$stateC(_p1)));
 };
-var _user$project$Components_Asana_FieldOptions$update = F3(
-	function (props, msg, model) {
-		var _p2 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{
-					targets: A3(_elm_lang$core$Array$set, _p2._0, _p2._1, model.targets)
-				}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
 var _user$project$Components_Asana_FieldOptions$Props = F2(
 	function (a, b) {
 		return {customFields: a, numFields: b};
@@ -10831,37 +10735,48 @@ var _user$project$Components_Asana_FieldOptions$DueDateTarget = {ctor: 'DueDateT
 var _user$project$Components_Asana_FieldOptions$DescriptionTarget = {ctor: 'DescriptionTarget'};
 var _user$project$Components_Asana_FieldOptions$NameTarget = {ctor: 'NameTarget'};
 var _user$project$Components_Asana_FieldOptions$NoTarget = {ctor: 'NoTarget'};
-var _user$project$Components_Asana_FieldOptions$init = function (_p3) {
-	var _p4 = _p3;
-	var targets = A2(_elm_lang$core$Array$repeat, _p4.numFields, _user$project$Components_Asana_FieldOptions$NoTarget);
+var _user$project$Components_Asana_FieldOptions$init = function (_p2) {
+	var _p3 = _p2;
+	var targets = A2(_elm_lang$core$Array$repeat, _p3.numFields, _user$project$Components_Asana_FieldOptions$NoTarget);
 	return {
 		ctor: '_Tuple2',
 		_0: {targets: targets},
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Components_Asana_FieldOptions$setNumFields = F2(
-	function (numFields, model) {
-		var targets = model.targets;
-		var targets$ = A2(
-			_elm_lang$core$Debug$log,
-			'setting targets:',
-			(_elm_lang$core$Native_Utils.cmp(
-				numFields,
-				_elm_lang$core$Array$length(targets)) < 1) ? A3(_elm_lang$core$Array$slice, 0, numFields, targets) : A2(
+var _user$project$Components_Asana_FieldOptions$update = F3(
+	function (props, msg, model) {
+		var _p4 = msg;
+		if (_p4.ctor === 'TargetUpdated') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						targets: A3(_elm_lang$core$Array$set, _p4._0, _p4._1, model.targets)
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		} else {
+			var _p5 = _p4._0;
+			var targets = model.targets;
+			var targets$ = (_elm_lang$core$Native_Utils.cmp(
+				_p5,
+				_elm_lang$core$Array$length(targets)) < 1) ? A3(_elm_lang$core$Array$slice, 0, _p5, targets) : A2(
 				_elm_lang$core$Array$append,
 				targets,
 				A2(
 					_elm_lang$core$Array$repeat,
-					_elm_lang$core$Array$length(targets) - numFields,
-					_user$project$Components_Asana_FieldOptions$NoTarget)));
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{targets: targets$}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+					_elm_lang$core$Array$length(targets) - _p5,
+					_user$project$Components_Asana_FieldOptions$NoTarget));
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{targets: targets$}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
+		}
 	});
 var _user$project$Components_Asana_FieldOptions$allTargets = function (customFields) {
 	var genericTargets = _elm_lang$core$Native_List.fromArray(
@@ -10871,8 +10786,8 @@ var _user$project$Components_Asana_FieldOptions$allTargets = function (customFie
 };
 var _user$project$Components_Asana_FieldOptions$targetFromString = F2(
 	function (customFields, str) {
-		var _p5 = str;
-		switch (_p5) {
+		var _p6 = str;
+		switch (_p6) {
 			case 'None':
 				return _user$project$Components_Asana_FieldOptions$NoTarget;
 			case 'Name':
@@ -10887,13 +10802,20 @@ var _user$project$Components_Asana_FieldOptions$targetFromString = F2(
 					F2(
 						function (customField, target) {
 							return _elm_lang$core$Native_Utils.eq(
-								_p5,
+								_p6,
 								A2(_elm_lang$core$Basics_ops['++'], 'CF: ', customField.name)) ? _user$project$Components_Asana_FieldOptions$CustomFieldTarget(customField) : target;
 						}),
 					_user$project$Components_Asana_FieldOptions$NoTarget,
 					customFields);
 		}
 	});
+var _user$project$Components_Asana_FieldOptions$UpdateNumFields = function (a) {
+	return {ctor: 'UpdateNumFields', _0: a};
+};
+var _user$project$Components_Asana_FieldOptions$setNumFields = function (_p7) {
+	return _user$project$Base$updateC(
+		_user$project$Components_Asana_FieldOptions$UpdateNumFields(_p7));
+};
 var _user$project$Components_Asana_FieldOptions$TargetUpdated = F2(
 	function (a, b) {
 		return {ctor: 'TargetUpdated', _0: a, _1: b};
@@ -10932,8 +10854,8 @@ var _user$project$Components_Asana_FieldOptions$viewSelect = F3(
 			options);
 	});
 var _user$project$Components_Asana_FieldOptions$view = F2(
-	function (props, _p6) {
-		var _p7 = _p6;
+	function (props, _p8) {
+		var _p9 = _p8;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -10944,7 +10866,7 @@ var _user$project$Components_Asana_FieldOptions$view = F2(
 				A2(
 					_elm_lang$core$Array$indexedMap,
 					_user$project$Components_Asana_FieldOptions$viewSelect(props.customFields),
-					_p7.targets)));
+					_p9.targets)));
 	});
 var _user$project$Components_Asana_FieldOptions$component = function (props) {
 	return {
@@ -11107,9 +11029,9 @@ var _user$project$Components_FieldMatcher$Props = F5(
 	function (a, b, c, d, e) {
 		return {token: a, projectId: b, csvHeaders: c, csvRecords: d, customFields: e};
 	});
-var _user$project$Components_FieldMatcher$Model = F3(
-	function (a, b, c) {
-		return {fieldOptions: a, fieldOptionsComponent: b, uploader: c};
+var _user$project$Components_FieldMatcher$Model = F2(
+	function (a, b) {
+		return {fieldOptions: a, uploader: b};
 	});
 var _user$project$Components_FieldMatcher$StartUpload = {ctor: 'StartUpload'};
 var _user$project$Components_FieldMatcher$UploaderMsg = function (a) {
@@ -11121,7 +11043,7 @@ var _user$project$Components_FieldMatcher$renderUploader = function (mUploader) 
 		return A2(
 			_elm_lang$html$Html_App$map,
 			_user$project$Components_FieldMatcher$UploaderMsg,
-			_p0._0._0.view(_p0._0._1));
+			_user$project$Base$viewC(_p0._0));
 	} else {
 		return _elm_lang$html$Html$text('Click to start the import.');
 	}
@@ -11131,15 +11053,15 @@ var _user$project$Components_FieldMatcher$FieldOptionsMsg = function (a) {
 };
 var _user$project$Components_FieldMatcher$init = function (_p1) {
 	var _p2 = _p1;
-	var fieldOptionsComponent = _user$project$Components_Asana_FieldOptions$component(
-		{
-			customFields: _p2.customFields,
-			numFields: _elm_lang$core$List$length(_p2.csvHeaders)
-		});
-	var _p3 = fieldOptionsComponent.init;
+	var _p3 = _user$project$Base$initC(
+		_user$project$Components_Asana_FieldOptions$component(
+			{
+				customFields: _p2.customFields,
+				numFields: _elm_lang$core$List$length(_p2.csvHeaders)
+			}));
 	var fieldOptions = _p3._0;
 	var fieldOptionsCmd = _p3._1;
-	var model = {fieldOptions: fieldOptions, fieldOptionsComponent: fieldOptionsComponent, uploader: _elm_lang$core$Maybe$Nothing};
+	var model = {fieldOptions: fieldOptions, uploader: _elm_lang$core$Maybe$Nothing};
 	return {
 		ctor: '_Tuple2',
 		_0: model,
@@ -11151,7 +11073,7 @@ var _user$project$Components_FieldMatcher$update = F3(
 		var _p4 = msg;
 		switch (_p4.ctor) {
 			case 'FieldOptionsMsg':
-				var _p5 = A2(model.fieldOptionsComponent.update, _p4._0, model.fieldOptions);
+				var _p5 = A2(_user$project$Base$updateC, _p4._0, model.fieldOptions);
 				var fieldOptions$ = _p5._0;
 				var fieldOptionsCmd = _p5._1;
 				return {
@@ -11164,17 +11086,15 @@ var _user$project$Components_FieldMatcher$update = F3(
 			case 'UploaderMsg':
 				var _p6 = model.uploader;
 				if (_p6.ctor === 'Just') {
-					var _p8 = _p6._0._0;
-					var _p7 = A2(_p8.update, _p4._0, _p6._0._1);
-					var uploaderModel$ = _p7._0;
+					var _p7 = A2(_user$project$Base$updateC, _p4._0, _p6._0);
+					var uploader$ = _p7._0;
 					var uploaderCmd = _p7._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								uploader: _elm_lang$core$Maybe$Just(
-									{ctor: '_Tuple2', _0: _p8, _1: uploaderModel$})
+								uploader: _elm_lang$core$Maybe$Just(uploader$)
 							}),
 						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$UploaderMsg, uploaderCmd)
 					};
@@ -11182,30 +11102,31 @@ var _user$project$Components_FieldMatcher$update = F3(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
-				var uploaderComponent = _user$project$Components_Uploader$component(
-					{
-						token: props.token,
-						projectId: props.projectId,
-						records: props.csvRecords,
-						fieldTargets: _user$project$Components_Asana_FieldOptions$getTargets(model.fieldOptions)
-					});
-				var _p9 = uploaderComponent.init;
-				var uploader = _p9._0;
-				var uploaderCmd = _p9._1;
-				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$UploaderMsg, uploaderCmd);
-				var model$ = _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						uploader: _elm_lang$core$Maybe$Just(
-							{ctor: '_Tuple2', _0: uploaderComponent, _1: uploader})
-					});
-				return {ctor: '_Tuple2', _0: model$, _1: cmd};
+				var _p8 = _user$project$Base$initC(
+					_user$project$Components_Uploader$component(
+						{
+							token: props.token,
+							projectId: props.projectId,
+							records: props.csvRecords,
+							fieldTargets: _user$project$Components_Asana_FieldOptions$getTargets(model.fieldOptions)
+						}));
+				var uploader = _p8._0;
+				var uploaderCmd = _p8._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							uploader: _elm_lang$core$Maybe$Just(uploader)
+						}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$UploaderMsg, uploaderCmd)
+				};
 		}
 	});
 var _user$project$Components_FieldMatcher$view = F2(
-	function (_p11, _p10) {
-		var _p12 = _p11;
-		var _p13 = _p10;
+	function (_p10, _p9) {
+		var _p11 = _p10;
+		var _p12 = _p9;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -11230,7 +11151,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_user$project$Components_FieldMatcher$renderHeaders(_p12.csvHeaders)
+									_user$project$Components_FieldMatcher$renderHeaders(_p11.csvHeaders)
 								])),
 							A2(
 							_elm_lang$html$Html$div,
@@ -11243,7 +11164,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 									A2(
 									_elm_lang$html$Html_App$map,
 									_user$project$Components_FieldMatcher$FieldOptionsMsg,
-									_p13.fieldOptionsComponent.view(_p13.fieldOptions))
+									_user$project$Base$viewC(_p12.fieldOptions))
 								]))
 						])),
 					A2(
@@ -11281,7 +11202,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_user$project$Components_FieldMatcher$renderUploader(_p13.uploader)
+									_user$project$Components_FieldMatcher$renderUploader(_p12.uploader)
 								]))
 						]))
 				]));
@@ -11295,18 +11216,48 @@ var _user$project$Components_FieldMatcher$component = function (props) {
 	};
 };
 
+var _user$project$Components_Asana_CommonViews$errorView = function (error) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('ApiError')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(error))
+			]));
+};
+var _user$project$Components_Asana_CommonViews$loadingIndicator = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('LoadingIndicator')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html$text('Loading...')
+		]));
+var _user$project$Components_Asana_CommonViews$unloadedView = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[]),
+	_elm_lang$core$Native_List.fromArray(
+		[]));
+
 var _user$project$Components_Asana$getSelectedProject = function (model) {
 	return A2(
 		_elm_lang$core$Maybe$andThen,
-		_user$project$Components_Asana_UserLoader$getChild(model.form),
+		_user$project$Components_Asana_ApiResource$getChild(model.form),
 		_user$project$Components_Asana_Form$getSelectedProject);
 };
 var _user$project$Components_Asana$Props = function (a) {
 	return {token: a};
 };
-var _user$project$Components_Asana$Model = F4(
-	function (a, b, c, d) {
-		return {form: a, formComponent: b, csv: c, fieldMatcher: d};
+var _user$project$Components_Asana$Model = F3(
+	function (a, b, c) {
+		return {form: a, csv: b, fieldMatcher: c};
 	});
 var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
 	return {ctor: 'FieldMatcherMsg', _0: a};
@@ -11314,69 +11265,65 @@ var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
 var _user$project$Components_Asana$updateMatcher = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
-		var _p9 = _p2.token;
+		var _p8 = _p2.token;
 		var _p3 = _p0;
-		var _p8 = _p3._0;
+		var _p7 = _p3._0;
 		var _p4 = {
 			ctor: '_Tuple3',
-			_0: _user$project$Components_Asana$getSelectedProject(_p8),
-			_1: _user$project$Components_Csv$getHeaders(_p8.csv),
-			_2: _user$project$Components_Csv$getRecords(_p8.csv)
+			_0: _user$project$Components_Asana$getSelectedProject(_p7),
+			_1: _user$project$Components_Csv$getHeaders(_p7.csv),
+			_2: _user$project$Components_Csv$getRecords(_p7.csv)
 		};
 		if ((((_p4.ctor === '_Tuple3') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === 'Just')) && (_p4._2.ctor === 'Just')) {
-			var _p7 = _p4._1._0;
-			var matcherComponent = _user$project$Components_Asana_ProjectLoader$component(
-				{
-					token: _p9,
-					childComponent: function (project) {
-						var numFields = _elm_lang$core$List$length(_p7);
-						var customFields = A2(
-							_elm_lang$core$List$map,
-							function (_) {
-								return _.customField;
+			var _p6 = _p4._1._0;
+			var _p5 = A2(
+				_user$project$Base$mapCmd,
+				_user$project$Components_Asana$FieldMatcherMsg,
+				_user$project$Base$initC(
+					_user$project$Components_Asana_ApiResource$component(
+						{
+							childSpec: function (project) {
+								var numFields = _elm_lang$core$List$length(_p6);
+								var customFields = A2(
+									_elm_lang$core$List$map,
+									function (_) {
+										return _.customField;
+									},
+									project.customFieldSettings);
+								return _user$project$Components_FieldMatcher$component(
+									{token: _p8, projectId: project.id, csvHeaders: _p6, csvRecords: _p4._2._0, customFields: customFields});
 							},
-							project.customFieldSettings);
-						return _user$project$Components_FieldMatcher$component(
-							{token: _p9, projectId: project.id, csvHeaders: _p7, csvRecords: _p4._2._0, customFields: customFields});
-					}
-				});
-			var _p5 = matcherComponent.init;
+							fetch: A2(_user$project$Components_Asana_Api$project, _p4._0._0.id, _p8),
+							unloadedView: _user$project$Components_Asana_CommonViews$unloadedView,
+							loadingView: _user$project$Components_Asana_CommonViews$loadingIndicator,
+							errorView: _user$project$Components_Asana_CommonViews$errorView
+						})));
 			var matcher = _p5._0;
-			var matcherCmd1 = _p5._1;
-			var _p6 = A3(_user$project$Components_Asana_ProjectLoader$load, _p4._0._0.id, _p9, matcher);
-			var matcher$ = _p6._0;
-			var matcherCmd2 = _p6._1;
-			var cmd = _elm_lang$core$Platform_Cmd$batch(
-				A2(
-					_elm_lang$core$List$map,
-					_elm_lang$core$Platform_Cmd$map(_user$project$Components_Asana$FieldMatcherMsg),
-					_elm_lang$core$Native_List.fromArray(
-						[matcherCmd1, matcherCmd2])));
+			var matcherCmd = _p5._1;
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
+					_p7,
 					{
-						fieldMatcher: _elm_lang$core$Maybe$Just(
-							{ctor: '_Tuple2', _0: matcher$, _1: matcherComponent})
+						fieldMatcher: _elm_lang$core$Maybe$Just(matcher)
 					}),
-				_1: cmd
+				_1: matcherCmd
 			};
 		} else {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
+					_p7,
 					{fieldMatcher: _elm_lang$core$Maybe$Nothing}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		}
 	});
 var _user$project$Components_Asana$viewMatcher = F2(
-	function (props, _p10) {
-		var _p11 = _p10;
-		var _p12 = _p11.fieldMatcher;
-		if (_p12.ctor === 'Just') {
+	function (props, _p9) {
+		var _p10 = _p9;
+		var _p11 = _p10.fieldMatcher;
+		if (_p11.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -11388,7 +11335,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 						A2(
 						_elm_lang$html$Html_App$map,
 						_user$project$Components_Asana$FieldMatcherMsg,
-						_p12._0._1.view(_p12._0._0))
+						_user$project$Base$viewC(_p11._0))
 					]));
 		} else {
 			return A2(
@@ -11407,61 +11354,67 @@ var _user$project$Components_Asana$CsvMsg = function (a) {
 var _user$project$Components_Asana$FormMsg = function (a) {
 	return {ctor: 'FormMsg', _0: a};
 };
-var _user$project$Components_Asana$init = function (_p13) {
-	var _p14 = _p13;
-	var _p17 = _p14.token;
-	var _p15 = _user$project$Components_Csv$init(
-		{});
-	var csv = _p15._0;
-	var csvCmd = _p15._1;
-	var form = function (user) {
-		return _user$project$Components_Asana_Form$component(
-			{token: _p17, user: user});
-	};
-	var userLoaderComponent = _user$project$Components_Asana_UserLoader$component(
-		{childComponent: form, token: _p17});
-	var _p16 = userLoaderComponent.init;
-	var userLoader = _p16._0;
-	var userLoaderCmd = _p16._1;
+var _user$project$Components_Asana$init = function (_p12) {
+	var _p13 = _p12;
+	var _p16 = _p13.token;
+	var _p14 = A2(
+		_user$project$Base$mapCmd,
+		_user$project$Components_Asana$CsvMsg,
+		_user$project$Base$initC(
+			_user$project$Components_Csv$spec(
+				{})));
+	var csv = _p14._0;
+	var csvCmd = _p14._1;
+	var _p15 = A2(
+		_user$project$Base$mapCmd,
+		_user$project$Components_Asana$FormMsg,
+		_user$project$Base$initC(
+			_user$project$Components_Asana_ApiResource$component(
+				{
+					childSpec: function (user) {
+						return _user$project$Components_Asana_Form$component(
+							{token: _p16, user: user});
+					},
+					fetch: _user$project$Components_Asana_Api$me(_p16),
+					unloadedView: _user$project$Components_Asana_CommonViews$unloadedView,
+					loadingView: _user$project$Components_Asana_CommonViews$loadingIndicator,
+					errorView: _user$project$Components_Asana_CommonViews$errorView
+				})));
+	var form = _p15._0;
+	var formCmd = _p15._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FormMsg, userLoaderCmd),
-				A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$CsvMsg, csvCmd)
-			]));
+			[formCmd, csvCmd]));
 	return {
 		ctor: '_Tuple2',
-		_0: {form: userLoader, formComponent: userLoaderComponent, csv: csv, fieldMatcher: _elm_lang$core$Maybe$Nothing},
+		_0: {form: form, csv: csv, fieldMatcher: _elm_lang$core$Maybe$Nothing},
 		_1: cmd
 	};
 };
 var _user$project$Components_Asana$subscriptions = F2(
-	function (_p19, _p18) {
-		var _p20 = _p18;
+	function (_p18, _p17) {
+		var _p19 = _p17;
 		var csvSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$CsvMsg,
-			A2(
-				_user$project$Components_Csv$subscriptions,
-				{},
-				_p20.csv));
+			_user$project$Base$subscriptionsC(_p19.csv));
 		var formSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$FormMsg,
-			_p20.formComponent.subscriptions(_p20.form));
+			_user$project$Base$subscriptionsC(_p19.form));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[formSubs, csvSubs]));
 	});
 var _user$project$Components_Asana$processMessage = F3(
 	function (props, msg, model) {
-		var _p21 = msg;
-		switch (_p21.ctor) {
+		var _p20 = msg;
+		switch (_p20.ctor) {
 			case 'FormMsg':
 				var project = _user$project$Components_Asana$getSelectedProject(model);
-				var _p22 = A2(model.formComponent.update, _p21._0, model.form);
-				var form$ = _p22._0;
-				var formCmd = _p22._1;
+				var _p21 = A2(_user$project$Base$updateC, _p20._0, model.form);
+				var form$ = _p21._0;
+				var formCmd = _p21._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{form: form$});
@@ -11475,13 +11428,9 @@ var _user$project$Components_Asana$processMessage = F3(
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			case 'CsvMsg':
 				var headers = _user$project$Components_Csv$getHeaders(model.csv);
-				var _p23 = A3(
-					_user$project$Components_Csv$update,
-					{},
-					_p21._0,
-					model.csv);
-				var csv$ = _p23._0;
-				var csvCmd = _p23._1;
+				var _p22 = A2(_user$project$Base$updateC, _p20._0, model.csv);
+				var csv$ = _p22._0;
+				var csvCmd = _p22._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{csv: csv$});
@@ -11494,20 +11443,18 @@ var _user$project$Components_Asana$processMessage = F3(
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			default:
-				var _p24 = model.fieldMatcher;
-				if (_p24.ctor === 'Just') {
-					var _p26 = _p24._0._1;
-					var _p25 = A2(_p26.update, _p21._0, _p24._0._0);
-					var matcher$ = _p25._0;
-					var matcherCmd = _p25._1;
+				var _p23 = model.fieldMatcher;
+				if (_p23.ctor === 'Just') {
+					var _p24 = A2(_user$project$Base$updateC, _p20._0, _p23._0);
+					var matcher$ = _p24._0;
+					var matcherCmd = _p24._1;
 					var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FieldMatcherMsg, matcherCmd);
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								fieldMatcher: _elm_lang$core$Maybe$Just(
-									{ctor: '_Tuple2', _0: matcher$, _1: _p26})
+								fieldMatcher: _elm_lang$core$Maybe$Just(matcher$)
 							}),
 						_1: cmd
 					};
@@ -11538,7 +11485,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$FormMsg,
-							model.formComponent.view(model.form))
+							_user$project$Base$viewC(model.form))
 						])),
 					A2(
 					_elm_lang$html$Html$div,
@@ -11551,10 +11498,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$CsvMsg,
-							A2(
-								_user$project$Components_Csv$view,
-								{},
-								model.csv))
+							_user$project$Base$viewC(model.csv))
 						]))
 				]));
 	});
@@ -11572,7 +11516,7 @@ var _user$project$Components_Asana$view = F2(
 					A2(_user$project$Components_Asana$viewMatcher, props, model)
 				]));
 	});
-var _user$project$Components_Asana$component = function (props) {
+var _user$project$Components_Asana$spec = function (props) {
 	return {
 		init: _user$project$Components_Asana$init(props),
 		update: _user$project$Components_Asana$update(props),
@@ -11736,8 +11680,11 @@ var _user$project$Components_OAuth$update = F2(
 		}
 	});
 
-var _user$project$Components_OAuthBoundary$getChild = function (_) {
-	return _.child;
+var _user$project$Components_OAuthBoundary$getChild = function (_p0) {
+	return function (_) {
+		return _.child;
+	}(
+		_user$project$Base$stateC(_p0));
 };
 var _user$project$Components_OAuthBoundary$Model = F2(
 	function (a, b) {
@@ -11745,27 +11692,42 @@ var _user$project$Components_OAuthBoundary$Model = F2(
 	});
 var _user$project$Components_OAuthBoundary$Props = F4(
 	function (a, b, c, d) {
-		return {baseAuthUrl: a, clientId: b, baseRedirectUrl: c, childComponent: d};
+		return {baseAuthUrl: a, clientId: b, baseRedirectUrl: c, childSpec: d};
 	});
 var _user$project$Components_OAuthBoundary$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
+var _user$project$Components_OAuthBoundary$updateChild = F2(
+	function (msg, model) {
+		var _p1 = model.child;
+		if (_p1.ctor === 'Just') {
+			var _p2 = A2(
+				_user$project$Base$mapCmd,
+				_user$project$Components_OAuthBoundary$ChildMsg,
+				A2(_user$project$Base$updateC, msg, _p1._0));
+			var child$ = _p2._0;
+			var childCmd = _p2._1;
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						child: _elm_lang$core$Maybe$Just(child$)
+					}),
+				_1: childCmd
+			};
+		} else {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		}
+	});
 var _user$project$Components_OAuthBoundary$view = F2(
-	function (_p0, model) {
-		var _p1 = _p0;
-		var _p2 = {
-			ctor: '_Tuple2',
-			_0: model.child,
-			_1: _user$project$Components_OAuth$getToken(model.oauth)
-		};
-		if (((_p2.ctor === '_Tuple2') && (_p2._0.ctor === 'Just')) && (_p2._1.ctor === 'Just')) {
+	function (_p3, model) {
+		var _p4 = model.child;
+		if (_p4.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Components_OAuthBoundary$ChildMsg,
-				function (comp) {
-					return comp.view(_p2._0._0);
-				}(
-					_p1.childComponent(_p2._1._0)));
+				_user$project$Base$viewC(_p4._0));
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -11777,26 +11739,6 @@ var _user$project$Components_OAuthBoundary$view = F2(
 					[
 						_elm_lang$html$Html$text('Authorizing')
 					]));
-		}
-	});
-var _user$project$Components_OAuthBoundary$updateChild = F2(
-	function (updater, model) {
-		var _p3 = model.child;
-		if (_p3.ctor === 'Just') {
-			var _p4 = updater(_p3._0);
-			var child$ = _p4._0;
-			var childCmd = _p4._1;
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						child: _elm_lang$core$Maybe$Just(child$)
-					}),
-				_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$ChildMsg, childCmd)
-			};
-		} else {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 var _user$project$Components_OAuthBoundary$OAuthMsg = function (a) {
@@ -11814,110 +11756,84 @@ var _user$project$Components_OAuthBoundary$init = function (_p5) {
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$OAuthMsg, oauthCmd)
 	};
 };
-var _user$project$Components_OAuthBoundary$update = F3(
-	function (_p8, msg, model) {
-		var _p9 = _p8;
-		var _p18 = _p9.childComponent;
-		var _p10 = msg;
-		if (_p10.ctor === 'OAuthMsg') {
-			var _p11 = A2(_user$project$Components_OAuth$update, _p10._0, model.oauth);
-			var oauth$ = _p11._0;
-			var oauthCmd = _p11._1;
-			var _p12 = _user$project$Components_OAuth$getToken(oauth$);
-			if (_p12.ctor === 'Just') {
-				var _p13 = function (_) {
-					return _.init;
-				}(
-					_p18(_p12._0));
-				var child = _p13._0;
-				var childCmd = _p13._1;
-				var cmd = _elm_lang$core$Platform_Cmd$batch(
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$OAuthMsg, oauthCmd),
-							A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$ChildMsg, childCmd)
-						]));
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							oauth: oauth$,
-							child: _elm_lang$core$Maybe$Just(child)
-						}),
-					_1: cmd
-				};
-			} else {
-				var _p14 = _user$project$Components_OAuth$getState(oauth$);
-				if (_p14.ctor === 'Ready') {
-					var _p15 = _user$project$Components_OAuth$authenticate(oauth$);
-					var oauth2 = _p15._0;
-					var oauthCmd = _p15._1;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{oauth: oauth2}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$OAuthMsg, oauthCmd)
-					};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{oauth: oauth$}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$OAuthMsg, oauthCmd)
-					};
-				}
-			}
-		} else {
-			var _p16 = {
+var _user$project$Components_OAuthBoundary$updateOAuth = F3(
+	function (props, msg, model) {
+		var _p8 = A2(
+			_user$project$Base$mapCmd,
+			_user$project$Components_OAuthBoundary$OAuthMsg,
+			A2(_user$project$Components_OAuth$update, msg, model.oauth));
+		var oauth$ = _p8._0;
+		var oauthCmd1 = _p8._1;
+		var _p9 = _user$project$Components_OAuth$getToken(oauth$);
+		if (_p9.ctor === 'Just') {
+			var _p10 = A2(
+				_user$project$Base$mapCmd,
+				_user$project$Components_OAuthBoundary$ChildMsg,
+				_user$project$Base$initC(
+					props.childSpec(_p9._0)));
+			var child = _p10._0;
+			var childCmd = _p10._1;
+			var cmd = _elm_lang$core$Platform_Cmd$batch(
+				_elm_lang$core$Native_List.fromArray(
+					[oauthCmd1, childCmd]));
+			return {
 				ctor: '_Tuple2',
-				_0: model.child,
-				_1: _user$project$Components_OAuth$getToken(model.oauth)
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						oauth: oauth$,
+						child: _elm_lang$core$Maybe$Just(child)
+					}),
+				_1: cmd
 			};
-			if (((_p16.ctor === '_Tuple2') && (_p16._0.ctor === 'Just')) && (_p16._1.ctor === 'Just')) {
-				var _p17 = function (component) {
-					return A2(component.update, _p10._0, _p16._0._0);
-				}(
-					_p18(_p16._1._0));
-				var child$ = _p17._0;
-				var childCmd = _p17._1;
+		} else {
+			var _p11 = _user$project$Components_OAuth$getState(oauth$);
+			if (_p11.ctor === 'Ready') {
+				var _p12 = A2(
+					_user$project$Base$mapCmd,
+					_user$project$Components_OAuthBoundary$OAuthMsg,
+					_user$project$Components_OAuth$authenticate(oauth$));
+				var oauth2 = _p12._0;
+				var oauthCmd2 = _p12._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							child: _elm_lang$core$Maybe$Just(child$)
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$ChildMsg, childCmd)
+						{oauth: oauth2}),
+					_1: _elm_lang$core$Platform_Cmd$batch(
+						_elm_lang$core$Native_List.fromArray(
+							[oauthCmd1, oauthCmd2]))
 				};
 			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{oauth: oauth$}),
+					_1: oauthCmd1
+				};
 			}
 		}
 	});
+var _user$project$Components_OAuthBoundary$update = F3(
+	function (props, msg, model) {
+		var _p13 = msg;
+		if (_p13.ctor === 'OAuthMsg') {
+			return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p13._0, model);
+		} else {
+			return A2(_user$project$Components_OAuthBoundary$updateChild, _p13._0, model);
+		}
+	});
 var _user$project$Components_OAuthBoundary$subscriptions = F2(
-	function (_p20, _p19) {
-		var _p21 = _p20;
-		var _p22 = _p19;
-		var _p24 = _p22.oauth;
+	function (_p15, _p14) {
+		var _p16 = _p14;
 		var childSubs = function () {
-			var _p23 = {
-				ctor: '_Tuple2',
-				_0: _user$project$Components_OAuth$getToken(_p24),
-				_1: _p22.child
-			};
-			if (((_p23.ctor === '_Tuple2') && (_p23._0.ctor === 'Just')) && (_p23._1.ctor === 'Just')) {
+			var _p17 = _p16.child;
+			if (_p17.ctor === 'Just') {
 				return A2(
 					_elm_lang$core$Platform_Sub$map,
 					_user$project$Components_OAuthBoundary$ChildMsg,
-					A2(
-						function (_) {
-							return _.subscriptions;
-						},
-						_p21.childComponent(_p23._0._0),
-						_p23._1._0));
+					_user$project$Base$subscriptionsC(_p17._0));
 			} else {
 				return _elm_lang$core$Platform_Sub$none;
 			}
@@ -11925,12 +11841,12 @@ var _user$project$Components_OAuthBoundary$subscriptions = F2(
 		var oauthSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_OAuthBoundary$OAuthMsg,
-			_user$project$Components_OAuth$subscriptions(_p24));
+			_user$project$Components_OAuth$subscriptions(_p16.oauth));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[oauthSubs, childSubs]));
 	});
-var _user$project$Components_OAuthBoundary$component = function (props) {
+var _user$project$Components_OAuthBoundary$spec = function (props) {
 	return {
 		init: _user$project$Components_OAuthBoundary$init(props),
 		update: _user$project$Components_OAuthBoundary$update(props),
@@ -11973,7 +11889,7 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						model.oauthComponent.view(model.oauthBoundary)
+						_user$project$Base$viewC(model)
 					]))
 			]));
 };
@@ -11981,41 +11897,23 @@ var _user$project$Main$urlUpdate = F2(
 	function (location, model) {
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Main$subscriptions = function (_p0) {
-	var _p1 = _p0;
-	return _p1.oauthComponent.subscriptions(_p1.oauthBoundary);
-};
-var _user$project$Main$update = F2(
-	function (msg, model) {
-		var _p2 = A2(model.oauthComponent.update, msg, model.oauthBoundary);
-		var oauthBoundary$ = _p2._0;
-		var cmd = _p2._1;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{oauthBoundary: oauthBoundary$}),
-			_1: cmd
-		};
-	});
+var _user$project$Main$subscriptions = _user$project$Base$subscriptionsC;
+var _user$project$Main$update = _user$project$Base$updateC;
 var _user$project$Main$init = function (location) {
-	var _p3 = A2(_elm_lang$core$String$contains, 'localhost', location.origin) ? {ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'} : {ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'};
-	var clientId = _p3._0;
-	var baseRedirectUrl = _p3._1;
-	var asanaComponent = function (token) {
-		return _user$project$Components_Asana$component(
-			{token: token});
+	var _p0 = A2(_elm_lang$core$String$contains, 'localhost', location.origin) ? {ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'} : {ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'};
+	var clientId = _p0._0;
+	var baseRedirectUrl = _p0._1;
+	var oauthProps = {
+		baseAuthUrl: 'https://app.asana.com/-/oauth_authorize',
+		clientId: clientId,
+		baseRedirectUrl: baseRedirectUrl,
+		childSpec: function (token) {
+			return _user$project$Components_Asana$spec(
+				{token: token});
+		}
 	};
-	var oauthProps = {baseAuthUrl: 'https://app.asana.com/-/oauth_authorize', clientId: clientId, baseRedirectUrl: baseRedirectUrl, childComponent: asanaComponent};
-	var oauthComponent = _user$project$Components_OAuthBoundary$component(oauthProps);
-	var _p4 = oauthComponent.init;
-	var boundary = _p4._0;
-	var boundaryCmd = _p4._1;
-	return {
-		ctor: '_Tuple2',
-		_0: {oauthBoundary: boundary, oauthComponent: oauthComponent},
-		_1: boundaryCmd
-	};
+	var oauthSpec = _user$project$Components_OAuthBoundary$spec(oauthProps);
+	return _user$project$Base$initC(oauthSpec);
 };
 var _user$project$Main$main = {
 	main: A2(
@@ -12023,10 +11921,6 @@ var _user$project$Main$main = {
 		_elm_lang$navigation$Navigation$makeParser(_elm_lang$core$Basics$identity),
 		{init: _user$project$Main$init, update: _user$project$Main$update, urlUpdate: _user$project$Main$urlUpdate, subscriptions: _user$project$Main$subscriptions, view: _user$project$Main$view})
 };
-var _user$project$Main$Model = F2(
-	function (a, b) {
-		return {oauthBoundary: a, oauthComponent: b};
-	});
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};

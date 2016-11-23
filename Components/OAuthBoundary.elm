@@ -1,14 +1,14 @@
-module Components.OAuthBoundary exposing (Model, Msg, Props, component, getChild, updateChild)
+module Components.OAuthBoundary exposing (Component, Spec, Msg, Props, spec, getChild)
 
-import Base exposing (..)
+import Base
 import Components.Asana.Api exposing (Token)
 import Components.OAuth as OAuth
 import Html.App
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
 
-type alias Model model =
-    { child : Maybe model
+type alias Model model msg =
+    { child : Maybe (Base.Component model msg)
     , oauth : OAuth.Model
     }
 
@@ -20,18 +20,27 @@ type alias Props model msg =
     { baseAuthUrl : String
     , clientId : String
     , baseRedirectUrl : String
-    , childComponent : Token -> Component model msg
+    , childSpec : Token -> Base.Spec model msg
     }
 
-component : Props model msg -> Component (Model model) (Msg msg)
-component props =
+type alias Spec model msg = Base.Spec (Model model msg) (Msg msg)
+type alias Component model msg = Base.Component (Model model msg) (Msg msg)
+
+spec : Props model msg -> Spec model msg
+spec props =
     { init = init props
     , update = update props
     , view = view props
     , subscriptions = subscriptions props
     }
 
-init : Props model msg -> (Model model, Cmd (Msg msg))
+getChild : Component model msg -> Maybe (Base.Component model msg)
+getChild = Base.stateC >> .child
+
+--------------------------------------------------------------------------------
+-- Private
+
+init : Props model msg -> (Model model msg, Cmd (Msg msg))
 init {baseAuthUrl, clientId, baseRedirectUrl} =
     let
         (oauthModel, oauthCmd) = OAuth.init baseAuthUrl clientId baseRedirectUrl
@@ -42,71 +51,66 @@ init {baseAuthUrl, clientId, baseRedirectUrl} =
     in
         (model, Cmd.map OAuthMsg oauthCmd)
 
-update : Props model msg -> Msg msg -> Model model -> (Model model, Cmd (Msg msg))
-update {childComponent} msg model =
+update : Props model msg -> Msg msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
+update props msg model =
     case msg of
         OAuthMsg msg' ->
+            updateOAuth props msg' model
+        ChildMsg msg' ->
+            updateChild msg' model
+
+updateOAuth : Props model msg -> OAuth.Msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
+updateOAuth props msg model =
             let
-                (oauth', oauthCmd) = OAuth.update msg' model.oauth
+                (oauth', oauthCmd1) = Base.mapCmd OAuthMsg <| OAuth.update msg model.oauth
             in
                 case OAuth.getToken oauth' of
                     Just token ->
                         let
-                            (child, childCmd) = childComponent token |> .init
-                            cmd = Cmd.batch [ Cmd.map OAuthMsg oauthCmd, Cmd.map ChildMsg childCmd ]
+                            (child, childCmd) = Base.mapCmd ChildMsg <| Base.initC (props.childSpec token)
+                            cmd = Cmd.batch [ oauthCmd1, childCmd ]
                         in
                             ({ model | oauth = oauth', child = Just child }, cmd)
                     Nothing ->
                         case OAuth.getState oauth' of
                             OAuth.Ready ->
                                 let
-                                    (oauth2, oauthCmd) = OAuth.authenticate oauth'
+                                    (oauth2, oauthCmd2) = Base.mapCmd OAuthMsg <| OAuth.authenticate oauth'
                                 in
-                                    ({ model | oauth = oauth2 }, Cmd.map OAuthMsg oauthCmd)
+                                    ({ model | oauth = oauth2 }, Cmd.batch [oauthCmd1, oauthCmd2])
                             _ ->
-                                ({ model | oauth = oauth' }, Cmd.map OAuthMsg oauthCmd)
-        ChildMsg msg' ->
-            case (model.child, OAuth.getToken model.oauth) of
-                (Just child, Just token) ->
-                    let
-                        (child', childCmd) = childComponent token |> \component -> component.update msg' child
-                    in
-                        ({ model | child = Just child' }, Cmd.map ChildMsg childCmd)
-                _ ->
-                    (model, Cmd.none)
+                                ({ model | oauth = oauth' }, oauthCmd1)
 
-view : Props model msg -> Model model -> Html (Msg msg)
-view {childComponent} model =
-    case (model.child, OAuth.getToken model.oauth) of
-        (Just child, Just token) ->
-            Html.App.map ChildMsg <| (\comp -> comp.view child) <| childComponent token
+updateChild : msg -> Model model msg -> (Model model msg, Cmd (Msg msg))
+updateChild msg model =
+    case model.child of
+        Just child ->
+            let
+                (child', childCmd) = Base.mapCmd ChildMsg <| Base.updateC msg child
+            in
+                ({ model | child = Just child' }, childCmd)
+        _ ->
+            (model, Cmd.none)
+
+view : Props model msg -> Model model msg -> Html (Msg msg)
+view _ model =
+    case model.child of
+        Just child ->
+            Html.App.map ChildMsg <| Base.viewC child
         _ ->
             div [ class "OAuthBoundary--authorizing" ]
                 [ text "Authorizing" ]
 
-subscriptions : Props model msg -> Model model -> Sub (Msg msg)
-subscriptions {childComponent} {oauth, child} =
+subscriptions : Props model msg -> Model model msg -> Sub (Msg msg)
+subscriptions _ {oauth, child} =
     let
         oauthSubs = Sub.map OAuthMsg <| OAuth.subscriptions oauth
-        childSubs =
-            case (OAuth.getToken oauth, child) of
-                (Just token, Just child) ->
-                    Sub.map ChildMsg <| .subscriptions (childComponent token) child
+        childSubs = 
+            case child of
+                Just child ->
+                    Sub.map ChildMsg <| Base.subscriptionsC child
                 _ ->
                     Sub.none
     in
         Sub.batch [oauthSubs, childSubs]
 
-getChild : Model model -> Maybe model
-getChild = .child
-
-updateChild : (model -> (model, Cmd msg)) -> Model model -> (Model model, Cmd (Msg msg))
-updateChild updater model =
-    case model.child of
-        Just child ->
-            let
-                (child', childCmd) = updater child
-            in
-                ({ model | child = Just child' }, Cmd.map ChildMsg childCmd)
-        Nothing ->
-            (model, Cmd.none)
