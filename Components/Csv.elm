@@ -45,7 +45,9 @@ subscriptions _ _ = FileReader.fileChunk MoreData
 
 view _ model =
     div [ class "Csv" ] 
-        [ div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ] ]
+        [ h3 [] [ text "Upload a CSV file:"]
+        , div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
+        ]
 
 getRecords : Model -> Maybe (List (List String))
 getRecords { csvData } =

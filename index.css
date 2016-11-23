@@ -1,17 +1,21 @@
-
 .Main {
+    width: 840px;
+    margin: auto;
+}
+
+.Asana {
     display: flex;
     flex-direction: column;
     align-elements: center
 }
 
-.Main-inputs {
+.Asana-inputs {
     display: flex;
     justify-content: center;
     border: 1px solid #eee;
 }
 
-.Main-form, .Main-csv {
+.Asana-form, .Asana-csv {
     width: 400px;
     padding: 15px;
 }
@@ -23,6 +27,11 @@
 
 .FieldMatcher {
     display: flex;
+    flex-direction: column;
+}
+
+.FieldMatcher-fields {
+    display: flex;
     justify-content: center;
     border: 1px solid #eee;
     margin-top: 15px;
@@ -33,14 +42,23 @@
     padding: 15px;
 }
 
+.FieldMatcher-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.FieldMatcher-button {
+    padding: 10px 0;
+}
 
 .FieldOptions {
     display: flex;
     flex-direction: column;
 }
-
-
-
 
 .Typeahead {
     display: inline;

@@ -10518,6 +10518,14 @@ var _user$project$Components_Asana_Form$view = F2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
+					_elm_lang$html$Html$h3,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text('Select an Asana project:')
+						])),
+					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -10731,6 +10739,14 @@ var _user$project$Components_Csv$view = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
+					A2(
+					_elm_lang$html$Html$h3,
+					_elm_lang$core$Native_List.fromArray(
+						[]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text('Upload a CSV file:')
+						])),
 					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
@@ -11193,14 +11209,16 @@ var _user$project$Components_FieldMatcher$view = F2(
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
-				[]),
+				[
+					_elm_lang$html$Html_Attributes$class('FieldMatcher')
+				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('FieldMatcher')
+							_elm_lang$html$Html_Attributes$class('FieldMatcher-fields')
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -11232,30 +11250,39 @@ var _user$project$Components_FieldMatcher$view = F2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('FieldMatcher-button')
+							_elm_lang$html$Html_Attributes$class('FieldMatcher-upload')
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(
-							_elm_lang$html$Html$button,
+							_elm_lang$html$Html$div,
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_elm_lang$html$Html_Events$onClick(_user$project$Components_FieldMatcher$StartUpload)
+									_elm_lang$html$Html_Attributes$class('FieldMatcher-button')
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									_elm_lang$html$Html$text('Import')
+									A2(
+									_elm_lang$html$Html$button,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Events$onClick(_user$project$Components_FieldMatcher$StartUpload)
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text('Import')
+										]))
+								])),
+							A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('FieldMatcher-progress')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_user$project$Components_FieldMatcher$renderUploader(_p13.uploader)
 								]))
-						])),
-					A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html_Attributes$class('FieldMatcher-uploader')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_user$project$Components_FieldMatcher$renderUploader(_p13.uploader)
 						]))
 				]));
 	});
@@ -11354,7 +11381,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('Main-matcher')
+						_elm_lang$html$Html_Attributes$class('Asana-matcher')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
@@ -11368,7 +11395,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('Main-matcher--disabled')
+						_elm_lang$html$Html_Attributes$class('Asana-matcher--disabled')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[]));
@@ -11496,7 +11523,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$html$Html_Attributes$class('Main-inputs')
+					_elm_lang$html$Html_Attributes$class('Asana-inputs')
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
@@ -11504,7 +11531,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('Main-form')
+							_elm_lang$html$Html_Attributes$class('Asana-form')
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -11517,7 +11544,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('Main-csv')
+							_elm_lang$html$Html_Attributes$class('Asana-csv')
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -11537,7 +11564,7 @@ var _user$project$Components_Asana$view = F2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$html$Html_Attributes$class('Main')
+					_elm_lang$html$Html_Attributes$class('Asana')
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
@@ -11917,7 +11944,7 @@ var _user$project$Main$view = function (model) {
 		_elm_lang$html$Html$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				_elm_lang$html$Html_Attributes$class('Asana')
+				_elm_lang$html$Html_Attributes$class('Main')
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -11925,7 +11952,24 @@ var _user$project$Main$view = function (model) {
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('Asana-form')
+						_elm_lang$html$Html_Attributes$class('Main-header')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$h1,
+						_elm_lang$core$Native_List.fromArray(
+							[]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text('CSVana : CSV → Asana')
+							]))
+					])),
+				A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('Main-form')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[

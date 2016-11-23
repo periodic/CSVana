@@ -52,8 +52,10 @@ urlUpdate location model =
     (model, Cmd.none)
 
 view model =
-    div [ class "Asana" ]
-        [ div [ class "Asana-form" ]
+    div [ class "Main" ]
+        [ div [ class "Main-header" ]
+            [ h1 [] [ text "CSVana : CSV → Asana" ] ]
+        , div [ class "Main-form" ]
             [ model.oauthComponent.view model.oauthBoundary ]
         ]
 

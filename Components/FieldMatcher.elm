@@ -92,17 +92,19 @@ update props msg model =
 
 view : Props -> Model -> Html Msg
 view { csvHeaders} { fieldOptions, fieldOptionsComponent, uploader } =
-    div []
-        [ div [ class "FieldMatcher" ]
+    div [ class "FieldMatcher" ]
+        [ div [ class "FieldMatcher-fields" ]
             [ div [ class "FieldMatcher-csv" ]
                 [ renderHeaders csvHeaders ]
             , div [ class "FieldMatcher-targets" ]
                 [ Html.App.map FieldOptionsMsg <| fieldOptionsComponent.view fieldOptions ]
             ]
-        , div [ class "FieldMatcher-button" ]
-            [ button [ onClick StartUpload ] [ text "Import" ] ]
-        , div [ class "FieldMatcher-uploader" ]
-            [ renderUploader uploader ]
+        , div [ class "FieldMatcher-upload" ]
+            [ div [ class "FieldMatcher-button" ]
+                [ button [ onClick StartUpload ] [ text "Import" ] ]
+            , div [ class "FieldMatcher-progress" ]
+                [ renderUploader uploader ]
+            ]
         ]
 
 renderHeaders : List String -> Html Msg

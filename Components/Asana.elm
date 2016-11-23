@@ -83,7 +83,7 @@ update =
 
 view : Props -> Model -> Html Msg
 view props model =
-    div [ class "Main" ]
+    div [ class "Asana" ]
         [ viewInputs props model
         , viewMatcher props model
         ]
@@ -166,17 +166,17 @@ getSelectedProject model =
 
 
 viewInputs props model =
-    div [ class "Main-inputs" ]
-        [ div [ class "Main-form" ]
+    div [ class "Asana-inputs" ]
+        [ div [ class "Asana-form" ]
             [ Html.App.map FormMsg <| model.formComponent.view model.form ]
-        , div [ class "Main-csv" ]
+        , div [ class "Asana-csv" ]
             [ Html.App.map CsvMsg <| Csv.view {} model.csv ]
         ]
 
 viewMatcher props { fieldMatcher } =
     case fieldMatcher of
         Just (model, component) ->
-            div [ class "Main-matcher" ]
+            div [ class "Asana-matcher" ]
                 [ Html.App.map FieldMatcherMsg <| component.view model ]
         Nothing ->
-            div [ class "Main-matcher--disabled" ] []
+            div [ class "Asana-matcher--disabled" ] []

@@ -1,6 +1,6 @@
 module Components.Asana.Form exposing (Props, Model, Msg, component, getSelectedProject)
 
-import Html exposing (Html, div, text, input, label)
+import Html exposing (Html, div, text, input, label, h3)
 import Html.Attributes exposing (class)
 import Html.App
 
@@ -95,7 +95,8 @@ view _ model =
                     div [] [ input [] [] ]
     in
         div [ class "AsanaForm" ]
-            [ div [ class "AsanaForm-workspaces" ]
+            [ h3 [] [ text "Select an Asana project:" ]
+            , div [ class "AsanaForm-workspaces" ]
                 [ label [ class "AsanaForm-workspacesLabel" ] [ text "Workspace: " ]
                 , workspaces
                 ]
