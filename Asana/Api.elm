@@ -7,6 +7,7 @@ import Task
 
 import Asana.Model as Asana
 
+apiRoot : String
 apiRoot = "https://app.asana.com/api/1.0"
 
 type alias Token = String

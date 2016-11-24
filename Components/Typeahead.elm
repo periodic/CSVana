@@ -1,70 +1,121 @@
-module Components.Typeahead exposing (..)
+module Components.Typeahead exposing (Props, Msg, Spec, Component, spec, getSelection)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
-import Json.Decode exposing (Decoder, list)
+import Html.Events exposing (onClick, onInput, onFocus, onBlur, onMouseOver, onMouseOut)
 
-import Asana.Api exposing (ApiResult)
-import Asana.Model exposing (..)
+import Asana.Api as Api
+import Asana.Model as Asana exposing (Named)
+import Base
 
 type ResourceStatus a
     = Unloaded
     | Loading
     | Loaded a
 
+type alias Props a =
+    { fetcher : String -> Cmd (Api.ApiResult (List a))
+    }
+
+type Msg a
+    = NewOptions String (Api.ApiResult (List a))
+    | Input String
+    | Selection a
+    | InputFocus Bool
+    | OptionsHovered Bool
+
+type alias Spec a = Base.Spec (Model a) (Msg a)
+type alias Component a = Base.Component (Model a) (Msg a)
+
+spec : Props (Named a) -> Spec (Named a)
+spec props =
+    { init = init props
+    , update = update props
+    , subscriptions = always Sub.none
+    , view = view props
+    }
+
+getSelection : Component a -> Maybe a
+getSelection = Base.stateC >> .selected
+
+--------------------------------------------------------------------------------
+-- Private
+
 type alias Model a =
     { options : ResourceStatus (List a)
     , fragment : String
     , selected : Maybe a
-    -- TODO: move read only values to props.
-    , token : String
-    , workspaceId : Id
-    , fetcher : Id -> String -> String -> Cmd (ApiResult (List a))
+    , inputFocused : Bool
+    , optionsHovered : Bool
     }
 
-init : String -> Id -> (Id -> String -> String -> Cmd (ApiResult (List a))) -> (Model a, Cmd (Msg a))
-init token workspaceId fetcher =
-    ({ options = Unloaded
-    , fragment = ""
-    , selected = Nothing
-    , token = token
-    , workspaceId = workspaceId
-    , fetcher = fetcher
-    }, Cmd.none)
+init : Props a -> (Model a, Cmd (Msg a))
+init _ =
+    let
+        model =
+            { options = Unloaded
+            , fragment = ""
+            , selected = Nothing
+            , inputFocused = False
+            , optionsHovered = False
+            }
+    in
+        (model, Cmd.none)
 
-type Msg a
-    = NewTypeaheadOptions (ApiResult (List a))
-    | TypeaheadInput String
-    | TypeaheadSelection a
-
-update : Msg { a | name : String } -> Model { a | name : String } -> (Model { a | name : String }, Cmd (Msg { a | name : String }))
-update msg model =
+update : Props (Named a) -> Msg (Named a) -> Model (Named a) -> (Model (Named a), Cmd (Msg (Named a)))
+update { fetcher } msg model =
     case msg of
-        NewTypeaheadOptions (Ok items) ->
-            ({model | options = Loaded items}, Cmd.none)
-        NewTypeaheadOptions (Err items) ->
-            ({model | options = Unloaded}, Cmd.none)
-        TypeaheadInput fragment ->
+        NewOptions fragment (Ok items) ->
+            if fragment == model.fragment && isActive model
+                then ({model | options = Loaded items}, Cmd.none)
+                else (model, Cmd.none)
+        NewOptions _ (Err items) ->
+            (model, Cmd.none)
+        Input fragment ->
             if fragment == ""
-               then ({ model | options = Unloaded, fragment = fragment, selected = Nothing }, Cmd.none)
+               then ({ model | options = Unloaded, fragment = fragment, selected = Nothing, optionsHovered = False }, Cmd.none)
                else ({ model | options = Loading, fragment = fragment, selected = Nothing },
-                    Cmd.map NewTypeaheadOptions <| model.fetcher model.workspaceId fragment model.token)
-        TypeaheadSelection val ->
-            ({ model | selected = Just val, fragment = val.name, options = Unloaded }, Cmd.none)
+                    Cmd.map (NewOptions fragment) <| fetcher fragment)
+        Selection val ->
+            ({ model | selected = Just (Debug.log "Selection" val), fragment = val.name, options = Unloaded }, Cmd.none)
+        InputFocus val ->
+            ({ model | inputFocused = (Debug.log "Focused" val) }, Cmd.none)
+        OptionsHovered val ->
+            ({ model | optionsHovered = (Debug.log "Hovered" val) }, Cmd.none)
 
-view : Model { a | name : String} -> Html (Msg { a | name : String })
-view model =
-    div [ class "Typeahead" ]
-        [ input [ class "Typeahead-input", onInput TypeaheadInput, value model.fragment ] []
-        , renderOptions model
-        ]
+view : Props (Named a) -> Model (Named a) -> Html (Msg (Named a))
+view _ model =
+    let
+        inputElem = input
+            [ class "Typeahead-input"
+            , onInput Input
+            , onFocus <| InputFocus True
+            , onBlur <| InputFocus False
+            , value model.fragment
+            ] []
+        elems =
+            if isActive model
+            then [ inputElem, renderOptions model ]
+            else [ inputElem ]
+    in
+        div [ class "Typeahead" ] elems
 
-renderOptions : Model { a | name : String } -> Html (Msg { a | name : String })
+isActive : Model a -> Bool
+isActive model =
+    case model.options of
+        Unloaded ->
+            False
+        _ ->
+            model.inputFocused || model.optionsHovered
+
+renderOptions : Model (Named a) -> Html (Msg (Named a))
 renderOptions {options, selected} =
         case options of
             Loaded items ->
-                div [ class "Typeahead-options" ]
+                div [ class "Typeahead-options"
+                    , onMouseOver (OptionsHovered True)
+                    , onMouseOut (OptionsHovered False)
+                    ]
                     (if List.length items > 0
                         then List.map (renderOption selected) items
                         else [ renderNoResultsOption ])
@@ -75,7 +126,7 @@ renderOptions {options, selected} =
                 div [ class "Typeahead-options--empty" ]
                     []
 
-renderOption : Maybe { a | name : String } -> { a | name : String } -> Html (Msg { a | name : String })
+renderOption : Maybe (Named a) -> (Named a) -> Html (Msg (Named a))
 renderOption selected resource =
     case selected of
         Just selectedResource ->
@@ -85,31 +136,28 @@ renderOption selected resource =
         Nothing ->
             renderUnselected resource
 
-renderUnselected : { a | name : String } -> Html (Msg { a | name : String })
+renderUnselected : (Named a) -> Html (Msg (Named a))
 renderUnselected resource = 
     div [ class "Typeahead-option"
-        , onClick (TypeaheadSelection resource)
+        , onClick (Selection resource)
         ]
         [ text resource.name ]
 
-renderSelected : { a | name : String } -> Html (Msg { a | name : String })
+renderSelected : (Named a) -> Html (Msg (Named a))
 renderSelected resource = 
     div [ class "Typeahead-option Typeahead-option--selected"
-        , onClick (TypeaheadSelection resource)
+        , onClick (Selection resource)
         ]
         [ text resource.name ]
 
-renderLoadingOption : Html (Msg { a | name : String  })
+renderLoadingOption : Html (Msg a)
 renderLoadingOption =
     div [ class "Typeahead-option Typeahead-option--loading"
         ]
         [ text "Loading..." ]
 
-renderNoResultsOption : Html (Msg { a | name : String  })
+renderNoResultsOption : Html (Msg a)
 renderNoResultsOption =
     div [ class "Typeahead-option Typeahead-option--noResults"
         ]
         [ text "No Results" ]
-
-getSelection : Model a -> Maybe a
-getSelection = .selected

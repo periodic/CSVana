@@ -1,17 +1,20 @@
 module Asana.Model exposing (..)
 
-import Date exposing (Date)
 import Json.Decode exposing (..)
 
 -- TODO: move decoders to Api.elm.
 
 type alias Id = String
 
+type alias Named a =
+    { a | name : String }
+
 type alias Resource =
     { id: Id
     , name: String
     }
 
+resourceDecoder : Decoder Resource
 resourceDecoder = object2 Resource
   ("id" := map toString int)
   ("name" := string)
@@ -26,6 +29,7 @@ type alias User =
   , workspaces: Maybe (List Workspace)
   }
 
+userDecoder : Decoder User
 userDecoder = object5 User
   ("id" := map toString int)
   ("name" := string)
@@ -41,6 +45,7 @@ type alias Photos =
   , image_128x128: Maybe String
   }
 
+photosDecoder : Decoder Photos
 photosDecoder = object5 Photos
   (maybe <| "image_21x21" := string)
   (maybe <| "image_27x27" := string)
@@ -55,6 +60,7 @@ type alias Workspace =
   , name: String
   }
 
+workspaceDecoder : Decoder Workspace
 workspaceDecoder = object2 Workspace
   ("id" := map toString int)
   ("name" := string)
@@ -67,6 +73,7 @@ type alias Project =
     , customFieldSettings : List CustomFieldSetting
     }
 
+projectDecoder : Decoder Project
 projectDecoder = object3 Project
   ("id" := map toString int)
   ("name" := string)
@@ -78,6 +85,7 @@ type alias CustomFieldSetting =
     , customField : CustomField
     }
 
+customFieldSettingDecoder : Decoder CustomFieldSetting
 customFieldSettingDecoder = object2 CustomFieldSetting
     ("id" := map toString int)
     ("custom_field" := customFieldDecoder)
@@ -88,6 +96,7 @@ type CustomFieldType
     | CustomEnum
     | CustomUnknown
 
+customFieldTypeDecoder : Decoder CustomFieldType
 customFieldTypeDecoder = 
     map (\str -> case str of
             "text" ->
@@ -107,6 +116,7 @@ type alias CustomField =
     , name : String
     }
 
+customFieldDecoder : Decoder CustomField
 customFieldDecoder = object3 CustomField
     ("id" := map toString int)
     ("type" := customFieldTypeDecoder)
@@ -120,6 +130,7 @@ type alias Task =
     , dueDate : Maybe String
     }
 
+taskDecoder : Decoder Task
 taskDecoder = object4 Task
     ("id" := map toString int)
     (maybe <| "name" := string)

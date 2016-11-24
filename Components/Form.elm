@@ -18,7 +18,7 @@ type alias Props =
 type alias Model =
     { workspaceSelector : WorkspaceSelector.Model
     -- Only valid if a workspace is selected.  Consider disabling instead?
-    , projectTypeahead : Maybe (Typeahead.Model Asana.ProjectResource)
+    , projectTypeahead : Maybe (Typeahead.Component Asana.ProjectResource)
     }
 
 type Msg
@@ -65,11 +65,9 @@ updateProject {token} msg model =
     case model.projectTypeahead of
         Just typeahead ->
             let
-                (typeahead', typeaheadCmd) = Typeahead.update msg typeahead
-                cmd = Cmd.map ProjectTypeaheadMsg typeaheadCmd
-                model' = { model | projectTypeahead = Just typeahead' }
+                (typeahead', cmd) = Base.updateWrapped ProjectTypeaheadMsg msg typeahead
             in
-                (model', cmd)
+                ({ model | projectTypeahead = Just typeahead' }, cmd)
         Nothing ->
             (model, Cmd.none)
 
@@ -81,10 +79,13 @@ updateWorkspace { token } msg model =
             case WorkspaceSelector.getValue wss' of
                 Just workspaceId ->
                     -- TODO: Only create a new typeahead if the workspace changes.
-                    mapFst Just <| Typeahead.init token workspaceId Api.projectTypeahead
+                    mapFst Just
+                    <| Base.initWrapped ProjectTypeaheadMsg
+                    <| Typeahead.spec
+                        { fetcher = \fragment -> Api.projectTypeahead workspaceId fragment token }
                 Nothing ->
                     (Nothing, Cmd.none)
-        cmd = Cmd.batch [Cmd.map WorkspaceSelectorMsg wsscmd, Cmd.map ProjectTypeaheadMsg typeaheadCmd]
+        cmd = Cmd.batch [Cmd.map WorkspaceSelectorMsg wsscmd, typeaheadCmd]
     in
         ({ model | workspaceSelector = wss', projectTypeahead = typeahead }, cmd)
 
@@ -96,7 +97,7 @@ view _ model =
         projects =
             case model.projectTypeahead of
                 Just typeahead ->
-                    Html.App.map ProjectTypeaheadMsg <| Typeahead.view typeahead
+                    viewWrapped ProjectTypeaheadMsg typeahead
                 Nothing ->
                     div [] [ input [] [] ]
     in
