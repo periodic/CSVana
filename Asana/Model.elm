@@ -1,4 +1,4 @@
-module Components.Asana.Model exposing (..)
+module Asana.Model exposing (..)
 
 import Date exposing (Date)
 import Json.Decode exposing (..)

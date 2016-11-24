@@ -1,14 +1,14 @@
-module Components.Asana.Form exposing (Props, Model, Msg, component, getSelectedProject)
+module Components.Form exposing (Props, Model, Msg, component, getSelectedProject)
 
 import Html exposing (Html, div, text, input, label, h3)
 import Html.Attributes exposing (class)
 import Html.App
 
+import Asana.Api as Api
+import Asana.Model as Asana
 import Base exposing (..)
-import Components.Asana.Model as Asana
-import Components.Asana.Api as Api
-import Components.Asana.WorkspaceSelector as WorkspaceSelector
-import Components.Asana.Typeahead as Typeahead
+import Components.Typeahead as Typeahead
+import Components.WorkspaceSelector as WorkspaceSelector
 
 type alias Props =
     { token : Api.Token

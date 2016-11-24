@@ -1,7 +1,7 @@
-module WorkspaceSelectorTest exposing (main)
+module Components.WorkspaceSelectorTest exposing (main)
 
-import Components.Asana.Model as Asana
-import Components.Asana.WorkspaceSelector as WorkspaceSelector
+import Asana.Model as Asana
+import Components.WorkspaceSelector as WorkspaceSelector
 import Html exposing (..)
 import Html.App exposing (..)
 

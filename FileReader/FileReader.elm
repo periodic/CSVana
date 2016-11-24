@@ -1,4 +1,4 @@
-port module FileReader exposing (..)
+port module FileReader.FileReader exposing (..)
 
 import Json.Decode exposing (Decoder, at, object3, string, int, value, keyValuePairs, maybe, (:=), map)
 import Html exposing (Attribute)

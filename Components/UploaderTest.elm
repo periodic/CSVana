@@ -4,7 +4,7 @@ import Html.App exposing (program)
 
 import Components.Uploader as Uploader
 import Components.OAuthBoundary as OAuthBoundary
-import Components.Asana.FieldOptions as FieldOptions
+import Components.FieldOptions as FieldOptions
 
 fieldTargets =
     [ FieldOptions.NameTarget
@@ -18,13 +18,12 @@ records =
     , [ "Task 3", "Desc 3", "2016-11-26:00:00.000Z" ]
     ]
 
-props : OAuthBoundary.Props Uploader.Model Uploader.Msg
 props =
     { baseRedirectUrl =  "https://localhost:8000"
     , baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
     , clientId = "192968333753040"
-    , childComponent = \token ->
-        Uploader.component
+    , childSpec = \token ->
+        Uploader.spec
             { token = token
             , projectId = "216637505526884"
             , records = records
@@ -34,4 +33,4 @@ props =
 
 main : Program Never
 main =
-    program <| OAuthBoundary.component props
+    program <| OAuthBoundary.spec props

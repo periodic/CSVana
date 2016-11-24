@@ -1,6 +1,7 @@
 module Base exposing (..)
 
 import Html exposing (Html)
+import Html.App
 
 -- TODO: Bundle with the model, create easy functions.
 -- create : Props -> Spec -> Component
@@ -42,7 +43,6 @@ viewC { spec, state } =
 
 stateC : Component model msg -> model
 stateC { state } = state
-
 
 mapFst : (a -> b) -> (a, c) -> (b, c)
 mapFst f (a, c) =

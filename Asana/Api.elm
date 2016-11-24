@@ -1,11 +1,11 @@
-module Components.Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask, NewTask)
+module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask, NewTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list)
 import Json.Encode as Encode exposing (Value)
 import Task
 
-import Components.Asana.Model as Asana
+import Asana.Model as Asana
 
 apiRoot = "https://app.asana.com/api/1.0"
 

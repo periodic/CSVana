@@ -5,10 +5,10 @@ import Html.App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
+import Asana.Api as Api
+import Asana.Model as Asana
 import Base
-import Components.Asana.FieldOptions as FieldOptions
-import Components.Asana.Model as Asana
-import Components.Asana.Api as Api
+import Components.FieldOptions as FieldOptions
 import Components.Uploader as Uploader
 
 type alias Props =

@@ -1,11 +1,12 @@
 module Components.OAuthBoundary exposing (Component, Spec, Msg, Props, spec, getChild)
 
-import Base
-import Components.Asana.Api exposing (Token)
-import Components.OAuth as OAuth
 import Html.App
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)
+
+import Asana.Api exposing (Token)
+import Base
+import OAuth.OAuth as OAuth
 
 type alias Model model msg =
     { child : Maybe (Base.Component model msg)

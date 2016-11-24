@@ -1,10 +1,11 @@
-module Components.Asana.ApiResource exposing (Component, Spec, Msg, component, isLoaded, isUnloaded, getChild)
+module Components.ApiResource exposing (Component, Spec, Msg, component, isLoaded, isUnloaded, getChild)
 
-import Base exposing (initC, updateC, viewC, subscriptionsC, stateC)
-import Components.Asana.Api exposing (ApiResult)
 import Html exposing (Html)
 import Html.App as App exposing (map)
 import Http
+
+import Asana.Api exposing (ApiResult)
+import Base exposing (initC, updateC, viewC, subscriptionsC, stateC)
 
 type alias Props data model msg =
     { childSpec : data -> Base.Spec model msg

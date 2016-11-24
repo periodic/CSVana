@@ -1,11 +1,12 @@
-module Components.Asana.Typeahead exposing (..)
+module Components.Typeahead exposing (..)
 
-import Components.Asana.Model exposing (..)
-import Components.Asana.Api exposing (ApiResult)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Json.Decode exposing (Decoder, list)
+
+import Asana.Api exposing (ApiResult)
+import Asana.Model exposing (..)
 
 type ResourceStatus a
     = Unloaded

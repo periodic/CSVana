@@ -4,14 +4,14 @@ import Html exposing (Html, div)
 import Html.App
 import Html.Attributes exposing (class)
 
+import Asana.Api as Api
+import Asana.Model as Asana
 import Base
-import Components.Asana.Api as Api
-import Components.Asana.ApiResource as ApiResource
-import Components.Asana.Form as Form
-import Components.Asana.Model as Asana
+import CommonViews
+import Components.ApiResource as ApiResource
 import Components.Csv as Csv
 import Components.FieldMatcher as FieldMatcher
-import Components.Asana.CommonViews as CommonViews
+import Components.Form as Form
 
 type alias Props =
     { token : Api.Token

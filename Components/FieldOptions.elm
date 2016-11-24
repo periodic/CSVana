@@ -1,4 +1,4 @@
-module Components.Asana.FieldOptions exposing (Target(..), Props, Msg, Component, component, setNumFields, getTargets)
+module Components.FieldOptions exposing (Target(..), Props, Msg, Component, component, setNumFields, getTargets)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -7,7 +7,7 @@ import Html.Events as Events
 import Json.Decode as Json
 
 import Base
-import Components.Asana.Model as Asana
+import Asana.Model as Asana
 
 type Target
     = NoTarget

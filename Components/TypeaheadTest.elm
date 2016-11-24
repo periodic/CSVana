@@ -1,11 +1,10 @@
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
+module Components.TypeaheadTest exposing (main)
+
 import Html.App exposing (program)
 
-import Components.Asana.Typeahead as Typeahead
-import Components.Asana.Model as Asana
-import Components.Asana.Api as Api
+import Asana.Api as Api
+import Asana.Model as Asana
+import Components.Typeahead as Typeahead
 
 
 main : Program Never

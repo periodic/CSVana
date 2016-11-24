@@ -1,4 +1,4 @@
-module Components.Asana.CommonViews exposing (..)
+module CommonViews exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -18,4 +18,12 @@ errorView : Http.Error -> Html msg
 errorView error =
     div [ class "ApiError" ]
         [ text <| toString error ]
+
+debugView : (model -> Html msg) -> model -> Html msg
+debugView childView model =
+    div []
+        [ childView model
+        , div [ class "Debug" ]
+            [ text <| toString model ]
+        ]
 

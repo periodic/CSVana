@@ -1,10 +1,11 @@
-module Components.Asana.WorkspaceSelector exposing (Model, Msg, init, update, view, getValue)
+module Components.WorkspaceSelector exposing (Model, Msg, init, update, view, getValue)
 
-import Components.Asana.Model as Asana
-import Json.Decode as Json
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on)
+import Json.Decode as Json
+
+import Asana.Model as Asana
 
 type Msg =
     Selected (Maybe Asana.WorkspaceId)

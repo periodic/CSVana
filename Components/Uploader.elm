@@ -5,10 +5,10 @@ import Html.Attributes exposing (..)
 import List
 import String
 
+import Asana.Api as Api
+import Asana.Model as Asana
 import Base exposing (..)
-import Components.Asana.Model as Asana
-import Components.Asana.Api as Api
-import Components.Asana.FieldOptions as FieldOptions
+import Components.FieldOptions as FieldOptions
 
 type alias Record = List String
 

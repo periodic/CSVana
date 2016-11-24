@@ -1,10 +1,11 @@
 module Components.Csv exposing (Props, Msg, Component, Spec, spec, getRecords, getHeaders, getNumFields)
 
-import Base
-import Csv
-import FileReader
 import Html exposing (..)
 import Html.Attributes exposing (..)
+
+import Base
+import Csv
+import FileReader.FileReader as FileReader
 
 type alias Props =
     {}

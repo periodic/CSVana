@@ -1,6 +1,6 @@
-module OAuthTest exposing (main)
+module OAuth.OAuthTest exposing (main)
 
-import Components.OAuth as OAuth
+import OAuth.OAuth as OAuth
 import Html exposing (..)
 import Html.App exposing (..)
 
