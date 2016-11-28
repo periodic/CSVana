@@ -136,3 +136,49 @@ taskDecoder = object4 Task
     (maybe <| "name" := string)
     (maybe <| "description" := string)
     (maybe <| "due_date" := string)
+
+type alias CustomFieldEnumValueId = Id
+type alias CustomFieldEnumValue =
+    { id : CustomFieldEnumValueId
+    , name : String
+    }
+
+enumValueDecoder : Decoder CustomFieldEnumValue
+enumValueDecoder = resourceDecoder
+
+type CustomFieldData
+    = TextValue String
+    | NumberValue Float
+    | EnumValue CustomFieldEnumValue
+
+customFieldDataDecoder : Decoder CustomFieldData
+customFieldDataDecoder =
+    oneOf
+        [ (map TextValue <| "text_value" := string)
+        , (map NumberValue <| "number_value" := float)
+        , (map EnumValue <| "enum_value" := enumValueDecoder)
+        ]
+
+type alias CustomFieldValue =
+    { id : CustomFieldId
+    , name : String
+    , fieldType: CustomFieldType
+    , value : CustomFieldData
+    }
+
+customFieldValueDecoder : Decoder CustomFieldValue
+customFieldValueDecoder = object4 CustomFieldValue
+    ("id" := map toString int)
+    ("name" := string)
+    ("type" := customFieldTypeDecoder)
+    (customFieldDataDecoder)
+
+type alias NewTask =
+    { name : Maybe String
+    , dueOn : Maybe String
+    , dueAt : Maybe String
+    , description : Maybe String
+    , projects : Maybe (List ProjectId)
+    , customFields : List (CustomFieldId, CustomFieldData)
+    }
+

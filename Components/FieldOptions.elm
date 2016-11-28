@@ -1,4 +1,4 @@
-module Components.FieldOptions exposing (Target(..), Props, Msg, Component, component, setNumFields, getTargets)
+module Components.FieldOptions exposing (Props, Msg, Component, component, setNumFields, getTargets)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -8,13 +8,7 @@ import Json.Decode as Json
 
 import Base
 import Asana.Model as Asana
-
-type Target
-    = NoTarget
-    | NameTarget
-    | DescriptionTarget
-    | DueDateTarget
-    | CustomFieldTarget Asana.CustomField
+import Asana.Target as Target exposing (Target)
 
 type alias Props =
     { customFields : List Asana.CustomField
@@ -55,7 +49,7 @@ setNumFields =
 init : Props -> (Model, Cmd Msg)
 init { numFields } =
     let
-        targets = Array.repeat numFields NoTarget
+        targets = Array.repeat numFields Target.None
     in
         ({ targets = targets }, Cmd.none)
 
@@ -72,7 +66,7 @@ update props msg model =
                         then
                             Array.slice 0 numFields targets
                         else
-                            Array.append targets <| Array.repeat (Array.length targets - numFields) NoTarget
+                            Array.append targets <| Array.repeat (Array.length targets - numFields) Target.None
             in
                 ({ model | targets = targets' }, Cmd.none)
 
@@ -84,12 +78,12 @@ view props {targets} =
 allTargets : List Asana.CustomField -> List Target
 allTargets customFields =
     let
-        customFieldTargets = List.map CustomFieldTarget customFields
+        customFieldTargets = List.map Target.CustomField customFields
         genericTargets =
-            [ NoTarget
-            , NameTarget
-            , DescriptionTarget
-            , DueDateTarget
+            [ Target.None
+            , Target.Name
+            , Target.Description
+            , Target.DueDate
             ]
     in
         genericTargets ++ customFieldTargets
@@ -114,33 +108,33 @@ viewOption selectedTarget target =
 targetString : Target -> String
 targetString target =
     case target of
-        NoTarget ->
+        Target.None ->
             "None"
-        NameTarget ->
+        Target.Name ->
             "Name"
-        DescriptionTarget ->
+        Target.Description ->
             "Description"
-        DueDateTarget ->
+        Target.DueDate ->
             "Due Date"
-        CustomFieldTarget customField ->
+        Target.CustomField customField ->
             "CF: " ++ customField.name
 
 targetFromString : List Asana.CustomField -> String -> Target
 targetFromString customFields str =
     case str of
         "None" ->
-            NoTarget
+            Target.None
         "Name" ->
-            NameTarget
+            Target.Name
         "Description" ->
-            DescriptionTarget
+            Target.Description
         "Due Date" ->
-            DueDateTarget
+            Target.DueDate
         str ->
             List.foldr
                 (\customField target ->
                     if str == "CF: " ++ customField.name
-                        then CustomFieldTarget customField
+                        then Target.CustomField customField
                         else target)
-                NoTarget
+                Target.None
                 customFields

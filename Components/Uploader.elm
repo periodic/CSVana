@@ -1,4 +1,4 @@
-module Components.Uploader exposing (Props, Msg, Component, component)
+module Components.Uploader exposing (Props, Msg, Component, spec)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,8 +7,8 @@ import String
 
 import Asana.Api as Api
 import Asana.Model as Asana
+import Asana.Target as Target
 import Base exposing (..)
-import Components.FieldOptions as FieldOptions
 
 type alias Record = List String
 
@@ -16,7 +16,7 @@ type alias Props =
     { token : Api.Token
     , projectId : Asana.ProjectId
     , records : List Record
-    , fieldTargets : List FieldOptions.Target
+    , fieldTargets : List Target.Target
     }
 
 type alias Model =
@@ -29,8 +29,8 @@ type Msg =
 type alias Spec = Base.Spec Model Msg
 type alias Component = Base.Component Model Msg
 
-component : Props -> Spec
-component props =
+spec : Props -> Spec
+spec props =
     { init = init props
     , update = update props
     , view = view props
@@ -70,28 +70,8 @@ view { records } { recordsProcessed } =
 uploadRecord : Props -> Record -> Cmd Msg
 uploadRecord props record =
     let
-        fieldSpecs = List.map2 (,) record props.fieldTargets
-        newTask = List.foldr addRecordToTask (emptyTask props.projectId) fieldSpecs
+        fieldSpecs = List.map2 (,) props.fieldTargets record
+        newTask = List.foldr (uncurry Target.updateTask) (Target.emptyTask props.projectId) fieldSpecs
     in
         Cmd.map RecordProcessed <| Api.createTask (Debug.log "Creating task" newTask) props.token
-
-addRecordToTask : (String, FieldOptions.Target) -> Api.NewTask -> Api.NewTask
-addRecordToTask (value, target) task =
-    case target of
-        FieldOptions.NameTarget ->
-            { task | name = Just value }
-        FieldOptions.DescriptionTarget ->
-            { task | description = Just value }
-        FieldOptions.DueDateTarget ->
-            { task | dueDate = Just value }
-        _ ->
-            task
-
-emptyTask : Asana.ProjectId -> Api.NewTask
-emptyTask projectId =
-    { name = Nothing
-    , description = Nothing
-    , dueDate = Nothing
-    , projects = Just [projectId]
-    }
 

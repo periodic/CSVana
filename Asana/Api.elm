@@ -1,10 +1,11 @@
-module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask, NewTask)
+module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask)
 
 import Http
-import Json.Decode exposing (Decoder, (:=), list)
+import Json.Decode exposing (Decoder, (:=), list, oneOf)
 import Json.Encode as Encode exposing (Value)
 import Task
 
+import Base
 import Asana.Model as Asana
 
 apiRoot : String
@@ -103,30 +104,28 @@ project projectId =
     in
         apiGetRequest path query Asana.projectDecoder
 
-type alias NewTask =
-    { name : Maybe String
-    , dueDate : Maybe String
-    , description : Maybe String
-    , projects : Maybe (List Asana.ProjectId)
-    }
+encodeCustomFieldData : Asana.CustomFieldData -> Value
+encodeCustomFieldData data =
+    case data of
+        Asana.TextValue text ->
+            Encode.string text
+        Asana.NumberValue num ->
+            Encode.float num
+        Asana.EnumValue enum ->
+            Encode.string enum.id
 
-encodeResource : Asana.Resource -> Value
-encodeResource {id, name} =
-    Encode.object
-        [ ("id", Encode.string id)
-        , ("name", Encode.string name)
-        ]
-
-encodeTask : NewTask -> Value
-encodeTask { name, dueDate, description, projects } =
+encodeTask : Asana.NewTask -> Value
+encodeTask { name, dueAt, dueOn, description, projects, customFields } =
     Encode.object <| List.filterMap identity
         [ Maybe.map (Encode.string >> (,) "name") name
         , Maybe.map (Encode.string >> (,) "notes") description
-        , Maybe.map (Encode.string >> (,) "due_on") dueDate
+        , Maybe.map (Encode.string >> (,) "due_at") dueAt
+        , Maybe.map (Encode.string >> (,) "due_on") dueOn
         , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") projects
+        , List.map (Base.mapSnd encodeCustomFieldData) customFields |> Encode.object |> (,) "custom_fields" |> Just
         ]
 
-createTask : NewTask -> Token -> Cmd (ApiResult Asana.Task)
+createTask : Asana.NewTask -> Token -> Cmd (ApiResult Asana.Task)
 createTask newTask =
     let
         path = "/tasks"
