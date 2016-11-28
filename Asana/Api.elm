@@ -122,7 +122,7 @@ encodeTask { name, dueDate, description, projects } =
     Encode.object <| List.filterMap identity
         [ Maybe.map (Encode.string >> (,) "name") name
         , Maybe.map (Encode.string >> (,) "notes") description
-        , Maybe.map (Encode.string >> (,) "due_date") dueDate
+        , Maybe.map (Encode.string >> (,) "due_on") dueDate
         , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") projects
         ]
 

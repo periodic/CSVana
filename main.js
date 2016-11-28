@@ -9609,7 +9609,7 @@ var _user$project$Asana_Api$encodeTask = function (_p0) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'due_date',
+							'due_on',
 							_elm_lang$core$Json_Encode$string(_p4));
 					},
 					_p1.dueDate),
