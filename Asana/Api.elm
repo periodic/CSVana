@@ -1,4 +1,4 @@
-module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, createTask)
+module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, customField, createTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list, oneOf)
@@ -100,9 +100,15 @@ project : Asana.ProjectId -> Token -> Cmd (ApiResult Asana.Project)
 project projectId =
     let
         path = "/projects/" ++ projectId
-        query = []
     in
-        apiGetRequest path query Asana.projectDecoder
+        apiGetRequest path [] Asana.projectDecoder
+
+customField : Asana.CustomFieldId -> Token -> Cmd (ApiResult Asana.CustomFieldInfo)
+customField customFieldId =
+    let
+        path = "/custom_field/" ++ customFieldId
+    in
+        apiGetRequest path [] Asana.customFieldInfoDecoder
 
 encodeCustomFieldData : Asana.CustomFieldData -> Value
 encodeCustomFieldData data =

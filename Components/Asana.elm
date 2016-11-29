@@ -119,15 +119,22 @@ updateMatcher {token} (model, cmd) =
                     ApiResource.component
                         { childSpec = \project ->
                             let
-                                customFields = List.map .customField project.customFieldSettings
+                                customFieldIds = List.map .customField.id project.customFieldSettings
                                 numFields = List.length headers
                             in
-                                FieldMatcher.component
-                                    { token = token
-                                    , projectId = project.id
-                                    , csvHeaders = headers
-                                    , csvRecords = records
-                                    , customFields = customFields
+                                ApiResource.component 
+                                    { childSpec = \customFieldInfos ->
+                                        FieldMatcher.component
+                                            { token = token
+                                            , projectId = project.id
+                                            , csvHeaders = headers
+                                            , csvRecords = records
+                                            , customFields = customFieldInfos
+                                            }
+                                    , fetch = Cmd.batch <| List.map (Api.customField) customFieldIds
+                                    , unloadedView = CommonViews.unloadedView
+                                    , loadingView = CommonViews.loadingIndicator
+                                    , errorView = CommonViews.errorView
                                     }
                         , fetch = Api.project project.id token
                         , unloadedView = CommonViews.unloadedView

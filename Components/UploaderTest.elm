@@ -13,9 +13,12 @@ fieldTargets =
     , Target.Description
     , Target.DueDate
     , Target.DueTime
-    , Target.CustomField { id = "216726495168048", fieldType = Asana.CustomText, name = "String" }
-    , Target.CustomField { id = "216726495168054", fieldType = Asana.CustomNumber, name = "Drew's Number" }
-    , Target.CustomField { id = "216726495168050", fieldType = Asana.CustomEnum, name = "Drew's Enum" }
+    , Target.CustomField <| Asana.CustomTextFieldInfo "216726495168048" "String"
+    , Target.CustomField <| Asana.CustomNumberFieldInfo "216726495168054" "Drew's Number" 2
+    , Target.CustomField <| Asana.CustomEnumFieldInfo "216726495168050" "Drew's Enum"
+        [ { id = "216726495168051", name = "Option1" }
+        , { id = "216726495168052", name = "Option2" }
+        ]
     ]
 
 records : List (List String)

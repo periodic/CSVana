@@ -94,7 +94,7 @@ type CustomFieldType
     = CustomText
     | CustomNumber
     | CustomEnum
-    | CustomUnknown
+    | CustomUnknown String
 
 customFieldTypeDecoder : Decoder CustomFieldType
 customFieldTypeDecoder = 
@@ -106,8 +106,18 @@ customFieldTypeDecoder =
             "enum" ->
                 CustomEnum
             _ ->
-                CustomUnknown)
+                CustomUnknown str)
         string
+
+type alias EnumOption =
+    { id : Id
+    , name : String
+    -- , enabled : Bool
+    -- , color : String
+    }
+
+enumOptionDecoder : Decoder EnumOption
+enumOptionDecoder = resourceDecoder
 
 type alias CustomFieldId = Id
 type alias CustomField =
@@ -121,6 +131,34 @@ customFieldDecoder = object3 CustomField
     ("id" := map toString int)
     ("type" := customFieldTypeDecoder)
     ("name" := string)
+
+type alias CustomFieldInfoId = Id
+type CustomFieldInfo
+    = CustomTextFieldInfo Id String
+    | CustomNumberFieldInfo Id String Int
+    | CustomEnumFieldInfo Id String (List EnumOption)
+
+customFieldInfoDecoder : Decoder CustomFieldInfo
+customFieldInfoDecoder =
+    ("type" := customFieldTypeDecoder)
+    |> flip andThen (\fieldType ->
+        case fieldType of
+            CustomText ->
+                object2 CustomTextFieldInfo
+                    ("id" := map toString int)
+                    ("name" := string)
+            CustomNumber ->
+                object3 CustomNumberFieldInfo
+                    ("id" := map toString int)
+                    ("name" := string)
+                    ("precision" := int)
+            CustomEnum ->
+                object3 CustomEnumFieldInfo
+                    ("id" := map toString int)
+                    ("name" := string)
+                    ("enum_options" := list enumOptionDecoder)
+            CustomUnknown str ->
+                fail <| "Got an unknown custom field type '" ++ str ++ "'.")
 
 type alias TaskId = Id
 type alias Task =

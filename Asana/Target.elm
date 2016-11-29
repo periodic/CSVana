@@ -2,7 +2,6 @@ module Asana.Target exposing (Target(..), emptyTask, updateTask)
 
 import Date exposing (Date)
 import Date.Extra.Format as Format
-import Date.Extra.Create as DateCreate
 import Date.Extra.Config.Config_en_us as En_us
 import String
 
@@ -14,7 +13,7 @@ type Target
     | Description
     | DueDate
     | DueTime
-    | CustomField Asana.CustomField
+    | CustomField Asana.CustomFieldInfo
 
 emptyTask : Asana.ProjectId -> Asana.NewTask
 emptyTask projectId =
@@ -36,42 +35,47 @@ updateTask target value task =
         Description ->
             { task | description = Just value }
         DueDate ->
-            case Date.fromString (Debug.log "============= Raw date" value) of
+            case Date.fromString value of
                 Ok date ->
-                    { task | dueOn = Just (Debug.log "Formatted due_on" <| dateToDueOn date) }
+                    { task | dueOn = Just <| dateToDueOn date }
                 Err msg ->
                     -- TODO: Accumulate errors.
                     Debug.log msg task
         DueTime ->
-            case Date.fromString (Debug.log "============= Raw date+time" value) of
+            case Date.fromString value of
                 Ok date ->
-                    { task | dueAt = Just (Debug.log "Formatted due_at" <| dateToDueAt date) }
+                    { task | dueAt = Just <| dateToDueAt date }
                 Err msg ->
                     -- TODO: Accumulate errors.
                     Debug.log msg task
         CustomField field ->
-            case field.fieldType of
-                Asana.CustomText ->
+            case field of
+                Asana.CustomTextFieldInfo id _ ->
                     let
-                        newField = (field.id, Asana.TextValue value)
+                        newField = (id, Asana.TextValue value)
                         customFields = newField :: task.customFields
                     in
                         { task | customFields = customFields }
-                Asana.CustomNumber ->
+                Asana.CustomNumberFieldInfo id _ _ ->
                     case String.toFloat value of
                         Ok num ->
                             let
-                                newField = (field.id, Asana.NumberValue num)
+                                newField = (id, Asana.NumberValue num)
                                 customFields = newField :: task.customFields
                             in
                                 { task | customFields = customFields }
                         Err msg ->
                             -- TODO: Accumulate errors.
                             Debug.log msg task
-                Asana.CustomEnum ->
-                    task
-                Asana.CustomUnknown ->
-                    Debug.log "Unknown custom field type used" task
+                Asana.CustomEnumFieldInfo id _ options ->
+                    let
+                        matchingOptions = List.filter (.name >> (==) value) options
+                    in
+                        case List.head (Debug.log ("Matching options for '" ++ value ++ "'") matchingOptions) of
+                            Just option ->
+                                { task | customFields = (id, Asana.EnumValue option) :: task.customFields }
+                            Nothing ->
+                                task
 
 dateToDueOn : Date -> String
 dateToDueOn date =
@@ -80,14 +84,4 @@ dateToDueOn date =
 dateToDueAt : Date -> String
 dateToDueAt date =
     Format.format En_us.config Format.isoOffsetFormat date
-
-
-hasTime : Date -> Bool
-hasTime date =
-    Debug.log ("Checking if date has time: " ++ toString date ++ " -> ") <|
-    let 
-        tz = Debug.log "timezone" <| DateCreate.getTimezoneOffset date
-        time = (Date.hour date * 60 + Date.minute date - tz) % (24 * 60 * 60)
-    in
-        (Debug.log "Parsed time" (time, Date.second date, Date.millisecond date)) /= (0, 0, 0)
 
