@@ -73,5 +73,5 @@ uploadRecord props record =
         fieldSpecs = List.map2 (,) props.fieldTargets record
         newTask = List.foldr (uncurry Target.updateTask) (Target.emptyTask props.projectId) fieldSpecs
     in
-        Cmd.map RecordProcessed <| Api.createTask (Debug.log "Creating task" newTask) props.token
+        Cmd.map RecordProcessed <| Api.createTask newTask props.token
 

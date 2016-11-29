@@ -11106,7 +11106,7 @@ var _user$project$Asana_Target$updateTask = F3(
 										return _.name;
 									}(_p5));
 							},
-							_p3._2);
+							A2(_elm_lang$core$Debug$log, 'All options', _p3._2));
 						var _p6 = _elm_lang$core$List$head(
 							A2(
 								_elm_lang$core$Debug$log,
@@ -11748,7 +11748,7 @@ var _user$project$Components_FieldOptions$viewOption = F2(
 	});
 var _user$project$Components_FieldOptions$allTargets = function (customFields) {
 	var genericTargets = _elm_lang$core$Native_List.fromArray(
-		[_user$project$Asana_Target$None, _user$project$Asana_Target$Name, _user$project$Asana_Target$Description, _user$project$Asana_Target$DueDate]);
+		[_user$project$Asana_Target$None, _user$project$Asana_Target$Name, _user$project$Asana_Target$Description, _user$project$Asana_Target$DueDate, _user$project$Asana_Target$DueTime]);
 	var customFieldTargets = A2(_elm_lang$core$List$map, _user$project$Asana_Target$CustomField, customFields);
 	return A2(_elm_lang$core$Basics_ops['++'], genericTargets, customFieldTargets);
 };

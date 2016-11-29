@@ -90,7 +90,7 @@ processMessage props msg model =
                 project = getSelectedProject model
                 project' = getSelectedProject model'
             in
-                if (Debug.log "Old Project" project) /= (Debug.log "New project" project')
+                if project /= project'
                     then updateMatcher props (model', cmd)
                     else (model', cmd)
         CsvMsg msg' ->
@@ -101,7 +101,7 @@ processMessage props msg model =
                 headers = Csv.getHeaders model.csv
                 headers' = Csv.getHeaders csv'
             in
-                if (Debug.log "Old headers" headers) /= (Debug.log "New headers" headers')
+                if headers /= headers'
                     then updateMatcher props (model', cmd)
                     else (model', cmd)
         FieldMatcherMsg msg' ->

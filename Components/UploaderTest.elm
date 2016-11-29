@@ -16,8 +16,8 @@ fieldTargets =
     , Target.CustomField <| Asana.CustomTextFieldInfo "216726495168048" "String"
     , Target.CustomField <| Asana.CustomNumberFieldInfo "216726495168054" "Drew's Number" 2
     , Target.CustomField <| Asana.CustomEnumFieldInfo "216726495168050" "Drew's Enum"
-        [ { id = "216726495168051", name = "Option1" }
-        , { id = "216726495168052", name = "Option2" }
+        [ { id = "216726495168051", name = "Option 1" }
+        , { id = "216726495168052", name = "Option 2" }
         ]
     ]
 
@@ -29,7 +29,7 @@ records =
       , ""
       , "String1"
       , "1"  -- 1.00
-      , "Option1"
+      , "Option 1"
       ]
     , [ "Task 2"
       , "Desc 2"
@@ -37,7 +37,7 @@ records =
       , ""
       , "String2"
       , "2.00" -- 2.00
-      , "Option2"
+      , "Option 2"
       ]
     , [ "Task 3"
       , "Desc 3"

@@ -69,7 +69,7 @@ updateTask target value task =
                             Debug.log msg task
                 Asana.CustomEnumFieldInfo id _ options ->
                     let
-                        matchingOptions = List.filter (.name >> (==) value) options
+                        matchingOptions = List.filter (.name >> (==) value) (Debug.log "All options" options)
                     in
                         case List.head (Debug.log ("Matching options for '" ++ value ++ "'") matchingOptions) of
                             Just option ->
