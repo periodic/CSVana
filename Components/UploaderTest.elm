@@ -14,16 +14,60 @@ fieldTargets =
     , Target.DueDate
     , Target.DueTime
     , Target.CustomField { id = "216726495168048", fieldType = Asana.CustomText, name = "String" }
+    , Target.CustomField { id = "216726495168054", fieldType = Asana.CustomNumber, name = "Drew's Number" }
+    , Target.CustomField { id = "216726495168050", fieldType = Asana.CustomEnum, name = "Drew's Enum" }
     ]
 
 records : List (List String)
 records =
-    [ [ "Task 1 - Due on 11/24", "Desc 1", "2016-11-24T08:00:00Z", "", "CS1" ] -- Just date
-    , [ "Task 2 - Due on 11/24", "Desc 2", "2016-11-24", "", "CS2" ] -- Just date
-    , [ "Task 3 - Due on 11/24", "Desc 3", "11/24/2016 16:00:00", "", "CS3" ] -- Just date
-    , [ "Task 4 - Due on 11/24 12a", "Desc 4", "", "2016-11-24", "CS4" ] -- Date + Time
-    , [ "Task 5 - Due on 11/24 12p", "Desc 5", "", "2016-11-24T08:00:00Z", "CS5" ] -- Date + Time
-    , [ "Task 6 - Due on 11/24 12p", "Desc 6", "", "11/24/2016 12:00:00", "CS6" ] -- Date + Time
+    [ [ "Task 1"
+      , "Desc 1"
+      , "2016-11-24T08:00:00Z" -- Due 11/24
+      , ""
+      , "String1"
+      , "1"  -- 1.00
+      , "Option1"
+      ]
+    , [ "Task 2"
+      , "Desc 2"
+      , "2016-11-24" -- Due 11/24
+      , ""
+      , "String2"
+      , "2.00" -- 2.00
+      , "Option2"
+      ]
+    , [ "Task 3"
+      , "Desc 3"
+      , "11/24/2016 16:00:00" -- Due 11/24
+      , ""
+      , "String3"
+      , "3.0001" -- 3.00
+      , "Invalid"
+      ]
+    , [ "Task 4"
+      , "Desc 4"
+      , ""
+      , "2016-11-24" -- Due 11/24 12a
+      , "String4"
+      , "-4" -- -4.00
+      , ""
+      ]
+    , [ "Task 5"
+      , "Desc 5"
+      , ""
+      , "2016-11-24T08:00:00Z" -- Due 11/24 12a
+      , "String5"
+      , "" -- null
+      , ""
+      ]
+    , [ "Task 6"
+      , "Desc 6"
+      , ""
+      , "11/24/2016 12:00:00" -- Due 11/24 12p
+      , "String6"
+      , "1e5" -- null
+      , ""
+      ]
     ]
 
 main : Program Never

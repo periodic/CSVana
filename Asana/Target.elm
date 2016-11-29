@@ -4,6 +4,8 @@ import Date exposing (Date)
 import Date.Extra.Format as Format
 import Date.Extra.Create as DateCreate
 import Date.Extra.Config.Config_en_us as En_us
+import String
+
 import Asana.Model as Asana
 
 type Target
@@ -35,16 +37,18 @@ updateTask target value task =
             { task | description = Just value }
         DueDate ->
             case Date.fromString (Debug.log "============= Raw date" value) of
-                Err msg ->
-                    Debug.log ("Unable to parse date: " ++ msg) task
                 Ok date ->
                     { task | dueOn = Just (Debug.log "Formatted due_on" <| dateToDueOn date) }
+                Err msg ->
+                    -- TODO: Accumulate errors.
+                    Debug.log msg task
         DueTime ->
             case Date.fromString (Debug.log "============= Raw date+time" value) of
-                Err msg ->
-                    Debug.log ("Unable to parse date: " ++ msg) task
                 Ok date ->
                     { task | dueAt = Just (Debug.log "Formatted due_at" <| dateToDueAt date) }
+                Err msg ->
+                    -- TODO: Accumulate errors.
+                    Debug.log msg task
         CustomField field ->
             case field.fieldType of
                 Asana.CustomText ->
@@ -54,11 +58,20 @@ updateTask target value task =
                     in
                         { task | customFields = customFields }
                 Asana.CustomNumber ->
-                    task
+                    case String.toFloat value of
+                        Ok num ->
+                            let
+                                newField = (field.id, Asana.NumberValue num)
+                                customFields = newField :: task.customFields
+                            in
+                                { task | customFields = customFields }
+                        Err msg ->
+                            -- TODO: Accumulate errors.
+                            Debug.log msg task
                 Asana.CustomEnum ->
                     task
                 Asana.CustomUnknown ->
-                    task
+                    Debug.log "Unknown custom field type used" task
 
 dateToDueOn : Date -> String
 dateToDueOn date =
