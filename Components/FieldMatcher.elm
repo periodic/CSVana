@@ -16,7 +16,7 @@ type alias Props =
     , projectId : Asana.ProjectId
     , csvHeaders : List String
     , csvRecords : List (List String)
-    , customFields : List Asana.CustomField
+    , customFields : List Asana.CustomFieldInfo
     }
 
 type alias Model =
@@ -77,7 +77,7 @@ update props msg model =
                     (model, Cmd.none)
         StartUpload ->
             let
-                (uploader, uploaderCmd) = Base.initC <| Uploader.component
+                (uploader, uploaderCmd) = Base.initC <| Uploader.spec
                     { token = props.token
                     , projectId = props.projectId
                     , records = props.csvRecords

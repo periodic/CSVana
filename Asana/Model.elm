@@ -138,6 +138,22 @@ type CustomFieldInfo
     | CustomNumberFieldInfo Id String Int
     | CustomEnumFieldInfo Id String (List EnumOption)
 
+customFieldInfoToCustomField : CustomFieldInfo -> CustomField
+customFieldInfoToCustomField info =
+    case info of
+        CustomTextFieldInfo id name ->
+            { id = id, fieldType = CustomText, name = name}
+        CustomNumberFieldInfo id name _ ->
+            { id = id, fieldType = CustomNumber, name = name}
+        CustomEnumFieldInfo id name _ ->
+            { id = id, fieldType = CustomEnum, name = name}
+
+customFieldId : CustomFieldInfo -> Id
+customFieldId = customFieldInfoToCustomField >> .id
+
+customFieldName : CustomFieldInfo -> String
+customFieldName = customFieldInfoToCustomField >> .name
+
 customFieldInfoDecoder : Decoder CustomFieldInfo
 customFieldInfoDecoder =
     ("type" := customFieldTypeDecoder)

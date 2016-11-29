@@ -2709,6 +2709,39 @@ var _elm_lang$core$Char$isHexDigit = function ($char) {
 		$char));
 };
 
+//import Result //
+
+var _elm_lang$core$Native_Date = function() {
+
+function fromString(str)
+{
+	var date = new Date(str);
+	return isNaN(date.getTime())
+		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
+		: _elm_lang$core$Result$Ok(date);
+}
+
+var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthTable =
+	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+return {
+	fromString: fromString,
+	year: function(d) { return d.getFullYear(); },
+	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
+	day: function(d) { return d.getDate(); },
+	hour: function(d) { return d.getHours(); },
+	minute: function(d) { return d.getMinutes(); },
+	second: function(d) { return d.getSeconds(); },
+	millisecond: function(d) { return d.getMilliseconds(); },
+	toTime: function(d) { return d.getTime(); },
+	fromTime: function(t) { return new Date(t); },
+	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
+};
+
+}();
 //import Native.Utils //
 
 var _elm_lang$core$Native_Scheduler = function() {
@@ -5526,6 +5559,39 @@ var _elm_lang$core$Time$subMap = F2(
 			});
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+
+var _elm_lang$core$Date$millisecond = _elm_lang$core$Native_Date.millisecond;
+var _elm_lang$core$Date$second = _elm_lang$core$Native_Date.second;
+var _elm_lang$core$Date$minute = _elm_lang$core$Native_Date.minute;
+var _elm_lang$core$Date$hour = _elm_lang$core$Native_Date.hour;
+var _elm_lang$core$Date$dayOfWeek = _elm_lang$core$Native_Date.dayOfWeek;
+var _elm_lang$core$Date$day = _elm_lang$core$Native_Date.day;
+var _elm_lang$core$Date$month = _elm_lang$core$Native_Date.month;
+var _elm_lang$core$Date$year = _elm_lang$core$Native_Date.year;
+var _elm_lang$core$Date$fromTime = _elm_lang$core$Native_Date.fromTime;
+var _elm_lang$core$Date$toTime = _elm_lang$core$Native_Date.toTime;
+var _elm_lang$core$Date$fromString = _elm_lang$core$Native_Date.fromString;
+var _elm_lang$core$Date$now = A2(_elm_lang$core$Task$map, _elm_lang$core$Date$fromTime, _elm_lang$core$Time$now);
+var _elm_lang$core$Date$Date = {ctor: 'Date'};
+var _elm_lang$core$Date$Sun = {ctor: 'Sun'};
+var _elm_lang$core$Date$Sat = {ctor: 'Sat'};
+var _elm_lang$core$Date$Fri = {ctor: 'Fri'};
+var _elm_lang$core$Date$Thu = {ctor: 'Thu'};
+var _elm_lang$core$Date$Wed = {ctor: 'Wed'};
+var _elm_lang$core$Date$Tue = {ctor: 'Tue'};
+var _elm_lang$core$Date$Mon = {ctor: 'Mon'};
+var _elm_lang$core$Date$Dec = {ctor: 'Dec'};
+var _elm_lang$core$Date$Nov = {ctor: 'Nov'};
+var _elm_lang$core$Date$Oct = {ctor: 'Oct'};
+var _elm_lang$core$Date$Sep = {ctor: 'Sep'};
+var _elm_lang$core$Date$Aug = {ctor: 'Aug'};
+var _elm_lang$core$Date$Jul = {ctor: 'Jul'};
+var _elm_lang$core$Date$Jun = {ctor: 'Jun'};
+var _elm_lang$core$Date$May = {ctor: 'May'};
+var _elm_lang$core$Date$Apr = {ctor: 'Apr'};
+var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
+var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
+var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
 
 var _elm_lang$core$Debug$crash = _elm_lang$core$Native_Debug.crash;
 var _elm_lang$core$Debug$log = _elm_lang$core$Native_Debug.log;
@@ -9428,6 +9494,1017 @@ var _lovasoa$elm_csv$Csv$Csv = F2(
 		return {headers: a, records: b};
 	});
 
+var _rluiten$elm_date_extra$Date_Extra_Core$prevMonth = function (month) {
+	var _p0 = month;
+	switch (_p0.ctor) {
+		case 'Jan':
+			return _elm_lang$core$Date$Dec;
+		case 'Feb':
+			return _elm_lang$core$Date$Jan;
+		case 'Mar':
+			return _elm_lang$core$Date$Feb;
+		case 'Apr':
+			return _elm_lang$core$Date$Mar;
+		case 'May':
+			return _elm_lang$core$Date$Apr;
+		case 'Jun':
+			return _elm_lang$core$Date$May;
+		case 'Jul':
+			return _elm_lang$core$Date$Jun;
+		case 'Aug':
+			return _elm_lang$core$Date$Jul;
+		case 'Sep':
+			return _elm_lang$core$Date$Aug;
+		case 'Oct':
+			return _elm_lang$core$Date$Sep;
+		case 'Nov':
+			return _elm_lang$core$Date$Oct;
+		default:
+			return _elm_lang$core$Date$Nov;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$nextMonth = function (month) {
+	var _p1 = month;
+	switch (_p1.ctor) {
+		case 'Jan':
+			return _elm_lang$core$Date$Feb;
+		case 'Feb':
+			return _elm_lang$core$Date$Mar;
+		case 'Mar':
+			return _elm_lang$core$Date$Apr;
+		case 'Apr':
+			return _elm_lang$core$Date$May;
+		case 'May':
+			return _elm_lang$core$Date$Jun;
+		case 'Jun':
+			return _elm_lang$core$Date$Jul;
+		case 'Jul':
+			return _elm_lang$core$Date$Aug;
+		case 'Aug':
+			return _elm_lang$core$Date$Sep;
+		case 'Sep':
+			return _elm_lang$core$Date$Oct;
+		case 'Oct':
+			return _elm_lang$core$Date$Nov;
+		case 'Nov':
+			return _elm_lang$core$Date$Dec;
+		default:
+			return _elm_lang$core$Date$Jan;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$intToMonth = function (month) {
+	return (_elm_lang$core$Native_Utils.cmp(month, 1) < 1) ? _elm_lang$core$Date$Jan : (_elm_lang$core$Native_Utils.eq(month, 2) ? _elm_lang$core$Date$Feb : (_elm_lang$core$Native_Utils.eq(month, 3) ? _elm_lang$core$Date$Mar : (_elm_lang$core$Native_Utils.eq(month, 4) ? _elm_lang$core$Date$Apr : (_elm_lang$core$Native_Utils.eq(month, 5) ? _elm_lang$core$Date$May : (_elm_lang$core$Native_Utils.eq(month, 6) ? _elm_lang$core$Date$Jun : (_elm_lang$core$Native_Utils.eq(month, 7) ? _elm_lang$core$Date$Jul : (_elm_lang$core$Native_Utils.eq(month, 8) ? _elm_lang$core$Date$Aug : (_elm_lang$core$Native_Utils.eq(month, 9) ? _elm_lang$core$Date$Sep : (_elm_lang$core$Native_Utils.eq(month, 10) ? _elm_lang$core$Date$Oct : (_elm_lang$core$Native_Utils.eq(month, 11) ? _elm_lang$core$Date$Nov : _elm_lang$core$Date$Dec))))))))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$monthToInt = function (month) {
+	var _p2 = month;
+	switch (_p2.ctor) {
+		case 'Jan':
+			return 1;
+		case 'Feb':
+			return 2;
+		case 'Mar':
+			return 3;
+		case 'Apr':
+			return 4;
+		case 'May':
+			return 5;
+		case 'Jun':
+			return 6;
+		case 'Jul':
+			return 7;
+		case 'Aug':
+			return 8;
+		case 'Sep':
+			return 9;
+		case 'Oct':
+			return 10;
+		case 'Nov':
+			return 11;
+		default:
+			return 12;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear = function (year) {
+	return (_elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 4),
+		0) && (!_elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 100),
+		0))) || _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 400),
+		0);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYearDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(
+		_elm_lang$core$Date$year(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$yearToDayLength = function (year) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 366 : 365;
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonth = F2(
+	function (year, month) {
+		var _p3 = month;
+		switch (_p3.ctor) {
+			case 'Jan':
+				return 31;
+			case 'Feb':
+				return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 29 : 28;
+			case 'Mar':
+				return 31;
+			case 'Apr':
+				return 30;
+			case 'May':
+				return 31;
+			case 'Jun':
+				return 30;
+			case 'Jul':
+				return 31;
+			case 'Aug':
+				return 31;
+			case 'Sep':
+				return 30;
+			case 'Oct':
+				return 31;
+			case 'Nov':
+				return 30;
+			default:
+				return 31;
+		}
+	});
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate = function (date) {
+	return A2(
+		_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth,
+		_elm_lang$core$Date$year(date),
+		_elm_lang$core$Date$month(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$monthList = _elm_lang$core$Native_List.fromArray(
+	[_elm_lang$core$Date$Jan, _elm_lang$core$Date$Feb, _elm_lang$core$Date$Mar, _elm_lang$core$Date$Apr, _elm_lang$core$Date$May, _elm_lang$core$Date$Jun, _elm_lang$core$Date$Jul, _elm_lang$core$Date$Aug, _elm_lang$core$Date$Sep, _elm_lang$core$Date$Oct, _elm_lang$core$Date$Nov, _elm_lang$core$Date$Dec]);
+var _rluiten$elm_date_extra$Date_Extra_Core$toTime = function (_p4) {
+	return _elm_lang$core$Basics$floor(
+		_elm_lang$core$Date$toTime(_p4));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$fromTime = function (_p5) {
+	return _elm_lang$core$Date$fromTime(
+		_elm_lang$core$Basics$toFloat(_p5));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$prevDay = function (day) {
+	var _p6 = day;
+	switch (_p6.ctor) {
+		case 'Mon':
+			return _elm_lang$core$Date$Sun;
+		case 'Tue':
+			return _elm_lang$core$Date$Mon;
+		case 'Wed':
+			return _elm_lang$core$Date$Tue;
+		case 'Thu':
+			return _elm_lang$core$Date$Wed;
+		case 'Fri':
+			return _elm_lang$core$Date$Thu;
+		case 'Sat':
+			return _elm_lang$core$Date$Fri;
+		default:
+			return _elm_lang$core$Date$Sat;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$nextDay = function (day) {
+	var _p7 = day;
+	switch (_p7.ctor) {
+		case 'Mon':
+			return _elm_lang$core$Date$Tue;
+		case 'Tue':
+			return _elm_lang$core$Date$Wed;
+		case 'Wed':
+			return _elm_lang$core$Date$Thu;
+		case 'Thu':
+			return _elm_lang$core$Date$Fri;
+		case 'Fri':
+			return _elm_lang$core$Date$Sat;
+		case 'Sat':
+			return _elm_lang$core$Date$Sun;
+		default:
+			return _elm_lang$core$Date$Mon;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek = function (day) {
+	var _p8 = day;
+	switch (_p8.ctor) {
+		case 'Mon':
+			return 1;
+		case 'Tue':
+			return 2;
+		case 'Wed':
+			return 3;
+		case 'Thu':
+			return 4;
+		case 'Fri':
+			return 5;
+		case 'Sat':
+			return 6;
+		default:
+			return 7;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysBackToStartOfWeek = F2(
+	function (dateDay, startOfWeekDay) {
+		var startOfWeekDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(startOfWeekDay);
+		var dateDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(dateDay);
+		return (_elm_lang$core$Native_Utils.cmp(dateDayIndex, startOfWeekDayIndex) < 0) ? ((7 + dateDayIndex) - startOfWeekDayIndex) : (dateDayIndex - startOfWeekDayIndex);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond = _elm_lang$core$Basics$floor(_elm_lang$core$Time$millisecond);
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * 1000;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute = _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * 60;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * 60;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksADay = _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * 24;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek = _rluiten$elm_date_extra$Date_Extra_Core$ticksADay * 7;
+var _rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks = function (date) {
+	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
+	var day = _elm_lang$core$Date$day(date);
+	return dateTicks + ((1 - day) * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date) - _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInPrevMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$toFirstOfMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks = function (date) {
+	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
+	var day = _elm_lang$core$Date$day(date);
+	var month = _elm_lang$core$Date$month(date);
+	var year = _elm_lang$core$Date$year(date);
+	var daysInMonthVal = A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, year, month);
+	var addDays = daysInMonthVal - day;
+	return dateTicks + (addDays * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date) + _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInNextMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$epochDateStr = '1970-01-01T00:00:00Z';
+
+var _rluiten$elm_date_extra$Date_Extra_Config$Config = F2(
+	function (a, b) {
+		return {i18n: a, format: b};
+	});
+
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix = F2(
+	function (pad, day) {
+		var value = function () {
+			var _p0 = day;
+			switch (_p0) {
+				case 1:
+					return '1st';
+				case 21:
+					return '21st';
+				case 2:
+					return '2nd';
+				case 22:
+					return '22nd';
+				case 3:
+					return '3rd';
+				case 23:
+					return '23rd';
+				case 31:
+					return '31st';
+				default:
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(day),
+						'th');
+			}
+		}();
+		return pad ? A3(
+			_elm_lang$core$String$padLeft,
+			4,
+			_elm_lang$core$Native_Utils.chr(' '),
+			value) : value;
+	});
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName = function (month) {
+	var _p1 = month;
+	switch (_p1.ctor) {
+		case 'Jan':
+			return 'January';
+		case 'Feb':
+			return 'February';
+		case 'Mar':
+			return 'March';
+		case 'Apr':
+			return 'April';
+		case 'May':
+			return 'May';
+		case 'Jun':
+			return 'June';
+		case 'Jul':
+			return 'July';
+		case 'Aug':
+			return 'August';
+		case 'Sep':
+			return 'September';
+		case 'Oct':
+			return 'October';
+		case 'Nov':
+			return 'November';
+		default:
+			return 'December';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort = function (month) {
+	var _p2 = month;
+	switch (_p2.ctor) {
+		case 'Jan':
+			return 'Jan';
+		case 'Feb':
+			return 'Feb';
+		case 'Mar':
+			return 'Mar';
+		case 'Apr':
+			return 'Apr';
+		case 'May':
+			return 'May';
+		case 'Jun':
+			return 'Jun';
+		case 'Jul':
+			return 'Jul';
+		case 'Aug':
+			return 'Aug';
+		case 'Sep':
+			return 'Sep';
+		case 'Oct':
+			return 'Oct';
+		case 'Nov':
+			return 'Nov';
+		default:
+			return 'Dec';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName = function (day) {
+	var _p3 = day;
+	switch (_p3.ctor) {
+		case 'Mon':
+			return 'Monday';
+		case 'Tue':
+			return 'Tuesday';
+		case 'Wed':
+			return 'Wednesday';
+		case 'Thu':
+			return 'Thursday';
+		case 'Fri':
+			return 'Friday';
+		case 'Sat':
+			return 'Saturday';
+		default:
+			return 'Sunday';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort = function (day) {
+	var _p4 = day;
+	switch (_p4.ctor) {
+		case 'Mon':
+			return 'Mon';
+		case 'Tue':
+			return 'Tue';
+		case 'Wed':
+			return 'Wed';
+		case 'Thu':
+			return 'Thu';
+		case 'Fri':
+			return 'Fri';
+		case 'Sat':
+			return 'Sat';
+		default:
+			return 'Sun';
+	}
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config = {
+	i18n: {dayShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort, dayName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName, monthShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort, monthName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName, dayOfMonthWithSuffix: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix},
+	format: {date: '%-m/%-d/%Y', longDate: '%A, %B %d, %Y', time: '%-H:%M %p', longTime: '%-H:%M:%S %p', dateTime: '%-m/%-d/%Y %-I:%M %p', firstDayOfWeek: _elm_lang$core$Date$Sun}
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Period$diff = F2(
+	function (date1, date2) {
+		var millisecondDiff = _elm_lang$core$Date$millisecond(date1) - _elm_lang$core$Date$millisecond(date2);
+		var secondDiff = _elm_lang$core$Date$second(date1) - _elm_lang$core$Date$second(date2);
+		var minuteDiff = _elm_lang$core$Date$minute(date1) - _elm_lang$core$Date$minute(date2);
+		var hourDiff = _elm_lang$core$Date$hour(date1) - _elm_lang$core$Date$hour(date2);
+		var ticksDiff = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date1) - _rluiten$elm_date_extra$Date_Extra_Core$toTime(date2);
+		var ticksDayDiff = (((ticksDiff - (hourDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) - (minuteDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute)) - (secondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond)) - (millisecondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond);
+		var onlyDaysDiff = (ticksDayDiff / _rluiten$elm_date_extra$Date_Extra_Core$ticksADay) | 0;
+		var _p0 = function () {
+			if (_elm_lang$core$Native_Utils.cmp(onlyDaysDiff, 0) < 0) {
+				var absDayDiff = _elm_lang$core$Basics$abs(onlyDaysDiff);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Basics$negate((absDayDiff / 7) | 0),
+					_1: _elm_lang$core$Basics$negate(
+						A2(_elm_lang$core$Basics_ops['%'], absDayDiff, 7))
+				};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: (onlyDaysDiff / 7) | 0,
+					_1: A2(_elm_lang$core$Basics_ops['%'], onlyDaysDiff, 7)
+				};
+			}
+		}();
+		var weekDiff = _p0._0;
+		var dayDiff = _p0._1;
+		return {week: weekDiff, day: dayDiff, hour: hourDiff, minute: minuteDiff, second: secondDiff, millisecond: millisecondDiff};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit = F3(
+	function (unit, addend, date) {
+		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+			A2(
+				F2(
+					function (x, y) {
+						return x + y;
+					}),
+				addend * unit,
+				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$toTicks = function (period) {
+	var _p1 = period;
+	switch (_p1.ctor) {
+		case 'Millisecond':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond;
+		case 'Second':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond;
+		case 'Minute':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute;
+		case 'Hour':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour;
+		case 'Day':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksADay;
+		case 'Week':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek;
+		default:
+			var _p2 = _p1._0;
+			return (((((_rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * _p2.millisecond) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * _p2.second)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * _p2.minute)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * _p2.hour)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksADay * _p2.day)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek * _p2.week);
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$add = function (period) {
+	return _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit(
+		_rluiten$elm_date_extra$Date_Extra_Period$toTicks(period));
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$zeroDelta = {week: 0, day: 0, hour: 0, minute: 0, second: 0, millisecond: 0};
+var _rluiten$elm_date_extra$Date_Extra_Period$DeltaRecord = F6(
+	function (a, b, c, d, e, f) {
+		return {week: a, day: b, hour: c, minute: d, second: e, millisecond: f};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$Delta = function (a) {
+	return {ctor: 'Delta', _0: a};
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$Week = {ctor: 'Week'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Day = {ctor: 'Day'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Hour = {ctor: 'Hour'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Minute = {ctor: 'Minute'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Second = {ctor: 'Second'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Millisecond = {ctor: 'Millisecond'};
+
+var _rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil = F3(
+	function (year, month, day) {
+		var doy = (((((153 * (month + ((_elm_lang$core$Native_Utils.cmp(month, 2) > 0) ? -3 : 9))) + 2) / 5) | 0) + day) - 1;
+		var y = year - ((_elm_lang$core$Native_Utils.cmp(month, 2) < 1) ? 1 : 0);
+		var era = (((_elm_lang$core$Native_Utils.cmp(y, 0) > -1) ? y : (y - 399)) / 400) | 0;
+		var yoe = y - (era * 400);
+		var doe = (((yoe * 365) + ((yoe / 4) | 0)) - ((yoe / 100) | 0)) + doy;
+		return ((era * 146097) + doe) - 719468;
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields = F7(
+	function (year, month, day, hour, minute, second, millisecond) {
+		var monthInt = _rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month);
+		var c_year = (_elm_lang$core$Native_Utils.cmp(year, 0) < 0) ? 0 : year;
+		var c_day = A3(
+			_elm_lang$core$Basics$clamp,
+			1,
+			A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, c_year, month),
+			day);
+		var dayCount = A3(_rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil, c_year, monthInt, c_day);
+		return _rluiten$elm_date_extra$Date_Extra_Period$toTicks(
+			_rluiten$elm_date_extra$Date_Extra_Period$Delta(
+				{
+					millisecond: A3(_elm_lang$core$Basics$clamp, 0, 999, millisecond),
+					second: A3(_elm_lang$core$Basics$clamp, 0, 59, second),
+					minute: A3(_elm_lang$core$Basics$clamp, 0, 59, minute),
+					hour: A3(_elm_lang$core$Basics$clamp, 0, 23, hour),
+					day: dayCount,
+					week: 0
+				}));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields = function (date) {
+	return A7(
+		_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields,
+		_elm_lang$core$Date$year(date),
+		_elm_lang$core$Date$month(date),
+		_elm_lang$core$Date$day(date),
+		_elm_lang$core$Date$hour(date),
+		_elm_lang$core$Date$minute(date),
+		_elm_lang$core$Date$second(date),
+		_elm_lang$core$Date$millisecond(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset = function (date) {
+	var v1Ticks = _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields(date);
+	var dateTicks = _elm_lang$core$Basics$floor(
+		_elm_lang$core$Date$toTime(date));
+	return ((dateTicks - v1Ticks) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
+};
+var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset = F2(
+	function (offsetMinutes, date) {
+		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+			A2(
+				F2(
+					function (x, y) {
+						return x + y;
+					}),
+				offsetMinutes * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute,
+				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc = function (date) {
+	var offset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset(date);
+	var oHours = (offset / _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour) | 0;
+	var oMinutes = ((offset - (oHours * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
+	var _p0 = A2(
+		_elm_lang$core$Debug$log,
+		'hackDateAsUtc',
+		{ctor: '_Tuple3', _0: offset, _1: oHours, _2: oMinutes});
+	var _p1 = A2(
+		_elm_lang$core$Debug$log,
+		'(local  date) fields',
+		{
+			ctor: '_Tuple7',
+			_0: _elm_lang$core$Date$year(date),
+			_1: _elm_lang$core$Date$month(date),
+			_2: _elm_lang$core$Date$day(date),
+			_3: _elm_lang$core$Date$hour(date),
+			_4: _elm_lang$core$Date$minute(date),
+			_5: _elm_lang$core$Date$second(date),
+			_6: _elm_lang$core$Date$millisecond(date)
+		});
+	return A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, offset, date);
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Create$epochDate = _elm_lang$core$Date$fromTime(0);
+var _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset = function () {
+	var inMinutes = (_elm_lang$core$Date$hour(_rluiten$elm_date_extra$Date_Extra_Create$epochDate) * 60) + _elm_lang$core$Date$minute(_rluiten$elm_date_extra$Date_Extra_Create$epochDate);
+	return _elm_lang$core$Native_Utils.eq(
+		_elm_lang$core$Date$year(_rluiten$elm_date_extra$Date_Extra_Create$epochDate),
+		1969) ? (0 - (inMinutes - (24 * 60))) : (0 - inMinutes);
+}();
+var _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset;
+var _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate = function (ticks) {
+	var date = A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Millisecond, ticks + (_rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute), _rluiten$elm_date_extra$Date_Extra_Create$epochDate);
+	var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
+	return _elm_lang$core$Native_Utils.eq(dateOffset, _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset) ? date : A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Minute, dateOffset - _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset, date);
+};
+var _rluiten$elm_date_extra$Date_Extra_Create$dateFromFields = F7(
+	function (year, month, day, hour, minute, second, millisecond) {
+		return _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate(
+			A7(_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields, year, month, day, hour, minute, second, millisecond));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Create$timeFromFields = A3(_rluiten$elm_date_extra$Date_Extra_Create$dateFromFields, 1970, _elm_lang$core$Date$Jan, 1);
+
+var _rluiten$elm_date_extra$Date_Extra_Format$toHourMin = function (offsetMinutes) {
+	return {
+		ctor: '_Tuple2',
+		_0: (offsetMinutes / 60) | 0,
+		_1: A2(_elm_lang$core$Basics_ops['%'], offsetMinutes, 60)
+	};
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$padWithN = F2(
+	function (n, c) {
+		return function (_p0) {
+			return A3(
+				_elm_lang$core$String$padLeft,
+				n,
+				c,
+				_elm_lang$core$Basics$toString(_p0));
+		};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$padWith = function (c) {
+	return function (_p1) {
+		return A3(
+			_elm_lang$core$String$padLeft,
+			2,
+			c,
+			_elm_lang$core$Basics$toString(_p1));
+	};
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$hourMod12 = function (h) {
+	return _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], h, 12),
+		0) ? 12 : A2(_elm_lang$core$Basics_ops['%'], h, 12);
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr = F2(
+	function (betweenHoursMinutes, offset) {
+		var _p2 = _rluiten$elm_date_extra$Date_Extra_Format$toHourMin(
+			_elm_lang$core$Basics$abs(offset));
+		var hour = _p2._0;
+		var minute = _p2._1;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			(_elm_lang$core$Native_Utils.cmp(offset, 0) < 1) ? '+' : '-',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					hour),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					betweenHoursMinutes,
+					A2(
+						_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+						_elm_lang$core$Native_Utils.chr('0'),
+						minute))));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$collapse = function (m) {
+	return A2(_elm_lang$core$Maybe$andThen, m, _elm_lang$core$Basics$identity);
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$formatToken = F4(
+	function (config, offset, d, m) {
+		var symbol = A2(
+			_elm_lang$core$Maybe$withDefault,
+			' ',
+			_rluiten$elm_date_extra$Date_Extra_Format$collapse(
+				_elm_lang$core$List$head(m.submatches)));
+		var _p3 = symbol;
+		switch (_p3) {
+			case 'Y':
+				return A3(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+					4,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$year(d));
+			case 'y':
+				return A2(
+					_elm_lang$core$String$right,
+					2,
+					A3(
+						_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+						2,
+						_elm_lang$core$Native_Utils.chr('0'),
+						_elm_lang$core$Date$year(d)));
+			case 'm':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case '_m':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case '-m':
+				return _elm_lang$core$Basics$toString(
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case 'B':
+				return config.i18n.monthName(
+					_elm_lang$core$Date$month(d));
+			case '^B':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.monthName(
+						_elm_lang$core$Date$month(d)));
+			case 'b':
+				return config.i18n.monthShort(
+					_elm_lang$core$Date$month(d));
+			case '^b':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.monthShort(
+						_elm_lang$core$Date$month(d)));
+			case 'd':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$day(d));
+			case '-d':
+				return _elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$day(d));
+			case '-@d':
+				return A2(
+					config.i18n.dayOfMonthWithSuffix,
+					false,
+					_elm_lang$core$Date$day(d));
+			case 'e':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_elm_lang$core$Date$day(d));
+			case '@e':
+				return A2(
+					config.i18n.dayOfMonthWithSuffix,
+					true,
+					_elm_lang$core$Date$day(d));
+			case 'A':
+				return config.i18n.dayName(
+					_elm_lang$core$Date$dayOfWeek(d));
+			case '^A':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.dayName(
+						_elm_lang$core$Date$dayOfWeek(d)));
+			case 'a':
+				return config.i18n.dayShort(
+					_elm_lang$core$Date$dayOfWeek(d));
+			case '^a':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.dayShort(
+						_elm_lang$core$Date$dayOfWeek(d)));
+			case 'H':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$hour(d));
+			case '-H':
+				return _elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$hour(d));
+			case 'k':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_elm_lang$core$Date$hour(d));
+			case 'I':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case '-I':
+				return _elm_lang$core$Basics$toString(
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case 'l':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case 'p':
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$Date$hour(d),
+					12) < 0) ? 'AM' : 'PM';
+			case 'P':
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$Date$hour(d),
+					12) < 0) ? 'am' : 'pm';
+			case 'M':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$minute(d));
+			case 'S':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$second(d));
+			case 'L':
+				return A3(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+					3,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$millisecond(d));
+			case '%':
+				return symbol;
+			case 'z':
+				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, '', offset);
+			case ':z':
+				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, ':', offset);
+			default:
+				return '';
+		}
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$formatRegex = _elm_lang$core$Regex$regex('%(y|Y|m|_m|-m|B|^B|b|^b|d|-d|-@d|e|@e|A|^A|a|^a|H|-H|k|I|-I|l|p|P|M|S|%|L|z|:z)');
+var _rluiten$elm_date_extra$Date_Extra_Format$formatOffset = F4(
+	function (config, targetOffset, formatStr, date) {
+		var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
+		var hackOffset = dateOffset - targetOffset;
+		return A4(
+			_elm_lang$core$Regex$replace,
+			_elm_lang$core$Regex$All,
+			_rluiten$elm_date_extra$Date_Extra_Format$formatRegex,
+			A3(
+				_rluiten$elm_date_extra$Date_Extra_Format$formatToken,
+				config,
+				targetOffset,
+				A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, hackOffset, date)),
+			formatStr);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$format = F3(
+	function (config, formatStr, date) {
+		return A4(
+			_rluiten$elm_date_extra$Date_Extra_Format$formatOffset,
+			config,
+			_rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date),
+			formatStr,
+			date);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$formatUtc = F3(
+	function (config, formatStr, date) {
+		return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, config, 0, formatStr, date);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$isoDateString = function (date) {
+	var day = _elm_lang$core$Date$day(date);
+	var month = _elm_lang$core$Date$month(date);
+	var year = _elm_lang$core$Date$year(date);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		A3(
+			_elm_lang$core$String$padLeft,
+			4,
+			_elm_lang$core$Native_Utils.chr('0'),
+			_elm_lang$core$Basics$toString(year)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'-',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A3(
+					_elm_lang$core$String$padLeft,
+					2,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Basics$toString(
+						_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month))),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'-',
+					A3(
+						_elm_lang$core$String$padLeft,
+						2,
+						_elm_lang$core$Native_Utils.chr('0'),
+						_elm_lang$core$Basics$toString(day))))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoDateString = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Format$isoDateString(
+		_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$yearInt = function (year) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		4,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(year));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$year = function (date) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		4,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_elm_lang$core$Date$year(date)));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$monthMonth = function (month) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		2,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month)));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$month = function (date) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		2,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+				_elm_lang$core$Date$month(date))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$isoTimeFormat = '%H:%M:%S';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat = '%Y-%m-%d';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat = '%Y-%m-%dT%H:%M:%S.%L%z';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoString = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat);
+var _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat = '%Y-%m-%dT%H:%M:%S%z';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat = '%Y-%m-%dT%H:%M:%S.%L';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoStringNoOffset = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat);
+var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoString = function (date) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		A3(_rluiten$elm_date_extra$Date_Extra_Format$formatUtc, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat, date),
+		'Z');
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$isoFormat = '%Y-%m-%dT%H:%M:%S';
+
+var _user$project$Base$isJust = function (maybe) {
+	var _p0 = maybe;
+	if (_p0.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Base$mapSnd = F2(
+	function (f, _p1) {
+		var _p2 = _p1;
+		return {
+			ctor: '_Tuple2',
+			_0: _p2._0,
+			_1: f(_p2._1)
+		};
+	});
+var _user$project$Base$mapCmd = function (f) {
+	return _user$project$Base$mapSnd(
+		_elm_lang$core$Platform_Cmd$map(f));
+};
+var _user$project$Base$mapFst = F2(
+	function (f, _p3) {
+		var _p4 = _p3;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p4._0),
+			_1: _p4._1
+		};
+	});
+var _user$project$Base$stateC = function (_p5) {
+	var _p6 = _p5;
+	return _p6.state;
+};
+var _user$project$Base$viewC = function (_p7) {
+	var _p8 = _p7;
+	return _p8.spec.view(_p8.state);
+};
+var _user$project$Base$viewWrapped = function (f) {
+	return function (_p9) {
+		return A2(
+			_elm_lang$html$Html_App$map,
+			f,
+			_user$project$Base$viewC(_p9));
+	};
+};
+var _user$project$Base$subscriptionsC = function (_p10) {
+	var _p11 = _p10;
+	return _p11.spec.subscriptions(_p11.state);
+};
+var _user$project$Base$subscriptionsWrapped = function (f) {
+	return function (_p12) {
+		return A2(
+			_elm_lang$core$Platform_Sub$map,
+			f,
+			_user$project$Base$subscriptionsC(_p12));
+	};
+};
+var _user$project$Base$updateC = F2(
+	function (msg, _p13) {
+		var _p14 = _p13;
+		var _p16 = _p14.spec;
+		var _p15 = A2(_p16.update, msg, _p14.state);
+		var state$ = _p15._0;
+		var cmd = _p15._1;
+		return {
+			ctor: '_Tuple2',
+			_0: {spec: _p16, state: state$},
+			_1: cmd
+		};
+	});
+var _user$project$Base$updateWrapped = F2(
+	function (f, msg) {
+		return function (_p17) {
+			return A2(
+				_user$project$Base$mapCmd,
+				f,
+				A2(_user$project$Base$updateC, msg, _p17));
+		};
+	});
+var _user$project$Base$initC = function (spec) {
+	var _p18 = spec.init;
+	var state = _p18._0;
+	var cmd = _p18._1;
+	return {
+		ctor: '_Tuple2',
+		_0: {spec: spec, state: state},
+		_1: cmd
+	};
+};
+var _user$project$Base$initWrapped = function (f) {
+	return function (_p19) {
+		return A2(
+			_user$project$Base$mapCmd,
+			f,
+			_user$project$Base$initC(_p19));
+	};
+};
+var _user$project$Base$Spec = F4(
+	function (a, b, c, d) {
+		return {init: a, update: b, view: c, subscriptions: d};
+	});
+var _user$project$Base$Component = F2(
+	function (a, b) {
+		return {spec: a, state: b};
+	});
+
 var _user$project$Asana_Model$Resource = F2(
 	function (a, b) {
 		return {id: a, name: b};
@@ -9440,6 +10517,8 @@ var _user$project$Asana_Model$resourceDecoder = A3(
 		'id',
 		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
 	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+var _user$project$Asana_Model$enumOptionDecoder = _user$project$Asana_Model$resourceDecoder;
+var _user$project$Asana_Model$enumValueDecoder = _user$project$Asana_Model$resourceDecoder;
 var _user$project$Asana_Model$User = F5(
 	function (a, b, c, d, e) {
 		return {id: a, name: b, email: c, photo: d, workspaces: e};
@@ -9498,6 +10577,10 @@ var _user$project$Asana_Model$CustomFieldSetting = F2(
 	function (a, b) {
 		return {id: a, customField: b};
 	});
+var _user$project$Asana_Model$EnumOption = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
 var _user$project$Asana_Model$CustomField = F3(
 	function (a, b, c) {
 		return {id: a, fieldType: b, name: c};
@@ -9519,7 +10602,21 @@ var _user$project$Asana_Model$taskDecoder = A5(
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_date', _elm_lang$core$Json_Decode$string)));
-var _user$project$Asana_Model$CustomUnknown = {ctor: 'CustomUnknown'};
+var _user$project$Asana_Model$CustomFieldEnumValue = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _user$project$Asana_Model$CustomFieldValue = F4(
+	function (a, b, c, d) {
+		return {id: a, name: b, fieldType: c, value: d};
+	});
+var _user$project$Asana_Model$NewTask = F6(
+	function (a, b, c, d, e, f) {
+		return {name: a, dueOn: b, dueAt: c, description: d, projects: e, customFields: f};
+	});
+var _user$project$Asana_Model$CustomUnknown = function (a) {
+	return {ctor: 'CustomUnknown', _0: a};
+};
 var _user$project$Asana_Model$CustomEnum = {ctor: 'CustomEnum'};
 var _user$project$Asana_Model$CustomNumber = {ctor: 'CustomNumber'};
 var _user$project$Asana_Model$CustomText = {ctor: 'CustomText'};
@@ -9535,7 +10632,7 @@ var _user$project$Asana_Model$customFieldTypeDecoder = A2(
 			case 'enum':
 				return _user$project$Asana_Model$CustomEnum;
 			default:
-				return _user$project$Asana_Model$CustomUnknown;
+				return _user$project$Asana_Model$CustomUnknown(str);
 		}
 	},
 	_elm_lang$core$Json_Decode$string);
@@ -9568,9 +10665,137 @@ var _user$project$Asana_Model$projectDecoder = A4(
 		_elm_lang$core$Json_Decode_ops[':='],
 		'custom_field_settings',
 		_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$customFieldSettingDecoder)));
+var _user$project$Asana_Model$customFieldInfoToCustomField = function (info) {
+	var _p1 = info;
+	switch (_p1.ctor) {
+		case 'CustomTextFieldInfo':
+			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomText, name: _p1._1};
+		case 'CustomNumberFieldInfo':
+			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomNumber, name: _p1._1};
+		default:
+			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomEnum, name: _p1._1};
+	}
+};
+var _user$project$Asana_Model$customFieldId = function (_p2) {
+	return function (_) {
+		return _.id;
+	}(
+		_user$project$Asana_Model$customFieldInfoToCustomField(_p2));
+};
+var _user$project$Asana_Model$customFieldName = function (_p3) {
+	return function (_) {
+		return _.name;
+	}(
+		_user$project$Asana_Model$customFieldInfoToCustomField(_p3));
+};
+var _user$project$Asana_Model$CustomEnumFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomEnumFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _user$project$Asana_Model$CustomNumberFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomNumberFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _user$project$Asana_Model$CustomTextFieldInfo = F2(
+	function (a, b) {
+		return {ctor: 'CustomTextFieldInfo', _0: a, _1: b};
+	});
+var _user$project$Asana_Model$customFieldInfoDecoder = A3(
+	_elm_lang$core$Basics$flip,
+	_elm_lang$core$Json_Decode$andThen,
+	function (fieldType) {
+		var _p4 = fieldType;
+		switch (_p4.ctor) {
+			case 'CustomText':
+				return A3(
+					_elm_lang$core$Json_Decode$object2,
+					_user$project$Asana_Model$CustomTextFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+			case 'CustomNumber':
+				return A4(
+					_elm_lang$core$Json_Decode$object3,
+					_user$project$Asana_Model$CustomNumberFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'precision', _elm_lang$core$Json_Decode$int));
+			case 'CustomEnum':
+				return A4(
+					_elm_lang$core$Json_Decode$object3,
+					_user$project$Asana_Model$CustomEnumFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'enum_options',
+						_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$enumOptionDecoder)));
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Got an unknown custom field type \'',
+						A2(_elm_lang$core$Basics_ops['++'], _p4._0, '\'.')));
+		}
+	},
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Model$customFieldTypeDecoder));
+var _user$project$Asana_Model$EnumValue = function (a) {
+	return {ctor: 'EnumValue', _0: a};
+};
+var _user$project$Asana_Model$NumberValue = function (a) {
+	return {ctor: 'NumberValue', _0: a};
+};
+var _user$project$Asana_Model$TextValue = function (a) {
+	return {ctor: 'TextValue', _0: a};
+};
+var _user$project$Asana_Model$customFieldDataDecoder = _elm_lang$core$Json_Decode$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$TextValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'text_value', _elm_lang$core$Json_Decode$string)),
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$NumberValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'number_value', _elm_lang$core$Json_Decode$float)),
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$EnumValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'enum_value', _user$project$Asana_Model$enumValueDecoder))
+		]));
+var _user$project$Asana_Model$customFieldValueDecoder = A5(
+	_elm_lang$core$Json_Decode$object4,
+	_user$project$Asana_Model$CustomFieldValue,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Model$customFieldTypeDecoder),
+	_user$project$Asana_Model$customFieldDataDecoder);
 
-var _user$project$Asana_Api$encodeTask = function (_p0) {
-	var _p1 = _p0;
+var _user$project$Asana_Api$encodeCustomFieldData = function (data) {
+	var _p0 = data;
+	switch (_p0.ctor) {
+		case 'TextValue':
+			return _elm_lang$core$Json_Encode$string(_p0._0);
+		case 'NumberValue':
+			return _elm_lang$core$Json_Encode$float(_p0._0);
+		default:
+			return _elm_lang$core$Json_Encode$string(_p0._0.id);
+	}
+};
+var _user$project$Asana_Api$encodeTask = function (_p1) {
+	var _p2 = _p1;
 	return _elm_lang$core$Json_Encode$object(
 		A2(
 			_elm_lang$core$List$filterMap,
@@ -9579,28 +10804,16 @@ var _user$project$Asana_Api$encodeTask = function (_p0) {
 				[
 					A2(
 					_elm_lang$core$Maybe$map,
-					function (_p2) {
-						return A2(
-							F2(
-								function (v0, v1) {
-									return {ctor: '_Tuple2', _0: v0, _1: v1};
-								}),
-							'name',
-							_elm_lang$core$Json_Encode$string(_p2));
-					},
-					_p1.name),
-					A2(
-					_elm_lang$core$Maybe$map,
 					function (_p3) {
 						return A2(
 							F2(
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'notes',
+							'name',
 							_elm_lang$core$Json_Encode$string(_p3));
 					},
-					_p1.description),
+					_p2.name),
 					A2(
 					_elm_lang$core$Maybe$map,
 					function (_p4) {
@@ -9609,10 +10822,10 @@ var _user$project$Asana_Api$encodeTask = function (_p0) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'due_on',
+							'notes',
 							_elm_lang$core$Json_Encode$string(_p4));
 					},
-					_p1.dueDate),
+					_p2.description),
 					A2(
 					_elm_lang$core$Maybe$map,
 					function (_p5) {
@@ -9621,29 +10834,48 @@ var _user$project$Asana_Api$encodeTask = function (_p0) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
+							'due_at',
+							_elm_lang$core$Json_Encode$string(_p5));
+					},
+					_p2.dueAt),
+					A2(
+					_elm_lang$core$Maybe$map,
+					function (_p6) {
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							'due_on',
+							_elm_lang$core$Json_Encode$string(_p6));
+					},
+					_p2.dueOn),
+					A2(
+					_elm_lang$core$Maybe$map,
+					function (_p7) {
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
 							'projects',
 							_elm_lang$core$Json_Encode$list(
-								A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p5)));
+								A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p7)));
 					},
-					_p1.projects)
+					_p2.projects),
+					_elm_lang$core$Maybe$Just(
+					A2(
+						F2(
+							function (v0, v1) {
+								return {ctor: '_Tuple2', _0: v0, _1: v1};
+							}),
+						'custom_fields',
+						_elm_lang$core$Json_Encode$object(
+							A2(
+								_elm_lang$core$List$map,
+								_user$project$Base$mapSnd(_user$project$Asana_Api$encodeCustomFieldData),
+								_p2.customFields))))
 				])));
-};
-var _user$project$Asana_Api$encodeResource = function (_p6) {
-	var _p7 = _p6;
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'id',
-				_1: _elm_lang$core$Json_Encode$string(_p7.id)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'name',
-				_1: _elm_lang$core$Json_Encode$string(_p7.name)
-			}
-			]));
 };
 var _user$project$Asana_Api$typeaheadTypeStr = function (resourceType) {
 	var _p8 = resourceType;
@@ -9720,10 +10952,22 @@ var _user$project$Asana_Api$getTypeaheadOptions = F4(
 			_elm_lang$core$Json_Decode$list(decoder));
 	});
 var _user$project$Asana_Api$project = function (projectId) {
-	var query = _elm_lang$core$Native_List.fromArray(
-		[]);
 	var path = A2(_elm_lang$core$Basics_ops['++'], '/projects/', projectId);
-	return A3(_user$project$Asana_Api$apiGetRequest, path, query, _user$project$Asana_Model$projectDecoder);
+	return A3(
+		_user$project$Asana_Api$apiGetRequest,
+		path,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_user$project$Asana_Model$projectDecoder);
+};
+var _user$project$Asana_Api$customField = function (customFieldId) {
+	var path = A2(_elm_lang$core$Basics_ops['++'], '/custom_fields/', customFieldId);
+	return A3(
+		_user$project$Asana_Api$apiGetRequest,
+		path,
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_user$project$Asana_Model$customFieldInfoDecoder);
 };
 var _user$project$Asana_Api$apiPostRequest = F5(
 	function (path, query, body, decoder, token) {
@@ -9766,114 +11010,151 @@ var _user$project$Asana_Api$createTask = function (newTask) {
 	var path = '/tasks';
 	return A4(_user$project$Asana_Api$apiPostRequest, path, query, body, _user$project$Asana_Model$taskDecoder);
 };
-var _user$project$Asana_Api$NewTask = F4(
-	function (a, b, c, d) {
-		return {name: a, dueDate: b, description: c, projects: d};
-	});
 var _user$project$Asana_Api$TypeaheadTask = {ctor: 'TypeaheadTask'};
 var _user$project$Asana_Api$TypeaheadTag = {ctor: 'TypeaheadTag'};
 var _user$project$Asana_Api$TypeaheadUser = {ctor: 'TypeaheadUser'};
 var _user$project$Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProject'};
 var _user$project$Asana_Api$projectTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadProject, _user$project$Asana_Model$resourceDecoder);
 
-var _user$project$Base$mapSnd = F2(
-	function (f, _p0) {
-		var _p1 = _p0;
-		return {
-			ctor: '_Tuple2',
-			_0: _p1._0,
-			_1: f(_p1._1)
-		};
+var _user$project$Asana_Target$dateToDueAt = function (date) {
+	return A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, date);
+};
+var _user$project$Asana_Target$dateToDueOn = function (date) {
+	return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, date);
+};
+var _user$project$Asana_Target$updateTask = F3(
+	function (target, value, task) {
+		var _p0 = target;
+		switch (_p0.ctor) {
+			case 'None':
+				return task;
+			case 'Name':
+				return _elm_lang$core$Native_Utils.update(
+					task,
+					{
+						name: _elm_lang$core$Maybe$Just(value)
+					});
+			case 'Description':
+				return _elm_lang$core$Native_Utils.update(
+					task,
+					{
+						description: _elm_lang$core$Maybe$Just(value)
+					});
+			case 'DueDate':
+				var _p1 = _elm_lang$core$Date$fromString(value);
+				if (_p1.ctor === 'Ok') {
+					return _elm_lang$core$Native_Utils.update(
+						task,
+						{
+							dueOn: _elm_lang$core$Maybe$Just(
+								_user$project$Asana_Target$dateToDueOn(_p1._0))
+						});
+				} else {
+					return A2(_elm_lang$core$Debug$log, _p1._0, task);
+				}
+			case 'DueTime':
+				var _p2 = _elm_lang$core$Date$fromString(value);
+				if (_p2.ctor === 'Ok') {
+					return _elm_lang$core$Native_Utils.update(
+						task,
+						{
+							dueAt: _elm_lang$core$Maybe$Just(
+								_user$project$Asana_Target$dateToDueAt(_p2._0))
+						});
+				} else {
+					return A2(_elm_lang$core$Debug$log, _p2._0, task);
+				}
+			default:
+				var _p3 = _p0._0;
+				switch (_p3.ctor) {
+					case 'CustomTextFieldInfo':
+						var newField = {
+							ctor: '_Tuple2',
+							_0: _p3._0,
+							_1: _user$project$Asana_Model$TextValue(value)
+						};
+						var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
+						return _elm_lang$core$Native_Utils.update(
+							task,
+							{customFields: customFields});
+					case 'CustomNumberFieldInfo':
+						var _p4 = _elm_lang$core$String$toFloat(value);
+						if (_p4.ctor === 'Ok') {
+							var newField = {
+								ctor: '_Tuple2',
+								_0: _p3._0,
+								_1: _user$project$Asana_Model$NumberValue(_p4._0)
+							};
+							var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
+							return _elm_lang$core$Native_Utils.update(
+								task,
+								{customFields: customFields});
+						} else {
+							return A2(_elm_lang$core$Debug$log, _p4._0, task);
+						}
+					default:
+						var matchingOptions = A2(
+							_elm_lang$core$List$filter,
+							function (_p5) {
+								return A2(
+									F2(
+										function (x, y) {
+											return _elm_lang$core$Native_Utils.eq(x, y);
+										}),
+									value,
+									function (_) {
+										return _.name;
+									}(_p5));
+							},
+							_p3._2);
+						var _p6 = _elm_lang$core$List$head(
+							A2(
+								_elm_lang$core$Debug$log,
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Matching options for \'',
+									A2(_elm_lang$core$Basics_ops['++'], value, '\'')),
+								matchingOptions));
+						if (_p6.ctor === 'Just') {
+							return _elm_lang$core$Native_Utils.update(
+								task,
+								{
+									customFields: A2(
+										_elm_lang$core$List_ops['::'],
+										{
+											ctor: '_Tuple2',
+											_0: _p3._0,
+											_1: _user$project$Asana_Model$EnumValue(_p6._0)
+										},
+										task.customFields)
+								});
+						} else {
+							return task;
+						}
+				}
+		}
 	});
-var _user$project$Base$mapCmd = function (f) {
-	return _user$project$Base$mapSnd(
-		_elm_lang$core$Platform_Cmd$map(f));
-};
-var _user$project$Base$mapFst = F2(
-	function (f, _p2) {
-		var _p3 = _p2;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p3._0),
-			_1: _p3._1
-		};
-	});
-var _user$project$Base$stateC = function (_p4) {
-	var _p5 = _p4;
-	return _p5.state;
-};
-var _user$project$Base$viewC = function (_p6) {
-	var _p7 = _p6;
-	return _p7.spec.view(_p7.state);
-};
-var _user$project$Base$viewWrapped = function (f) {
-	return function (_p8) {
-		return A2(
-			_elm_lang$html$Html_App$map,
-			f,
-			_user$project$Base$viewC(_p8));
-	};
-};
-var _user$project$Base$subscriptionsC = function (_p9) {
-	var _p10 = _p9;
-	return _p10.spec.subscriptions(_p10.state);
-};
-var _user$project$Base$subscriptionsWrapped = function (f) {
-	return function (_p11) {
-		return A2(
-			_elm_lang$core$Platform_Sub$map,
-			f,
-			_user$project$Base$subscriptionsC(_p11));
-	};
-};
-var _user$project$Base$updateC = F2(
-	function (msg, _p12) {
-		var _p13 = _p12;
-		var _p15 = _p13.spec;
-		var _p14 = A2(_p15.update, msg, _p13.state);
-		var state$ = _p14._0;
-		var cmd = _p14._1;
-		return {
-			ctor: '_Tuple2',
-			_0: {spec: _p15, state: state$},
-			_1: cmd
-		};
-	});
-var _user$project$Base$updateWrapped = F2(
-	function (f, msg) {
-		return function (_p16) {
-			return A2(
-				_user$project$Base$mapCmd,
-				f,
-				A2(_user$project$Base$updateC, msg, _p16));
-		};
-	});
-var _user$project$Base$initC = function (spec) {
-	var _p17 = spec.init;
-	var state = _p17._0;
-	var cmd = _p17._1;
+var _user$project$Asana_Target$emptyTask = function (projectId) {
 	return {
-		ctor: '_Tuple2',
-		_0: {spec: spec, state: state},
-		_1: cmd
+		name: _elm_lang$core$Maybe$Nothing,
+		description: _elm_lang$core$Maybe$Nothing,
+		dueOn: _elm_lang$core$Maybe$Nothing,
+		dueAt: _elm_lang$core$Maybe$Nothing,
+		projects: _elm_lang$core$Maybe$Just(
+			_elm_lang$core$Native_List.fromArray(
+				[projectId])),
+		customFields: _elm_lang$core$Native_List.fromArray(
+			[])
 	};
 };
-var _user$project$Base$initWrapped = function (f) {
-	return function (_p18) {
-		return A2(
-			_user$project$Base$mapCmd,
-			f,
-			_user$project$Base$initC(_p18));
-	};
+var _user$project$Asana_Target$CustomField = function (a) {
+	return {ctor: 'CustomField', _0: a};
 };
-var _user$project$Base$Spec = F4(
-	function (a, b, c, d) {
-		return {init: a, update: b, view: c, subscriptions: d};
-	});
-var _user$project$Base$Component = F2(
-	function (a, b) {
-		return {spec: a, state: b};
-	});
+var _user$project$Asana_Target$DueTime = {ctor: 'DueTime'};
+var _user$project$Asana_Target$DueDate = {ctor: 'DueDate'};
+var _user$project$Asana_Target$Description = {ctor: 'Description'};
+var _user$project$Asana_Target$Name = {ctor: 'Name'};
+var _user$project$Asana_Target$None = {ctor: 'None'};
 
 var _user$project$CommonViews$debugView = F2(
 	function (childView, model) {
@@ -9926,6 +11207,170 @@ var _user$project$CommonViews$unloadedView = A2(
 		[]),
 	_elm_lang$core$Native_List.fromArray(
 		[]));
+
+var _user$project$Components_ApiParallelResource$isUnloaded = function (resource) {
+	var _p0 = _user$project$Base$stateC(resource);
+	if (_p0.ctor === 'Unloaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Components_ApiParallelResource$isLoaded = function (resource) {
+	var _p1 = _user$project$Base$stateC(resource);
+	if (_p1.ctor === 'Loaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Components_ApiParallelResource$getChild = function (resource) {
+	var _p2 = _user$project$Base$stateC(resource);
+	if (_p2.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(_p2._0);
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Components_ApiParallelResource$Props = F5(
+	function (a, b, c, d, e) {
+		return {childSpec: a, fetches: b, unloadedView: c, loadingView: d, errorView: e};
+	});
+var _user$project$Components_ApiParallelResource$ChildMsg = function (a) {
+	return {ctor: 'ChildMsg', _0: a};
+};
+var _user$project$Components_ApiParallelResource$subscriptions = F2(
+	function (_p3, model) {
+		var _p4 = model;
+		if (_p4.ctor === 'Loaded') {
+			return A2(
+				_elm_lang$core$Platform_Sub$map,
+				_user$project$Components_ApiParallelResource$ChildMsg,
+				_user$project$Base$subscriptionsC(_p4._0));
+		} else {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	});
+var _user$project$Components_ApiParallelResource$view = F2(
+	function (props, resource) {
+		var _p5 = resource;
+		switch (_p5.ctor) {
+			case 'Unloaded':
+				return props.unloadedView;
+			case 'Loading':
+				return props.loadingView;
+			case 'Error':
+				return props.errorView(_p5._0);
+			default:
+				return A2(
+					_elm_lang$html$Html_App$map,
+					_user$project$Components_ApiParallelResource$ChildMsg,
+					_user$project$Base$viewC(_p5._0));
+		}
+	});
+var _user$project$Components_ApiParallelResource$ApiMsg = F2(
+	function (a, b) {
+		return {ctor: 'ApiMsg', _0: a, _1: b};
+	});
+var _user$project$Components_ApiParallelResource$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _user$project$Components_ApiParallelResource$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _user$project$Components_ApiParallelResource$Loading = function (a) {
+	return {ctor: 'Loading', _0: a};
+};
+var _user$project$Components_ApiParallelResource$init = function (_p6) {
+	var _p7 = _p6;
+	var _p9 = _p7.fetches;
+	var cmd = _elm_lang$core$Platform_Cmd$batch(
+		A2(
+			_elm_lang$core$List$indexedMap,
+			function (_p8) {
+				return _elm_lang$core$Platform_Cmd$map(
+					_user$project$Components_ApiParallelResource$ApiMsg(_p8));
+			},
+			_p9));
+	var model = _user$project$Components_ApiParallelResource$Loading(
+		A2(
+			_elm_lang$core$Array$repeat,
+			_elm_lang$core$List$length(_p9),
+			_elm_lang$core$Maybe$Nothing));
+	return {ctor: '_Tuple2', _0: model, _1: cmd};
+};
+var _user$project$Components_ApiParallelResource$update = F3(
+	function (props, msg, model) {
+		var _p10 = msg;
+		if (_p10.ctor === 'ApiMsg') {
+			var _p11 = {ctor: '_Tuple2', _0: model, _1: _p10._1};
+			if (_p11._1.ctor === 'Ok') {
+				if (_p11._0.ctor === 'Loading') {
+					var loadingData = A3(
+						_elm_lang$core$Array$set,
+						_p10._0,
+						_elm_lang$core$Maybe$Just(_p11._1._0),
+						_p11._0._0);
+					if (A2(
+						_elm_lang$core$List$all,
+						_user$project$Base$isJust,
+						_elm_lang$core$Array$toList(loadingData))) {
+						var loadedData = A2(
+							_elm_lang$core$List$filterMap,
+							_elm_lang$core$Basics$identity,
+							_elm_lang$core$Array$toList(loadingData));
+						var _p12 = _user$project$Base$initC(
+							props.childSpec(loadedData));
+						var child = _p12._0;
+						var childCmd = _p12._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _user$project$Components_ApiParallelResource$Loaded(child),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiParallelResource$ChildMsg, childCmd)
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _user$project$Components_ApiParallelResource$Loading(loadingData),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Components_ApiParallelResource$Error(
+						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11._1._0)),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			}
+		} else {
+			var _p13 = model;
+			if (_p13.ctor === 'Loaded') {
+				var _p14 = A2(_user$project$Base$updateC, _p10._0, _p13._0);
+				var child$ = _p14._0;
+				var childCmd = _p14._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _user$project$Components_ApiParallelResource$Loaded(child$),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiParallelResource$ChildMsg, childCmd)
+				};
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
+	});
+var _user$project$Components_ApiParallelResource$component = function (props) {
+	return {
+		init: _user$project$Components_ApiParallelResource$init(props),
+		update: _user$project$Components_ApiParallelResource$update(props),
+		subscriptions: _user$project$Components_ApiParallelResource$subscriptions(props),
+		view: _user$project$Components_ApiParallelResource$view(props)
+	};
+};
+var _user$project$Components_ApiParallelResource$Unloaded = {ctor: 'Unloaded'};
 
 var _user$project$Components_ApiResource$isUnloaded = function (resource) {
 	var _p0 = _user$project$Base$stateC(resource);
@@ -10217,19 +11662,71 @@ var _user$project$Components_Csv$spec = function (props) {
 	};
 };
 
+var _user$project$Components_FieldOptions$matchCustomFieldName = function (str) {
+	return function (_p0) {
+		return _elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (_p1) {
+					return A2(
+						F2(
+							function (x, y) {
+								return _elm_lang$core$Native_Utils.eq(x, y);
+							}),
+						str,
+						A2(
+							F2(
+								function (x, y) {
+									return A2(_elm_lang$core$Basics_ops['++'], x, y);
+								}),
+							'CF: ',
+							_user$project$Asana_Model$customFieldName(_p1)));
+				},
+				_p0));
+	};
+};
+var _user$project$Components_FieldOptions$targetFromString = F2(
+	function (customFields, str) {
+		var _p2 = str;
+		switch (_p2) {
+			case 'None':
+				return _user$project$Asana_Target$None;
+			case 'Name':
+				return _user$project$Asana_Target$Name;
+			case 'Description':
+				return _user$project$Asana_Target$Description;
+			case 'Due Date':
+				return _user$project$Asana_Target$DueDate;
+			case 'Due Time':
+				return _user$project$Asana_Target$DueTime;
+			default:
+				return A2(
+					_elm_lang$core$Maybe$withDefault,
+					_user$project$Asana_Target$None,
+					A2(
+						_elm_lang$core$Maybe$map,
+						_user$project$Asana_Target$CustomField,
+						A2(_user$project$Components_FieldOptions$matchCustomFieldName, _p2, customFields)));
+		}
+	});
 var _user$project$Components_FieldOptions$targetString = function (target) {
-	var _p0 = target;
-	switch (_p0.ctor) {
-		case 'NoTarget':
+	var _p3 = target;
+	switch (_p3.ctor) {
+		case 'None':
 			return 'None';
-		case 'NameTarget':
+		case 'Name':
 			return 'Name';
-		case 'DescriptionTarget':
+		case 'Description':
 			return 'Description';
-		case 'DueDateTarget':
+		case 'DueDate':
 			return 'Due Date';
+		case 'DueTime':
+			return 'Due Time';
 		default:
-			return A2(_elm_lang$core$Basics_ops['++'], 'CF: ', _p0._0.name);
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				'CF: ',
+				_user$project$Asana_Model$customFieldName(_p3._0));
 	}
 };
 var _user$project$Components_FieldOptions$viewOption = F2(
@@ -10249,35 +11746,11 @@ var _user$project$Components_FieldOptions$viewOption = F2(
 					_user$project$Components_FieldOptions$targetString(target))
 				]));
 	});
-var _user$project$Components_FieldOptions$getTargets = function (_p1) {
-	return _elm_lang$core$Array$toList(
-		function (_) {
-			return _.targets;
-		}(
-			_user$project$Base$stateC(_p1)));
-};
-var _user$project$Components_FieldOptions$Props = F2(
-	function (a, b) {
-		return {customFields: a, numFields: b};
-	});
-var _user$project$Components_FieldOptions$Model = function (a) {
-	return {targets: a};
-};
-var _user$project$Components_FieldOptions$CustomFieldTarget = function (a) {
-	return {ctor: 'CustomFieldTarget', _0: a};
-};
-var _user$project$Components_FieldOptions$DueDateTarget = {ctor: 'DueDateTarget'};
-var _user$project$Components_FieldOptions$DescriptionTarget = {ctor: 'DescriptionTarget'};
-var _user$project$Components_FieldOptions$NameTarget = {ctor: 'NameTarget'};
-var _user$project$Components_FieldOptions$NoTarget = {ctor: 'NoTarget'};
-var _user$project$Components_FieldOptions$init = function (_p2) {
-	var _p3 = _p2;
-	var targets = A2(_elm_lang$core$Array$repeat, _p3.numFields, _user$project$Components_FieldOptions$NoTarget);
-	return {
-		ctor: '_Tuple2',
-		_0: {targets: targets},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
+var _user$project$Components_FieldOptions$allTargets = function (customFields) {
+	var genericTargets = _elm_lang$core$Native_List.fromArray(
+		[_user$project$Asana_Target$None, _user$project$Asana_Target$Name, _user$project$Asana_Target$Description, _user$project$Asana_Target$DueDate]);
+	var customFieldTargets = A2(_elm_lang$core$List$map, _user$project$Asana_Target$CustomField, customFields);
+	return A2(_elm_lang$core$Basics_ops['++'], genericTargets, customFieldTargets);
 };
 var _user$project$Components_FieldOptions$update = F3(
 	function (props, msg, model) {
@@ -10303,7 +11776,7 @@ var _user$project$Components_FieldOptions$update = F3(
 				A2(
 					_elm_lang$core$Array$repeat,
 					_elm_lang$core$Array$length(targets) - _p5,
-					_user$project$Components_FieldOptions$NoTarget));
+					_user$project$Asana_Target$None));
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -10313,43 +11786,35 @@ var _user$project$Components_FieldOptions$update = F3(
 			};
 		}
 	});
-var _user$project$Components_FieldOptions$allTargets = function (customFields) {
-	var genericTargets = _elm_lang$core$Native_List.fromArray(
-		[_user$project$Components_FieldOptions$NoTarget, _user$project$Components_FieldOptions$NameTarget, _user$project$Components_FieldOptions$DescriptionTarget, _user$project$Components_FieldOptions$DueDateTarget]);
-	var customFieldTargets = A2(_elm_lang$core$List$map, _user$project$Components_FieldOptions$CustomFieldTarget, customFields);
-	return A2(_elm_lang$core$Basics_ops['++'], genericTargets, customFieldTargets);
+var _user$project$Components_FieldOptions$init = function (_p6) {
+	var _p7 = _p6;
+	var targets = A2(_elm_lang$core$Array$repeat, _p7.numFields, _user$project$Asana_Target$None);
+	return {
+		ctor: '_Tuple2',
+		_0: {targets: targets},
+		_1: _elm_lang$core$Platform_Cmd$none
+	};
 };
-var _user$project$Components_FieldOptions$targetFromString = F2(
-	function (customFields, str) {
-		var _p6 = str;
-		switch (_p6) {
-			case 'None':
-				return _user$project$Components_FieldOptions$NoTarget;
-			case 'Name':
-				return _user$project$Components_FieldOptions$NameTarget;
-			case 'Description':
-				return _user$project$Components_FieldOptions$DescriptionTarget;
-			case 'Due Date':
-				return _user$project$Components_FieldOptions$DueDateTarget;
-			default:
-				return A3(
-					_elm_lang$core$List$foldr,
-					F2(
-						function (customField, target) {
-							return _elm_lang$core$Native_Utils.eq(
-								_p6,
-								A2(_elm_lang$core$Basics_ops['++'], 'CF: ', customField.name)) ? _user$project$Components_FieldOptions$CustomFieldTarget(customField) : target;
-						}),
-					_user$project$Components_FieldOptions$NoTarget,
-					customFields);
-		}
+var _user$project$Components_FieldOptions$getTargets = function (_p8) {
+	return _elm_lang$core$Array$toList(
+		function (_) {
+			return _.targets;
+		}(
+			_user$project$Base$stateC(_p8)));
+};
+var _user$project$Components_FieldOptions$Props = F2(
+	function (a, b) {
+		return {customFields: a, numFields: b};
 	});
+var _user$project$Components_FieldOptions$Model = function (a) {
+	return {targets: a};
+};
 var _user$project$Components_FieldOptions$UpdateNumFields = function (a) {
 	return {ctor: 'UpdateNumFields', _0: a};
 };
-var _user$project$Components_FieldOptions$setNumFields = function (_p7) {
+var _user$project$Components_FieldOptions$setNumFields = function (_p9) {
 	return _user$project$Base$updateC(
-		_user$project$Components_FieldOptions$UpdateNumFields(_p7));
+		_user$project$Components_FieldOptions$UpdateNumFields(_p9));
 };
 var _user$project$Components_FieldOptions$TargetUpdated = F2(
 	function (a, b) {
@@ -10389,8 +11854,8 @@ var _user$project$Components_FieldOptions$viewSelect = F3(
 			options);
 	});
 var _user$project$Components_FieldOptions$view = F2(
-	function (props, _p8) {
-		var _p9 = _p8;
+	function (props, _p10) {
+		var _p11 = _p10;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -10401,7 +11866,7 @@ var _user$project$Components_FieldOptions$view = F2(
 				A2(
 					_elm_lang$core$Array$indexedMap,
 					_user$project$Components_FieldOptions$viewSelect(props.customFields),
-					_p9.targets)));
+					_p11.targets)));
 	});
 var _user$project$Components_FieldOptions$component = function (props) {
 	return {
@@ -10412,48 +11877,10 @@ var _user$project$Components_FieldOptions$component = function (props) {
 	};
 };
 
-var _user$project$Components_Uploader$emptyTask = function (projectId) {
-	return {
-		name: _elm_lang$core$Maybe$Nothing,
-		description: _elm_lang$core$Maybe$Nothing,
-		dueDate: _elm_lang$core$Maybe$Nothing,
-		projects: _elm_lang$core$Maybe$Just(
-			_elm_lang$core$Native_List.fromArray(
-				[projectId]))
-	};
-};
-var _user$project$Components_Uploader$addRecordToTask = F2(
-	function (_p0, task) {
-		var _p1 = _p0;
-		var _p3 = _p1._0;
-		var _p2 = _p1._1;
-		switch (_p2.ctor) {
-			case 'NameTarget':
-				return _elm_lang$core$Native_Utils.update(
-					task,
-					{
-						name: _elm_lang$core$Maybe$Just(_p3)
-					});
-			case 'DescriptionTarget':
-				return _elm_lang$core$Native_Utils.update(
-					task,
-					{
-						description: _elm_lang$core$Maybe$Just(_p3)
-					});
-			case 'DueDateTarget':
-				return _elm_lang$core$Native_Utils.update(
-					task,
-					{
-						dueDate: _elm_lang$core$Maybe$Just(_p3)
-					});
-			default:
-				return task;
-		}
-	});
 var _user$project$Components_Uploader$view = F2(
-	function (_p5, _p4) {
-		var _p6 = _p5;
-		var _p7 = _p4;
+	function (_p1, _p0) {
+		var _p2 = _p1;
+		var _p3 = _p0;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -10466,17 +11893,17 @@ var _user$project$Components_Uploader$view = F2(
 					_elm_lang$core$String$concat(
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$core$Basics$toString(_p7.recordsProcessed),
+								_elm_lang$core$Basics$toString(_p3.recordsProcessed),
 								' / ',
 								_elm_lang$core$Basics$toString(
-								_elm_lang$core$List$length(_p6.records))
+								_elm_lang$core$List$length(_p2.records))
 							])))
 				]));
 	});
 var _user$project$Components_Uploader$update = F3(
 	function (props, msg, model) {
-		var _p8 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
-		if (_p8._0.ctor === 'Ok') {
+		var _p4 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		if (_p4._0.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -10506,12 +11933,12 @@ var _user$project$Components_Uploader$uploadRecord = F2(
 				function (v0, v1) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
-			record,
-			props.fieldTargets);
+			props.fieldTargets,
+			record);
 		var newTask = A3(
 			_elm_lang$core$List$foldr,
-			_user$project$Components_Uploader$addRecordToTask,
-			_user$project$Components_Uploader$emptyTask(props.projectId),
+			_elm_lang$core$Basics$uncurry(_user$project$Asana_Target$updateTask),
+			_user$project$Asana_Target$emptyTask(props.projectId),
 			fieldSpecs);
 		return A2(
 			_elm_lang$core$Platform_Cmd$map,
@@ -10530,7 +11957,7 @@ var _user$project$Components_Uploader$init = function (props) {
 	var model = {recordsProcessed: 0};
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
-var _user$project$Components_Uploader$component = function (props) {
+var _user$project$Components_Uploader$spec = function (props) {
 	return {
 		init: _user$project$Components_Uploader$init(props),
 		update: _user$project$Components_Uploader$update(props),
@@ -10638,7 +12065,7 @@ var _user$project$Components_FieldMatcher$update = F3(
 				}
 			default:
 				var _p8 = _user$project$Base$initC(
-					_user$project$Components_Uploader$component(
+					_user$project$Components_Uploader$spec(
 						{
 							token: props.token,
 							projectId: props.projectId,
@@ -11314,17 +12741,17 @@ var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
 var _user$project$Components_Asana$updateMatcher = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
-		var _p8 = _p2.token;
+		var _p9 = _p2.token;
 		var _p3 = _p0;
-		var _p7 = _p3._0;
+		var _p8 = _p3._0;
 		var _p4 = {
 			ctor: '_Tuple3',
-			_0: _user$project$Components_Asana$getSelectedProject(_p7),
-			_1: _user$project$Components_Csv$getHeaders(_p7.csv),
-			_2: _user$project$Components_Csv$getRecords(_p7.csv)
+			_0: _user$project$Components_Asana$getSelectedProject(_p8),
+			_1: _user$project$Components_Csv$getHeaders(_p8.csv),
+			_2: _user$project$Components_Csv$getRecords(_p8.csv)
 		};
 		if ((((_p4.ctor === '_Tuple3') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === 'Just')) && (_p4._2.ctor === 'Just')) {
-			var _p6 = _p4._1._0;
+			var _p7 = _p4._1._0;
 			var _p5 = A2(
 				_user$project$Base$mapCmd,
 				_user$project$Components_Asana$FieldMatcherMsg,
@@ -11332,17 +12759,34 @@ var _user$project$Components_Asana$updateMatcher = F2(
 					_user$project$Components_ApiResource$component(
 						{
 							childSpec: function (project) {
-								var numFields = _elm_lang$core$List$length(_p6);
-								var customFields = A2(
+								var numFields = _elm_lang$core$List$length(_p7);
+								var customFieldIds = A2(
 									_elm_lang$core$List$map,
-									function (_) {
-										return _.customField;
+									function (_p6) {
+										return function (_) {
+											return _.id;
+										}(
+											function (_) {
+												return _.customField;
+											}(_p6));
 									},
 									project.customFieldSettings);
-								return _user$project$Components_FieldMatcher$component(
-									{token: _p8, projectId: project.id, csvHeaders: _p6, csvRecords: _p4._2._0, customFields: customFields});
+								return _user$project$Components_ApiParallelResource$component(
+									{
+										childSpec: function (customFieldInfos) {
+											return _user$project$Components_FieldMatcher$component(
+												{token: _p9, projectId: project.id, csvHeaders: _p7, csvRecords: _p4._2._0, customFields: customFieldInfos});
+										},
+										fetches: A2(
+											_elm_lang$core$List$map,
+											A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
+											customFieldIds),
+										unloadedView: _user$project$CommonViews$unloadedView,
+										loadingView: _user$project$CommonViews$loadingIndicator,
+										errorView: _user$project$CommonViews$errorView
+									});
 							},
-							fetch: A2(_user$project$Asana_Api$project, _p4._0._0.id, _p8),
+							fetch: A2(_user$project$Asana_Api$project, _p4._0._0.id, _p9),
 							unloadedView: _user$project$CommonViews$unloadedView,
 							loadingView: _user$project$CommonViews$loadingIndicator,
 							errorView: _user$project$CommonViews$errorView
@@ -11352,7 +12796,7 @@ var _user$project$Components_Asana$updateMatcher = F2(
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p7,
+					_p8,
 					{
 						fieldMatcher: _elm_lang$core$Maybe$Just(matcher)
 					}),
@@ -11362,17 +12806,17 @@ var _user$project$Components_Asana$updateMatcher = F2(
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p7,
+					_p8,
 					{fieldMatcher: _elm_lang$core$Maybe$Nothing}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		}
 	});
 var _user$project$Components_Asana$viewMatcher = F2(
-	function (props, _p9) {
-		var _p10 = _p9;
-		var _p11 = _p10.fieldMatcher;
-		if (_p11.ctor === 'Just') {
+	function (props, _p10) {
+		var _p11 = _p10;
+		var _p12 = _p11.fieldMatcher;
+		if (_p12.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -11384,7 +12828,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 						A2(
 						_elm_lang$html$Html_App$map,
 						_user$project$Components_Asana$FieldMatcherMsg,
-						_user$project$Base$viewC(_p11._0))
+						_user$project$Base$viewC(_p12._0))
 					]));
 		} else {
 			return A2(
@@ -11403,18 +12847,18 @@ var _user$project$Components_Asana$CsvMsg = function (a) {
 var _user$project$Components_Asana$FormMsg = function (a) {
 	return {ctor: 'FormMsg', _0: a};
 };
-var _user$project$Components_Asana$init = function (_p12) {
-	var _p13 = _p12;
-	var _p16 = _p13.token;
-	var _p14 = A2(
+var _user$project$Components_Asana$init = function (_p13) {
+	var _p14 = _p13;
+	var _p17 = _p14.token;
+	var _p15 = A2(
 		_user$project$Base$mapCmd,
 		_user$project$Components_Asana$CsvMsg,
 		_user$project$Base$initC(
 			_user$project$Components_Csv$spec(
 				{})));
-	var csv = _p14._0;
-	var csvCmd = _p14._1;
-	var _p15 = A2(
+	var csv = _p15._0;
+	var csvCmd = _p15._1;
+	var _p16 = A2(
 		_user$project$Base$mapCmd,
 		_user$project$Components_Asana$FormMsg,
 		_user$project$Base$initC(
@@ -11422,15 +12866,15 @@ var _user$project$Components_Asana$init = function (_p12) {
 				{
 					childSpec: function (user) {
 						return _user$project$Components_Form$component(
-							{token: _p16, user: user});
+							{token: _p17, user: user});
 					},
-					fetch: _user$project$Asana_Api$me(_p16),
+					fetch: _user$project$Asana_Api$me(_p17),
 					unloadedView: _user$project$CommonViews$unloadedView,
 					loadingView: _user$project$CommonViews$loadingIndicator,
 					errorView: _user$project$CommonViews$errorView
 				})));
-	var form = _p15._0;
-	var formCmd = _p15._1;
+	var form = _p16._0;
+	var formCmd = _p16._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
 			[formCmd, csvCmd]));
@@ -11441,29 +12885,29 @@ var _user$project$Components_Asana$init = function (_p12) {
 	};
 };
 var _user$project$Components_Asana$subscriptions = F2(
-	function (_p18, _p17) {
-		var _p19 = _p17;
+	function (_p19, _p18) {
+		var _p20 = _p18;
 		var csvSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$CsvMsg,
-			_user$project$Base$subscriptionsC(_p19.csv));
+			_user$project$Base$subscriptionsC(_p20.csv));
 		var formSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$FormMsg,
-			_user$project$Base$subscriptionsC(_p19.form));
+			_user$project$Base$subscriptionsC(_p20.form));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[formSubs, csvSubs]));
 	});
 var _user$project$Components_Asana$processMessage = F3(
 	function (props, msg, model) {
-		var _p20 = msg;
-		switch (_p20.ctor) {
+		var _p21 = msg;
+		switch (_p21.ctor) {
 			case 'FormMsg':
 				var project = _user$project$Components_Asana$getSelectedProject(model);
-				var _p21 = A2(_user$project$Base$updateC, _p20._0, model.form);
-				var form$ = _p21._0;
-				var formCmd = _p21._1;
+				var _p22 = A2(_user$project$Base$updateC, _p21._0, model.form);
+				var form$ = _p22._0;
+				var formCmd = _p22._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{form: form$});
@@ -11477,9 +12921,9 @@ var _user$project$Components_Asana$processMessage = F3(
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			case 'CsvMsg':
 				var headers = _user$project$Components_Csv$getHeaders(model.csv);
-				var _p22 = A2(_user$project$Base$updateC, _p20._0, model.csv);
-				var csv$ = _p22._0;
-				var csvCmd = _p22._1;
+				var _p23 = A2(_user$project$Base$updateC, _p21._0, model.csv);
+				var csv$ = _p23._0;
+				var csvCmd = _p23._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{csv: csv$});
@@ -11492,11 +12936,11 @@ var _user$project$Components_Asana$processMessage = F3(
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			default:
-				var _p23 = model.fieldMatcher;
-				if (_p23.ctor === 'Just') {
-					var _p24 = A2(_user$project$Base$updateC, _p20._0, _p23._0);
-					var matcher$ = _p24._0;
-					var matcherCmd = _p24._1;
+				var _p24 = model.fieldMatcher;
+				if (_p24.ctor === 'Just') {
+					var _p25 = A2(_user$project$Base$updateC, _p21._0, _p24._0);
+					var matcher$ = _p25._0;
+					var matcherCmd = _p25._1;
 					var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FieldMatcherMsg, matcherCmd);
 					return {
 						ctor: '_Tuple2',

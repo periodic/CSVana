@@ -9,6 +9,7 @@ import Asana.Model as Asana
 import Base
 import CommonViews
 import Components.ApiResource as ApiResource
+import Components.ApiParallelResource as ApiParallelResource
 import Components.Csv as Csv
 import Components.FieldMatcher as FieldMatcher
 import Components.Form as Form
@@ -20,12 +21,16 @@ type alias Props =
 type Msg
     = FormMsg (ApiResource.Msg Asana.User Form.Msg)
     | CsvMsg Csv.Msg
-    | FieldMatcherMsg (ApiResource.Msg Asana.Project FieldMatcher.Msg)
+    | FieldMatcherMsg (ApiResource.Msg Asana.Project (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
 
 type alias Model =
     { form : ApiResource.Component Asana.User Form.Model Form.Msg
     , csv : Csv.Component
-    , fieldMatcher : Maybe (ApiResource.Component Asana.Project FieldMatcher.Model FieldMatcher.Msg)
+    , fieldMatcher : Maybe
+        (ApiResource.Component
+            Asana.Project
+            (ApiParallelResource.Model Asana.CustomFieldInfo FieldMatcher.Model FieldMatcher.Msg)
+            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
     }
 
 spec : Props -> Base.Spec Model Msg
@@ -119,10 +124,10 @@ updateMatcher {token} (model, cmd) =
                     ApiResource.component
                         { childSpec = \project ->
                             let
-                                customFieldIds = List.map .customField.id project.customFieldSettings
+                                customFieldIds = List.map (.customField >> .id) project.customFieldSettings
                                 numFields = List.length headers
                             in
-                                ApiResource.component 
+                                ApiParallelResource.component 
                                     { childSpec = \customFieldInfos ->
                                         FieldMatcher.component
                                             { token = token
@@ -131,7 +136,7 @@ updateMatcher {token} (model, cmd) =
                                             , csvRecords = records
                                             , customFields = customFieldInfos
                                             }
-                                    , fetch = Cmd.batch <| List.map (Api.customField) customFieldIds
+                                    , fetches = List.map (flip Api.customField token) customFieldIds
                                     , unloadedView = CommonViews.unloadedView
                                     , loadingView = CommonViews.loadingIndicator
                                     , errorView = CommonViews.errorView

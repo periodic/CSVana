@@ -1,5 +1,7 @@
-String 1,String 2,Date,Number
-1A,2A,2016-12-01,1
-1B,2B,2016-12-02,2
-1C,2C,2016-12-03,3
-1D,2D,2016-12-04,4
+Name,Description,Date Only,Date With Time, Custom String, Custom Number, Custom Enum
+"Task 1", "Desc 1", "2016-11-24T08:00:00Z", "", "String1", "1" , "Option1"
+"Task 2", "Desc 2", "2016-11-24", "", "String2", "2.00", "Option2"
+"Task 3", "Desc 3", "11/24/2016 16:00:00", "", "String3", "3.0001", "Invalid"
+"Task 4", "Desc 4", "", "2016-11-24", "String4", "-4", ""
+"Task 5", "Desc 5", "", "2016-11-24T08:00:00Z", "String5", "", ""
+"Task 6", "Desc 6", "", "11/24/2016 12:00:00", "String6", "1e5", ""

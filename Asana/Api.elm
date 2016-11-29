@@ -106,7 +106,7 @@ project projectId =
 customField : Asana.CustomFieldId -> Token -> Cmd (ApiResult Asana.CustomFieldInfo)
 customField customFieldId =
     let
-        path = "/custom_field/" ++ customFieldId
+        path = "/custom_fields/" ++ customFieldId
     in
         apiGetRequest path [] Asana.customFieldInfoDecoder
 

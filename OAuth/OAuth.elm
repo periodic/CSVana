@@ -11,8 +11,6 @@ port module OAuth.OAuth exposing
     )
 
 import String exposing (..)
-import Navigation exposing (Location)
-import Task
 
 type alias Token = String
 

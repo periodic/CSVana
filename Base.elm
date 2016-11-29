@@ -68,3 +68,11 @@ mapSnd f (c, a) =
 
 mapCmd : (a -> b) -> (c, Cmd a) -> (c, Cmd b)
 mapCmd f = mapSnd (Cmd.map f)
+
+isJust : Maybe a -> Bool
+isJust maybe =
+    case maybe of
+        Just _ ->
+            True
+        Nothing ->
+            False

@@ -11,7 +11,7 @@ import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
 
 type alias Props =
-    { customFields : List Asana.CustomField
+    { customFields : List Asana.CustomFieldInfo
     , numFields : Int
     }
 
@@ -75,7 +75,7 @@ view props {targets} =
     div [ class "FieldOptions" ]
         (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
 
-allTargets : List Asana.CustomField -> List Target
+allTargets : List Asana.CustomFieldInfo -> List Target
 allTargets customFields =
     let
         customFieldTargets = List.map Target.CustomField customFields
@@ -84,11 +84,12 @@ allTargets customFields =
             , Target.Name
             , Target.Description
             , Target.DueDate
+            , Target.DueTime
             ]
     in
         genericTargets ++ customFieldTargets
 
-viewSelect : List Asana.CustomField -> Int -> Target -> Html Msg
+viewSelect : List Asana.CustomFieldInfo -> Int -> Target -> Html Msg
 viewSelect customFields index selectedTarget =
     let
         targets = allTargets customFields
@@ -96,7 +97,7 @@ viewSelect customFields index selectedTarget =
     in
         select [ class "FieldOptions-select", Events.on "change" (onChange index customFields) ] options
 
-onChange : Int -> List Asana.CustomField -> Json.Decoder Msg
+onChange : Int -> List Asana.CustomFieldInfo -> Json.Decoder Msg
 onChange index customFields =
     Json.map (TargetUpdated index) <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
 
@@ -116,10 +117,12 @@ targetString target =
             "Description"
         Target.DueDate ->
             "Due Date"
+        Target.DueTime ->
+            "Due Time"
         Target.CustomField customField ->
-            "CF: " ++ customField.name
+            "CF: " ++ Asana.customFieldName customField
 
-targetFromString : List Asana.CustomField -> String -> Target
+targetFromString : List Asana.CustomFieldInfo -> String -> Target
 targetFromString customFields str =
     case str of
         "None" ->
@@ -130,11 +133,12 @@ targetFromString customFields str =
             Target.Description
         "Due Date" ->
             Target.DueDate
+        "Due Time" ->
+            Target.DueTime
         str ->
-            List.foldr
-                (\customField target ->
-                    if str == "CF: " ++ customField.name
-                        then Target.CustomField customField
-                        else target)
-                Target.None
-                customFields
+            matchCustomFieldName str customFields |> Maybe.map Target.CustomField |> Maybe.withDefault Target.None
+
+matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
+matchCustomFieldName str =
+    List.head << List.filter (Asana.customFieldName >> (++) "CF: " >> (==) str)
+
