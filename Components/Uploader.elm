@@ -19,12 +19,8 @@ type alias Props =
     , fieldTargets : List Target.Target
     }
 
-type alias Model =
-    { recordsProcessed : Int
-    }
-
 type Msg =
-    RecordProcessed (Api.ApiResult Asana.Task)
+    RecordProcessed Int (Api.ApiResult Asana.Task)
 
 type alias Spec = Base.Spec Model Msg
 type alias Component = Base.Component Model Msg
@@ -40,38 +36,84 @@ spec props =
 --------------------------------------------------------------------------------
 -- Private
 
+type Error
+    = ParseError
+        { msg : String
+        , row : Int
+        , col : Int
+        }
+    | UploadError
+        { msg : String
+        , row : Int
+        }
+
+type alias Model =
+    { recordsProcessed : Int
+    , errors : List Error
+    }
+
 init : Props -> (Model, Cmd Msg)
 init props =
     let
         model =
             { recordsProcessed = 0
+            , errors = []
             }
+        (model', cmds) =
+            List.foldr
+                (\(row, record) (model, cmds) ->
+                    let
+                        (model', cmd) = uploadRecord props row record model
+                    in
+                        (model', cmd :: cmds))
+                (model, [])
+                (List.indexedMap (,) props.records)
         cmd =
-            Cmd.batch <| List.map (uploadRecord props) props.records
+            Cmd.batch cmds
     in
-        (model, cmd)
+        (model', cmd)
 
+uploadRecord : Props -> Int -> Record -> Model -> (Model, Cmd Msg)
+uploadRecord props row record model =
+    let
+        fieldSpecs = List.indexedMap (\i (t, r) -> (i, t, r)) <| List.map2 (,) props.fieldTargets record
+        (newTask, errs) = List.foldr (updateTask row) (Target.emptyTask props.projectId, []) fieldSpecs
+        model' = { model | errors = errs ++ model.errors }
+        cmd = Cmd.map (RecordProcessed row) <| Api.createTask newTask props.token
+    in
+        (model', cmd)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
     case Debug.log "Updater msg" msg of
-        RecordProcessed (Ok _) ->
+        RecordProcessed row (Ok _) ->
             ({ model | recordsProcessed = model.recordsProcessed + 1 }, Cmd.none)
-        RecordProcessed (Err _) ->
-            -- TODO: do something about errors.
-            (model, Cmd.none)
+        RecordProcessed row (Err httpErr) ->
+            ({ model | errors = UploadError { msg = toString httpErr, row = row } :: model.errors }, Cmd.none)
 
+updateTask : Int -> (Int, Target.Target, String) -> (Asana.NewTask, List Error) -> (Asana.NewTask, List Error)
+updateTask row (col, target, value) (task, errors) =
+    case Target.updateTask target value task of
+        Ok task' ->
+            (task', errors)
+        Err msg ->
+            (task, ParseError { msg = msg, row = row, col = col } :: errors)
 
 view : Props -> Model -> Html Msg
-view { records } { recordsProcessed } =
+view { records } { recordsProcessed, errors } =
     div [ class "Uploader" ]
-        [ text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
+        [ div [ class "Uploader-progress" ]
+            [ text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
+        , div [ class "Uploader-errors" ]
+            (List.map viewError errors)
+        ]
 
-uploadRecord : Props -> Record -> Cmd Msg
-uploadRecord props record =
-    let
-        fieldSpecs = List.map2 (,) props.fieldTargets record
-        newTask = List.foldr (uncurry Target.updateTask) (Target.emptyTask props.projectId) fieldSpecs
-    in
-        Cmd.map RecordProcessed <| Api.createTask newTask props.token
-
+viewError : Error -> Html Msg
+viewError error =
+    case error of
+        ParseError { msg, row, col } ->
+            div [ class "Uploader-error" ]
+                [ text <| "Row " ++ toString row ++ ", Col " ++ toString col ++ ": " ++ msg ]
+        UploadError { msg, row } ->
+            div [ class "Uploader-error" ]
+                [ text <| "Row " ++ toString row ++ ": " ++ msg ]

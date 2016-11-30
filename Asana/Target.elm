@@ -25,29 +25,27 @@ emptyTask projectId =
     , customFields = []
     }
 
-updateTask : Target -> String -> Asana.NewTask -> Asana.NewTask
+updateTask : Target -> String -> Asana.NewTask -> Result String Asana.NewTask
 updateTask target value task =
     case target of
         None ->
-            task
+            Ok task
         Name ->
-            { task | name = Just value }
+            Ok { task | name = Just value }
         Description ->
-            { task | description = Just value }
+            Ok { task | description = Just value }
         DueDate ->
             case Date.fromString value of
                 Ok date ->
-                    { task | dueOn = Just <| dateToDueOn date }
+                    Ok { task | dueOn = Just <| dateToDueOn date }
                 Err msg ->
-                    -- TODO: Accumulate errors.
-                    Debug.log msg task
+                    Err <| "Could not parse date from '" ++ value ++ "'"
         DueTime ->
             case Date.fromString value of
                 Ok date ->
-                    { task | dueAt = Just <| dateToDueAt date }
+                    Ok { task | dueAt = Just <| dateToDueAt date }
                 Err msg ->
-                    -- TODO: Accumulate errors.
-                    Debug.log msg task
+                    Err <| "Could not parse date from '" ++ value ++ "'"
         CustomField field ->
             case field of
                 Asana.CustomTextFieldInfo id _ ->
@@ -55,7 +53,7 @@ updateTask target value task =
                         newField = (id, Asana.TextValue value)
                         customFields = newField :: task.customFields
                     in
-                        { task | customFields = customFields }
+                        Ok { task | customFields = customFields }
                 Asana.CustomNumberFieldInfo id _ _ ->
                     case String.toFloat value of
                         Ok num ->
@@ -63,19 +61,20 @@ updateTask target value task =
                                 newField = (id, Asana.NumberValue num)
                                 customFields = newField :: task.customFields
                             in
-                                { task | customFields = customFields }
+                                Ok { task | customFields = customFields }
                         Err msg ->
-                            -- TODO: Accumulate errors.
-                            Debug.log msg task
+                            Err <| "Could not parse number from '" ++ value ++ "'"
                 Asana.CustomEnumFieldInfo id _ options ->
                     let
-                        matchingOptions = List.filter (.name >> (==) value) (Debug.log "All options" options)
+                        matchingOptions = List.filter (.name >> (==) value) options
                     in
-                        case List.head (Debug.log ("Matching options for '" ++ value ++ "'") matchingOptions) of
+                        case List.head matchingOptions of
                             Just option ->
-                                { task | customFields = (id, Asana.EnumValue option) :: task.customFields }
+                                Ok { task | customFields = (id, Asana.EnumValue option) :: task.customFields }
                             Nothing ->
-                                task
+                                if String.isEmpty value
+                                    then Ok task
+                                    else Err <| "Could not parse a valid enum option from '" ++ value ++ "'"
 
 dateToDueOn : Date -> String
 dateToDueOn date =

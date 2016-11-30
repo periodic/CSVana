@@ -10406,13 +10406,22 @@ var _user$project$Base$isJust = function (maybe) {
 		return false;
 	}
 };
-var _user$project$Base$mapSnd = F2(
-	function (f, _p1) {
+var _user$project$Base$pairMap = F3(
+	function (f, g, _p1) {
 		var _p2 = _p1;
 		return {
 			ctor: '_Tuple2',
-			_0: _p2._0,
-			_1: f(_p2._1)
+			_0: f(_p2._0),
+			_1: g(_p2._1)
+		};
+	});
+var _user$project$Base$mapSnd = F2(
+	function (f, _p3) {
+		var _p4 = _p3;
+		return {
+			ctor: '_Tuple2',
+			_0: _p4._0,
+			_1: f(_p4._1)
 		};
 	});
 var _user$project$Base$mapCmd = function (f) {
@@ -10420,68 +10429,68 @@ var _user$project$Base$mapCmd = function (f) {
 		_elm_lang$core$Platform_Cmd$map(f));
 };
 var _user$project$Base$mapFst = F2(
-	function (f, _p3) {
-		var _p4 = _p3;
+	function (f, _p5) {
+		var _p6 = _p5;
 		return {
 			ctor: '_Tuple2',
-			_0: f(_p4._0),
-			_1: _p4._1
+			_0: f(_p6._0),
+			_1: _p6._1
 		};
 	});
-var _user$project$Base$stateC = function (_p5) {
-	var _p6 = _p5;
-	return _p6.state;
-};
-var _user$project$Base$viewC = function (_p7) {
+var _user$project$Base$stateC = function (_p7) {
 	var _p8 = _p7;
-	return _p8.spec.view(_p8.state);
+	return _p8.state;
+};
+var _user$project$Base$viewC = function (_p9) {
+	var _p10 = _p9;
+	return _p10.spec.view(_p10.state);
 };
 var _user$project$Base$viewWrapped = function (f) {
-	return function (_p9) {
+	return function (_p11) {
 		return A2(
 			_elm_lang$html$Html_App$map,
 			f,
-			_user$project$Base$viewC(_p9));
+			_user$project$Base$viewC(_p11));
 	};
 };
-var _user$project$Base$subscriptionsC = function (_p10) {
-	var _p11 = _p10;
-	return _p11.spec.subscriptions(_p11.state);
+var _user$project$Base$subscriptionsC = function (_p12) {
+	var _p13 = _p12;
+	return _p13.spec.subscriptions(_p13.state);
 };
 var _user$project$Base$subscriptionsWrapped = function (f) {
-	return function (_p12) {
+	return function (_p14) {
 		return A2(
 			_elm_lang$core$Platform_Sub$map,
 			f,
-			_user$project$Base$subscriptionsC(_p12));
+			_user$project$Base$subscriptionsC(_p14));
 	};
 };
 var _user$project$Base$updateC = F2(
-	function (msg, _p13) {
-		var _p14 = _p13;
-		var _p16 = _p14.spec;
-		var _p15 = A2(_p16.update, msg, _p14.state);
-		var state$ = _p15._0;
-		var cmd = _p15._1;
+	function (msg, _p15) {
+		var _p16 = _p15;
+		var _p18 = _p16.spec;
+		var _p17 = A2(_p18.update, msg, _p16.state);
+		var state$ = _p17._0;
+		var cmd = _p17._1;
 		return {
 			ctor: '_Tuple2',
-			_0: {spec: _p16, state: state$},
+			_0: {spec: _p18, state: state$},
 			_1: cmd
 		};
 	});
 var _user$project$Base$updateWrapped = F2(
 	function (f, msg) {
-		return function (_p17) {
+		return function (_p19) {
 			return A2(
 				_user$project$Base$mapCmd,
 				f,
-				A2(_user$project$Base$updateC, msg, _p17));
+				A2(_user$project$Base$updateC, msg, _p19));
 		};
 	});
 var _user$project$Base$initC = function (spec) {
-	var _p18 = spec.init;
-	var state = _p18._0;
-	var cmd = _p18._1;
+	var _p20 = spec.init;
+	var state = _p20._0;
+	var cmd = _p20._1;
 	return {
 		ctor: '_Tuple2',
 		_0: {spec: spec, state: state},
@@ -10489,11 +10498,11 @@ var _user$project$Base$initC = function (spec) {
 	};
 };
 var _user$project$Base$initWrapped = function (f) {
-	return function (_p19) {
+	return function (_p21) {
 		return A2(
 			_user$project$Base$mapCmd,
 			f,
-			_user$project$Base$initC(_p19));
+			_user$project$Base$initC(_p21));
 	};
 };
 var _user$project$Base$Spec = F4(
@@ -11027,42 +11036,54 @@ var _user$project$Asana_Target$updateTask = F3(
 		var _p0 = target;
 		switch (_p0.ctor) {
 			case 'None':
-				return task;
+				return _elm_lang$core$Result$Ok(task);
 			case 'Name':
-				return _elm_lang$core$Native_Utils.update(
-					task,
-					{
-						name: _elm_lang$core$Maybe$Just(value)
-					});
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{
+							name: _elm_lang$core$Maybe$Just(value)
+						}));
 			case 'Description':
-				return _elm_lang$core$Native_Utils.update(
-					task,
-					{
-						description: _elm_lang$core$Maybe$Just(value)
-					});
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{
+							description: _elm_lang$core$Maybe$Just(value)
+						}));
 			case 'DueDate':
 				var _p1 = _elm_lang$core$Date$fromString(value);
 				if (_p1.ctor === 'Ok') {
-					return _elm_lang$core$Native_Utils.update(
-						task,
-						{
-							dueOn: _elm_lang$core$Maybe$Just(
-								_user$project$Asana_Target$dateToDueOn(_p1._0))
-						});
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{
+								dueOn: _elm_lang$core$Maybe$Just(
+									_user$project$Asana_Target$dateToDueOn(_p1._0))
+							}));
 				} else {
-					return A2(_elm_lang$core$Debug$log, _p1._0, task);
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Could not parse date from \'',
+							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 				}
 			case 'DueTime':
 				var _p2 = _elm_lang$core$Date$fromString(value);
 				if (_p2.ctor === 'Ok') {
-					return _elm_lang$core$Native_Utils.update(
-						task,
-						{
-							dueAt: _elm_lang$core$Maybe$Just(
-								_user$project$Asana_Target$dateToDueAt(_p2._0))
-						});
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{
+								dueAt: _elm_lang$core$Maybe$Just(
+									_user$project$Asana_Target$dateToDueAt(_p2._0))
+							}));
 				} else {
-					return A2(_elm_lang$core$Debug$log, _p2._0, task);
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Could not parse date from \'',
+							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 				}
 			default:
 				var _p3 = _p0._0;
@@ -11074,9 +11095,10 @@ var _user$project$Asana_Target$updateTask = F3(
 							_1: _user$project$Asana_Model$TextValue(value)
 						};
 						var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
-						return _elm_lang$core$Native_Utils.update(
-							task,
-							{customFields: customFields});
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{customFields: customFields}));
 					case 'CustomNumberFieldInfo':
 						var _p4 = _elm_lang$core$String$toFloat(value);
 						if (_p4.ctor === 'Ok') {
@@ -11086,11 +11108,16 @@ var _user$project$Asana_Target$updateTask = F3(
 								_1: _user$project$Asana_Model$NumberValue(_p4._0)
 							};
 							var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
-							return _elm_lang$core$Native_Utils.update(
-								task,
-								{customFields: customFields});
+							return _elm_lang$core$Result$Ok(
+								_elm_lang$core$Native_Utils.update(
+									task,
+									{customFields: customFields}));
 						} else {
-							return A2(_elm_lang$core$Debug$log, _p4._0, task);
+							return _elm_lang$core$Result$Err(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'Could not parse number from \'',
+									A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 						}
 					default:
 						var matchingOptions = A2(
@@ -11106,30 +11133,28 @@ var _user$project$Asana_Target$updateTask = F3(
 										return _.name;
 									}(_p5));
 							},
-							A2(_elm_lang$core$Debug$log, 'All options', _p3._2));
-						var _p6 = _elm_lang$core$List$head(
-							A2(
-								_elm_lang$core$Debug$log,
+							_p3._2);
+						var _p6 = _elm_lang$core$List$head(matchingOptions);
+						if (_p6.ctor === 'Just') {
+							return _elm_lang$core$Result$Ok(
+								_elm_lang$core$Native_Utils.update(
+									task,
+									{
+										customFields: A2(
+											_elm_lang$core$List_ops['::'],
+											{
+												ctor: '_Tuple2',
+												_0: _p3._0,
+												_1: _user$project$Asana_Model$EnumValue(_p6._0)
+											},
+											task.customFields)
+									}));
+						} else {
+							return _elm_lang$core$String$isEmpty(value) ? _elm_lang$core$Result$Ok(task) : _elm_lang$core$Result$Err(
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									'Matching options for \'',
-									A2(_elm_lang$core$Basics_ops['++'], value, '\'')),
-								matchingOptions));
-						if (_p6.ctor === 'Just') {
-							return _elm_lang$core$Native_Utils.update(
-								task,
-								{
-									customFields: A2(
-										_elm_lang$core$List_ops['::'],
-										{
-											ctor: '_Tuple2',
-											_0: _p3._0,
-											_1: _user$project$Asana_Model$EnumValue(_p6._0)
-										},
-										task.customFields)
-								});
-						} else {
-							return task;
+									'Could not parse a valid enum option from \'',
+									A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 						}
 				}
 		}
@@ -11869,10 +11894,56 @@ var _user$project$Components_FieldOptions$component = function (props) {
 	};
 };
 
+var _user$project$Components_Uploader$viewError = function (error) {
+	var _p0 = error;
+	if (_p0.ctor === 'ParseError') {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Uploader-error')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Row ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(_p0._0.row),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								', Col ',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(_p0._0.col),
+									A2(_elm_lang$core$Basics_ops['++'], ': ', _p0._0.msg))))))
+				]));
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Uploader-error')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Row ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(_p0._0.row),
+							A2(_elm_lang$core$Basics_ops['++'], ': ', _p0._0.msg))))
+				]));
+	}
+};
 var _user$project$Components_Uploader$view = F2(
-	function (_p1, _p0) {
-		var _p2 = _p1;
-		var _p3 = _p0;
+	function (_p2, _p1) {
+		var _p3 = _p2;
+		var _p4 = _p1;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -11881,21 +11952,52 @@ var _user$project$Components_Uploader$view = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$html$Html$text(
-					_elm_lang$core$String$concat(
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$core$Basics$toString(_p3.recordsProcessed),
-								' / ',
-								_elm_lang$core$Basics$toString(
-								_elm_lang$core$List$length(_p2.records))
-							])))
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Uploader-progress')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_elm_lang$core$String$concat(
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$core$Basics$toString(_p4.recordsProcessed),
+										' / ',
+										_elm_lang$core$Basics$toString(
+										_elm_lang$core$List$length(_p3.records))
+									])))
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Uploader-errors')
+						]),
+					A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, _p4.errors))
 				]));
 	});
+var _user$project$Components_Uploader$Props = F4(
+	function (a, b, c, d) {
+		return {token: a, projectId: b, records: c, fieldTargets: d};
+	});
+var _user$project$Components_Uploader$Model = F2(
+	function (a, b) {
+		return {recordsProcessed: a, errors: b};
+	});
+var _user$project$Components_Uploader$RecordProcessed = F2(
+	function (a, b) {
+		return {ctor: 'RecordProcessed', _0: a, _1: b};
+	});
+var _user$project$Components_Uploader$UploadError = function (a) {
+	return {ctor: 'UploadError', _0: a};
+};
 var _user$project$Components_Uploader$update = F3(
 	function (props, msg, model) {
-		var _p4 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
-		if (_p4._0.ctor === 'Ok') {
+		var _p5 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		if (_p5._1.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -11904,47 +12006,126 @@ var _user$project$Components_Uploader$update = F3(
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
-			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						errors: A2(
+							_elm_lang$core$List_ops['::'],
+							_user$project$Components_Uploader$UploadError(
+								{
+									msg: _elm_lang$core$Basics$toString(_p5._1._0),
+									row: _p5._0
+								}),
+							model.errors)
+					}),
+				_1: _elm_lang$core$Platform_Cmd$none
+			};
 		}
 	});
-var _user$project$Components_Uploader$Props = F4(
-	function (a, b, c, d) {
-		return {token: a, projectId: b, records: c, fieldTargets: d};
+var _user$project$Components_Uploader$ParseError = function (a) {
+	return {ctor: 'ParseError', _0: a};
+};
+var _user$project$Components_Uploader$updateTask = F3(
+	function (row, _p7, _p6) {
+		var _p8 = _p7;
+		var _p9 = _p6;
+		var _p12 = _p9._0;
+		var _p11 = _p9._1;
+		var _p10 = A3(_user$project$Asana_Target$updateTask, _p8._1, _p8._2, _p12);
+		if (_p10.ctor === 'Ok') {
+			return {ctor: '_Tuple2', _0: _p10._0, _1: _p11};
+		} else {
+			return {
+				ctor: '_Tuple2',
+				_0: _p12,
+				_1: A2(
+					_elm_lang$core$List_ops['::'],
+					_user$project$Components_Uploader$ParseError(
+						{msg: _p10._0, row: row, col: _p8._0}),
+					_p11)
+			};
+		}
 	});
-var _user$project$Components_Uploader$Model = function (a) {
-	return {recordsProcessed: a};
-};
-var _user$project$Components_Uploader$RecordProcessed = function (a) {
-	return {ctor: 'RecordProcessed', _0: a};
-};
-var _user$project$Components_Uploader$uploadRecord = F2(
-	function (props, record) {
-		var fieldSpecs = A3(
-			_elm_lang$core$List$map2,
+var _user$project$Components_Uploader$uploadRecord = F4(
+	function (props, row, record, model) {
+		var fieldSpecs = A2(
+			_elm_lang$core$List$indexedMap,
+			F2(
+				function (i, _p13) {
+					var _p14 = _p13;
+					return {ctor: '_Tuple3', _0: i, _1: _p14._0, _2: _p14._1};
+				}),
+			A3(
+				_elm_lang$core$List$map2,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				props.fieldTargets,
+				record));
+		var _p15 = A3(
+			_elm_lang$core$List$foldr,
+			_user$project$Components_Uploader$updateTask(row),
+			{
+				ctor: '_Tuple2',
+				_0: _user$project$Asana_Target$emptyTask(props.projectId),
+				_1: _elm_lang$core$Native_List.fromArray(
+					[])
+			},
+			fieldSpecs);
+		var newTask = _p15._0;
+		var errs = _p15._1;
+		var model$ = _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				errors: A2(_elm_lang$core$Basics_ops['++'], errs, model.errors)
+			});
+		var cmd = A2(
+			_elm_lang$core$Platform_Cmd$map,
+			_user$project$Components_Uploader$RecordProcessed(row),
+			A2(_user$project$Asana_Api$createTask, newTask, props.token));
+		return {ctor: '_Tuple2', _0: model$, _1: cmd};
+	});
+var _user$project$Components_Uploader$init = function (props) {
+	var model = {
+		recordsProcessed: 0,
+		errors: _elm_lang$core$Native_List.fromArray(
+			[])
+	};
+	var _p16 = A3(
+		_elm_lang$core$List$foldr,
+		F2(
+			function (_p18, _p17) {
+				var _p19 = _p18;
+				var _p20 = _p17;
+				var _p21 = A4(_user$project$Components_Uploader$uploadRecord, props, _p19._0, _p19._1, _p20._0);
+				var model$ = _p21._0;
+				var cmd = _p21._1;
+				return {
+					ctor: '_Tuple2',
+					_0: model$,
+					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p20._1)
+				};
+			}),
+		{
+			ctor: '_Tuple2',
+			_0: model,
+			_1: _elm_lang$core$Native_List.fromArray(
+				[])
+		},
+		A2(
+			_elm_lang$core$List$indexedMap,
 			F2(
 				function (v0, v1) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
-			props.fieldTargets,
-			record);
-		var newTask = A3(
-			_elm_lang$core$List$foldr,
-			_elm_lang$core$Basics$uncurry(_user$project$Asana_Target$updateTask),
-			_user$project$Asana_Target$emptyTask(props.projectId),
-			fieldSpecs);
-		return A2(
-			_elm_lang$core$Platform_Cmd$map,
-			_user$project$Components_Uploader$RecordProcessed,
-			A2(_user$project$Asana_Api$createTask, newTask, props.token));
-	});
-var _user$project$Components_Uploader$init = function (props) {
-	var cmd = _elm_lang$core$Platform_Cmd$batch(
-		A2(
-			_elm_lang$core$List$map,
-			_user$project$Components_Uploader$uploadRecord(props),
 			props.records));
-	var model = {recordsProcessed: 0};
-	return {ctor: '_Tuple2', _0: model, _1: cmd};
+	var model$ = _p16._0;
+	var cmds = _p16._1;
+	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
+	return {ctor: '_Tuple2', _0: model$, _1: cmd};
 };
 var _user$project$Components_Uploader$spec = function (props) {
 	return {
