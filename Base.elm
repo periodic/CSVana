@@ -66,6 +66,10 @@ mapSnd : (a -> b) -> (c, a) -> (c, b)
 mapSnd f (c, a) =
     (c, f a)
 
+pairMap : (a -> c) -> (b -> d) -> (a, b) -> (c, d)
+pairMap f g (a, b) =
+    (f a, g b)
+
 mapCmd : (a -> b) -> (c, Cmd a) -> (c, Cmd b)
 mapCmd f = mapSnd (Cmd.map f)
 

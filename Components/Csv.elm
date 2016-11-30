@@ -79,7 +79,6 @@ subscriptions _ _ = FileReader.fileChunk MoreData
 view : Props -> Model -> Html Msg
 view _ model =
     div [ class "Csv" ] 
-        [ h3 [] [ text "Upload a CSV file:"]
-        , div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
+        [ div [] [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
         ]
 

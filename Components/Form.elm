@@ -102,8 +102,7 @@ view _ model =
                     div [] [ input [] [] ]
     in
         div [ class "AsanaForm" ]
-            [ h3 [] [ text "Select an Asana project:" ]
-            , div [ class "AsanaForm-workspaces" ]
+            [ div [ class "AsanaForm-workspaces" ]
                 [ label [ class "AsanaForm-workspacesLabel" ] [ text "Workspace: " ]
                 , workspaces
                 ]

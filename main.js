@@ -11628,14 +11628,6 @@ var _user$project$Components_Csv$view = F2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_elm_lang$html$Html$h3,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text('Upload a CSV file:')
-						])),
-					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[]),
@@ -11943,10 +11935,7 @@ var _user$project$Components_Uploader$uploadRecord = F2(
 		return A2(
 			_elm_lang$core$Platform_Cmd$map,
 			_user$project$Components_Uploader$RecordProcessed,
-			A2(
-				_user$project$Asana_Api$createTask,
-				A2(_elm_lang$core$Debug$log, 'Creating task', newTask),
-				props.token));
+			A2(_user$project$Asana_Api$createTask, newTask, props.token));
 	});
 var _user$project$Components_Uploader$init = function (props) {
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
@@ -12664,14 +12653,6 @@ var _user$project$Components_Form$view = F2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_elm_lang$html$Html$h3,
-					_elm_lang$core$Native_List.fromArray(
-						[]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text('Select an Asana project:')
-						])),
-					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -12781,13 +12762,13 @@ var _user$project$Components_Asana$updateMatcher = F2(
 											_elm_lang$core$List$map,
 											A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
 											customFieldIds),
-										unloadedView: _user$project$CommonViews$unloadedView,
+										unloadedView: _user$project$CommonViews$loadingIndicator,
 										loadingView: _user$project$CommonViews$loadingIndicator,
 										errorView: _user$project$CommonViews$errorView
 									});
 							},
 							fetch: A2(_user$project$Asana_Api$project, _p4._0._0.id, _p9),
-							unloadedView: _user$project$CommonViews$unloadedView,
+							unloadedView: _user$project$CommonViews$loadingIndicator,
 							loadingView: _user$project$CommonViews$loadingIndicator,
 							errorView: _user$project$CommonViews$errorView
 						})));
@@ -12869,7 +12850,7 @@ var _user$project$Components_Asana$init = function (_p13) {
 							{token: _p17, user: user});
 					},
 					fetch: _user$project$Asana_Api$me(_p17),
-					unloadedView: _user$project$CommonViews$unloadedView,
+					unloadedView: _user$project$CommonViews$loadingIndicator,
 					loadingView: _user$project$CommonViews$loadingIndicator,
 					errorView: _user$project$CommonViews$errorView
 				})));
@@ -12913,9 +12894,7 @@ var _user$project$Components_Asana$processMessage = F3(
 					{form: form$});
 				var project$ = _user$project$Components_Asana$getSelectedProject(model$);
 				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FormMsg, formCmd);
-				return (!_elm_lang$core$Native_Utils.eq(
-					A2(_elm_lang$core$Debug$log, 'Old Project', project),
-					A2(_elm_lang$core$Debug$log, 'New project', project$))) ? A2(
+				return (!_elm_lang$core$Native_Utils.eq(project, project$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
@@ -12929,9 +12908,7 @@ var _user$project$Components_Asana$processMessage = F3(
 					{csv: csv$});
 				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$CsvMsg, csvCmd);
 				var headers$ = _user$project$Components_Csv$getHeaders(csv$);
-				return (!_elm_lang$core$Native_Utils.eq(
-					A2(_elm_lang$core$Debug$log, 'Old headers', headers),
-					A2(_elm_lang$core$Debug$log, 'New headers', headers$))) ? A2(
+				return (!_elm_lang$core$Native_Utils.eq(headers, headers$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
@@ -12976,6 +12953,14 @@ var _user$project$Components_Asana$viewInputs = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(
+							_elm_lang$html$Html$h3,
+							_elm_lang$core$Native_List.fromArray(
+								[]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Select an Asana project:')
+								])),
+							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$FormMsg,
 							_user$project$Base$viewC(model.form))
@@ -12988,6 +12973,14 @@ var _user$project$Components_Asana$viewInputs = F2(
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
+							A2(
+							_elm_lang$html$Html$h3,
+							_elm_lang$core$Native_List.fromArray(
+								[]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Upload a CSV file:')
+								])),
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$CsvMsg,

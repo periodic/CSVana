@@ -1,6 +1,6 @@
 module Components.Asana exposing (Props, Msg, Model, spec)
 
-import Html exposing (Html, div)
+import Html exposing (Html, div, h3, text)
 import Html.App
 import Html.Attributes exposing (class)
 
@@ -54,7 +54,7 @@ init {token} =
                     , user = user
                     }
             , fetch = Api.me token
-            , unloadedView = CommonViews.unloadedView
+            , unloadedView = CommonViews.loadingIndicator
             , loadingView = CommonViews.loadingIndicator
             , errorView = CommonViews.errorView
             }
@@ -137,12 +137,12 @@ updateMatcher {token} (model, cmd) =
                                             , customFields = customFieldInfos
                                             }
                                     , fetches = List.map (flip Api.customField token) customFieldIds
-                                    , unloadedView = CommonViews.unloadedView
+                                    , unloadedView = CommonViews.loadingIndicator
                                     , loadingView = CommonViews.loadingIndicator
                                     , errorView = CommonViews.errorView
                                     }
                         , fetch = Api.project project.id token
-                        , unloadedView = CommonViews.unloadedView
+                        , unloadedView = CommonViews.loadingIndicator
                         , loadingView = CommonViews.loadingIndicator
                         , errorView = CommonViews.errorView
                         }
@@ -168,9 +168,13 @@ viewInputs : Props -> Model -> Html Msg
 viewInputs props model =
     div [ class "Asana-inputs" ]
         [ div [ class "Asana-form" ]
-            [ Html.App.map FormMsg <| Base.viewC model.form ]
+            [ h3 [] [ text "Select an Asana project:" ]
+            , Html.App.map FormMsg <| Base.viewC model.form
+            ]
         , div [ class "Asana-csv" ]
-            [ Html.App.map CsvMsg <| Base.viewC model.csv ]
+            [ h3 [] [ text "Upload a CSV file:"]
+            , Html.App.map CsvMsg <| Base.viewC model.csv
+            ]
         ]
 
 viewMatcher : Props -> Model -> Html Msg
