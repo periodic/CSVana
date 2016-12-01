@@ -33,8 +33,15 @@ create props =
 --------------------------------------------------------------------------------
 -- Private
 
-type alias Model
-    = Maybe Target
+type Model
+    = None
+    | Name
+    | Description
+    | DueDate
+    | DueTime
+    | CustomText Asana.CustomFieldInfo
+    | CustomNumber Asana.CustomFieldInfo
+    | CustomEnum Asana.CustomFieldInfo
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -90,19 +97,30 @@ targetString target =
         Target.CustomField customField ->
             "Custom Field: " ++ Asana.customFieldName customField
 
-targetFromString : List Asana.CustomFieldInfo -> String -> Maybe Target
-targetFromString customFields str =
+selectedModel : List Asana.CustomFieldInfo -> String -> Model
+selectedModel customFields str =
     case str of
         "Name" ->
-            Just Target.Name
+            Just Name
         "Description" ->
-            Just Target.Description
+            Just Description
         "Due Date" ->
             Just Target.DueDate
         "Due Date with time" ->
             Just Target.DueTime
         str ->
-            matchCustomFieldName str customFields |> Maybe.map Target.CustomField
+            matchCustomFieldName str customFields |> Maybe.map customFieldToModel |> Maybe.withDefault None
+
+customFieldToModel : Asana.CustomFieldInfo -> Model
+customFieldToModel customField =
+    case customField.fieldType of
+        Asana.CustomText ->
+            CustomText customField
+        Asana.CustomNumber ->
+            CustomNumber customField
+        Asana.CustomEnum ->
+            CustomEnum customField
+
 
 allTargets : List Asana.CustomFieldInfo -> List Target
 allTargets customFields =

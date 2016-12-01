@@ -10,6 +10,7 @@ import Asana.Model as Asana
 type Target
     = Name
     | Description
+    | Completed (Dict String Bool)
     | DueDate
     | DueTime
     | CustomField Asana.CustomFieldInfo

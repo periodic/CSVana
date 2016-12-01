@@ -77,6 +77,16 @@ asRoot (instance, cmd) =
     , view = view
     }
 
+staticComponent : (Html msg) -> (Instance () msg, Cmd msg)
+staticComponent view =
+    create
+        { init = ((), Cmd.none)
+        , view = always view
+        , update = always <| always ((), Cmd.none)
+        , subscriptions = always Sub.none
+        , get = always ()
+        }
+
 -- Utility
 -- TODO: move to it's own file.
 
