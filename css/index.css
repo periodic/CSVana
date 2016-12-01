@@ -1,6 +1,36 @@
+body {
+    background-color: #eff0f1;
+    font-family: "proxima-nova","Helvetica Neue",Arial,sans-serif;
+    color: #1B2432;
+    font-size: 14px;
+}
+
 .Main {
     width: 840px;
     margin: auto;
+    background-color: #fff;
+    border-radius: 3px 3px 0 0;
+    margin-top: 20px;
+    box-shadow: 0 1px 3px rbga(0,0,0,0.3);
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.Main-header {
+    border-bottom: 1px solid #e1e2e4;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 32px;
+}
+
+h2 {
+    font-size: 28px;
+}
+
+h3 {
+    font-size: 20px;
 }
 
 .Asana {
@@ -11,13 +41,17 @@
 
 .Asana-inputs {
     display: flex;
-    justify-content: center;
-    border: 1px solid #eee;
+    justify-content: space-between;
 }
 
 .Asana-form, .Asana-csv {
-    width: 400px;
+    width: 300px;
     padding: 15px;
+}
+
+.Asana-arrow {
+    align-self: center;
+    font-size: 28px;
 }
 
 .AsanaForm-workspaces, .AsanaForm-projects {

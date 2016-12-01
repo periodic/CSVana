@@ -10398,6 +10398,111 @@ var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoString = function (date) {
 };
 var _rluiten$elm_date_extra$Date_Extra_Format$isoFormat = '%Y-%m-%dT%H:%M:%S';
 
+var _user$project$Asana_Model$Resource = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _user$project$Asana_Model$User = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, email: c, photo: d, workspaces: e};
+	});
+var _user$project$Asana_Model$Photos = F5(
+	function (a, b, c, d, e) {
+		return {image_21x21: a, image_27x27: b, image_36x36: c, image_60x60: d, image_128x128: e};
+	});
+var _user$project$Asana_Model$Workspace = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _user$project$Asana_Model$Project = F3(
+	function (a, b, c) {
+		return {id: a, name: b, customFieldSettings: c};
+	});
+var _user$project$Asana_Model$CustomFieldSetting = F2(
+	function (a, b) {
+		return {id: a, customField: b};
+	});
+var _user$project$Asana_Model$EnumOption = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _user$project$Asana_Model$CustomField = F3(
+	function (a, b, c) {
+		return {id: a, fieldType: b, name: c};
+	});
+var _user$project$Asana_Model$Task = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, description: c, dueOn: d, dueAt: e};
+	});
+var _user$project$Asana_Model$CustomFieldEnumValue = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _user$project$Asana_Model$CustomFieldValue = F4(
+	function (a, b, c, d) {
+		return {id: a, name: b, fieldType: c, value: d};
+	});
+var _user$project$Asana_Model$NewTask = F6(
+	function (a, b, c, d, e, f) {
+		return {name: a, dueOn: b, dueAt: c, description: d, projects: e, customFields: f};
+	});
+var _user$project$Asana_Model$CustomUnknown = function (a) {
+	return {ctor: 'CustomUnknown', _0: a};
+};
+var _user$project$Asana_Model$CustomEnum = {ctor: 'CustomEnum'};
+var _user$project$Asana_Model$CustomNumber = {ctor: 'CustomNumber'};
+var _user$project$Asana_Model$CustomText = {ctor: 'CustomText'};
+var _user$project$Asana_Model$customFieldInfoToCustomField = function (info) {
+	var _p0 = info;
+	switch (_p0.ctor) {
+		case 'CustomTextFieldInfo':
+			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomText, name: _p0._1};
+		case 'CustomNumberFieldInfo':
+			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomNumber, name: _p0._1};
+		default:
+			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomEnum, name: _p0._1};
+	}
+};
+var _user$project$Asana_Model$customFieldId = function (_p1) {
+	return function (_) {
+		return _.id;
+	}(
+		_user$project$Asana_Model$customFieldInfoToCustomField(_p1));
+};
+var _user$project$Asana_Model$customFieldName = function (_p2) {
+	return function (_) {
+		return _.name;
+	}(
+		_user$project$Asana_Model$customFieldInfoToCustomField(_p2));
+};
+var _user$project$Asana_Model$CustomEnumFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomEnumFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _user$project$Asana_Model$CustomNumberFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomNumberFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _user$project$Asana_Model$CustomTextFieldInfo = F2(
+	function (a, b) {
+		return {ctor: 'CustomTextFieldInfo', _0: a, _1: b};
+	});
+var _user$project$Asana_Model$DueOn = function (a) {
+	return {ctor: 'DueOn', _0: a};
+};
+var _user$project$Asana_Model$DueAt = function (a) {
+	return {ctor: 'DueAt', _0: a};
+};
+var _user$project$Asana_Model$EnumValue = function (a) {
+	return {ctor: 'EnumValue', _0: a};
+};
+var _user$project$Asana_Model$NumberValue = function (a) {
+	return {ctor: 'NumberValue', _0: a};
+};
+var _user$project$Asana_Model$TextValue = function (a) {
+	return {ctor: 'TextValue', _0: a};
+};
+
 var _user$project$Base$isJust = function (maybe) {
 	var _p0 = maybe;
 	if (_p0.ctor === 'Just') {
@@ -10441,56 +10546,61 @@ var _user$project$Base$stateC = function (_p7) {
 	var _p8 = _p7;
 	return _p8.state;
 };
-var _user$project$Base$viewC = function (_p9) {
-	var _p10 = _p9;
-	return _p10.spec.view(_p10.state);
+var _user$project$Base$get = F2(
+	function (f, _p9) {
+		var _p10 = _p9;
+		return f(_p10.state);
+	});
+var _user$project$Base$viewC = function (_p11) {
+	var _p12 = _p11;
+	return _p12.spec.view(_p12.state);
 };
 var _user$project$Base$viewWrapped = function (f) {
-	return function (_p11) {
+	return function (_p13) {
 		return A2(
 			_elm_lang$html$Html_App$map,
 			f,
-			_user$project$Base$viewC(_p11));
+			_user$project$Base$viewC(_p13));
 	};
 };
-var _user$project$Base$subscriptionsC = function (_p12) {
-	var _p13 = _p12;
-	return _p13.spec.subscriptions(_p13.state);
+var _user$project$Base$subscriptionsC = function (_p14) {
+	var _p15 = _p14;
+	return _p15.spec.subscriptions(_p15.state);
 };
 var _user$project$Base$subscriptionsWrapped = function (f) {
-	return function (_p14) {
+	return function (_p16) {
 		return A2(
 			_elm_lang$core$Platform_Sub$map,
 			f,
-			_user$project$Base$subscriptionsC(_p14));
+			_user$project$Base$subscriptionsC(_p16));
 	};
 };
 var _user$project$Base$updateC = F2(
-	function (msg, _p15) {
-		var _p16 = _p15;
-		var _p18 = _p16.spec;
-		var _p17 = A2(_p18.update, msg, _p16.state);
-		var state$ = _p17._0;
-		var cmd = _p17._1;
+	function (msg, _p17) {
+		var _p18 = _p17;
+		var _p20 = _p18.spec;
+		var _p19 = A2(_p20.update, msg, _p18.state);
+		var state$ = _p19._0;
+		var cmd = _p19._1;
 		return {
 			ctor: '_Tuple2',
-			_0: {spec: _p18, state: state$},
+			_0: {spec: _p20, state: state$},
 			_1: cmd
 		};
 	});
 var _user$project$Base$updateWrapped = F2(
 	function (f, msg) {
-		return function (_p19) {
+		return function (_p21) {
 			return A2(
 				_user$project$Base$mapCmd,
 				f,
-				A2(_user$project$Base$updateC, msg, _p19));
+				A2(_user$project$Base$updateC, msg, _p21));
 		};
 	});
 var _user$project$Base$initC = function (spec) {
-	var _p20 = spec.init;
-	var state = _p20._0;
-	var cmd = _p20._1;
+	var _p22 = spec.init;
+	var state = _p22._0;
+	var cmd = _p22._1;
 	return {
 		ctor: '_Tuple2',
 		_0: {spec: spec, state: state},
@@ -10498,11 +10608,11 @@ var _user$project$Base$initC = function (spec) {
 	};
 };
 var _user$project$Base$initWrapped = function (f) {
-	return function (_p21) {
+	return function (_p23) {
 		return A2(
 			_user$project$Base$mapCmd,
 			f,
-			_user$project$Base$initC(_p21));
+			_user$project$Base$initC(_p23));
 	};
 };
 var _user$project$Base$Spec = F4(
@@ -10513,286 +10623,32 @@ var _user$project$Base$Component = F2(
 	function (a, b) {
 		return {spec: a, state: b};
 	});
+var _user$project$Base$Instance = function (a) {
+	return {ctor: 'Instance', _0: a};
+};
+var _user$project$Base$createWithState = F2(
+	function (spec, state) {
+		return _user$project$Base$Instance(
+			{
+				update: function (_p24) {
+					return A2(
+						_user$project$Base$mapFst,
+						_user$project$Base$createWithState(spec),
+						A3(_elm_lang$core$Basics$flip, spec.update, state, _p24));
+				},
+				view: spec.view(state),
+				subscriptions: spec.subscriptions(state)
+			});
+	});
+var _user$project$Base$create = function (spec) {
+	var _p25 = spec.init;
+	var state = _p25._0;
+	var cmd = _p25._1;
+	var instance = A2(_user$project$Base$createWithState, spec, state);
+	return {ctor: '_Tuple2', _0: instance, _1: cmd};
+};
 
-var _user$project$Asana_Model$Resource = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$resourceDecoder = A3(
-	_elm_lang$core$Json_Decode$object2,
-	_user$project$Asana_Model$Resource,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Model$enumOptionDecoder = _user$project$Asana_Model$resourceDecoder;
-var _user$project$Asana_Model$enumValueDecoder = _user$project$Asana_Model$resourceDecoder;
-var _user$project$Asana_Model$User = F5(
-	function (a, b, c, d, e) {
-		return {id: a, name: b, email: c, photo: d, workspaces: e};
-	});
-var _user$project$Asana_Model$Photos = F5(
-	function (a, b, c, d, e) {
-		return {image_21x21: a, image_27x27: b, image_36x36: c, image_60x60: d, image_128x128: e};
-	});
-var _user$project$Asana_Model$photosDecoder = A6(
-	_elm_lang$core$Json_Decode$object5,
-	_user$project$Asana_Model$Photos,
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_21x21', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_27x27', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_36x36', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_60x60', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_128x128', _elm_lang$core$Json_Decode$string)));
-var _user$project$Asana_Model$Workspace = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$workspaceDecoder = A3(
-	_elm_lang$core$Json_Decode$object2,
-	_user$project$Asana_Model$Workspace,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Model$userDecoder = A6(
-	_elm_lang$core$Json_Decode$object5,
-	_user$project$Asana_Model$User,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'photo', _user$project$Asana_Model$photosDecoder)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(
-			_elm_lang$core$Json_Decode_ops[':='],
-			'workspaces',
-			_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$workspaceDecoder))));
-var _user$project$Asana_Model$Project = F3(
-	function (a, b, c) {
-		return {id: a, name: b, customFieldSettings: c};
-	});
-var _user$project$Asana_Model$CustomFieldSetting = F2(
-	function (a, b) {
-		return {id: a, customField: b};
-	});
-var _user$project$Asana_Model$EnumOption = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$CustomField = F3(
-	function (a, b, c) {
-		return {id: a, fieldType: b, name: c};
-	});
-var _user$project$Asana_Model$Task = F4(
-	function (a, b, c, d) {
-		return {id: a, name: b, description: c, dueDate: d};
-	});
-var _user$project$Asana_Model$taskDecoder = A5(
-	_elm_lang$core$Json_Decode$object4,
-	_user$project$Asana_Model$Task,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_date', _elm_lang$core$Json_Decode$string)));
-var _user$project$Asana_Model$CustomFieldEnumValue = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$CustomFieldValue = F4(
-	function (a, b, c, d) {
-		return {id: a, name: b, fieldType: c, value: d};
-	});
-var _user$project$Asana_Model$NewTask = F6(
-	function (a, b, c, d, e, f) {
-		return {name: a, dueOn: b, dueAt: c, description: d, projects: e, customFields: f};
-	});
-var _user$project$Asana_Model$CustomUnknown = function (a) {
-	return {ctor: 'CustomUnknown', _0: a};
-};
-var _user$project$Asana_Model$CustomEnum = {ctor: 'CustomEnum'};
-var _user$project$Asana_Model$CustomNumber = {ctor: 'CustomNumber'};
-var _user$project$Asana_Model$CustomText = {ctor: 'CustomText'};
-var _user$project$Asana_Model$customFieldTypeDecoder = A2(
-	_elm_lang$core$Json_Decode$map,
-	function (str) {
-		var _p0 = str;
-		switch (_p0) {
-			case 'text':
-				return _user$project$Asana_Model$CustomText;
-			case 'number':
-				return _user$project$Asana_Model$CustomNumber;
-			case 'enum':
-				return _user$project$Asana_Model$CustomEnum;
-			default:
-				return _user$project$Asana_Model$CustomUnknown(str);
-		}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _user$project$Asana_Model$customFieldDecoder = A4(
-	_elm_lang$core$Json_Decode$object3,
-	_user$project$Asana_Model$CustomField,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Model$customFieldTypeDecoder),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Model$customFieldSettingDecoder = A3(
-	_elm_lang$core$Json_Decode$object2,
-	_user$project$Asana_Model$CustomFieldSetting,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'custom_field', _user$project$Asana_Model$customFieldDecoder));
-var _user$project$Asana_Model$projectDecoder = A4(
-	_elm_lang$core$Json_Decode$object3,
-	_user$project$Asana_Model$Project,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'custom_field_settings',
-		_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$customFieldSettingDecoder)));
-var _user$project$Asana_Model$customFieldInfoToCustomField = function (info) {
-	var _p1 = info;
-	switch (_p1.ctor) {
-		case 'CustomTextFieldInfo':
-			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomText, name: _p1._1};
-		case 'CustomNumberFieldInfo':
-			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomNumber, name: _p1._1};
-		default:
-			return {id: _p1._0, fieldType: _user$project$Asana_Model$CustomEnum, name: _p1._1};
-	}
-};
-var _user$project$Asana_Model$customFieldId = function (_p2) {
-	return function (_) {
-		return _.id;
-	}(
-		_user$project$Asana_Model$customFieldInfoToCustomField(_p2));
-};
-var _user$project$Asana_Model$customFieldName = function (_p3) {
-	return function (_) {
-		return _.name;
-	}(
-		_user$project$Asana_Model$customFieldInfoToCustomField(_p3));
-};
-var _user$project$Asana_Model$CustomEnumFieldInfo = F3(
-	function (a, b, c) {
-		return {ctor: 'CustomEnumFieldInfo', _0: a, _1: b, _2: c};
-	});
-var _user$project$Asana_Model$CustomNumberFieldInfo = F3(
-	function (a, b, c) {
-		return {ctor: 'CustomNumberFieldInfo', _0: a, _1: b, _2: c};
-	});
-var _user$project$Asana_Model$CustomTextFieldInfo = F2(
-	function (a, b) {
-		return {ctor: 'CustomTextFieldInfo', _0: a, _1: b};
-	});
-var _user$project$Asana_Model$customFieldInfoDecoder = A3(
-	_elm_lang$core$Basics$flip,
-	_elm_lang$core$Json_Decode$andThen,
-	function (fieldType) {
-		var _p4 = fieldType;
-		switch (_p4.ctor) {
-			case 'CustomText':
-				return A3(
-					_elm_lang$core$Json_Decode$object2,
-					_user$project$Asana_Model$CustomTextFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
-			case 'CustomNumber':
-				return A4(
-					_elm_lang$core$Json_Decode$object3,
-					_user$project$Asana_Model$CustomNumberFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'precision', _elm_lang$core$Json_Decode$int));
-			case 'CustomEnum':
-				return A4(
-					_elm_lang$core$Json_Decode$object3,
-					_user$project$Asana_Model$CustomEnumFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'enum_options',
-						_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$enumOptionDecoder)));
-			default:
-				return _elm_lang$core$Json_Decode$fail(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'Got an unknown custom field type \'',
-						A2(_elm_lang$core$Basics_ops['++'], _p4._0, '\'.')));
-		}
-	},
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Model$customFieldTypeDecoder));
-var _user$project$Asana_Model$EnumValue = function (a) {
-	return {ctor: 'EnumValue', _0: a};
-};
-var _user$project$Asana_Model$NumberValue = function (a) {
-	return {ctor: 'NumberValue', _0: a};
-};
-var _user$project$Asana_Model$TextValue = function (a) {
-	return {ctor: 'TextValue', _0: a};
-};
-var _user$project$Asana_Model$customFieldDataDecoder = _elm_lang$core$Json_Decode$oneOf(
-	_elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_elm_lang$core$Json_Decode$map,
-			_user$project$Asana_Model$TextValue,
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'text_value', _elm_lang$core$Json_Decode$string)),
-			A2(
-			_elm_lang$core$Json_Decode$map,
-			_user$project$Asana_Model$NumberValue,
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'number_value', _elm_lang$core$Json_Decode$float)),
-			A2(
-			_elm_lang$core$Json_Decode$map,
-			_user$project$Asana_Model$EnumValue,
-			A2(_elm_lang$core$Json_Decode_ops[':='], 'enum_value', _user$project$Asana_Model$enumValueDecoder))
-		]));
-var _user$project$Asana_Model$customFieldValueDecoder = A5(
-	_elm_lang$core$Json_Decode$object4,
-	_user$project$Asana_Model$CustomFieldValue,
-	A2(
-		_elm_lang$core$Json_Decode_ops[':='],
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Model$customFieldTypeDecoder),
-	_user$project$Asana_Model$customFieldDataDecoder);
-
-var _user$project$Asana_Api$encodeCustomFieldData = function (data) {
+var _user$project$Asana_Encoder$encodeCustomFieldData = function (data) {
 	var _p0 = data;
 	switch (_p0.ctor) {
 		case 'TextValue':
@@ -10803,7 +10659,7 @@ var _user$project$Asana_Api$encodeCustomFieldData = function (data) {
 			return _elm_lang$core$Json_Encode$string(_p0._0.id);
 	}
 };
-var _user$project$Asana_Api$encodeTask = function (_p1) {
+var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 	var _p2 = _p1;
 	return _elm_lang$core$Json_Encode$object(
 		A2(
@@ -10882,13 +10738,248 @@ var _user$project$Asana_Api$encodeTask = function (_p1) {
 						_elm_lang$core$Json_Encode$object(
 							A2(
 								_elm_lang$core$List$map,
-								_user$project$Base$mapSnd(_user$project$Asana_Api$encodeCustomFieldData),
+								_user$project$Base$mapSnd(_user$project$Asana_Encoder$encodeCustomFieldData),
 								_p2.customFields))))
 				])));
 };
+var _user$project$Asana_Encoder$encodeDueAt = function (_p8) {
+	var _p9 = _p8;
+	return _elm_lang$core$Json_Encode$string(
+		A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, _p9._0));
+};
+var _user$project$Asana_Encoder$encodeDueOn = function (_p10) {
+	var _p11 = _p10;
+	return _elm_lang$core$Json_Encode$string(
+		A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, _p11._0));
+};
+
+var _user$project$Asana_Decoder$emptyString = function (a) {
+	return A2(
+		_elm_lang$core$Json_Decode$andThen,
+		_elm_lang$core$Json_Decode$string,
+		function (str) {
+			return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Json_Decode$succeed(a) : _elm_lang$core$Json_Decode$fail('String is not empty.');
+		});
+};
+var _user$project$Asana_Decoder$emptyOrNull = function (decoder) {
+	return _elm_lang$core$Json_Decode$oneOf(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+				_user$project$Asana_Decoder$emptyString(_elm_lang$core$Maybe$Nothing),
+				A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder)
+			]));
+};
+var _user$project$Asana_Decoder$nullable = function (decoder) {
+	return _elm_lang$core$Json_Decode$oneOf(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+				A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder)
+			]));
+};
+var _user$project$Asana_Decoder$emptyAsNull = _elm_lang$core$Json_Decode$map(
+	function (str) {
+		return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(str);
+	});
+var _user$project$Asana_Decoder$customFieldTypeDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	function (str) {
+		var _p0 = str;
+		switch (_p0) {
+			case 'text':
+				return _user$project$Asana_Model$CustomText;
+			case 'number':
+				return _user$project$Asana_Model$CustomNumber;
+			case 'enum':
+				return _user$project$Asana_Model$CustomEnum;
+			default:
+				return _user$project$Asana_Model$CustomUnknown(str);
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _user$project$Asana_Decoder$customFieldDecoder = A4(
+	_elm_lang$core$Json_Decode$object3,
+	_user$project$Asana_Model$CustomField,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Decoder$customFieldTypeDecoder),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+var _user$project$Asana_Decoder$customFieldSettingDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	_user$project$Asana_Model$CustomFieldSetting,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'custom_field', _user$project$Asana_Decoder$customFieldDecoder));
+var _user$project$Asana_Decoder$projectDecoder = A4(
+	_elm_lang$core$Json_Decode$object3,
+	_user$project$Asana_Model$Project,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'custom_field_settings',
+		_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$customFieldSettingDecoder)));
+var _user$project$Asana_Decoder$workspaceDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	_user$project$Asana_Model$Workspace,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+var _user$project$Asana_Decoder$photosDecoder = A6(
+	_elm_lang$core$Json_Decode$object5,
+	_user$project$Asana_Model$Photos,
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_21x21', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_27x27', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_36x36', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_60x60', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'image_128x128', _elm_lang$core$Json_Decode$string)));
+var _user$project$Asana_Decoder$userDecoder = A6(
+	_elm_lang$core$Json_Decode$object5,
+	_user$project$Asana_Model$User,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'email', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'photo', _user$project$Asana_Decoder$photosDecoder)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'workspaces',
+			_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$workspaceDecoder))));
+var _user$project$Asana_Decoder$resourceDecoder = A3(
+	_elm_lang$core$Json_Decode$object2,
+	_user$project$Asana_Model$Resource,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+var _user$project$Asana_Decoder$enumOptionDecoder = _user$project$Asana_Decoder$resourceDecoder;
+var _user$project$Asana_Decoder$customFieldInfoDecoder = A3(
+	_elm_lang$core$Basics$flip,
+	_elm_lang$core$Json_Decode$andThen,
+	function (fieldType) {
+		var _p1 = fieldType;
+		switch (_p1.ctor) {
+			case 'CustomText':
+				return A3(
+					_elm_lang$core$Json_Decode$object2,
+					_user$project$Asana_Model$CustomTextFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string));
+			case 'CustomNumber':
+				return A4(
+					_elm_lang$core$Json_Decode$object3,
+					_user$project$Asana_Model$CustomNumberFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'precision', _elm_lang$core$Json_Decode$int));
+			case 'CustomEnum':
+				return A4(
+					_elm_lang$core$Json_Decode$object3,
+					_user$project$Asana_Model$CustomEnumFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'enum_options',
+						_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$enumOptionDecoder)));
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Got an unknown custom field type \'',
+						A2(_elm_lang$core$Basics_ops['++'], _p1._0, '\'.')));
+		}
+	},
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Decoder$customFieldTypeDecoder));
+var _user$project$Asana_Decoder$enumValueDecoder = _user$project$Asana_Decoder$resourceDecoder;
+var _user$project$Asana_Decoder$customFieldDataDecoder = _elm_lang$core$Json_Decode$oneOf(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$TextValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'text_value', _elm_lang$core$Json_Decode$string)),
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$NumberValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'number_value', _elm_lang$core$Json_Decode$float)),
+			A2(
+			_elm_lang$core$Json_Decode$map,
+			_user$project$Asana_Model$EnumValue,
+			A2(_elm_lang$core$Json_Decode_ops[':='], 'enum_value', _user$project$Asana_Decoder$enumValueDecoder))
+		]));
+var _user$project$Asana_Decoder$customFieldValueDecoder = A5(
+	_elm_lang$core$Json_Decode$object4,
+	_user$project$Asana_Model$CustomFieldValue,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'type', _user$project$Asana_Decoder$customFieldTypeDecoder),
+	_user$project$Asana_Decoder$customFieldDataDecoder);
+var _user$project$Asana_Decoder$dateDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	_elm_lang$core$Json_Decode$string,
+	function (str) {
+		var _p2 = _elm_lang$core$Date$fromString(str);
+		if (_p2.ctor === 'Ok') {
+			return _elm_lang$core$Json_Decode$succeed(_p2._0);
+		} else {
+			return _elm_lang$core$Json_Decode$fail(_p2._0);
+		}
+	});
+var _user$project$Asana_Decoder$dueOnDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Asana_Model$DueOn, _user$project$Asana_Decoder$dateDecoder);
+var _user$project$Asana_Decoder$dueAtDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Asana_Model$DueAt, _user$project$Asana_Decoder$dateDecoder);
+var _user$project$Asana_Decoder$taskDecoder = A6(
+	_elm_lang$core$Json_Decode$object5,
+	_user$project$Asana_Model$Task,
+	A2(
+		_elm_lang$core$Json_Decode_ops[':='],
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'description', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_on', _user$project$Asana_Decoder$dueOnDecoder)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_at', _user$project$Asana_Decoder$dueAtDecoder)));
+
 var _user$project$Asana_Api$typeaheadTypeStr = function (resourceType) {
-	var _p8 = resourceType;
-	switch (_p8.ctor) {
+	var _p0 = resourceType;
+	switch (_p0.ctor) {
 		case 'TypeaheadProject':
 			return 'project';
 		case 'TypeaheadUser':
@@ -10926,7 +11017,7 @@ var _user$project$Asana_Api$me = A3(
 	'/users/me',
 	_elm_lang$core$Native_List.fromArray(
 		[]),
-	_user$project$Asana_Model$userDecoder);
+	_user$project$Asana_Decoder$userDecoder);
 var _user$project$Asana_Api$users = function (workspaceId) {
 	var query = _elm_lang$core$Native_List.fromArray(
 		[
@@ -10940,7 +11031,7 @@ var _user$project$Asana_Api$users = function (workspaceId) {
 		_user$project$Asana_Api$apiGetRequest,
 		path,
 		query,
-		_elm_lang$core$Json_Decode$list(_user$project$Asana_Model$userDecoder));
+		_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$userDecoder));
 };
 var _user$project$Asana_Api$getTypeaheadOptions = F4(
 	function (resourceType, decoder, workspaceId, fragment) {
@@ -10967,7 +11058,7 @@ var _user$project$Asana_Api$project = function (projectId) {
 		path,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
-		_user$project$Asana_Model$projectDecoder);
+		_user$project$Asana_Decoder$projectDecoder);
 };
 var _user$project$Asana_Api$customField = function (customFieldId) {
 	var path = A2(_elm_lang$core$Basics_ops['++'], '/custom_fields/', customFieldId);
@@ -10976,7 +11067,7 @@ var _user$project$Asana_Api$customField = function (customFieldId) {
 		path,
 		_elm_lang$core$Native_List.fromArray(
 			[]),
-		_user$project$Asana_Model$customFieldInfoDecoder);
+		_user$project$Asana_Decoder$customFieldInfoDecoder);
 };
 var _user$project$Asana_Api$apiPostRequest = F5(
 	function (path, query, body, decoder, token) {
@@ -11013,17 +11104,17 @@ var _user$project$Asana_Api$apiPostRequest = F5(
 		return A3(_elm_lang$core$Task$perform, _elm_lang$core$Result$Err, _elm_lang$core$Result$Ok, httpRequest);
 	});
 var _user$project$Asana_Api$createTask = function (newTask) {
-	var body = _user$project$Asana_Api$encodeTask(newTask);
+	var body = _user$project$Asana_Encoder$encodeTask(newTask);
 	var query = _elm_lang$core$Native_List.fromArray(
 		[]);
 	var path = '/tasks';
-	return A4(_user$project$Asana_Api$apiPostRequest, path, query, body, _user$project$Asana_Model$taskDecoder);
+	return A4(_user$project$Asana_Api$apiPostRequest, path, query, body, _user$project$Asana_Decoder$taskDecoder);
 };
 var _user$project$Asana_Api$TypeaheadTask = {ctor: 'TypeaheadTask'};
 var _user$project$Asana_Api$TypeaheadTag = {ctor: 'TypeaheadTag'};
 var _user$project$Asana_Api$TypeaheadUser = {ctor: 'TypeaheadUser'};
 var _user$project$Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProject'};
-var _user$project$Asana_Api$projectTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadProject, _user$project$Asana_Model$resourceDecoder);
+var _user$project$Asana_Api$projectTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadProject, _user$project$Asana_Decoder$resourceDecoder);
 
 var _user$project$Asana_Target$dateToDueAt = function (date) {
 	return A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, date);
@@ -11035,8 +11126,6 @@ var _user$project$Asana_Target$updateTask = F3(
 	function (target, value, task) {
 		var _p0 = target;
 		switch (_p0.ctor) {
-			case 'None':
-				return _elm_lang$core$Result$Ok(task);
 			case 'Name':
 				return _elm_lang$core$Result$Ok(
 					_elm_lang$core$Native_Utils.update(
@@ -11179,7 +11268,6 @@ var _user$project$Asana_Target$DueTime = {ctor: 'DueTime'};
 var _user$project$Asana_Target$DueDate = {ctor: 'DueDate'};
 var _user$project$Asana_Target$Description = {ctor: 'Description'};
 var _user$project$Asana_Target$Name = {ctor: 'Name'};
-var _user$project$Asana_Target$None = {ctor: 'None'};
 
 var _user$project$CommonViews$debugView = F2(
 	function (childView, model) {
@@ -11203,6 +11291,13 @@ var _user$project$CommonViews$debugView = F2(
 						]))
 				]));
 	});
+var _user$project$CommonViews$withDebug = function (spec) {
+	return _elm_lang$core$Native_Utils.update(
+		spec,
+		{
+			view: _user$project$CommonViews$debugView(spec.view)
+		});
+};
 var _user$project$CommonViews$errorView = function (error) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11569,7 +11664,7 @@ var _user$project$Components_Csv$update = F3(
 							csvData: _elm_lang$core$Maybe$Just(
 								_lovasoa$elm_csv$Csv$parse(_p1._0))
 						}),
-					_1: A2(_elm_lang$core$Debug$log, 'Got CsvData', _elm_lang$core$Platform_Cmd$none)
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NewFiles':
 				var _p2 = _elm_lang$core$List$head(_p1._0);
@@ -11587,16 +11682,16 @@ var _user$project$Components_Csv$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{hasHeader: _p1._0}),
+						{hasHeaderRow: _p1._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
 var _user$project$Components_Csv$init = function (_p3) {
-	var model = {csvData: _elm_lang$core$Maybe$Nothing, hasHeader: true};
+	var model = {csvData: _elm_lang$core$Maybe$Nothing, hasHeaderRow: true};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_Csv$getHeaders = function (_p4) {
+var _user$project$Components_Csv$headers = function (_p4) {
 	return A2(
 		_elm_lang$core$Maybe$map,
 		function (_) {
@@ -11604,46 +11699,45 @@ var _user$project$Components_Csv$getHeaders = function (_p4) {
 		},
 		function (_) {
 			return _.csvData;
-		}(
-			_user$project$Base$stateC(_p4)));
+		}(_p4));
 };
-var _user$project$Components_Csv$getNumFields = function (_p5) {
+var _user$project$Components_Csv$numFields = function (_p5) {
 	return A2(
 		_elm_lang$core$Maybe$map,
 		_elm_lang$core$List$length,
-		_user$project$Components_Csv$getHeaders(_p5));
+		_user$project$Components_Csv$headers(_p5));
 };
-var _user$project$Components_Csv$getRecords = function (_p6) {
-	return A2(
-		_elm_lang$core$Maybe$map,
-		function (_) {
-			return _.records;
-		},
-		function (_) {
-			return _.csvData;
-		}(
-			_user$project$Base$stateC(_p6)));
+var _user$project$Components_Csv$records = function (_p6) {
+	var _p7 = _p6;
+	var _p8 = _p7.csvData;
+	if (_p8.ctor === 'Just') {
+		var _p9 = _p8._0;
+		return _p7.hasHeaderRow ? _elm_lang$core$Maybe$Just(_p9.records) : ((_elm_lang$core$List$isEmpty(_p9.records) && _elm_lang$core$List$isEmpty(_p9.headers)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$List_ops['::'], _p9.headers, _p9.records)));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
 };
 var _user$project$Components_Csv$Props = {};
 var _user$project$Components_Csv$Model = F2(
 	function (a, b) {
-		return {csvData: a, hasHeader: b};
+		return {csvData: a, hasHeaderRow: b};
 	});
-var _user$project$Components_Csv$HasHeader = function (a) {
-	return {ctor: 'HasHeader', _0: a};
+var _user$project$Components_Csv$HasHeaderRow = function (a) {
+	return {ctor: 'HasHeaderRow', _0: a};
 };
 var _user$project$Components_Csv$MoreData = function (a) {
 	return {ctor: 'MoreData', _0: a};
 };
 var _user$project$Components_Csv$subscriptions = F2(
-	function (_p8, _p7) {
+	function (_p11, _p10) {
 		return _user$project$FileReader_FileReader$fileChunk(_user$project$Components_Csv$MoreData);
 	});
 var _user$project$Components_Csv$NewFiles = function (a) {
 	return {ctor: 'NewFiles', _0: a};
 };
 var _user$project$Components_Csv$view = F2(
-	function (_p9, model) {
+	function (_p12, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -11655,7 +11749,9 @@ var _user$project$Components_Csv$view = F2(
 					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
-						[]),
+						[
+							_elm_lang$html$Html_Attributes$class('Csv-fileInput')
+						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
 							A2(
@@ -11667,6 +11763,28 @@ var _user$project$Components_Csv$view = F2(
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[]))
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Csv-headerInput')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$input,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$type$('checkbox'),
+									_elm_lang$html$Html_Events$onClick(
+									_user$project$Components_Csv$HasHeaderRow(
+										_elm_lang$core$Basics$not(model.hasHeaderRow))),
+									_elm_lang$html$Html_Attributes$checked(model.hasHeaderRow)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[])),
+							_elm_lang$html$Html$text('Header Row')
 						]))
 				]));
 	});
@@ -11706,31 +11824,24 @@ var _user$project$Components_FieldOptions$targetFromString = F2(
 	function (customFields, str) {
 		var _p2 = str;
 		switch (_p2) {
-			case 'None':
-				return _user$project$Asana_Target$None;
 			case 'Name':
-				return _user$project$Asana_Target$Name;
+				return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Name);
 			case 'Description':
-				return _user$project$Asana_Target$Description;
+				return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Description);
 			case 'Due Date':
-				return _user$project$Asana_Target$DueDate;
+				return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$DueDate);
 			case 'Due Time':
-				return _user$project$Asana_Target$DueTime;
+				return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$DueTime);
 			default:
 				return A2(
-					_elm_lang$core$Maybe$withDefault,
-					_user$project$Asana_Target$None,
-					A2(
-						_elm_lang$core$Maybe$map,
-						_user$project$Asana_Target$CustomField,
-						A2(_user$project$Components_FieldOptions$matchCustomFieldName, _p2, customFields)));
+					_elm_lang$core$Maybe$map,
+					_user$project$Asana_Target$CustomField,
+					A2(_user$project$Components_FieldOptions$matchCustomFieldName, _p2, customFields));
 		}
 	});
 var _user$project$Components_FieldOptions$targetString = function (target) {
 	var _p3 = target;
 	switch (_p3.ctor) {
-		case 'None':
-			return 'None';
 		case 'Name':
 			return 'Name';
 		case 'Description':
@@ -11753,7 +11864,9 @@ var _user$project$Components_FieldOptions$viewOption = F2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html_Attributes$selected(
-					_elm_lang$core$Native_Utils.eq(selectedTarget, target)),
+					_elm_lang$core$Native_Utils.eq(
+						selectedTarget,
+						_elm_lang$core$Maybe$Just(target))),
 					_elm_lang$html$Html_Attributes$value(
 					_user$project$Components_FieldOptions$targetString(target))
 				]),
@@ -11763,9 +11876,21 @@ var _user$project$Components_FieldOptions$viewOption = F2(
 					_user$project$Components_FieldOptions$targetString(target))
 				]));
 	});
+var _user$project$Components_FieldOptions$emptyOption = function (selectedTarget) {
+	return A2(
+		_elm_lang$html$Html$option,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$selected(
+				_elm_lang$core$Native_Utils.eq(selectedTarget, _elm_lang$core$Maybe$Nothing)),
+				_elm_lang$html$Html_Attributes$value('')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[]));
+};
 var _user$project$Components_FieldOptions$allTargets = function (customFields) {
 	var genericTargets = _elm_lang$core$Native_List.fromArray(
-		[_user$project$Asana_Target$None, _user$project$Asana_Target$Name, _user$project$Asana_Target$Description, _user$project$Asana_Target$DueDate, _user$project$Asana_Target$DueTime]);
+		[_user$project$Asana_Target$Name, _user$project$Asana_Target$Description, _user$project$Asana_Target$DueDate, _user$project$Asana_Target$DueTime]);
 	var customFieldTargets = A2(_elm_lang$core$List$map, _user$project$Asana_Target$CustomField, customFields);
 	return A2(_elm_lang$core$Basics_ops['++'], genericTargets, customFieldTargets);
 };
@@ -11793,7 +11918,7 @@ var _user$project$Components_FieldOptions$update = F3(
 				A2(
 					_elm_lang$core$Array$repeat,
 					_elm_lang$core$Array$length(targets) - _p5,
-					_user$project$Asana_Target$None));
+					_elm_lang$core$Maybe$Nothing));
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -11805,7 +11930,7 @@ var _user$project$Components_FieldOptions$update = F3(
 	});
 var _user$project$Components_FieldOptions$init = function (_p6) {
 	var _p7 = _p6;
-	var targets = A2(_elm_lang$core$Array$repeat, _p7.numFields, _user$project$Asana_Target$None);
+	var targets = A2(_elm_lang$core$Array$repeat, _p7.numFields, _elm_lang$core$Maybe$Nothing);
 	return {
 		ctor: '_Tuple2',
 		_0: {targets: targets},
@@ -11855,9 +11980,12 @@ var _user$project$Components_FieldOptions$viewSelect = F3(
 	function (customFields, index, selectedTarget) {
 		var targets = _user$project$Components_FieldOptions$allTargets(customFields);
 		var options = A2(
-			_elm_lang$core$List$map,
-			_user$project$Components_FieldOptions$viewOption(selectedTarget),
-			targets);
+			_elm_lang$core$List_ops['::'],
+			_user$project$Components_FieldOptions$emptyOption(selectedTarget),
+			A2(
+				_elm_lang$core$List$map,
+				_user$project$Components_FieldOptions$viewOption(selectedTarget),
+				targets));
 		return A2(
 			_elm_lang$html$Html$select,
 			_elm_lang$core$Native_List.fromArray(
@@ -12031,21 +12159,26 @@ var _user$project$Components_Uploader$updateTask = F3(
 	function (row, _p7, _p6) {
 		var _p8 = _p7;
 		var _p9 = _p6;
-		var _p12 = _p9._0;
-		var _p11 = _p9._1;
-		var _p10 = A3(_user$project$Asana_Target$updateTask, _p8._1, _p8._2, _p12);
-		if (_p10.ctor === 'Ok') {
-			return {ctor: '_Tuple2', _0: _p10._0, _1: _p11};
+		var _p13 = _p9._0;
+		var _p12 = _p9._1;
+		var _p10 = _p8._1;
+		if (_p10.ctor === 'Just') {
+			var _p11 = A3(_user$project$Asana_Target$updateTask, _p10._0, _p8._2, _p13);
+			if (_p11.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p11._0, _1: _p12};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: _p13,
+					_1: A2(
+						_elm_lang$core$List_ops['::'],
+						_user$project$Components_Uploader$ParseError(
+							{msg: _p11._0, row: row, col: _p8._0}),
+						_p12)
+				};
+			}
 		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _p12,
-				_1: A2(
-					_elm_lang$core$List_ops['::'],
-					_user$project$Components_Uploader$ParseError(
-						{msg: _p10._0, row: row, col: _p8._0}),
-					_p11)
-			};
+			return {ctor: '_Tuple2', _0: _p13, _1: _p12};
 		}
 	});
 var _user$project$Components_Uploader$uploadRecord = F4(
@@ -12053,9 +12186,9 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 		var fieldSpecs = A2(
 			_elm_lang$core$List$indexedMap,
 			F2(
-				function (i, _p13) {
-					var _p14 = _p13;
-					return {ctor: '_Tuple3', _0: i, _1: _p14._0, _2: _p14._1};
+				function (i, _p14) {
+					var _p15 = _p14;
+					return {ctor: '_Tuple3', _0: i, _1: _p15._0, _2: _p15._1};
 				}),
 			A3(
 				_elm_lang$core$List$map2,
@@ -12065,7 +12198,7 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 					}),
 				props.fieldTargets,
 				record));
-		var _p15 = A3(
+		var _p16 = A3(
 			_elm_lang$core$List$foldr,
 			_user$project$Components_Uploader$updateTask(row),
 			{
@@ -12075,8 +12208,8 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 					[])
 			},
 			fieldSpecs);
-		var newTask = _p15._0;
-		var errs = _p15._1;
+		var newTask = _p16._0;
+		var errs = _p16._1;
 		var model$ = _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -12094,19 +12227,19 @@ var _user$project$Components_Uploader$init = function (props) {
 		errors: _elm_lang$core$Native_List.fromArray(
 			[])
 	};
-	var _p16 = A3(
+	var _p17 = A3(
 		_elm_lang$core$List$foldr,
 		F2(
-			function (_p18, _p17) {
-				var _p19 = _p18;
-				var _p20 = _p17;
-				var _p21 = A4(_user$project$Components_Uploader$uploadRecord, props, _p19._0, _p19._1, _p20._0);
-				var model$ = _p21._0;
-				var cmd = _p21._1;
+			function (_p19, _p18) {
+				var _p20 = _p19;
+				var _p21 = _p18;
+				var _p22 = A4(_user$project$Components_Uploader$uploadRecord, props, _p20._0, _p20._1, _p21._0);
+				var model$ = _p22._0;
+				var cmd = _p22._1;
 				return {
 					ctor: '_Tuple2',
 					_0: model$,
-					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p20._1)
+					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p21._1)
 				};
 			}),
 		{
@@ -12122,8 +12255,8 @@ var _user$project$Components_Uploader$init = function (props) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
 			props.records));
-	var model$ = _p16._0;
-	var cmds = _p16._1;
+	var model$ = _p17._0;
+	var cmds = _p17._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
 	return {ctor: '_Tuple2', _0: model$, _1: cmd};
 };
@@ -12909,8 +13042,8 @@ var _user$project$Components_Asana$updateMatcher = F2(
 		var _p4 = {
 			ctor: '_Tuple3',
 			_0: _user$project$Components_Asana$getSelectedProject(_p8),
-			_1: _user$project$Components_Csv$getHeaders(_p8.csv),
-			_2: _user$project$Components_Csv$getRecords(_p8.csv)
+			_1: A2(_user$project$Base$get, _user$project$Components_Csv$headers, _p8.csv),
+			_2: A2(_user$project$Base$get, _user$project$Components_Csv$records, _p8.csv)
 		};
 		if ((((_p4.ctor === '_Tuple3') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === 'Just')) && (_p4._2.ctor === 'Just')) {
 			var _p7 = _p4._1._0;
@@ -13080,7 +13213,7 @@ var _user$project$Components_Asana$processMessage = F3(
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			case 'CsvMsg':
-				var headers = _user$project$Components_Csv$getHeaders(model.csv);
+				var headers = A2(_user$project$Base$get, _user$project$Components_Csv$headers, model.csv);
 				var _p23 = A2(_user$project$Base$updateC, _p21._0, model.csv);
 				var csv$ = _p23._0;
 				var csvCmd = _p23._1;
@@ -13088,7 +13221,7 @@ var _user$project$Components_Asana$processMessage = F3(
 					model,
 					{csv: csv$});
 				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$CsvMsg, csvCmd);
-				var headers$ = _user$project$Components_Csv$getHeaders(csv$);
+				var headers$ = A2(_user$project$Base$get, _user$project$Components_Csv$headers, csv$);
 				return (!_elm_lang$core$Native_Utils.eq(headers, headers$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
@@ -13129,27 +13262,6 @@ var _user$project$Components_Asana$viewInputs = F2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html_Attributes$class('Asana-form')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_elm_lang$html$Html$h3,
-							_elm_lang$core$Native_List.fromArray(
-								[]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html$text('Select an Asana project:')
-								])),
-							A2(
-							_elm_lang$html$Html_App$map,
-							_user$project$Components_Asana$FormMsg,
-							_user$project$Base$viewC(model.form))
-						])),
-					A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[
 							_elm_lang$html$Html_Attributes$class('Asana-csv')
 						]),
 					_elm_lang$core$Native_List.fromArray(
@@ -13160,12 +13272,63 @@ var _user$project$Components_Asana$viewInputs = F2(
 								[]),
 							_elm_lang$core$Native_List.fromArray(
 								[
+									_elm_lang$html$Html$text('CSV')
+								])),
+							A2(
+							_elm_lang$html$Html$p,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('Asana-infoText')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
 									_elm_lang$html$Html$text('Upload a CSV file:')
 								])),
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$CsvMsg,
 							_user$project$Base$viewC(model.csv))
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Asana-arrow')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text('→')
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('Asana-form')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_elm_lang$html$Html$h3,
+							_elm_lang$core$Native_List.fromArray(
+								[]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Asana')
+								])),
+							A2(
+							_elm_lang$html$Html$p,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('Asana-infoText')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text('Select an Asana project:')
+								])),
+							A2(
+							_elm_lang$html$Html_App$map,
+							_user$project$Components_Asana$FormMsg,
+							_user$project$Base$viewC(model.form))
 						]))
 				]));
 	});
@@ -13532,7 +13695,7 @@ var _user$project$Main$view = function (model) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_elm_lang$html$Html$div,
+				_elm_lang$html$Html$header,
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_elm_lang$html$Html_Attributes$class('Main-header')
@@ -13545,7 +13708,7 @@ var _user$project$Main$view = function (model) {
 							[]),
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html$text('CSVana : CSV → Asana')
+								_elm_lang$html$Html$text('CSVana')
 							]))
 					])),
 				A2(

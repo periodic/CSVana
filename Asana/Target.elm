@@ -8,12 +8,14 @@ import String
 import Asana.Model as Asana
 
 type Target
-    = None
-    | Name
+    = Name
     | Description
     | DueDate
     | DueTime
     | CustomField Asana.CustomFieldInfo
+
+type alias Mapping a =
+    String -> Result (Maybe a)
 
 emptyTask : Asana.ProjectId -> Asana.NewTask
 emptyTask projectId =
@@ -28,8 +30,6 @@ emptyTask projectId =
 updateTask : Target -> String -> Asana.NewTask -> Result String Asana.NewTask
 updateTask target value task =
     case target of
-        None ->
-            Ok task
         Name ->
             Ok { task | name = Just value }
         Description ->

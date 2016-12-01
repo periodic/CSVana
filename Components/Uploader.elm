@@ -16,7 +16,7 @@ type alias Props =
     { token : Api.Token
     , projectId : Asana.ProjectId
     , records : List Record
-    , fieldTargets : List Target.Target
+    , fieldTargets : List (Maybe Target.Target)
     }
 
 type Msg =
@@ -91,13 +91,17 @@ update props msg model =
         RecordProcessed row (Err httpErr) ->
             ({ model | errors = UploadError { msg = toString httpErr, row = row } :: model.errors }, Cmd.none)
 
-updateTask : Int -> (Int, Target.Target, String) -> (Asana.NewTask, List Error) -> (Asana.NewTask, List Error)
-updateTask row (col, target, value) (task, errors) =
-    case Target.updateTask target value task of
-        Ok task' ->
-            (task', errors)
-        Err msg ->
-            (task, ParseError { msg = msg, row = row, col = col } :: errors)
+updateTask : Int -> (Int, Maybe Target.Target, String) -> (Asana.NewTask, List Error) -> (Asana.NewTask, List Error)
+updateTask row (col, mTarget, value) (task, errors) =
+    case mTarget of
+        Just target -> 
+            case Target.updateTask target value task of
+                Ok task' ->
+                    (task', errors)
+                Err msg ->
+                    (task, ParseError { msg = msg, row = row, col = col } :: errors)
+        Nothing ->
+            (task, errors)
 
 view : Props -> Model -> Html Msg
 view { records } { recordsProcessed, errors } =

@@ -5,8 +5,9 @@ import Json.Decode exposing (Decoder, (:=), list, oneOf)
 import Json.Encode as Encode exposing (Value)
 import Task
 
-import Base
 import Asana.Model as Asana
+import Asana.Encoder as Encoder
+import Asana.Decoder as Decoder
 
 apiRoot : String
 apiRoot = "https://app.asana.com/api/1.0"
@@ -52,7 +53,7 @@ apiPostRequest path query body decoder token =
 
 me : Token -> Cmd (ApiResult Asana.User)
 me =
-    apiGetRequest "/users/me" [] Asana.userDecoder
+    apiGetRequest "/users/me" [] Decoder.userDecoder
 
 users : Asana.WorkspaceId -> Token -> Cmd (ApiResult (List Asana.User))
 users workspaceId =
@@ -60,7 +61,7 @@ users workspaceId =
         path = "/workspaces/" ++ workspaceId ++ "/users"
         query = [("opt_fields", "email,name,photo.image_128x128")]
     in
-        apiGetRequest path query (list Asana.userDecoder)
+        apiGetRequest path query (list Decoder.userDecoder)
 
 type TypeaheadType
     = TypeaheadProject
@@ -94,51 +95,30 @@ getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
 
 projectTypeahead : Asana.WorkspaceId -> String -> Token -> Cmd (ApiResult (List Asana.ProjectResource))
 projectTypeahead =
-    getTypeaheadOptions TypeaheadProject Asana.resourceDecoder
+    getTypeaheadOptions TypeaheadProject Decoder.resourceDecoder
 
 project : Asana.ProjectId -> Token -> Cmd (ApiResult Asana.Project)
 project projectId =
     let
         path = "/projects/" ++ projectId
     in
-        apiGetRequest path [] Asana.projectDecoder
+        apiGetRequest path [] Decoder.projectDecoder
 
 customField : Asana.CustomFieldId -> Token -> Cmd (ApiResult Asana.CustomFieldInfo)
 customField customFieldId =
     let
         path = "/custom_fields/" ++ customFieldId
     in
-        apiGetRequest path [] Asana.customFieldInfoDecoder
-
-encodeCustomFieldData : Asana.CustomFieldData -> Value
-encodeCustomFieldData data =
-    case data of
-        Asana.TextValue text ->
-            Encode.string text
-        Asana.NumberValue num ->
-            Encode.float num
-        Asana.EnumValue enum ->
-            Encode.string enum.id
-
-encodeTask : Asana.NewTask -> Value
-encodeTask { name, dueAt, dueOn, description, projects, customFields } =
-    Encode.object <| List.filterMap identity
-        [ Maybe.map (Encode.string >> (,) "name") name
-        , Maybe.map (Encode.string >> (,) "notes") description
-        , Maybe.map (Encode.string >> (,) "due_at") dueAt
-        , Maybe.map (Encode.string >> (,) "due_on") dueOn
-        , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") projects
-        , List.map (Base.mapSnd encodeCustomFieldData) customFields |> Encode.object |> (,) "custom_fields" |> Just
-        ]
+        apiGetRequest path [] Decoder.customFieldInfoDecoder
 
 createTask : Asana.NewTask -> Token -> Cmd (ApiResult Asana.Task)
 createTask newTask =
     let
         path = "/tasks"
         query = []
-        body = encodeTask newTask
+        body = Encoder.encodeTask newTask
     in
-       apiPostRequest path query body Asana.taskDecoder
+       apiPostRequest path query body Decoder.taskDecoder
 
 
 

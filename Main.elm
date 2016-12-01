@@ -44,8 +44,8 @@ urlUpdate location model =
 view : Model -> Html Msg
 view model =
     div [ class "Main" ]
-        [ div [ class "Main-header" ]
-            [ h1 [] [ text "CSVana : CSV → Asana" ] ]
+        [ header [ class "Main-header" ]
+            [ h1 [] [ text "CSVana" ] ]
         , div [ class "Main-form" ]
             [ Base.viewC model ]
         ]

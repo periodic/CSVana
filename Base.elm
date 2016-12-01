@@ -19,6 +19,29 @@ type alias Component model msg =
     , state : model
     }
 
+type Instance msg
+    = Instance
+        { update : msg -> (Instance msg, Cmd msg)
+        , view : Html msg
+        , subscriptions : Sub msg
+        }
+
+createWithState : Spec model msg -> model -> Instance msg
+createWithState spec state =
+    Instance
+        { update = mapFst (createWithState spec) << flip spec.update state
+        , view = spec.view state
+        , subscriptions = spec.subscriptions state
+        }
+
+create : Spec model msg -> (Instance msg, Cmd msg)
+create spec =
+    let
+        (state, cmd) = spec.init
+        instance = createWithState spec state
+    in
+        (instance, cmd)
+
 initC : Spec model msg -> (Component model msg, Cmd msg)
 initC spec =
     let
@@ -53,6 +76,10 @@ viewC { spec, state } =
 viewWrapped : (msg1 -> msg2) -> Component model msg1 -> Html msg2
 viewWrapped f =
     Html.App.map f << viewC
+
+get : (model -> a) -> Component model msg -> a
+get f { state } =
+    f state
 
 -- TODO: This should probably be managed by something like an OutMsg.
 stateC : Component model msg -> model

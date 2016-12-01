@@ -1,6 +1,6 @@
 module Components.Asana exposing (Props, Msg, Model, spec)
 
-import Html exposing (Html, div, h3, text)
+import Html exposing (Html, div, h3, text, p)
 import Html.App
 import Html.Attributes exposing (class)
 
@@ -98,8 +98,8 @@ processMessage props msg model =
                 (csv', csvCmd) = Base.updateC msg' model.csv
                 model' = { model | csv = csv' }
                 cmd = Cmd.map CsvMsg csvCmd
-                headers = Csv.getHeaders model.csv
-                headers' = Csv.getHeaders csv'
+                headers = Base.get Csv.headers model.csv
+                headers' = Base.get Csv.headers csv'
             in
                 if headers /= headers'
                     then updateMatcher props (model', cmd)
@@ -117,7 +117,7 @@ processMessage props msg model =
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
 updateMatcher {token} (model, cmd) =
-    case ( getSelectedProject model, Csv.getHeaders model.csv, Csv.getRecords model.csv) of
+    case ( getSelectedProject model, Base.get Csv.headers model.csv, Base.get Csv.records model.csv) of
         (Just project, Just headers, Just records) ->
             let
                 (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg <| Base.initC <|
@@ -167,13 +167,17 @@ view props model =
 viewInputs : Props -> Model -> Html Msg
 viewInputs props model =
     div [ class "Asana-inputs" ]
-        [ div [ class "Asana-form" ]
-            [ h3 [] [ text "Select an Asana project:" ]
-            , Html.App.map FormMsg <| Base.viewC model.form
-            ]
-        , div [ class "Asana-csv" ]
-            [ h3 [] [ text "Upload a CSV file:"]
+        [ div [ class "Asana-csv" ]
+            [ h3 [] [ text "CSV"]
+            , p [ class "Asana-infoText" ] [ text "Upload a CSV file:" ]
             , Html.App.map CsvMsg <| Base.viewC model.csv
+            ]
+        , div [ class "Asana-arrow" ]
+            [ text "→" ]
+        , div [ class "Asana-form" ]
+            [ h3 [] [ text "Asana" ]
+            , p [ class "Asana-infoText" ] [ text "Select an Asana project:" ]
+            , Html.App.map FormMsg <| Base.viewC model.form
             ]
         ]
 

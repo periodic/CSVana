@@ -16,11 +16,11 @@ type alias Props =
     }
 
 type alias Model =
-    { targets : Array Target
+    { targets : Array (Maybe Target)
     }
 
 type Msg
-    = TargetUpdated Int Target
+    = TargetUpdated Int (Maybe Target)
     | UpdateNumFields Int
 
 type alias Spec = Base.Spec Model Msg
@@ -34,7 +34,7 @@ component props =
     , subscriptions = always Sub.none
     }
 
-getTargets : Component -> List Target
+getTargets : Component -> List (Maybe Target)
 getTargets =
     Array.toList << .targets << Base.stateC
 
@@ -49,7 +49,7 @@ setNumFields =
 init : Props -> (Model, Cmd Msg)
 init { numFields } =
     let
-        targets = Array.repeat numFields Target.None
+        targets = Array.repeat numFields Nothing
     in
         ({ targets = targets }, Cmd.none)
 
@@ -66,7 +66,7 @@ update props msg model =
                         then
                             Array.slice 0 numFields targets
                         else
-                            Array.append targets <| Array.repeat (Array.length targets - numFields) Target.None
+                            Array.append targets <| Array.repeat (Array.length targets - numFields) Nothing
             in
                 ({ model | targets = targets' }, Cmd.none)
 
@@ -80,8 +80,7 @@ allTargets customFields =
     let
         customFieldTargets = List.map Target.CustomField customFields
         genericTargets =
-            [ Target.None
-            , Target.Name
+            [ Target.Name
             , Target.Description
             , Target.DueDate
             , Target.DueTime
@@ -89,28 +88,30 @@ allTargets customFields =
     in
         genericTargets ++ customFieldTargets
 
-viewSelect : List Asana.CustomFieldInfo -> Int -> Target -> Html Msg
+viewSelect : List Asana.CustomFieldInfo -> Int -> Maybe Target -> Html Msg
 viewSelect customFields index selectedTarget =
     let
         targets = allTargets customFields
-        options = List.map (viewOption selectedTarget) targets
+        options = emptyOption selectedTarget :: List.map (viewOption selectedTarget) targets
     in
         select [ class "FieldOptions-select", Events.on "change" (onChange index customFields) ] options
+
+emptyOption : Maybe Target -> Html Msg
+emptyOption selectedTarget =
+    option [ selected (selectedTarget == Nothing), value "" ] []
 
 onChange : Int -> List Asana.CustomFieldInfo -> Json.Decoder Msg
 onChange index customFields =
     Json.map (TargetUpdated index) <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
 
 
-viewOption : Target -> Target -> Html Msg
+viewOption : Maybe Target -> Target -> Html Msg
 viewOption selectedTarget target =
-    option [ selected (selectedTarget == target), value <| targetString target ] [ text <| targetString target ]
+    option [ selected (selectedTarget == Just target), value <| targetString target ] [ text <| targetString target ]
 
 targetString : Target -> String
 targetString target =
     case target of
-        Target.None ->
-            "None"
         Target.Name ->
             "Name"
         Target.Description ->
@@ -122,21 +123,19 @@ targetString target =
         Target.CustomField customField ->
             "CF: " ++ Asana.customFieldName customField
 
-targetFromString : List Asana.CustomFieldInfo -> String -> Target
+targetFromString : List Asana.CustomFieldInfo -> String -> Maybe Target
 targetFromString customFields str =
     case str of
-        "None" ->
-            Target.None
         "Name" ->
-            Target.Name
+            Just Target.Name
         "Description" ->
-            Target.Description
+            Just Target.Description
         "Due Date" ->
-            Target.DueDate
+            Just Target.DueDate
         "Due Time" ->
-            Target.DueTime
+            Just Target.DueTime
         str ->
-            matchCustomFieldName str customFields |> Maybe.map Target.CustomField |> Maybe.withDefault Target.None
+            matchCustomFieldName str customFields |> Maybe.map Target.CustomField
 
 matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
 matchCustomFieldName str =

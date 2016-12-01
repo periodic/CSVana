@@ -2,8 +2,9 @@ module CommonViews exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-
 import Http
+
+import Base
 
 unloadedView : Html msg
 unloadedView =
@@ -27,3 +28,6 @@ debugView childView model =
             [ text <| toString model ]
         ]
 
+withDebug : Base.Spec model msg -> Base.Spec model msg
+withDebug spec =
+    { spec | view = debugView spec.view }
