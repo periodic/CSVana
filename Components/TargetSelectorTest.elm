@@ -2,6 +2,7 @@ module Components.TargetSelectorTest exposing (main)
 
 import Html.App
 
+import Base
 import Asana.Model as Asana
 import CommonViews
 import Components.TargetSelector as TargetSelector
@@ -21,6 +22,7 @@ main : Program Never
 main =
     Html.App.program
     <| CommonViews.withDebug
-    <| TargetSelector.component
+    <| Base.asRoot
+    <| TargetSelector.create
         { customFields = customFields
         }

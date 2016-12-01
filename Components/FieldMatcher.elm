@@ -1,4 +1,4 @@
-module Components.FieldMatcher exposing (Props, Model, Msg, component)
+module Components.FieldMatcher exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
 import Html.App
@@ -19,35 +19,37 @@ type alias Props =
     , customFields : List Asana.CustomFieldInfo
     }
 
-type alias Model =
-    { fieldOptions : FieldOptions.Component
-    , uploader : Maybe Uploader.Component
-    }
-
-type Msg 
+type Msg
     = FieldOptionsMsg FieldOptions.Msg
     | UploaderMsg Uploader.Msg
     | StartUpload
 
-type alias Spec = Base.Spec Model Msg
-type alias Component = Base.Component Model Msg
+type alias Data = ()
+type alias Instance = Base.Instance Data Msg
 
-component : Props -> Spec
-component props =
-    { init = init props
-    , update = update props
-    , view = view props
-    , subscriptions = always Sub.none
-    }
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , view = view props
+        , subscriptions = always Sub.none
+        , get = always ()
+        }
 
 --------------------------------------------------------------------------------
 -- Private
+
+type alias Model =
+    { fieldOptions : FieldOptions.Instance
+    , uploader : Maybe Uploader.Instance
+    }
 
 init : Props -> (Model, Cmd Msg)
 init {csvHeaders, customFields} =
     let
         (fieldOptions, fieldOptionsCmd) =
-            Base.initC <| FieldOptions.component
+            FieldOptions.create
                 { customFields = customFields
                 , numFields = List.length csvHeaders
                 }
@@ -63,25 +65,25 @@ update props msg model =
     case msg of
         FieldOptionsMsg msg' ->
             let
-                (fieldOptions', fieldOptionsCmd) = Base.updateC msg' model.fieldOptions
+                (fieldOptions', fieldOptionsCmd) = Base.update msg' model.fieldOptions
             in
                 ({ model | fieldOptions = fieldOptions' }, Cmd.map FieldOptionsMsg fieldOptionsCmd)
         UploaderMsg msg' ->
             case model.uploader of
                 Just uploader ->
                     let
-                        (uploader', uploaderCmd) = Base.updateC msg' uploader
+                        (uploader', uploaderCmd) = Base.update msg' uploader
                     in
                         ({ model | uploader = Just uploader' }, Cmd.map UploaderMsg uploaderCmd)
                 Nothing ->
                     (model, Cmd.none)
         StartUpload ->
             let
-                (uploader, uploaderCmd) = Base.initC <| Uploader.spec
+                (uploader, uploaderCmd) = Uploader.create
                     { token = props.token
                     , projectId = props.projectId
                     , records = props.csvRecords
-                    , fieldTargets = FieldOptions.getTargets model.fieldOptions
+                    , fieldTargets = Base.get model.fieldOptions
                     }
             in
                 ({ model | uploader = Just uploader }, Cmd.map UploaderMsg uploaderCmd)
@@ -93,7 +95,7 @@ view { csvHeaders} { fieldOptions, uploader } =
             [ div [ class "FieldMatcher-csv" ]
                 [ renderHeaders csvHeaders ]
             , div [ class "FieldMatcher-targets" ]
-                [ Html.App.map FieldOptionsMsg <| Base.viewC fieldOptions ]
+                [ Html.App.map FieldOptionsMsg <| Base.view fieldOptions ]
             ]
         , div [ class "FieldMatcher-upload" ]
             [ div [ class "FieldMatcher-button" ]
@@ -113,10 +115,10 @@ renderHeader header =
     div [ class "CsvHeaders-header" ]
         [ text header ]
 
-renderUploader : Maybe Uploader.Component -> Html Msg
+renderUploader : Maybe Uploader.Instance -> Html Msg
 renderUploader mUploader =
     case mUploader of
         Just uploader ->
-            Html.App.map UploaderMsg <| Base.viewC uploader
+            Html.App.map UploaderMsg <| Base.view uploader
         Nothing ->
             text "Click to start the import."

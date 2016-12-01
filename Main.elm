@@ -11,7 +11,7 @@ import Components.OAuthBoundary as OAuthBoundary
 
 type alias Msg = OAuthBoundary.Msg Asana.Msg
 type alias Model =
-    OAuthBoundary.Component Asana.Model Asana.Msg
+    OAuthBoundary.Instance Asana.Data Asana.Msg
 
 init : Navigation.Location -> (Model, Cmd Msg)
 init location =
@@ -24,18 +24,17 @@ init location =
                 { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
                 , clientId = clientId
                 , baseRedirectUrl = baseRedirectUrl
-                , childSpec = \token ->
-                    Asana.spec { token = token }
+                , child = \token ->
+                    Asana.create { token = token }
                 }
-        oauthSpec = OAuthBoundary.spec oauthProps
     in
-        Base.initC oauthSpec
+        OAuthBoundary.create oauthProps
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update = Base.updateC 
+update = Base.update
 
 subscriptions : Model -> Sub Msg
-subscriptions = Base.subscriptionsC
+subscriptions = Base.subscriptions
 
 urlUpdate : Navigation.Location -> Model -> (Model, Cmd Msg)
 urlUpdate location model =
@@ -47,7 +46,7 @@ view model =
         [ header [ class "Main-header" ]
             [ h1 [] [ text "CSVana" ] ]
         , div [ class "Main-form" ]
-            [ Base.viewC model ]
+            [ Base.view model ]
         ]
 
 main : Program Never

@@ -2,14 +2,21 @@ module Components.TypeaheadTest exposing (main)
 
 import Html.App exposing (program)
 
+import Base
 import Asana.Api as Api
 import Components.Typeahead as Typeahead
-
+import CommonViews
+import Components.OAuthBoundary as OAuthBoundary
 
 main : Program Never
 main =
-    program <| Typeahead.spec
-        { fetcher = Api.projectTypeahead
-                "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpemF0aW9uIjoxOTI5Njk3NjgzOTEzMzEsInNjb3BlIjoiZGVmYXVsdCIsImlhdCI6MTQ3Nzg4NTk1OCwiZXhwIjoxNDc3ODg5NTU4fQ.OjoamBpJDRgyiU--rO-EvV1MpKyR_nxTLHNPcxmeVh0"
-                "16202385315778"
-        }
+    program <| CommonViews.withDebug <| Base.asRoot <|
+        OAuthBoundary.create 
+            { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
+            , clientId = "192968333753040"
+            , baseRedirectUrl = "https://localhost:8000"
+            , child =
+                \token -> Typeahead.create
+                    { fetcher = \fragment -> Api.projectTypeahead "15793206719" fragment token
+                    }
+            }

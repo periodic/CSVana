@@ -2,20 +2,23 @@ module Components.UploaderTest exposing (main)
 
 import Html.App exposing (program)
 
+import Base
+import CommonViews
 import Asana.Model as Asana
 import Asana.Target as Target
 import Components.Uploader as Uploader
 import Components.OAuthBoundary as OAuthBoundary
 
-fieldTargets : List Target.Target
+-- TODO: All the parsing logic can really be handled in a test on Asana.Parser.
+fieldTargets : List (Maybe Target.Target)
 fieldTargets =
-    [ Target.Name
-    , Target.Description
-    , Target.DueDate
-    , Target.DueTime
-    , Target.CustomField <| Asana.CustomTextFieldInfo "216726495168048" "String"
-    , Target.CustomField <| Asana.CustomNumberFieldInfo "216726495168054" "Drew's Number" 2
-    , Target.CustomField <| Asana.CustomEnumFieldInfo "216726495168050" "Drew's Enum"
+    [ Just Target.Name
+    , Just Target.Description
+    , Just Target.DueDate
+    , Just Target.DueTime
+    , Just <| Target.CustomField <| Asana.CustomTextFieldInfo "216726495168048" "String"
+    , Just <| Target.CustomField <| Asana.CustomNumberFieldInfo "216726495168054" "Drew's Number" 2
+    , Just <| Target.CustomField <| Asana.CustomEnumFieldInfo "216726495168050" "Drew's Enum"
         [ { id = "216726495168051", name = "Option 1" }
         , { id = "216726495168052", name = "Option 2" }
         ]
@@ -75,12 +78,12 @@ records =
 
 main : Program Never
 main =
-    program <| OAuthBoundary.spec
+    program <| CommonViews.withDebug <| Base.asRoot <| OAuthBoundary.create
         { baseRedirectUrl =  "https://localhost:8000"
         , baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
         , clientId = "192968333753040"
-        , childSpec = \token ->
-            Uploader.spec
+        , child = \token ->
+            Uploader.create
                 { token = token
                 , projectId = "216637505526884"
                 , records = records

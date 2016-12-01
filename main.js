@@ -10542,109 +10542,84 @@ var _user$project$Base$mapFst = F2(
 			_1: _p6._1
 		};
 	});
-var _user$project$Base$stateC = function (_p7) {
+var _user$project$Base$get = function (_p7) {
 	var _p8 = _p7;
-	return _p8.state;
+	return _p8._0.get;
 };
-var _user$project$Base$get = F2(
-	function (f, _p9) {
-		var _p10 = _p9;
-		return f(_p10.state);
-	});
-var _user$project$Base$viewC = function (_p11) {
-	var _p12 = _p11;
-	return _p12.spec.view(_p12.state);
+var _user$project$Base$view = function (_p9) {
+	var _p10 = _p9;
+	return _p10._0.view;
 };
-var _user$project$Base$viewWrapped = function (f) {
-	return function (_p13) {
+var _user$project$Base$viewWith = function (f) {
+	return function (_p11) {
 		return A2(
 			_elm_lang$html$Html_App$map,
 			f,
-			_user$project$Base$viewC(_p13));
+			_user$project$Base$view(_p11));
 	};
 };
-var _user$project$Base$subscriptionsC = function (_p14) {
-	var _p15 = _p14;
-	return _p15.spec.subscriptions(_p15.state);
+var _user$project$Base$subscriptions = function (_p12) {
+	var _p13 = _p12;
+	return _p13._0.subscriptions;
 };
-var _user$project$Base$subscriptionsWrapped = function (f) {
-	return function (_p16) {
+var _user$project$Base$subscriptionsWith = function (f) {
+	return function (_p14) {
 		return A2(
 			_elm_lang$core$Platform_Sub$map,
 			f,
-			_user$project$Base$subscriptionsC(_p16));
+			_user$project$Base$subscriptions(_p14));
 	};
 };
-var _user$project$Base$updateC = F2(
-	function (msg, _p17) {
-		var _p18 = _p17;
-		var _p20 = _p18.spec;
-		var _p19 = A2(_p20.update, msg, _p18.state);
-		var state$ = _p19._0;
-		var cmd = _p19._1;
-		return {
-			ctor: '_Tuple2',
-			_0: {spec: _p20, state: state$},
-			_1: cmd
-		};
+var _user$project$Base$update = F2(
+	function (msg, _p15) {
+		var _p16 = _p15;
+		return _p16._0.update(msg);
 	});
-var _user$project$Base$updateWrapped = F2(
+var _user$project$Base$updateWith = F2(
 	function (f, msg) {
-		return function (_p21) {
+		return function (_p17) {
 			return A2(
 				_user$project$Base$mapCmd,
 				f,
-				A2(_user$project$Base$updateC, msg, _p21));
+				A2(_user$project$Base$update, msg, _p17));
 		};
 	});
-var _user$project$Base$initC = function (spec) {
-	var _p22 = spec.init;
-	var state = _p22._0;
-	var cmd = _p22._1;
+var _user$project$Base$asRoot = function (_p18) {
+	var _p19 = _p18;
 	return {
-		ctor: '_Tuple2',
-		_0: {spec: spec, state: state},
-		_1: cmd
+		init: {ctor: '_Tuple2', _0: _p19._0, _1: _p19._1},
+		update: _user$project$Base$update,
+		subscriptions: _user$project$Base$subscriptions,
+		view: _user$project$Base$view
 	};
 };
-var _user$project$Base$initWrapped = function (f) {
-	return function (_p23) {
-		return A2(
-			_user$project$Base$mapCmd,
-			f,
-			_user$project$Base$initC(_p23));
-	};
-};
-var _user$project$Base$Spec = F4(
+var _user$project$Base$Program = F4(
 	function (a, b, c, d) {
 		return {init: a, update: b, view: c, subscriptions: d};
-	});
-var _user$project$Base$Component = F2(
-	function (a, b) {
-		return {spec: a, state: b};
 	});
 var _user$project$Base$Instance = function (a) {
 	return {ctor: 'Instance', _0: a};
 };
 var _user$project$Base$createWithState = F2(
-	function (spec, state) {
+	function (component, state) {
 		return _user$project$Base$Instance(
 			{
-				update: function (_p24) {
+				update: function (_p20) {
 					return A2(
 						_user$project$Base$mapFst,
-						_user$project$Base$createWithState(spec),
-						A3(_elm_lang$core$Basics$flip, spec.update, state, _p24));
+						_user$project$Base$createWithState(component),
+						A3(_elm_lang$core$Basics$flip, component.update, state, _p20));
 				},
-				view: spec.view(state),
-				subscriptions: spec.subscriptions(state)
+				view: component.view(state),
+				subscriptions: component.subscriptions(state),
+				get: component.get(state)
 			});
 	});
-var _user$project$Base$create = function (spec) {
-	var _p25 = spec.init;
-	var state = _p25._0;
-	var cmd = _p25._1;
-	var instance = A2(_user$project$Base$createWithState, spec, state);
+var _user$project$Base$create = function (component) {
+	var _p21 = component.init;
+	var state = _p21._0;
+	var cmd = _p21._1;
+	var instance = A2(_user$project$Base$createWithState, component, state);
 	return {ctor: '_Tuple2', _0: instance, _1: cmd};
 };
 
@@ -11270,14 +11245,14 @@ var _user$project$Asana_Target$Description = {ctor: 'Description'};
 var _user$project$Asana_Target$Name = {ctor: 'Name'};
 
 var _user$project$CommonViews$debugView = F2(
-	function (childView, model) {
+	function (childView, instance) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
 				[]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					childView(model),
+					childView(instance),
 					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
@@ -11287,15 +11262,16 @@ var _user$project$CommonViews$debugView = F2(
 					_elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$html$Html$text(
-							_elm_lang$core$Basics$toString(model))
+							_elm_lang$core$Basics$toString(
+								_user$project$Base$get(instance)))
 						]))
 				]));
 	});
-var _user$project$CommonViews$withDebug = function (spec) {
+var _user$project$CommonViews$withDebug = function (program) {
 	return _elm_lang$core$Native_Utils.update(
-		spec,
+		program,
 		{
-			view: _user$project$CommonViews$debugView(spec.view)
+			view: _user$project$CommonViews$debugView(program.view)
 		});
 };
 var _user$project$CommonViews$errorView = function (error) {
@@ -11328,64 +11304,43 @@ var _user$project$CommonViews$unloadedView = A2(
 	_elm_lang$core$Native_List.fromArray(
 		[]));
 
-var _user$project$Components_ApiParallelResource$isUnloaded = function (resource) {
-	var _p0 = _user$project$Base$stateC(resource);
-	if (_p0.ctor === 'Unloaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Components_ApiParallelResource$isLoaded = function (resource) {
-	var _p1 = _user$project$Base$stateC(resource);
-	if (_p1.ctor === 'Loaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Components_ApiParallelResource$getChild = function (resource) {
-	var _p2 = _user$project$Base$stateC(resource);
-	if (_p2.ctor === 'Loaded') {
-		return _elm_lang$core$Maybe$Just(_p2._0);
+var _user$project$Components_ApiParallelResource$get = function (resource) {
+	var _p0 = resource;
+	if (_p0.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(
+			_user$project$Base$get(_p0._0));
 	} else {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
 var _user$project$Components_ApiParallelResource$Props = F5(
 	function (a, b, c, d, e) {
-		return {childSpec: a, fetches: b, unloadedView: c, loadingView: d, errorView: e};
+		return {child: a, fetches: b, unloadedView: c, loadingView: d, errorView: e};
 	});
 var _user$project$Components_ApiParallelResource$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
 var _user$project$Components_ApiParallelResource$subscriptions = F2(
-	function (_p3, model) {
-		var _p4 = model;
-		if (_p4.ctor === 'Loaded') {
-			return A2(
-				_elm_lang$core$Platform_Sub$map,
-				_user$project$Components_ApiParallelResource$ChildMsg,
-				_user$project$Base$subscriptionsC(_p4._0));
+	function (_p1, model) {
+		var _p2 = model;
+		if (_p2.ctor === 'Loaded') {
+			return A2(_user$project$Base$subscriptionsWith, _user$project$Components_ApiParallelResource$ChildMsg, _p2._0);
 		} else {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	});
 var _user$project$Components_ApiParallelResource$view = F2(
 	function (props, resource) {
-		var _p5 = resource;
-		switch (_p5.ctor) {
+		var _p3 = resource;
+		switch (_p3.ctor) {
 			case 'Unloaded':
 				return props.unloadedView;
 			case 'Loading':
 				return props.loadingView;
 			case 'Error':
-				return props.errorView(_p5._0);
+				return props.errorView(_p3._0);
 			default:
-				return A2(
-					_elm_lang$html$Html_App$map,
-					_user$project$Components_ApiParallelResource$ChildMsg,
-					_user$project$Base$viewC(_p5._0));
+				return A2(_user$project$Base$viewWith, _user$project$Components_ApiParallelResource$ChildMsg, _p3._0);
 		}
 	});
 var _user$project$Components_ApiParallelResource$ApiMsg = F2(
@@ -11401,36 +11356,36 @@ var _user$project$Components_ApiParallelResource$Error = function (a) {
 var _user$project$Components_ApiParallelResource$Loading = function (a) {
 	return {ctor: 'Loading', _0: a};
 };
-var _user$project$Components_ApiParallelResource$init = function (_p6) {
-	var _p7 = _p6;
-	var _p9 = _p7.fetches;
+var _user$project$Components_ApiParallelResource$init = function (_p4) {
+	var _p5 = _p4;
+	var _p7 = _p5.fetches;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		A2(
 			_elm_lang$core$List$indexedMap,
-			function (_p8) {
+			function (_p6) {
 				return _elm_lang$core$Platform_Cmd$map(
-					_user$project$Components_ApiParallelResource$ApiMsg(_p8));
+					_user$project$Components_ApiParallelResource$ApiMsg(_p6));
 			},
-			_p9));
+			_p7));
 	var model = _user$project$Components_ApiParallelResource$Loading(
 		A2(
 			_elm_lang$core$Array$repeat,
-			_elm_lang$core$List$length(_p9),
+			_elm_lang$core$List$length(_p7),
 			_elm_lang$core$Maybe$Nothing));
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
 var _user$project$Components_ApiParallelResource$update = F3(
 	function (props, msg, model) {
-		var _p10 = msg;
-		if (_p10.ctor === 'ApiMsg') {
-			var _p11 = {ctor: '_Tuple2', _0: model, _1: _p10._1};
-			if (_p11._1.ctor === 'Ok') {
-				if (_p11._0.ctor === 'Loading') {
+		var _p8 = msg;
+		if (_p8.ctor === 'ApiMsg') {
+			var _p9 = {ctor: '_Tuple2', _0: model, _1: _p8._1};
+			if (_p9._1.ctor === 'Ok') {
+				if (_p9._0.ctor === 'Loading') {
 					var loadingData = A3(
 						_elm_lang$core$Array$set,
-						_p10._0,
-						_elm_lang$core$Maybe$Just(_p11._1._0),
-						_p11._0._0);
+						_p8._0,
+						_elm_lang$core$Maybe$Just(_p9._1._0),
+						_p9._0._0);
 					if (A2(
 						_elm_lang$core$List$all,
 						_user$project$Base$isJust,
@@ -11439,10 +11394,9 @@ var _user$project$Components_ApiParallelResource$update = F3(
 							_elm_lang$core$List$filterMap,
 							_elm_lang$core$Basics$identity,
 							_elm_lang$core$Array$toList(loadingData));
-						var _p12 = _user$project$Base$initC(
-							props.childSpec(loadedData));
-						var child = _p12._0;
-						var childCmd = _p12._1;
+						var _p10 = props.child(loadedData);
+						var child = _p10._0;
+						var childCmd = _p10._1;
 						return {
 							ctor: '_Tuple2',
 							_0: _user$project$Components_ApiParallelResource$Loaded(child),
@@ -11462,63 +11416,62 @@ var _user$project$Components_ApiParallelResource$update = F3(
 				return {
 					ctor: '_Tuple2',
 					_0: _user$project$Components_ApiParallelResource$Error(
-						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11._1._0)),
+						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p9._1._0)),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			}
 		} else {
-			var _p13 = model;
-			if (_p13.ctor === 'Loaded') {
-				var _p14 = A2(_user$project$Base$updateC, _p10._0, _p13._0);
-				var child$ = _p14._0;
-				var childCmd = _p14._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Components_ApiParallelResource$Loaded(child$),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiParallelResource$ChildMsg, childCmd)
-				};
+			var _p11 = model;
+			if (_p11.ctor === 'Loaded') {
+				return A2(
+					_user$project$Base$mapFst,
+					_user$project$Components_ApiParallelResource$Loaded,
+					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p8._0, _p11._0));
 			} else {
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		}
 	});
-var _user$project$Components_ApiParallelResource$component = function (props) {
-	return {
-		init: _user$project$Components_ApiParallelResource$init(props),
-		update: _user$project$Components_ApiParallelResource$update(props),
-		subscriptions: _user$project$Components_ApiParallelResource$subscriptions(props),
-		view: _user$project$Components_ApiParallelResource$view(props)
-	};
+var _user$project$Components_ApiParallelResource$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_ApiParallelResource$init(props),
+			update: _user$project$Components_ApiParallelResource$update(props),
+			subscriptions: _user$project$Components_ApiParallelResource$subscriptions(props),
+			view: _user$project$Components_ApiParallelResource$view(props),
+			get: _user$project$Components_ApiParallelResource$get
+		});
 };
 var _user$project$Components_ApiParallelResource$Unloaded = {ctor: 'Unloaded'};
 
-var _user$project$Components_ApiResource$isUnloaded = function (resource) {
-	var _p0 = _user$project$Base$stateC(resource);
-	if (_p0.ctor === 'Unloaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Components_ApiResource$isLoaded = function (resource) {
-	var _p1 = _user$project$Base$stateC(resource);
-	if (_p1.ctor === 'Loaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Components_ApiResource$getChild = function (resource) {
-	var _p2 = _user$project$Base$stateC(resource);
-	if (_p2.ctor === 'Loaded') {
-		return _elm_lang$core$Maybe$Just(_p2._0);
+var _user$project$Components_ApiResource$get = function (model) {
+	var _p0 = model;
+	if (_p0.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(
+			_user$project$Base$get(_p0._0));
 	} else {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
+var _user$project$Components_ApiResource$isUnloaded = function (model) {
+	var _p1 = model;
+	if (_p1.ctor === 'Unloaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Components_ApiResource$isLoaded = function (model) {
+	var _p2 = model;
+	if (_p2.ctor === 'Loaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
 var _user$project$Components_ApiResource$Props = F5(
 	function (a, b, c, d, e) {
-		return {childSpec: a, fetch: b, unloadedView: c, loadingView: d, errorView: e};
+		return {child: a, fetch: b, unloadedView: c, loadingView: d, errorView: e};
 	});
 var _user$project$Components_ApiResource$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
@@ -11530,7 +11483,7 @@ var _user$project$Components_ApiResource$subscriptions = F2(
 			return A2(
 				_elm_lang$core$Platform_Sub$map,
 				_user$project$Components_ApiResource$ChildMsg,
-				_user$project$Base$subscriptionsC(_p4._0));
+				_user$project$Base$subscriptions(_p4._0));
 		} else {
 			return _elm_lang$core$Platform_Sub$none;
 		}
@@ -11549,7 +11502,7 @@ var _user$project$Components_ApiResource$view = F2(
 				return A2(
 					_elm_lang$html$Html_App$map,
 					_user$project$Components_ApiResource$ChildMsg,
-					_user$project$Base$viewC(_p5._0));
+					_user$project$Base$view(_p5._0));
 		}
 	});
 var _user$project$Components_ApiResource$ApiMsg = function (a) {
@@ -11567,8 +11520,7 @@ var _user$project$Components_ApiResource$update = F3(
 		if (_p6.ctor === 'ApiMsg') {
 			var _p7 = _p6._0;
 			if (_p7.ctor === 'Ok') {
-				var _p8 = _user$project$Base$initC(
-					props.childSpec(_p7._0));
+				var _p8 = props.child(_p7._0);
 				var child = _p8._0;
 				var childCmd = _p8._1;
 				return {
@@ -11587,7 +11539,7 @@ var _user$project$Components_ApiResource$update = F3(
 		} else {
 			var _p9 = model;
 			if (_p9.ctor === 'Loaded') {
-				var _p10 = A2(_user$project$Base$updateC, _p6._0, _p9._0);
+				var _p10 = A2(_user$project$Base$update, _p6._0, _p9._0);
 				var child$ = _p10._0;
 				var childCmd = _p10._1;
 				return {
@@ -11610,13 +11562,15 @@ var _user$project$Components_ApiResource$init = function (_p11) {
 		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, _p12.fetch)
 	};
 };
-var _user$project$Components_ApiResource$component = function (props) {
-	return {
-		init: _user$project$Components_ApiResource$init(props),
-		update: _user$project$Components_ApiResource$update(props),
-		subscriptions: _user$project$Components_ApiResource$subscriptions(props),
-		view: _user$project$Components_ApiResource$view(props)
-	};
+var _user$project$Components_ApiResource$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_ApiResource$init(props),
+			update: _user$project$Components_ApiResource$update(props),
+			subscriptions: _user$project$Components_ApiResource$subscriptions(props),
+			view: _user$project$Components_ApiResource$view(props),
+			get: _user$project$Components_ApiResource$get
+		});
 };
 
 var _user$project$FileReader_FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
@@ -11651,10 +11605,42 @@ var _user$project$FileReader_FileReader$onFileInput = function (wrapper) {
 		A2(_elm_lang$core$Json_Decode$map, wrapper, _user$project$FileReader_FileReader$parseFiles));
 };
 
+var _user$project$Components_Csv$headers = function (_p0) {
+	return A2(
+		_elm_lang$core$Maybe$map,
+		function (_) {
+			return _.headers;
+		},
+		function (_) {
+			return _.csvData;
+		}(_p0));
+};
+var _user$project$Components_Csv$records = function (_p1) {
+	var _p2 = _p1;
+	var _p3 = _p2.csvData;
+	if (_p3.ctor === 'Just') {
+		var _p4 = _p3._0;
+		return _p2.hasHeaderRow ? _elm_lang$core$Maybe$Just(_p4.records) : ((_elm_lang$core$List$isEmpty(_p4.records) && _elm_lang$core$List$isEmpty(_p4.headers)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$List_ops['::'], _p4.headers, _p4.records)));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Components_Csv$get = F2(
+	function (_p5, model) {
+		return A3(
+			_elm_lang$core$Maybe$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			_user$project$Components_Csv$headers(model),
+			_user$project$Components_Csv$records(model));
+	});
 var _user$project$Components_Csv$update = F3(
-	function (_p0, msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
+	function (_p6, msg, model) {
+		var _p7 = msg;
+		switch (_p7.ctor) {
 			case 'MoreData':
 				return {
 					ctor: '_Tuple2',
@@ -11662,17 +11648,17 @@ var _user$project$Components_Csv$update = F3(
 						model,
 						{
 							csvData: _elm_lang$core$Maybe$Just(
-								_lovasoa$elm_csv$Csv$parse(_p1._0))
+								_lovasoa$elm_csv$Csv$parse(_p7._0))
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'NewFiles':
-				var _p2 = _elm_lang$core$List$head(_p1._0);
-				if (_p2.ctor === 'Just') {
+				var _p8 = _elm_lang$core$List$head(_p7._0);
+				if (_p8.ctor === 'Just') {
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$FileReader_FileReader$readFile(_p2._0)
+						_1: _user$project$FileReader_FileReader$readFile(_p8._0)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -11682,42 +11668,20 @@ var _user$project$Components_Csv$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{hasHeaderRow: _p1._0}),
+						{hasHeaderRow: _p7._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
-var _user$project$Components_Csv$init = function (_p3) {
+var _user$project$Components_Csv$init = function (_p9) {
 	var model = {csvData: _elm_lang$core$Maybe$Nothing, hasHeaderRow: true};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_Csv$headers = function (_p4) {
-	return A2(
-		_elm_lang$core$Maybe$map,
-		function (_) {
-			return _.headers;
-		},
-		function (_) {
-			return _.csvData;
-		}(_p4));
-};
-var _user$project$Components_Csv$numFields = function (_p5) {
-	return A2(
-		_elm_lang$core$Maybe$map,
-		_elm_lang$core$List$length,
-		_user$project$Components_Csv$headers(_p5));
-};
-var _user$project$Components_Csv$records = function (_p6) {
-	var _p7 = _p6;
-	var _p8 = _p7.csvData;
-	if (_p8.ctor === 'Just') {
-		var _p9 = _p8._0;
-		return _p7.hasHeaderRow ? _elm_lang$core$Maybe$Just(_p9.records) : ((_elm_lang$core$List$isEmpty(_p9.records) && _elm_lang$core$List$isEmpty(_p9.headers)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
-			A2(_elm_lang$core$List_ops['::'], _p9.headers, _p9.records)));
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
+var _user$project$Components_Csv$numFields = _elm_lang$core$Maybe$map(
+	function (_p10) {
+		return _elm_lang$core$List$length(
+			_elm_lang$core$Basics$fst(_p10));
+	});
 var _user$project$Components_Csv$Props = {};
 var _user$project$Components_Csv$Model = F2(
 	function (a, b) {
@@ -11730,14 +11694,14 @@ var _user$project$Components_Csv$MoreData = function (a) {
 	return {ctor: 'MoreData', _0: a};
 };
 var _user$project$Components_Csv$subscriptions = F2(
-	function (_p11, _p10) {
+	function (_p12, _p11) {
 		return _user$project$FileReader_FileReader$fileChunk(_user$project$Components_Csv$MoreData);
 	});
 var _user$project$Components_Csv$NewFiles = function (a) {
 	return {ctor: 'NewFiles', _0: a};
 };
 var _user$project$Components_Csv$view = F2(
-	function (_p12, model) {
+	function (_p13, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -11788,13 +11752,15 @@ var _user$project$Components_Csv$view = F2(
 						]))
 				]));
 	});
-var _user$project$Components_Csv$spec = function (props) {
-	return {
-		init: _user$project$Components_Csv$init(props),
-		update: _user$project$Components_Csv$update(props),
-		subscriptions: _user$project$Components_Csv$subscriptions(props),
-		view: _user$project$Components_Csv$view(props)
-	};
+var _user$project$Components_Csv$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Csv$init(props),
+			update: _user$project$Components_Csv$update(props),
+			subscriptions: _user$project$Components_Csv$subscriptions(props),
+			view: _user$project$Components_Csv$view(props),
+			get: _user$project$Components_Csv$get(props)
+		});
 };
 
 var _user$project$Components_FieldOptions$matchCustomFieldName = function (str) {
@@ -11937,13 +11903,6 @@ var _user$project$Components_FieldOptions$init = function (_p6) {
 		_1: _elm_lang$core$Platform_Cmd$none
 	};
 };
-var _user$project$Components_FieldOptions$getTargets = function (_p8) {
-	return _elm_lang$core$Array$toList(
-		function (_) {
-			return _.targets;
-		}(
-			_user$project$Base$stateC(_p8)));
-};
 var _user$project$Components_FieldOptions$Props = F2(
 	function (a, b) {
 		return {customFields: a, numFields: b};
@@ -11953,10 +11912,6 @@ var _user$project$Components_FieldOptions$Model = function (a) {
 };
 var _user$project$Components_FieldOptions$UpdateNumFields = function (a) {
 	return {ctor: 'UpdateNumFields', _0: a};
-};
-var _user$project$Components_FieldOptions$setNumFields = function (_p9) {
-	return _user$project$Base$updateC(
-		_user$project$Components_FieldOptions$UpdateNumFields(_p9));
 };
 var _user$project$Components_FieldOptions$TargetUpdated = F2(
 	function (a, b) {
@@ -11999,8 +11954,8 @@ var _user$project$Components_FieldOptions$viewSelect = F3(
 			options);
 	});
 var _user$project$Components_FieldOptions$view = F2(
-	function (props, _p10) {
-		var _p11 = _p10;
+	function (props, _p8) {
+		var _p9 = _p8;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -12011,20 +11966,37 @@ var _user$project$Components_FieldOptions$view = F2(
 				A2(
 					_elm_lang$core$Array$indexedMap,
 					_user$project$Components_FieldOptions$viewSelect(props.customFields),
-					_p11.targets)));
+					_p9.targets)));
 	});
-var _user$project$Components_FieldOptions$component = function (props) {
-	return {
-		init: _user$project$Components_FieldOptions$init(props),
-		update: _user$project$Components_FieldOptions$update(props),
-		view: _user$project$Components_FieldOptions$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
+var _user$project$Components_FieldOptions$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_FieldOptions$init(props),
+			update: _user$project$Components_FieldOptions$update(props),
+			view: _user$project$Components_FieldOptions$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: function (_p10) {
+				return _elm_lang$core$Array$toList(
+					function (_) {
+						return _.targets;
+					}(_p10));
+			}
+		});
 };
 
+var _user$project$Components_Uploader$get = F2(
+	function (_p1, _p0) {
+		var _p2 = _p1;
+		var _p3 = _p0;
+		return {
+			totalRecords: _elm_lang$core$List$length(_p2.records),
+			recordsProcessed: _p3.recordsProcessed,
+			errors: _p3.errors
+		};
+	});
 var _user$project$Components_Uploader$viewError = function (error) {
-	var _p0 = error;
-	if (_p0.ctor === 'ParseError') {
+	var _p4 = error;
+	if (_p4.ctor === 'ParseError') {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -12039,14 +12011,14 @@ var _user$project$Components_Uploader$viewError = function (error) {
 						'Row ',
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(_p0._0.row),
+							_elm_lang$core$Basics$toString(_p4._0.row),
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								', Col ',
 								A2(
 									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p0._0.col),
-									A2(_elm_lang$core$Basics_ops['++'], ': ', _p0._0.msg))))))
+									_elm_lang$core$Basics$toString(_p4._0.col),
+									A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg))))))
 				]));
 	} else {
 		return A2(
@@ -12063,15 +12035,15 @@ var _user$project$Components_Uploader$viewError = function (error) {
 						'Row ',
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(_p0._0.row),
-							A2(_elm_lang$core$Basics_ops['++'], ': ', _p0._0.msg))))
+							_elm_lang$core$Basics$toString(_p4._0.row),
+							A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg))))
 				]));
 	}
 };
 var _user$project$Components_Uploader$view = F2(
-	function (_p2, _p1) {
-		var _p3 = _p2;
-		var _p4 = _p1;
+	function (_p6, _p5) {
+		var _p7 = _p6;
+		var _p8 = _p5;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -12092,10 +12064,10 @@ var _user$project$Components_Uploader$view = F2(
 							_elm_lang$core$String$concat(
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$core$Basics$toString(_p4.recordsProcessed),
+										_elm_lang$core$Basics$toString(_p8.recordsProcessed),
 										' / ',
 										_elm_lang$core$Basics$toString(
-										_elm_lang$core$List$length(_p3.records))
+										_elm_lang$core$List$length(_p7.records))
 									])))
 						])),
 					A2(
@@ -12104,12 +12076,16 @@ var _user$project$Components_Uploader$view = F2(
 						[
 							_elm_lang$html$Html_Attributes$class('Uploader-errors')
 						]),
-					A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, _p4.errors))
+					A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, _p8.errors))
 				]));
 	});
 var _user$project$Components_Uploader$Props = F4(
 	function (a, b, c, d) {
 		return {token: a, projectId: b, records: c, fieldTargets: d};
+	});
+var _user$project$Components_Uploader$Data = F3(
+	function (a, b, c) {
+		return {totalRecords: a, recordsProcessed: b, errors: c};
 	});
 var _user$project$Components_Uploader$Model = F2(
 	function (a, b) {
@@ -12124,8 +12100,8 @@ var _user$project$Components_Uploader$UploadError = function (a) {
 };
 var _user$project$Components_Uploader$update = F3(
 	function (props, msg, model) {
-		var _p5 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
-		if (_p5._1.ctor === 'Ok') {
+		var _p9 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		if (_p9._1.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -12143,8 +12119,8 @@ var _user$project$Components_Uploader$update = F3(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Components_Uploader$UploadError(
 								{
-									msg: _elm_lang$core$Basics$toString(_p5._1._0),
-									row: _p5._0
+									msg: _elm_lang$core$Basics$toString(_p9._1._0),
+									row: _p9._0
 								}),
 							model.errors)
 					}),
@@ -12156,39 +12132,39 @@ var _user$project$Components_Uploader$ParseError = function (a) {
 	return {ctor: 'ParseError', _0: a};
 };
 var _user$project$Components_Uploader$updateTask = F3(
-	function (row, _p7, _p6) {
-		var _p8 = _p7;
-		var _p9 = _p6;
-		var _p13 = _p9._0;
-		var _p12 = _p9._1;
-		var _p10 = _p8._1;
-		if (_p10.ctor === 'Just') {
-			var _p11 = A3(_user$project$Asana_Target$updateTask, _p10._0, _p8._2, _p13);
-			if (_p11.ctor === 'Ok') {
-				return {ctor: '_Tuple2', _0: _p11._0, _1: _p12};
+	function (row, _p11, _p10) {
+		var _p12 = _p11;
+		var _p13 = _p10;
+		var _p17 = _p13._0;
+		var _p16 = _p13._1;
+		var _p14 = _p12._1;
+		if (_p14.ctor === 'Just') {
+			var _p15 = A3(_user$project$Asana_Target$updateTask, _p14._0, _p12._2, _p17);
+			if (_p15.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p15._0, _1: _p16};
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _p13,
+					_0: _p17,
 					_1: A2(
 						_elm_lang$core$List_ops['::'],
 						_user$project$Components_Uploader$ParseError(
-							{msg: _p11._0, row: row, col: _p8._0}),
-						_p12)
+							{msg: _p15._0, row: row, col: _p12._0}),
+						_p16)
 				};
 			}
 		} else {
-			return {ctor: '_Tuple2', _0: _p13, _1: _p12};
+			return {ctor: '_Tuple2', _0: _p17, _1: _p16};
 		}
 	});
 var _user$project$Components_Uploader$uploadRecord = F4(
 	function (props, row, record, model) {
-		var fieldSpecs = A2(
+		var fieldDefs = A2(
 			_elm_lang$core$List$indexedMap,
 			F2(
-				function (i, _p14) {
-					var _p15 = _p14;
-					return {ctor: '_Tuple3', _0: i, _1: _p15._0, _2: _p15._1};
+				function (i, _p18) {
+					var _p19 = _p18;
+					return {ctor: '_Tuple3', _0: i, _1: _p19._0, _2: _p19._1};
 				}),
 			A3(
 				_elm_lang$core$List$map2,
@@ -12198,7 +12174,7 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 					}),
 				props.fieldTargets,
 				record));
-		var _p16 = A3(
+		var _p20 = A3(
 			_elm_lang$core$List$foldr,
 			_user$project$Components_Uploader$updateTask(row),
 			{
@@ -12207,9 +12183,9 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 				_1: _elm_lang$core$Native_List.fromArray(
 					[])
 			},
-			fieldSpecs);
-		var newTask = _p16._0;
-		var errs = _p16._1;
+			fieldDefs);
+		var newTask = _p20._0;
+		var errs = _p20._1;
 		var model$ = _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -12227,19 +12203,19 @@ var _user$project$Components_Uploader$init = function (props) {
 		errors: _elm_lang$core$Native_List.fromArray(
 			[])
 	};
-	var _p17 = A3(
+	var _p21 = A3(
 		_elm_lang$core$List$foldr,
 		F2(
-			function (_p19, _p18) {
-				var _p20 = _p19;
-				var _p21 = _p18;
-				var _p22 = A4(_user$project$Components_Uploader$uploadRecord, props, _p20._0, _p20._1, _p21._0);
-				var model$ = _p22._0;
-				var cmd = _p22._1;
+			function (_p23, _p22) {
+				var _p24 = _p23;
+				var _p25 = _p22;
+				var _p26 = A4(_user$project$Components_Uploader$uploadRecord, props, _p24._0, _p24._1, _p25._0);
+				var model$ = _p26._0;
+				var cmd = _p26._1;
 				return {
 					ctor: '_Tuple2',
 					_0: model$,
-					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p21._1)
+					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p25._1)
 				};
 			}),
 		{
@@ -12255,18 +12231,20 @@ var _user$project$Components_Uploader$init = function (props) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
 			props.records));
-	var model$ = _p17._0;
-	var cmds = _p17._1;
+	var model$ = _p21._0;
+	var cmds = _p21._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
 	return {ctor: '_Tuple2', _0: model$, _1: cmd};
 };
-var _user$project$Components_Uploader$spec = function (props) {
-	return {
-		init: _user$project$Components_Uploader$init(props),
-		update: _user$project$Components_Uploader$update(props),
-		view: _user$project$Components_Uploader$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
+var _user$project$Components_Uploader$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Uploader$init(props),
+			update: _user$project$Components_Uploader$update(props),
+			view: _user$project$Components_Uploader$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _user$project$Components_Uploader$get(props)
+		});
 };
 
 var _user$project$Components_FieldMatcher$renderHeader = function (header) {
@@ -12308,7 +12286,7 @@ var _user$project$Components_FieldMatcher$renderUploader = function (mUploader) 
 		return A2(
 			_elm_lang$html$Html_App$map,
 			_user$project$Components_FieldMatcher$UploaderMsg,
-			_user$project$Base$viewC(_p0._0));
+			_user$project$Base$view(_p0._0));
 	} else {
 		return _elm_lang$html$Html$text('Click to start the import.');
 	}
@@ -12318,12 +12296,11 @@ var _user$project$Components_FieldMatcher$FieldOptionsMsg = function (a) {
 };
 var _user$project$Components_FieldMatcher$init = function (_p1) {
 	var _p2 = _p1;
-	var _p3 = _user$project$Base$initC(
-		_user$project$Components_FieldOptions$component(
-			{
-				customFields: _p2.customFields,
-				numFields: _elm_lang$core$List$length(_p2.csvHeaders)
-			}));
+	var _p3 = _user$project$Components_FieldOptions$create(
+		{
+			customFields: _p2.customFields,
+			numFields: _elm_lang$core$List$length(_p2.csvHeaders)
+		});
 	var fieldOptions = _p3._0;
 	var fieldOptionsCmd = _p3._1;
 	var model = {fieldOptions: fieldOptions, uploader: _elm_lang$core$Maybe$Nothing};
@@ -12338,7 +12315,7 @@ var _user$project$Components_FieldMatcher$update = F3(
 		var _p4 = msg;
 		switch (_p4.ctor) {
 			case 'FieldOptionsMsg':
-				var _p5 = A2(_user$project$Base$updateC, _p4._0, model.fieldOptions);
+				var _p5 = A2(_user$project$Base$update, _p4._0, model.fieldOptions);
 				var fieldOptions$ = _p5._0;
 				var fieldOptionsCmd = _p5._1;
 				return {
@@ -12351,7 +12328,7 @@ var _user$project$Components_FieldMatcher$update = F3(
 			case 'UploaderMsg':
 				var _p6 = model.uploader;
 				if (_p6.ctor === 'Just') {
-					var _p7 = A2(_user$project$Base$updateC, _p4._0, _p6._0);
+					var _p7 = A2(_user$project$Base$update, _p4._0, _p6._0);
 					var uploader$ = _p7._0;
 					var uploaderCmd = _p7._1;
 					return {
@@ -12367,14 +12344,13 @@ var _user$project$Components_FieldMatcher$update = F3(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			default:
-				var _p8 = _user$project$Base$initC(
-					_user$project$Components_Uploader$spec(
-						{
-							token: props.token,
-							projectId: props.projectId,
-							records: props.csvRecords,
-							fieldTargets: _user$project$Components_FieldOptions$getTargets(model.fieldOptions)
-						}));
+				var _p8 = _user$project$Components_Uploader$create(
+					{
+						token: props.token,
+						projectId: props.projectId,
+						records: props.csvRecords,
+						fieldTargets: _user$project$Base$get(model.fieldOptions)
+					});
 				var uploader = _p8._0;
 				var uploaderCmd = _p8._1;
 				return {
@@ -12429,7 +12405,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 									A2(
 									_elm_lang$html$Html_App$map,
 									_user$project$Components_FieldMatcher$FieldOptionsMsg,
-									_user$project$Base$viewC(_p12.fieldOptions))
+									_user$project$Base$view(_p12.fieldOptions))
 								]))
 						])),
 					A2(
@@ -12472,13 +12448,16 @@ var _user$project$Components_FieldMatcher$view = F2(
 						]))
 				]));
 	});
-var _user$project$Components_FieldMatcher$component = function (props) {
-	return {
-		init: _user$project$Components_FieldMatcher$init(props),
-		update: _user$project$Components_FieldMatcher$update(props),
-		view: _user$project$Components_FieldMatcher$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
+var _user$project$Components_FieldMatcher$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_FieldMatcher$init(props),
+			update: _user$project$Components_FieldMatcher$update(props),
+			view: _user$project$Components_FieldMatcher$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _elm_lang$core$Basics$always(
+				{ctor: '_Tuple0'})
+		});
 };
 
 var _user$project$Components_Typeahead$renderNoResultsOption = A2(
@@ -12509,11 +12488,8 @@ var _user$project$Components_Typeahead$isActive = function (model) {
 		return model.inputFocused || model.optionsHovered;
 	}
 };
-var _user$project$Components_Typeahead$getSelection = function (_p1) {
-	return function (_) {
-		return _.selected;
-	}(
-		_user$project$Base$stateC(_p1));
+var _user$project$Components_Typeahead$get = function (_) {
+	return _.selected;
 };
 var _user$project$Components_Typeahead$Props = function (a) {
 	return {fetcher: a};
@@ -12522,15 +12498,6 @@ var _user$project$Components_Typeahead$Model = F5(
 	function (a, b, c, d, e) {
 		return {options: a, fragment: b, selected: c, inputFocused: d, optionsHovered: e};
 	});
-var _user$project$Components_Typeahead$Loaded = function (a) {
-	return {ctor: 'Loaded', _0: a};
-};
-var _user$project$Components_Typeahead$Loading = {ctor: 'Loading'};
-var _user$project$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
-var _user$project$Components_Typeahead$init = function (_p2) {
-	var model = {options: _user$project$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
 var _user$project$Components_Typeahead$OptionsHovered = function (a) {
 	return {ctor: 'OptionsHovered', _0: a};
 };
@@ -12570,19 +12537,19 @@ var _user$project$Components_Typeahead$renderSelected = function (resource) {
 };
 var _user$project$Components_Typeahead$renderOption = F2(
 	function (selected, resource) {
-		var _p3 = selected;
-		if (_p3.ctor === 'Just') {
-			return _elm_lang$core$Native_Utils.eq(_p3._0, resource) ? _user$project$Components_Typeahead$renderSelected(resource) : _user$project$Components_Typeahead$renderUnselected(resource);
+		var _p1 = selected;
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.eq(_p1._0, resource) ? _user$project$Components_Typeahead$renderSelected(resource) : _user$project$Components_Typeahead$renderUnselected(resource);
 		} else {
 			return _user$project$Components_Typeahead$renderUnselected(resource);
 		}
 	});
-var _user$project$Components_Typeahead$renderOptions = function (_p4) {
-	var _p5 = _p4;
-	var _p6 = _p5.options;
-	switch (_p6.ctor) {
+var _user$project$Components_Typeahead$renderOptions = function (_p2) {
+	var _p3 = _p2;
+	var _p4 = _p3.options;
+	switch (_p4.ctor) {
 		case 'Loaded':
-			var _p7 = _p6._0;
+			var _p5 = _p4._0;
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -12594,11 +12561,11 @@ var _user$project$Components_Typeahead$renderOptions = function (_p4) {
 						_user$project$Components_Typeahead$OptionsHovered(false))
 					]),
 				(_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$List$length(_p7),
+					_elm_lang$core$List$length(_p5),
 					0) > 0) ? A2(
 					_elm_lang$core$List$map,
-					_user$project$Components_Typeahead$renderOption(_p5.selected),
-					_p7) : _elm_lang$core$Native_List.fromArray(
+					_user$project$Components_Typeahead$renderOption(_p3.selected),
+					_p5) : _elm_lang$core$Native_List.fromArray(
 					[_user$project$Components_Typeahead$renderNoResultsOption]));
 		case 'Loading':
 			return A2(
@@ -12624,7 +12591,7 @@ var _user$project$Components_Typeahead$Input = function (a) {
 	return {ctor: 'Input', _0: a};
 };
 var _user$project$Components_Typeahead$view = F2(
-	function (_p8, model) {
+	function (_p6, model) {
 		var inputElem = A2(
 			_elm_lang$html$Html$input,
 			_elm_lang$core$Native_List.fromArray(
@@ -12657,19 +12624,28 @@ var _user$project$Components_Typeahead$NewOptions = F2(
 	function (a, b) {
 		return {ctor: 'NewOptions', _0: a, _1: b};
 	});
+var _user$project$Components_Typeahead$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _user$project$Components_Typeahead$Loading = {ctor: 'Loading'};
+var _user$project$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
+var _user$project$Components_Typeahead$init = function (_p7) {
+	var model = {options: _user$project$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
 var _user$project$Components_Typeahead$update = F3(
-	function (_p9, msg, model) {
-		var _p10 = _p9;
-		var _p11 = msg;
-		switch (_p11.ctor) {
+	function (_p8, msg, model) {
+		var _p9 = _p8;
+		var _p10 = msg;
+		switch (_p10.ctor) {
 			case 'NewOptions':
-				if (_p11._1.ctor === 'Ok') {
-					return (_elm_lang$core$Native_Utils.eq(_p11._0, model.fragment) && _user$project$Components_Typeahead$isActive(model)) ? {
+				if (_p10._1.ctor === 'Ok') {
+					return (_elm_lang$core$Native_Utils.eq(_p10._0, model.fragment) && _user$project$Components_Typeahead$isActive(model)) ? {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								options: _user$project$Components_Typeahead$Loaded(_p11._1._0)
+								options: _user$project$Components_Typeahead$Loaded(_p10._1._0)
 							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -12677,33 +12653,33 @@ var _user$project$Components_Typeahead$update = F3(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'Input':
-				var _p12 = _p11._0;
-				return _elm_lang$core$Native_Utils.eq(_p12, '') ? {
+				var _p11 = _p10._0;
+				return _elm_lang$core$Native_Utils.eq(_p11, '') ? {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{options: _user$project$Components_Typeahead$Unloaded, fragment: _p12, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
+						{options: _user$project$Components_Typeahead$Unloaded, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				} : {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{options: _user$project$Components_Typeahead$Loading, fragment: _p12, selected: _elm_lang$core$Maybe$Nothing}),
+						{options: _user$project$Components_Typeahead$Loading, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing}),
 					_1: A2(
 						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_Typeahead$NewOptions(_p12),
-						_p10.fetcher(_p12))
+						_user$project$Components_Typeahead$NewOptions(_p11),
+						_p9.fetcher(_p11))
 				};
 			case 'Selection':
-				var _p13 = _p11._0;
+				var _p12 = _p10._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							selected: _elm_lang$core$Maybe$Just(
-								A2(_elm_lang$core$Debug$log, 'Selection', _p13)),
-							fragment: _p13.name,
+								A2(_elm_lang$core$Debug$log, 'Selection', _p12)),
+							fragment: _p12.name,
 							options: _user$project$Components_Typeahead$Unloaded
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
@@ -12714,7 +12690,7 @@ var _user$project$Components_Typeahead$update = F3(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							inputFocused: A2(_elm_lang$core$Debug$log, 'Focused', _p11._0)
+							inputFocused: A2(_elm_lang$core$Debug$log, 'Focused', _p10._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -12724,19 +12700,21 @@ var _user$project$Components_Typeahead$update = F3(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							optionsHovered: A2(_elm_lang$core$Debug$log, 'Hovered', _p11._0)
+							optionsHovered: A2(_elm_lang$core$Debug$log, 'Hovered', _p10._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
-var _user$project$Components_Typeahead$spec = function (props) {
-	return {
-		init: _user$project$Components_Typeahead$init(props),
-		update: _user$project$Components_Typeahead$update(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-		view: _user$project$Components_Typeahead$view(props)
-	};
+var _user$project$Components_Typeahead$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Typeahead$init(props),
+			update: _user$project$Components_Typeahead$update(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			view: _user$project$Components_Typeahead$view(props),
+			get: _user$project$Components_Typeahead$get
+		});
 };
 
 var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) {
@@ -12752,31 +12730,19 @@ var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) 
 				_elm_lang$html$Html$text(_p1.name)
 			]));
 };
-var _user$project$Components_WorkspaceSelector$getValue = function (_) {
-	return _.selected;
-};
+var _user$project$Components_WorkspaceSelector$get = _elm_lang$core$Basics$identity;
 var _user$project$Components_WorkspaceSelector$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_Utils.update(
-				model,
-				{selected: _p2._0}),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
+		return {ctor: '_Tuple2', _0: _p2._0, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Components_WorkspaceSelector$init = function (workspaces) {
-	return {
-		ctor: '_Tuple2',
-		_0: {workspaces: workspaces, selected: _elm_lang$core$Maybe$Nothing},
-		_1: _elm_lang$core$Platform_Cmd$none
-	};
+var _user$project$Components_WorkspaceSelector$init = function (_p3) {
+	var _p4 = _p3;
+	return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_WorkspaceSelector$Model = F2(
-	function (a, b) {
-		return {workspaces: a, selected: b};
-	});
+var _user$project$Components_WorkspaceSelector$Props = function (a) {
+	return {workspaces: a};
+};
 var _user$project$Components_WorkspaceSelector$Selected = function (a) {
 	return {ctor: 'Selected', _0: a};
 };
@@ -12799,35 +12765,46 @@ var _user$project$Components_WorkspaceSelector$onChange = function () {
 					['target', 'value']),
 				_elm_lang$core$Json_Decode$string)));
 }();
-var _user$project$Components_WorkspaceSelector$view = function (_p3) {
-	var _p4 = _p3;
-	var options = A2(
-		_elm_lang$core$List_ops['::'],
-		A2(
-			_elm_lang$html$Html$option,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$value('')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[])),
-		A2(_elm_lang$core$List$map, _user$project$Components_WorkspaceSelector$workspaceOption, _p4.workspaces));
-	var attrs = _elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html_Attributes$class('WorkspaceSelector'),
-			A2(_elm_lang$html$Html_Events$on, 'change', _user$project$Components_WorkspaceSelector$onChange)
-		]);
-	return A2(_elm_lang$html$Html$select, attrs, options);
+var _user$project$Components_WorkspaceSelector$view = F2(
+	function (_p5, selected) {
+		var _p6 = _p5;
+		var options = A2(
+			_elm_lang$core$List_ops['::'],
+			A2(
+				_elm_lang$html$Html$option,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$value('')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[])),
+			A2(_elm_lang$core$List$map, _user$project$Components_WorkspaceSelector$workspaceOption, _p6.workspaces));
+		var attrs = _elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('WorkspaceSelector'),
+				A2(_elm_lang$html$Html_Events$on, 'change', _user$project$Components_WorkspaceSelector$onChange)
+			]);
+		return A2(_elm_lang$html$Html$select, attrs, options);
+	});
+var _user$project$Components_WorkspaceSelector$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_WorkspaceSelector$init(props),
+			update: _user$project$Components_WorkspaceSelector$update,
+			view: _user$project$Components_WorkspaceSelector$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _user$project$Components_WorkspaceSelector$get
+		});
 };
 
-var _user$project$Components_Form$getSelectedProject = function (_p0) {
-	return function (typeahead) {
-		return A2(_elm_lang$core$Maybe$andThen, typeahead, _user$project$Components_Typeahead$getSelection);
-	}(
+var _user$project$Components_Form$get = function (_p0) {
+	return A3(
+		_elm_lang$core$Basics$flip,
+		_elm_lang$core$Maybe$andThen,
+		_user$project$Base$get,
 		function (_) {
 			return _.projectTypeahead;
-		}(
-			_user$project$Base$stateC(_p0)));
+		}(_p0));
 };
 var _user$project$Components_Form$Props = F2(
 	function (a, b) {
@@ -12845,7 +12822,7 @@ var _user$project$Components_Form$updateProject = F3(
 		var _p2 = _p1;
 		var _p3 = model.projectTypeahead;
 		if (_p3.ctor === 'Just') {
-			var _p4 = A3(_user$project$Base$updateWrapped, _user$project$Components_Form$ProjectTypeaheadMsg, msg, _p3._0);
+			var _p4 = A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectTypeaheadMsg, msg, _p3._0);
 			var typeahead$ = _p4._0;
 			var cmd = _p4._1;
 			return {
@@ -12866,12 +12843,14 @@ var _user$project$Components_Form$WorkspaceSelectorMsg = function (a) {
 };
 var _user$project$Components_Form$init = function (_p5) {
 	var _p6 = _p5;
-	var _p7 = _user$project$Components_WorkspaceSelector$init(
-		A2(
-			_elm_lang$core$Maybe$withDefault,
-			_elm_lang$core$Native_List.fromArray(
-				[]),
-			_p6.user.workspaces));
+	var _p7 = _user$project$Components_WorkspaceSelector$create(
+		{
+			workspaces: A2(
+				_elm_lang$core$Maybe$withDefault,
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				_p6.user.workspaces)
+		});
 	var wss = _p7._0;
 	var wsscmd = _p7._1;
 	var model = {workspaceSelector: wss, projectTypeahead: _elm_lang$core$Maybe$Nothing};
@@ -12885,19 +12864,19 @@ var _user$project$Components_Form$init = function (_p5) {
 var _user$project$Components_Form$updateWorkspace = F3(
 	function (_p8, msg, model) {
 		var _p9 = _p8;
-		var _p10 = A2(_user$project$Components_WorkspaceSelector$update, msg, model.workspaceSelector);
+		var _p10 = A3(_user$project$Base$updateWith, _user$project$Components_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
 		var wss$ = _p10._0;
 		var wsscmd = _p10._1;
 		var _p11 = function () {
-			var _p12 = _user$project$Components_WorkspaceSelector$getValue(wss$);
+			var _p12 = _user$project$Base$get(wss$);
 			if (_p12.ctor === 'Just') {
 				return A2(
 					_user$project$Base$mapFst,
 					_elm_lang$core$Maybe$Just,
 					A2(
-						_user$project$Base$initWrapped,
+						_user$project$Base$mapCmd,
 						_user$project$Components_Form$ProjectTypeaheadMsg,
-						_user$project$Components_Typeahead$spec(
+						_user$project$Components_Typeahead$create(
 							{
 								fetcher: function (fragment) {
 									return A3(_user$project$Asana_Api$projectTypeahead, _p12._0, fragment, _p9.token);
@@ -12911,10 +12890,7 @@ var _user$project$Components_Form$updateWorkspace = F3(
 		var typeaheadCmd = _p11._1;
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Form$WorkspaceSelectorMsg, wsscmd),
-					typeaheadCmd
-				]));
+				[wsscmd, typeaheadCmd]));
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -12937,7 +12913,7 @@ var _user$project$Components_Form$view = F2(
 		var projects = function () {
 			var _p15 = model.projectTypeahead;
 			if (_p15.ctor === 'Just') {
-				return A2(_user$project$Base$viewWrapped, _user$project$Components_Form$ProjectTypeaheadMsg, _p15._0);
+				return A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectTypeaheadMsg, _p15._0);
 			} else {
 				return A2(
 					_elm_lang$html$Html$div,
@@ -12954,10 +12930,7 @@ var _user$project$Components_Form$view = F2(
 						]));
 			}
 		}();
-		var workspaces = A2(
-			_elm_lang$html$Html_App$map,
-			_user$project$Components_Form$WorkspaceSelectorMsg,
-			_user$project$Components_WorkspaceSelector$view(model.workspaceSelector));
+		var workspaces = A2(_user$project$Base$viewWith, _user$project$Components_Form$WorkspaceSelectorMsg, model.workspaceSelector);
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -13008,20 +12981,26 @@ var _user$project$Components_Form$view = F2(
 						]))
 				]));
 	});
-var _user$project$Components_Form$component = function (props) {
-	return {
-		init: _user$project$Components_Form$init(props),
-		update: _user$project$Components_Form$update(props),
-		view: _user$project$Components_Form$view(props),
-		subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none)
-	};
+var _user$project$Components_Form$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Form$init(props),
+			update: _user$project$Components_Form$update(props),
+			view: _user$project$Components_Form$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _user$project$Components_Form$get
+		});
 };
 
-var _user$project$Components_Asana$getSelectedProject = function (model) {
-	return A2(
+var _user$project$Components_Asana$getSelectedProject = function (_p0) {
+	return A3(
+		_elm_lang$core$Basics$flip,
 		_elm_lang$core$Maybe$andThen,
-		_user$project$Components_ApiResource$getChild(model.form),
-		_user$project$Components_Form$getSelectedProject);
+		_elm_lang$core$Basics$identity,
+		_user$project$Base$get(
+			function (_) {
+				return _.form;
+			}(_p0)));
 };
 var _user$project$Components_Asana$Props = function (a) {
 	return {token: a};
@@ -13034,64 +13013,62 @@ var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
 	return {ctor: 'FieldMatcherMsg', _0: a};
 };
 var _user$project$Components_Asana$updateMatcher = F2(
-	function (_p1, _p0) {
-		var _p2 = _p1;
-		var _p9 = _p2.token;
-		var _p3 = _p0;
-		var _p8 = _p3._0;
-		var _p4 = {
-			ctor: '_Tuple3',
-			_0: _user$project$Components_Asana$getSelectedProject(_p8),
-			_1: A2(_user$project$Base$get, _user$project$Components_Csv$headers, _p8.csv),
-			_2: A2(_user$project$Base$get, _user$project$Components_Csv$records, _p8.csv)
+	function (_p2, _p1) {
+		var _p3 = _p2;
+		var _p10 = _p3.token;
+		var _p4 = _p1;
+		var _p9 = _p4._0;
+		var _p5 = {
+			ctor: '_Tuple2',
+			_0: _user$project$Components_Asana$getSelectedProject(_p9),
+			_1: _user$project$Base$get(_p9.csv)
 		};
-		if ((((_p4.ctor === '_Tuple3') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === 'Just')) && (_p4._2.ctor === 'Just')) {
-			var _p7 = _p4._1._0;
-			var _p5 = A2(
+		if ((((_p5.ctor === '_Tuple2') && (_p5._0.ctor === 'Just')) && (_p5._1.ctor === 'Just')) && (_p5._1._0.ctor === '_Tuple2')) {
+			var _p8 = _p5._1._0._0;
+			var _p6 = A2(
 				_user$project$Base$mapCmd,
 				_user$project$Components_Asana$FieldMatcherMsg,
-				_user$project$Base$initC(
-					_user$project$Components_ApiResource$component(
-						{
-							childSpec: function (project) {
-								var numFields = _elm_lang$core$List$length(_p7);
-								var customFieldIds = A2(
-									_elm_lang$core$List$map,
-									function (_p6) {
-										return function (_) {
-											return _.id;
-										}(
-											function (_) {
-												return _.customField;
-											}(_p6));
+				_user$project$Components_ApiResource$create(
+					{
+						child: function (project) {
+							var numFields = _elm_lang$core$List$length(_p8);
+							var customFieldIds = A2(
+								_elm_lang$core$List$map,
+								function (_p7) {
+									return function (_) {
+										return _.id;
+									}(
+										function (_) {
+											return _.customField;
+										}(_p7));
+								},
+								project.customFieldSettings);
+							return _user$project$Components_ApiParallelResource$create(
+								{
+									child: function (customFieldInfos) {
+										return _user$project$Components_FieldMatcher$create(
+											{token: _p10, projectId: project.id, csvHeaders: _p8, csvRecords: _p5._1._0._1, customFields: customFieldInfos});
 									},
-									project.customFieldSettings);
-								return _user$project$Components_ApiParallelResource$component(
-									{
-										childSpec: function (customFieldInfos) {
-											return _user$project$Components_FieldMatcher$component(
-												{token: _p9, projectId: project.id, csvHeaders: _p7, csvRecords: _p4._2._0, customFields: customFieldInfos});
-										},
-										fetches: A2(
-											_elm_lang$core$List$map,
-											A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
-											customFieldIds),
-										unloadedView: _user$project$CommonViews$loadingIndicator,
-										loadingView: _user$project$CommonViews$loadingIndicator,
-										errorView: _user$project$CommonViews$errorView
-									});
-							},
-							fetch: A2(_user$project$Asana_Api$project, _p4._0._0.id, _p9),
-							unloadedView: _user$project$CommonViews$loadingIndicator,
-							loadingView: _user$project$CommonViews$loadingIndicator,
-							errorView: _user$project$CommonViews$errorView
-						})));
-			var matcher = _p5._0;
-			var matcherCmd = _p5._1;
+									fetches: A2(
+										_elm_lang$core$List$map,
+										A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p10),
+										customFieldIds),
+									unloadedView: _user$project$CommonViews$loadingIndicator,
+									loadingView: _user$project$CommonViews$loadingIndicator,
+									errorView: _user$project$CommonViews$errorView
+								});
+						},
+						fetch: A2(_user$project$Asana_Api$project, _p5._0._0.id, _p10),
+						unloadedView: _user$project$CommonViews$loadingIndicator,
+						loadingView: _user$project$CommonViews$loadingIndicator,
+						errorView: _user$project$CommonViews$errorView
+					}));
+			var matcher = _p6._0;
+			var matcherCmd = _p6._1;
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
+					_p9,
 					{
 						fieldMatcher: _elm_lang$core$Maybe$Just(matcher)
 					}),
@@ -13101,17 +13078,17 @@ var _user$project$Components_Asana$updateMatcher = F2(
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
+					_p9,
 					{fieldMatcher: _elm_lang$core$Maybe$Nothing}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		}
 	});
 var _user$project$Components_Asana$viewMatcher = F2(
-	function (props, _p10) {
-		var _p11 = _p10;
-		var _p12 = _p11.fieldMatcher;
-		if (_p12.ctor === 'Just') {
+	function (props, _p11) {
+		var _p12 = _p11;
+		var _p13 = _p12.fieldMatcher;
+		if (_p13.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -13123,7 +13100,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 						A2(
 						_elm_lang$html$Html_App$map,
 						_user$project$Components_Asana$FieldMatcherMsg,
-						_user$project$Base$viewC(_p12._0))
+						_user$project$Base$view(_p13._0))
 					]));
 		} else {
 			return A2(
@@ -13142,34 +13119,32 @@ var _user$project$Components_Asana$CsvMsg = function (a) {
 var _user$project$Components_Asana$FormMsg = function (a) {
 	return {ctor: 'FormMsg', _0: a};
 };
-var _user$project$Components_Asana$init = function (_p13) {
-	var _p14 = _p13;
-	var _p17 = _p14.token;
-	var _p15 = A2(
-		_user$project$Base$mapCmd,
-		_user$project$Components_Asana$CsvMsg,
-		_user$project$Base$initC(
-			_user$project$Components_Csv$spec(
-				{})));
-	var csv = _p15._0;
-	var csvCmd = _p15._1;
+var _user$project$Components_Asana$init = function (_p14) {
+	var _p15 = _p14;
+	var _p18 = _p15.token;
 	var _p16 = A2(
 		_user$project$Base$mapCmd,
+		_user$project$Components_Asana$CsvMsg,
+		_user$project$Components_Csv$create(
+			{}));
+	var csv = _p16._0;
+	var csvCmd = _p16._1;
+	var _p17 = A2(
+		_user$project$Base$mapCmd,
 		_user$project$Components_Asana$FormMsg,
-		_user$project$Base$initC(
-			_user$project$Components_ApiResource$component(
-				{
-					childSpec: function (user) {
-						return _user$project$Components_Form$component(
-							{token: _p17, user: user});
-					},
-					fetch: _user$project$Asana_Api$me(_p17),
-					unloadedView: _user$project$CommonViews$loadingIndicator,
-					loadingView: _user$project$CommonViews$loadingIndicator,
-					errorView: _user$project$CommonViews$errorView
-				})));
-	var form = _p16._0;
-	var formCmd = _p16._1;
+		_user$project$Components_ApiResource$create(
+			{
+				child: function (user) {
+					return _user$project$Components_Form$create(
+						{token: _p18, user: user});
+				},
+				fetch: _user$project$Asana_Api$me(_p18),
+				unloadedView: _user$project$CommonViews$loadingIndicator,
+				loadingView: _user$project$CommonViews$loadingIndicator,
+				errorView: _user$project$CommonViews$errorView
+			}));
+	var form = _p17._0;
+	var formCmd = _p17._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
 			[formCmd, csvCmd]));
@@ -13180,29 +13155,29 @@ var _user$project$Components_Asana$init = function (_p13) {
 	};
 };
 var _user$project$Components_Asana$subscriptions = F2(
-	function (_p19, _p18) {
-		var _p20 = _p18;
+	function (_p20, _p19) {
+		var _p21 = _p19;
 		var csvSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$CsvMsg,
-			_user$project$Base$subscriptionsC(_p20.csv));
+			_user$project$Base$subscriptions(_p21.csv));
 		var formSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$FormMsg,
-			_user$project$Base$subscriptionsC(_p20.form));
+			_user$project$Base$subscriptions(_p21.form));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[formSubs, csvSubs]));
 	});
 var _user$project$Components_Asana$processMessage = F3(
 	function (props, msg, model) {
-		var _p21 = msg;
-		switch (_p21.ctor) {
+		var _p22 = msg;
+		switch (_p22.ctor) {
 			case 'FormMsg':
 				var project = _user$project$Components_Asana$getSelectedProject(model);
-				var _p22 = A2(_user$project$Base$updateC, _p21._0, model.form);
-				var form$ = _p22._0;
-				var formCmd = _p22._1;
+				var _p23 = A2(_user$project$Base$update, _p22._0, model.form);
+				var form$ = _p23._0;
+				var formCmd = _p23._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{form: form$});
@@ -13213,25 +13188,44 @@ var _user$project$Components_Asana$processMessage = F3(
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			case 'CsvMsg':
-				var headers = A2(_user$project$Base$get, _user$project$Components_Csv$headers, model.csv);
-				var _p23 = A2(_user$project$Base$updateC, _p21._0, model.csv);
-				var csv$ = _p23._0;
-				var csvCmd = _p23._1;
+				var _p24 = A2(
+					_elm_lang$core$Maybe$withDefault,
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_List.fromArray(
+							[]),
+						_1: _elm_lang$core$Native_List.fromArray(
+							[])
+					},
+					_user$project$Base$get(model.csv));
+				var headers = _p24._0;
+				var _p25 = A3(_user$project$Base$updateWith, _user$project$Components_Asana$CsvMsg, _p22._0, model.csv);
+				var csv$ = _p25._0;
+				var csvCmd = _p25._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{csv: csv$});
-				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$CsvMsg, csvCmd);
-				var headers$ = A2(_user$project$Base$get, _user$project$Components_Csv$headers, csv$);
+				var _p26 = A2(
+					_elm_lang$core$Maybe$withDefault,
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_List.fromArray(
+							[]),
+						_1: _elm_lang$core$Native_List.fromArray(
+							[])
+					},
+					_user$project$Base$get(csv$));
+				var headers$ = _p26._0;
 				return (!_elm_lang$core$Native_Utils.eq(headers, headers$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
-					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
+					{ctor: '_Tuple2', _0: model$, _1: csvCmd}) : {ctor: '_Tuple2', _0: model$, _1: csvCmd};
 			default:
-				var _p24 = model.fieldMatcher;
-				if (_p24.ctor === 'Just') {
-					var _p25 = A2(_user$project$Base$updateC, _p21._0, _p24._0);
-					var matcher$ = _p25._0;
-					var matcherCmd = _p25._1;
+				var _p27 = model.fieldMatcher;
+				if (_p27.ctor === 'Just') {
+					var _p28 = A2(_user$project$Base$update, _p22._0, _p27._0);
+					var matcher$ = _p28._0;
+					var matcherCmd = _p28._1;
 					var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FieldMatcherMsg, matcherCmd);
 					return {
 						ctor: '_Tuple2',
@@ -13287,7 +13281,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$CsvMsg,
-							_user$project$Base$viewC(model.csv))
+							_user$project$Base$view(model.csv))
 						])),
 					A2(
 					_elm_lang$html$Html$div,
@@ -13328,7 +13322,7 @@ var _user$project$Components_Asana$viewInputs = F2(
 							A2(
 							_elm_lang$html$Html_App$map,
 							_user$project$Components_Asana$FormMsg,
-							_user$project$Base$viewC(model.form))
+							_user$project$Base$view(model.form))
 						]))
 				]));
 	});
@@ -13346,13 +13340,16 @@ var _user$project$Components_Asana$view = F2(
 					A2(_user$project$Components_Asana$viewMatcher, props, model)
 				]));
 	});
-var _user$project$Components_Asana$spec = function (props) {
-	return {
-		init: _user$project$Components_Asana$init(props),
-		update: _user$project$Components_Asana$update(props),
-		view: _user$project$Components_Asana$view(props),
-		subscriptions: _user$project$Components_Asana$subscriptions(props)
-	};
+var _user$project$Components_Asana$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Asana$init(props),
+			update: _user$project$Components_Asana$update(props),
+			view: _user$project$Components_Asana$view(props),
+			subscriptions: _user$project$Components_Asana$subscriptions(props),
+			get: _elm_lang$core$Basics$always(
+				{ctor: '_Tuple0'})
+		});
 };
 
 var _user$project$OAuth_OAuth$buildAuthUrl = function (_p0) {
@@ -13510,33 +13507,32 @@ var _user$project$OAuth_OAuth$update = F2(
 		}
 	});
 
-var _user$project$Components_OAuthBoundary$getChild = function (_p0) {
-	return function (_) {
-		return _.child;
-	}(
-		_user$project$Base$stateC(_p0));
-};
-var _user$project$Components_OAuthBoundary$Model = F2(
-	function (a, b) {
-		return {child: a, oauth: b};
+var _user$project$Components_OAuthBoundary$get = F2(
+	function (_p1, _p0) {
+		var _p2 = _p0;
+		return A2(_elm_lang$core$Maybe$map, _user$project$Base$get, _p2.child);
 	});
 var _user$project$Components_OAuthBoundary$Props = F4(
 	function (a, b, c, d) {
-		return {baseAuthUrl: a, clientId: b, baseRedirectUrl: c, childSpec: d};
+		return {baseAuthUrl: a, clientId: b, baseRedirectUrl: c, child: d};
+	});
+var _user$project$Components_OAuthBoundary$Model = F2(
+	function (a, b) {
+		return {child: a, oauth: b};
 	});
 var _user$project$Components_OAuthBoundary$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
 var _user$project$Components_OAuthBoundary$updateChild = F2(
 	function (msg, model) {
-		var _p1 = model.child;
-		if (_p1.ctor === 'Just') {
-			var _p2 = A2(
+		var _p3 = model.child;
+		if (_p3.ctor === 'Just') {
+			var _p4 = A2(
 				_user$project$Base$mapCmd,
 				_user$project$Components_OAuthBoundary$ChildMsg,
-				A2(_user$project$Base$updateC, msg, _p1._0));
-			var child$ = _p2._0;
-			var childCmd = _p2._1;
+				A2(_user$project$Base$update, msg, _p3._0));
+			var child$ = _p4._0;
+			var childCmd = _p4._1;
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -13551,13 +13547,13 @@ var _user$project$Components_OAuthBoundary$updateChild = F2(
 		}
 	});
 var _user$project$Components_OAuthBoundary$view = F2(
-	function (_p3, model) {
-		var _p4 = model.child;
-		if (_p4.ctor === 'Just') {
+	function (_p5, model) {
+		var _p6 = model.child;
+		if (_p6.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html_App$map,
 				_user$project$Components_OAuthBoundary$ChildMsg,
-				_user$project$Base$viewC(_p4._0));
+				_user$project$Base$view(_p6._0));
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -13574,11 +13570,11 @@ var _user$project$Components_OAuthBoundary$view = F2(
 var _user$project$Components_OAuthBoundary$OAuthMsg = function (a) {
 	return {ctor: 'OAuthMsg', _0: a};
 };
-var _user$project$Components_OAuthBoundary$init = function (_p5) {
-	var _p6 = _p5;
-	var _p7 = A3(_user$project$OAuth_OAuth$init, _p6.baseAuthUrl, _p6.clientId, _p6.baseRedirectUrl);
-	var oauthModel = _p7._0;
-	var oauthCmd = _p7._1;
+var _user$project$Components_OAuthBoundary$init = function (_p7) {
+	var _p8 = _p7;
+	var _p9 = A3(_user$project$OAuth_OAuth$init, _p8.baseAuthUrl, _p8.clientId, _p8.baseRedirectUrl);
+	var oauthModel = _p9._0;
+	var oauthCmd = _p9._1;
 	var model = {child: _elm_lang$core$Maybe$Nothing, oauth: oauthModel};
 	return {
 		ctor: '_Tuple2',
@@ -13588,21 +13584,20 @@ var _user$project$Components_OAuthBoundary$init = function (_p5) {
 };
 var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 	function (props, msg, model) {
-		var _p8 = A2(
+		var _p10 = A2(
 			_user$project$Base$mapCmd,
 			_user$project$Components_OAuthBoundary$OAuthMsg,
 			A2(_user$project$OAuth_OAuth$update, msg, model.oauth));
-		var oauth$ = _p8._0;
-		var oauthCmd1 = _p8._1;
-		var _p9 = _user$project$OAuth_OAuth$getToken(oauth$);
-		if (_p9.ctor === 'Just') {
-			var _p10 = A2(
+		var oauth$ = _p10._0;
+		var oauthCmd1 = _p10._1;
+		var _p11 = _user$project$OAuth_OAuth$getToken(oauth$);
+		if (_p11.ctor === 'Just') {
+			var _p12 = A2(
 				_user$project$Base$mapCmd,
 				_user$project$Components_OAuthBoundary$ChildMsg,
-				_user$project$Base$initC(
-					props.childSpec(_p9._0)));
-			var child = _p10._0;
-			var childCmd = _p10._1;
+				props.child(_p11._0));
+			var child = _p12._0;
+			var childCmd = _p12._1;
 			var cmd = _elm_lang$core$Platform_Cmd$batch(
 				_elm_lang$core$Native_List.fromArray(
 					[oauthCmd1, childCmd]));
@@ -13617,14 +13612,14 @@ var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 				_1: cmd
 			};
 		} else {
-			var _p11 = _user$project$OAuth_OAuth$getState(oauth$);
-			if (_p11.ctor === 'Ready') {
-				var _p12 = A2(
+			var _p13 = _user$project$OAuth_OAuth$getState(oauth$);
+			if (_p13.ctor === 'Ready') {
+				var _p14 = A2(
 					_user$project$Base$mapCmd,
 					_user$project$Components_OAuthBoundary$OAuthMsg,
 					_user$project$OAuth_OAuth$authenticate(oauth$));
-				var oauth2 = _p12._0;
-				var oauthCmd2 = _p12._1;
+				var oauth2 = _p14._0;
+				var oauthCmd2 = _p14._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -13647,23 +13642,23 @@ var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 	});
 var _user$project$Components_OAuthBoundary$update = F3(
 	function (props, msg, model) {
-		var _p13 = msg;
-		if (_p13.ctor === 'OAuthMsg') {
-			return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p13._0, model);
+		var _p15 = msg;
+		if (_p15.ctor === 'OAuthMsg') {
+			return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p15._0, model);
 		} else {
-			return A2(_user$project$Components_OAuthBoundary$updateChild, _p13._0, model);
+			return A2(_user$project$Components_OAuthBoundary$updateChild, _p15._0, model);
 		}
 	});
 var _user$project$Components_OAuthBoundary$subscriptions = F2(
-	function (_p15, _p14) {
-		var _p16 = _p14;
+	function (_p17, _p16) {
+		var _p18 = _p16;
 		var childSubs = function () {
-			var _p17 = _p16.child;
-			if (_p17.ctor === 'Just') {
+			var _p19 = _p18.child;
+			if (_p19.ctor === 'Just') {
 				return A2(
 					_elm_lang$core$Platform_Sub$map,
 					_user$project$Components_OAuthBoundary$ChildMsg,
-					_user$project$Base$subscriptionsC(_p17._0));
+					_user$project$Base$subscriptions(_p19._0));
 			} else {
 				return _elm_lang$core$Platform_Sub$none;
 			}
@@ -13671,18 +13666,20 @@ var _user$project$Components_OAuthBoundary$subscriptions = F2(
 		var oauthSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_OAuthBoundary$OAuthMsg,
-			_user$project$OAuth_OAuth$subscriptions(_p16.oauth));
+			_user$project$OAuth_OAuth$subscriptions(_p18.oauth));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[oauthSubs, childSubs]));
 	});
-var _user$project$Components_OAuthBoundary$spec = function (props) {
-	return {
-		init: _user$project$Components_OAuthBoundary$init(props),
-		update: _user$project$Components_OAuthBoundary$update(props),
-		view: _user$project$Components_OAuthBoundary$view(props),
-		subscriptions: _user$project$Components_OAuthBoundary$subscriptions(props)
-	};
+var _user$project$Components_OAuthBoundary$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_OAuthBoundary$init(props),
+			update: _user$project$Components_OAuthBoundary$update(props),
+			view: _user$project$Components_OAuthBoundary$view(props),
+			subscriptions: _user$project$Components_OAuthBoundary$subscriptions(props),
+			get: _user$project$Components_OAuthBoundary$get(props)
+		});
 };
 
 var _user$project$Main$view = function (model) {
@@ -13719,7 +13716,7 @@ var _user$project$Main$view = function (model) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_user$project$Base$viewC(model)
+						_user$project$Base$view(model)
 					]))
 			]));
 };
@@ -13727,8 +13724,8 @@ var _user$project$Main$urlUpdate = F2(
 	function (location, model) {
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Main$subscriptions = _user$project$Base$subscriptionsC;
-var _user$project$Main$update = _user$project$Base$updateC;
+var _user$project$Main$subscriptions = _user$project$Base$subscriptions;
+var _user$project$Main$update = _user$project$Base$update;
 var _user$project$Main$init = function (location) {
 	var _p0 = A2(_elm_lang$core$String$contains, 'localhost', location.origin) ? {ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'} : {ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'};
 	var clientId = _p0._0;
@@ -13737,13 +13734,12 @@ var _user$project$Main$init = function (location) {
 		baseAuthUrl: 'https://app.asana.com/-/oauth_authorize',
 		clientId: clientId,
 		baseRedirectUrl: baseRedirectUrl,
-		childSpec: function (token) {
-			return _user$project$Components_Asana$spec(
+		child: function (token) {
+			return _user$project$Components_Asana$create(
 				{token: token});
 		}
 	};
-	var oauthSpec = _user$project$Components_OAuthBoundary$spec(oauthProps);
-	return _user$project$Base$initC(oauthSpec);
+	return _user$project$Components_OAuthBoundary$create(oauthProps);
 };
 var _user$project$Main$main = {
 	main: A2(

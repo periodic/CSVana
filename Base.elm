@@ -3,87 +3,82 @@ module Base exposing (..)
 import Html exposing (Html)
 import Html.App
 
--- TODO: Bundle with the model, create easy functions.
--- create : Props -> Spec -> Component
--- update : Msg -> Component -> (Component, Cmd Msg)
--- view : Component -> Html Msg
-type alias Spec model msg =
+type alias Program model msg =
     { init : (model, Cmd msg)
     , update : msg -> model -> (model, Cmd msg)
     , view : model -> Html msg
     , subscriptions : model -> Sub msg
     }
 
-type alias Component model msg =
-    { spec : Spec model msg
-    , state : model
-    }
+type alias WithOutput model data a =
+    { a | get : model -> data }
 
-type Instance msg
+type alias Component model data msg =
+    WithOutput model data (Program model msg)
+
+type Instance data msg
     = Instance
-        { update : msg -> (Instance msg, Cmd msg)
+        { update : msg -> (Instance data msg, Cmd msg)
         , view : Html msg
         , subscriptions : Sub msg
+        , get : data
         }
 
-createWithState : Spec model msg -> model -> Instance msg
-createWithState spec state =
+createWithState : Component model data msg -> model -> Instance data msg
+createWithState component state =
     Instance
-        { update = mapFst (createWithState spec) << flip spec.update state
-        , view = spec.view state
-        , subscriptions = spec.subscriptions state
+        { update = mapFst (createWithState component) << flip component.update state
+        , view = component.view state
+        , subscriptions = component.subscriptions state
+        , get = component.get state
         }
 
-create : Spec model msg -> (Instance msg, Cmd msg)
-create spec =
+create : Component model data msg -> (Instance data msg, Cmd msg)
+create component =
     let
-        (state, cmd) = spec.init
-        instance = createWithState spec state
+        (state, cmd) = component.init
+        instance = createWithState component state
     in
         (instance, cmd)
 
-initC : Spec model msg -> (Component model msg, Cmd msg)
-initC spec =
-    let
-        (state, cmd) = spec.init
-    in
-        ({ spec = spec, state = state }, cmd)
+update : msg -> Instance model msg -> (Instance model msg, Cmd msg)
+update msg (Instance { update }) =
+    update msg
 
-initWrapped : (msg1 -> msg2) -> Spec model msg1 -> (Component model msg1, Cmd msg2)
-initWrapped f = mapCmd f << initC
+updateWith : (msg1 -> msg2) -> msg1 -> Instance model msg1 -> (Instance model msg1, Cmd msg2)
+updateWith f msg =
+    update msg >> mapCmd f
 
-updateC : msg -> Component model msg -> (Component model msg, Cmd msg)
-updateC msg {spec, state} =
-    let
-        (state', cmd) = spec.update msg state
-    in
-        ({ spec = spec, state = state' }, cmd)
+subscriptions : Instance model msg -> Sub msg
+subscriptions (Instance { subscriptions }) =
+    subscriptions
 
-updateWrapped : (msg1 -> msg2) -> msg1 -> Component model msg1 -> (Component model msg1, Cmd msg2)
-updateWrapped f msg = mapCmd f << updateC msg
+subscriptionsWith : (msg1 -> msg2) -> Instance model msg1 -> Sub msg2
+subscriptionsWith f =
+    subscriptions >> Sub.map f
 
-subscriptionsC : Component model msg -> Sub msg
-subscriptionsC { spec, state } =
-    spec.subscriptions state
+view : Instance model msg -> Html msg
+view (Instance { view }) =
+    view
 
-subscriptionsWrapped : (msg1 -> msg2) -> Component model msg1 -> Sub msg2
-subscriptionsWrapped f = Sub.map f << subscriptionsC
+viewWith : (msg1 -> msg2) -> Instance model msg1 -> Html msg2
+viewWith f =
+    view >> Html.App.map f
 
-viewC : Component model msg -> Html msg
-viewC { spec, state } =
-    spec.view state
+get : Instance data msg -> data
+get (Instance { get }) =
+    get
 
-viewWrapped : (msg1 -> msg2) -> Component model msg1 -> Html msg2
-viewWrapped f =
-    Html.App.map f << viewC
+asRoot : (Instance data msg, Cmd msg) -> Program (Instance data msg) msg
+asRoot (instance, cmd) =
+    { init = (instance, cmd)
+    , update = update
+    , subscriptions = subscriptions
+    , view = view
+    }
 
-get : (model -> a) -> Component model msg -> a
-get f { state } =
-    f state
-
--- TODO: This should probably be managed by something like an OutMsg.
-stateC : Component model msg -> model
-stateC { state } = state
+-- Utility
+-- TODO: move to it's own file.
 
 mapFst : (a -> b) -> (a, c) -> (b, c)
 mapFst f (a, c) =

@@ -1,12 +1,11 @@
-module Components.Form exposing (Props, Model, Msg, component, getSelectedProject)
+module Components.Form exposing (Props, Data, Msg, Instance, create)
 
 import Html exposing (Html, div, text, input, label, h3)
 import Html.Attributes exposing (class)
-import Html.App
 
 import Asana.Api as Api
 import Asana.Model as Asana
-import Base exposing (..)
+import Base
 import Components.Typeahead as Typeahead
 import Components.WorkspaceSelector as WorkspaceSelector
 
@@ -15,35 +14,43 @@ type alias Props =
     , user : Asana.User
     }
 
-type alias Model =
-    { workspaceSelector : WorkspaceSelector.Model
-    -- Only valid if a workspace is selected.  Consider disabling instead?
-    , projectTypeahead : Maybe (Typeahead.Component Asana.ProjectResource)
-    }
-
 type Msg
     = WorkspaceSelectorMsg WorkspaceSelector.Msg
     | ProjectTypeaheadMsg (Typeahead.Msg Asana.ProjectResource)
 
-component : Props -> Spec Model Msg
-component props =
-    { init = init props
-    , update = update props
-    , view = view props
-    , subscriptions = always Sub.none
-    }
+type alias Data = Maybe Asana.ProjectResource
+type alias Instance = Base.Instance Data Msg
 
-getSelectedProject : Component Model Msg -> Maybe Asana.ProjectResource
-getSelectedProject =
-    Base.stateC >> .projectTypeahead >> (\typeahead -> typeahead `Maybe.andThen` Typeahead.getSelection)
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , view = view props
+        , subscriptions = always Sub.none
+        , get = get
+        }
 
 --------------------------------------------------------------------------------
 -- Private
 
+type alias Model =
+    { workspaceSelector : WorkspaceSelector.Instance
+    -- Only valid if a workspace is selected.  Consider disabling instead?
+    , projectTypeahead : Maybe (Typeahead.Instance Asana.ProjectResource)
+    }
+
+
+get : Model -> Maybe Asana.ProjectResource
+get =
+    .projectTypeahead >> flip Maybe.andThen Base.get
+
 init : Props -> (Model, Cmd Msg)
 init {token, user} =
     let
-        (wss, wsscmd) = WorkspaceSelector.init (Maybe.withDefault [] user.workspaces)
+        (wss, wsscmd) = WorkspaceSelector.create
+            { workspaces = Maybe.withDefault [] user.workspaces
+            }
         model =
             { workspaceSelector = wss
             , projectTypeahead = Nothing
@@ -65,7 +72,7 @@ updateProject {token} msg model =
     case model.projectTypeahead of
         Just typeahead ->
             let
-                (typeahead', cmd) = Base.updateWrapped ProjectTypeaheadMsg msg typeahead
+                (typeahead', cmd) = Base.updateWith ProjectTypeaheadMsg msg typeahead
             in
                 ({ model | projectTypeahead = Just typeahead' }, cmd)
         Nothing ->
@@ -74,18 +81,18 @@ updateProject {token} msg model =
 updateWorkspace : Props -> WorkspaceSelector.Msg -> Model -> (Model, Cmd Msg)
 updateWorkspace { token } msg model =
     let
-        (wss', wsscmd) = WorkspaceSelector.update msg model.workspaceSelector
+        (wss', wsscmd) = Base.updateWith WorkspaceSelectorMsg msg model.workspaceSelector
         (typeahead, typeaheadCmd) =
-            case WorkspaceSelector.getValue wss' of
+            case Base.get wss' of
                 Just workspaceId ->
                     -- TODO: Only create a new typeahead if the workspace changes.
-                    mapFst Just
-                    <| Base.initWrapped ProjectTypeaheadMsg
-                    <| Typeahead.spec
+                    Base.mapFst Just
+                    <| Base.mapCmd ProjectTypeaheadMsg
+                    <| Typeahead.create
                         { fetcher = \fragment -> Api.projectTypeahead workspaceId fragment token }
                 Nothing ->
                     (Nothing, Cmd.none)
-        cmd = Cmd.batch [Cmd.map WorkspaceSelectorMsg wsscmd, typeaheadCmd]
+        cmd = Cmd.batch [wsscmd, typeaheadCmd]
     in
         ({ model | workspaceSelector = wss', projectTypeahead = typeahead }, cmd)
 
@@ -93,11 +100,11 @@ view : Props -> Model -> Html Msg
 view _ model =
     let
         workspaces =
-            Html.App.map WorkspaceSelectorMsg <| WorkspaceSelector.view model.workspaceSelector
+            Base.viewWith WorkspaceSelectorMsg model.workspaceSelector
         projects =
             case model.projectTypeahead of
                 Just typeahead ->
-                    viewWrapped ProjectTypeaheadMsg typeahead
+                    Base.viewWith ProjectTypeaheadMsg typeahead
                 Nothing ->
                     div [] [ input [] [] ]
     in

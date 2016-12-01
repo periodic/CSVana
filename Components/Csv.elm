@@ -1,4 +1,4 @@
-module Components.Csv exposing (Props, Msg, Component, Spec, spec, records, headers, numFields)
+module Components.Csv exposing (Props, Msg, Instance, create, numFields)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -16,39 +16,25 @@ type Msg
     | MoreData String
     | HasHeaderRow Bool
 
-type alias Spec =
-    Base.Spec Model Msg
-type alias Component =
-    Base.Component Model Msg
+type alias Data =
+    Maybe (List String, List (List String))
 
-spec : Props -> Spec
-spec props =
-    { init = init props
-    , update = update props
-    , subscriptions = subscriptions props
-    , view = view props
-    }
+type alias Instance =
+    Base.Instance Data Msg
 
-records : Model -> Maybe (List (List String))
-records { csvData, hasHeaderRow }=
-    case csvData of
-        Just csv ->
-            if hasHeaderRow
-            then Just csv.records
-            else 
-                if List.isEmpty csv.records && List.isEmpty csv.headers
-                then Nothing
-                else Just (csv.headers :: csv.records)
-        Nothing ->
-            Nothing
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , subscriptions = subscriptions props
+        , view = view props
+        , get = get props
+        }
 
-headers : Model -> Maybe (List String)
-headers =
-    .csvData >> Maybe.map .headers
-
-numFields : Model -> Maybe Int
+numFields : Data -> Maybe Int
 numFields =
-    headers >> Maybe.map List.length
+    Maybe.map (fst >> List.length)
 
 --------------------------------------------------------------------------------
 -- Private
@@ -95,4 +81,25 @@ view _ model =
             , text "Header Row"
             ]
         ]
+
+get : Props -> Model -> Data
+get _ model =
+    Maybe.map2 (,) (headers model) (records model)
+
+records : Model -> Maybe (List (List String))
+records { csvData, hasHeaderRow }=
+    case csvData of
+        Just csv ->
+            if hasHeaderRow
+            then Just csv.records
+            else 
+                if List.isEmpty csv.records && List.isEmpty csv.headers
+                then Nothing
+                else Just (csv.headers :: csv.records)
+        Nothing ->
+            Nothing
+
+headers : Model -> Maybe (List String)
+headers =
+    .csvData >> Maybe.map .headers
 

@@ -1,12 +1,11 @@
 module Components.WorkspaceSelectorTest exposing (main)
 
-import Asana.Model as Asana
-import Components.WorkspaceSelector as WorkspaceSelector
-import Html exposing (..)
 import Html.App exposing (..)
 
-type alias Model = WorkspaceSelector.Model
-type alias Msg = WorkspaceSelector.Msg
+import Asana.Model as Asana
+import Base
+import Components.WorkspaceSelector as WorkspaceSelector
+import CommonViews
 
 workspaces : List Asana.WorkspaceResource
 workspaces =
@@ -15,18 +14,9 @@ workspaces =
     , { id = "foo", name = "Foo-th" }
     ]
 
-view : Model -> Html Msg
-view model =
-    div []
-        [ div [] [ text <| toString model ]
-        , div [] [ WorkspaceSelector.view model ]
-        ]
-
 main : Program Never
 main =
     program
-        { init = WorkspaceSelector.init workspaces
-        , update = WorkspaceSelector.update
-        , subscriptions = always Sub.none
-        , view = view
-        }
+    <| CommonViews.withDebug
+    <| Base.asRoot
+    <| WorkspaceSelector.create { workspaces = workspaces }

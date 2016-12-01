@@ -1,15 +1,14 @@
-module Components.ApiParallelResource exposing (Component, Spec, Model, Msg, component, isLoaded, isUnloaded, getChild)
+module Components.ApiParallelResource exposing (Props, Data, Msg, Instance, create)
 
 import Array
 import Html exposing (Html)
-import Html.App as App exposing (map)
 import Http
 
 import Asana.Api exposing (ApiResult)
-import Base exposing (initC, updateC, viewC, subscriptionsC, stateC)
+import Base
 
 type alias Props data model msg =
-    { childSpec : List data -> Base.Spec model msg
+    { child : List data -> (Base.Instance model msg, Cmd msg)
     , fetches : List (Cmd (ApiResult data))
     , unloadedView : Html (Msg data msg)
     , loadingView : Html (Msg data msg)
@@ -22,40 +21,18 @@ type Msg data msg
 
 -- TODO: deal with the parallel fetches.
 
-type alias Spec data model msg = Base.Spec (Model data model msg) (Msg data msg)
-type alias Component data model msg = Base.Component (Model data model msg) (Msg data msg)
+type alias Data model = Maybe model
+type alias Instance data model msg = Base.Instance (Data model) (Msg data msg)
 
-component : Props data model msg -> Spec data model msg
-component props =
-    { init = init props
-    , update = update props
-    , subscriptions = subscriptions props
-    , view = view props
-    }
-
-getChild : Component data model msg -> Maybe (Base.Component model msg)
-getChild resource =
-    case stateC resource of
-        Loaded child ->
-            Just child
-        _ ->
-            Nothing
-
-isLoaded : Component data model msg -> Bool
-isLoaded resource =
-    case stateC resource of
-        Loaded _ ->
-            True
-        _ ->
-            False
-
-isUnloaded : Component data model msg -> Bool
-isUnloaded resource =
-    case stateC resource of
-        Unloaded ->
-            True
-        _ ->
-            False
+create : Props data model msg -> (Instance data model msg, Cmd (Msg data msg))
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , subscriptions = subscriptions props
+        , view = view props
+        , get = get
+        }
 
 --------------------------------------------------------------------------------
 -- Private
@@ -64,7 +41,15 @@ type Model data model msg
     = Unloaded
     | Loading (Array.Array (Maybe data))
     | Error Http.Error
-    | Loaded (Base.Component model msg)
+    | Loaded (Base.Instance model msg)
+
+get : Model data model msg -> Maybe model
+get resource =
+    case resource of
+        Loaded child ->
+            Just <| Base.get child
+        _ ->
+            Nothing
 
 init : Props data model msg -> (Model data model msg, Cmd (Msg data msg))
 init { fetches } =
@@ -88,7 +73,7 @@ update props msg model =
                             then 
                                 let
                                     loadedData = List.filterMap identity <| Array.toList loadingData
-                                    (child, childCmd) = initC <| props.childSpec loadedData
+                                    (child, childCmd) = props.child loadedData
                                 in
                                     (Loaded child, Cmd.map ChildMsg childCmd)
                             else
@@ -100,10 +85,7 @@ update props msg model =
         ChildMsg msg ->
             case model of
                 Loaded child ->
-                    let
-                        (child', childCmd) = updateC msg child
-                    in
-                        (Loaded child', Cmd.map ChildMsg childCmd)
+                    Base.mapFst Loaded <| Base.updateWith ChildMsg msg child
                 _ ->
                     -- TODO: Log something here.
                     (model, Cmd.none)
@@ -112,7 +94,7 @@ subscriptions : Props data model msg -> Model data model msg -> Sub (Msg data ms
 subscriptions _ model =
     case model of
         Loaded child ->
-            Sub.map ChildMsg <| subscriptionsC child
+            Base.subscriptionsWith ChildMsg child
         _ ->
             Sub.none
 
@@ -126,4 +108,4 @@ view props resource =
         Error error ->
             props.errorView error
         Loaded child ->
-            App.map ChildMsg <| viewC child
+            Base.viewWith ChildMsg child

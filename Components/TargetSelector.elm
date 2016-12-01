@@ -1,4 +1,4 @@
-module Components.TargetSelector exposing (Props, Msg, Spec, Component, component, target)
+module Components.TargetSelector exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -15,22 +15,20 @@ type alias Props =
 
 type Msg
     = ClearSelection
-    | Selection Target
+    | Selection (Maybe Target)
 
-type alias Spec = Base.Spec Model Msg
-type alias Component = Base.Component Model Msg
+type alias Data = Maybe Target
+type alias Instance = Base.Instance Model Msg
 
-component : Props -> Spec
-component props =
-    { init = init
-    , update = update
-    , subscriptions = subscriptions
-    , view = view props
-    }
-
-target : Base.Instance msg -> Maybe Target
-target instance =
-    Nothing
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = (Nothing, Cmd.none)
+        , update = update
+        , subscriptions = always Sub.none
+        , view = view props
+        , get = identity
+        }
 
 --------------------------------------------------------------------------------
 -- Private
@@ -38,20 +36,13 @@ target instance =
 type alias Model
     = Maybe Target
 
-init : (Model, Cmd Msg)
-init = (Unselected, Cmd.none)
-
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         ClearSelection ->
-            (Unselected, Cmd.none)
+            (Nothing, Cmd.none)
         Selection target ->
             (target, Cmd.none)
-
-subscriptions : Model -> Sub msg
-subscriptions model =
-    Sub.none
 
 view : Props -> Model -> Html Msg
 view props model =
@@ -65,7 +56,7 @@ viewSelect : List Asana.CustomFieldInfo -> Html Msg
 viewSelect customFields =
     let
         targets = allTargets customFields
-        options = List.map viewOption targets
+        options = emptyOption :: List.map viewOption targets
     in
         select [ class "FieldOptions-select", Events.on "change" (onChange customFields) ] options
 
@@ -73,6 +64,9 @@ onChange : List Asana.CustomFieldInfo -> Json.Decoder Msg
 onChange customFields =
     Json.map Selection <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
 
+emptyOption : Html Msg
+emptyOption =
+    option [ value "" ] []
 
 viewOption : Target -> Html Msg
 viewOption target =
@@ -85,8 +79,6 @@ matchCustomFieldName str =
 targetString : Target -> String
 targetString target =
     case target of
-        Target.None ->
-            "None"
         Target.Name ->
             "Name"
         Target.Description ->
@@ -98,29 +90,26 @@ targetString target =
         Target.CustomField customField ->
             "Custom Field: " ++ Asana.customFieldName customField
 
-targetFromString : List Asana.CustomFieldInfo -> String -> Target
+targetFromString : List Asana.CustomFieldInfo -> String -> Maybe Target
 targetFromString customFields str =
     case str of
-        "None" ->
-            Target.None
         "Name" ->
-            Target.Name
+            Just Target.Name
         "Description" ->
-            Target.Description
+            Just Target.Description
         "Due Date" ->
-            Target.DueDate
+            Just Target.DueDate
         "Due Date with time" ->
-            Target.DueTime
+            Just Target.DueTime
         str ->
-            matchCustomFieldName str customFields |> Maybe.map Target.CustomField |> Maybe.withDefault Target.None
+            matchCustomFieldName str customFields |> Maybe.map Target.CustomField
 
 allTargets : List Asana.CustomFieldInfo -> List Target
 allTargets customFields =
     let
         customFieldTargets = List.map Target.CustomField customFields
         genericTargets =
-            [ Target.None
-            , Target.Name
+            [ Target.Name
             , Target.Description
             , Target.DueDate
             , Target.DueTime
@@ -140,26 +129,26 @@ viewTarget target =
             viewMappingTarget target
         Target.DueTime ->
             viewMappingTarget target
-        CustomField fieldInfo ->
+        Target.CustomField fieldInfo ->
             viewMappingTarget target
 
 viewSimpleTarget : Target -> Html Msg
 viewSimpleTarget target =
     withUnselect <| text <| targetString target
 
-viewMappingTarget : String ->  Html Msg
+viewMappingTarget : Target -> Html Msg
 viewMappingTarget target =
     case target of 
         Target.Name ->
-            viewSimpleTarget  target
+            Debug.crash "Simple viewed with mapping."
         Target.Description ->
-            viewSimpleTarget  target
+            Debug.crash "Simple viewed with mapping."
         Target.DueDate ->
-            viewMappingTarget target
+            Debug.crash "Unimplemented"
         Target.DueTime ->
-            viewMappingTarget target
-        CustomField fieldInfo ->
-            viewMappingTarget target
+            Debug.crash "Unimplemented"
+        Target.CustomField fieldInfo ->
+            Debug.crash "Unimplemented"
 
 withUnselect : Html Msg -> Html Msg
 withUnselect inner =

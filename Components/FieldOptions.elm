@@ -1,4 +1,4 @@
-module Components.FieldOptions exposing (Props, Msg, Component, component, setNumFields, getTargets)
+module Components.FieldOptions exposing (Props, Msg, Data, Instance, create)
 
 import Array exposing (Array)
 import Html exposing (..)
@@ -15,36 +15,29 @@ type alias Props =
     , numFields : Int
     }
 
-type alias Model =
-    { targets : Array (Maybe Target)
-    }
-
 type Msg
     = TargetUpdated Int (Maybe Target)
     | UpdateNumFields Int
 
-type alias Spec = Base.Spec Model Msg
-type alias Component = Base.Component Model Msg
+type alias Data = List (Maybe Target)
+type alias Instance = Base.Instance Data Msg
 
-component : Props -> Spec
-component props =
-    { init = init props
-    , update = update props
-    , view = view props
-    , subscriptions = always Sub.none
-    }
-
-getTargets : Component -> List (Maybe Target)
-getTargets =
-    Array.toList << .targets << Base.stateC
-
-setNumFields : Int -> Component -> (Component, Cmd Msg)
-setNumFields =
-    Base.updateC << UpdateNumFields
-
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , view = view props
+        , subscriptions = always Sub.none
+        , get = .targets >> Array.toList
+        }
 
 --------------------------------------------------------------------------------
 -- Private
+
+type alias Model =
+    { targets : Array (Maybe Target)
+    }
 
 init : Props -> (Model, Cmd Msg)
 init { numFields } =

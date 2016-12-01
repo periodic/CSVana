@@ -1,4 +1,4 @@
-module Components.Asana exposing (Props, Msg, Model, spec)
+module Components.Asana exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (Html, div, h3, text, p)
 import Html.App
@@ -23,33 +23,39 @@ type Msg
     | CsvMsg Csv.Msg
     | FieldMatcherMsg (ApiResource.Msg Asana.Project (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
 
-type alias Model =
-    { form : ApiResource.Component Asana.User Form.Model Form.Msg
-    , csv : Csv.Component
-    , fieldMatcher : Maybe
-        (ApiResource.Component
-            Asana.Project
-            (ApiParallelResource.Model Asana.CustomFieldInfo FieldMatcher.Model FieldMatcher.Msg)
-            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
-    }
+type alias Data = ()
+type alias Instance = Base.Instance Data Msg
 
-spec : Props -> Base.Spec Model Msg
-spec props =
-    { init = init props
-    , update = update props
-    , view = view props
-    , subscriptions = subscriptions props
-    }
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , view = view props
+        , subscriptions = subscriptions props
+        , get = always ()
+        }
 
 --------------------------------------------------------------------------------
 -- Private
 
+type alias Model =
+    { form : ApiResource.Instance Asana.User Form.Data Form.Msg
+    , csv : Csv.Instance
+    , fieldMatcher : Maybe
+        (ApiResource.Instance
+            Asana.Project
+            (ApiParallelResource.Data FieldMatcher.Data)
+            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
+    }
+
+
 init : Props -> (Model, Cmd Msg)
 init {token} =
     let
-        (form, formCmd) = Base.mapCmd FormMsg <| Base.initC <| ApiResource.component
-            { childSpec = \user ->
-                Form.component
+        (form, formCmd) = Base.mapCmd FormMsg <| ApiResource.create
+            { child = \user ->
+                Form.create
                     { token = token
                     , user = user
                     }
@@ -58,7 +64,7 @@ init {token} =
             , loadingView = CommonViews.loadingIndicator
             , errorView = CommonViews.errorView
             }
-        (csv, csvCmd) = Base.mapCmd CsvMsg <| Base.initC <| Csv.spec {}
+        (csv, csvCmd) = Base.mapCmd CsvMsg <| Csv.create {}
         cmd = Cmd.batch [formCmd, csvCmd ]
     in
         ({ form = form
@@ -69,8 +75,8 @@ init {token} =
 subscriptions : Props -> Model -> Sub Msg
 subscriptions _ { form, csv } =
     let
-        formSubs = Sub.map FormMsg <| Base.subscriptionsC form
-        csvSubs = Sub.map CsvMsg <| Base.subscriptionsC csv
+        formSubs = Sub.map FormMsg <| Base.subscriptions form
+        csvSubs = Sub.map CsvMsg <| Base.subscriptions csv
     in
         Sub.batch [formSubs, csvSubs]
 
@@ -84,7 +90,7 @@ processMessage props msg model =
     case msg of
         FormMsg msg' ->
             let
-                (form', formCmd) = Base.updateC msg' model.form
+                (form', formCmd) = Base.update msg' model.form
                 model' = { model | form = form' }
                 cmd = Cmd.map FormMsg formCmd
                 project = getSelectedProject model
@@ -95,20 +101,19 @@ processMessage props msg model =
                     else (model', cmd)
         CsvMsg msg' ->
             let
-                (csv', csvCmd) = Base.updateC msg' model.csv
+                (csv', csvCmd) = Base.updateWith CsvMsg msg' model.csv
                 model' = { model | csv = csv' }
-                cmd = Cmd.map CsvMsg csvCmd
-                headers = Base.get Csv.headers model.csv
-                headers' = Base.get Csv.headers csv'
+                (headers, _) = Base.get model.csv |> Maybe.withDefault ([], [])
+                (headers', _) = Base.get csv' |> Maybe.withDefault ([], [])
             in
                 if headers /= headers'
-                    then updateMatcher props (model', cmd)
-                    else (model', cmd)
+                    then updateMatcher props (model', csvCmd)
+                    else (model', csvCmd)
         FieldMatcherMsg msg' ->
             case model.fieldMatcher of
                 Just matcher ->
                     let
-                        (matcher', matcherCmd) = Base.updateC msg' matcher
+                        (matcher', matcherCmd) = Base.update msg' matcher
                         cmd = Cmd.map FieldMatcherMsg matcherCmd
                     in
                         ({ model | fieldMatcher = Just matcher' }, cmd)
@@ -117,19 +122,19 @@ processMessage props msg model =
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
 updateMatcher {token} (model, cmd) =
-    case ( getSelectedProject model, Base.get Csv.headers model.csv, Base.get Csv.records model.csv) of
-        (Just project, Just headers, Just records) ->
+    case ( getSelectedProject model, Base.get model.csv) of
+        (Just project, Just (headers, records)) ->
             let
-                (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg <| Base.initC <|
-                    ApiResource.component
-                        { childSpec = \project ->
+                (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg
+                    <| ApiResource.create
+                        { child = \project ->
                             let
                                 customFieldIds = List.map (.customField >> .id) project.customFieldSettings
                                 numFields = List.length headers
                             in
-                                ApiParallelResource.component 
-                                    { childSpec = \customFieldInfos ->
-                                        FieldMatcher.component
+                                ApiParallelResource.create 
+                                    { child = \customFieldInfos ->
+                                        FieldMatcher.create
                                             { token = token
                                             , projectId = project.id
                                             , csvHeaders = headers
@@ -153,9 +158,8 @@ updateMatcher {token} (model, cmd) =
 
 
 getSelectedProject : Model -> Maybe Asana.ProjectResource
-getSelectedProject model =
-        ApiResource.getChild model.form
-            `Maybe.andThen` Form.getSelectedProject
+getSelectedProject =
+    .form >> Base.get >> flip Maybe.andThen identity
 
 view : Props -> Model -> Html Msg
 view props model =
@@ -170,14 +174,14 @@ viewInputs props model =
         [ div [ class "Asana-csv" ]
             [ h3 [] [ text "CSV"]
             , p [ class "Asana-infoText" ] [ text "Upload a CSV file:" ]
-            , Html.App.map CsvMsg <| Base.viewC model.csv
+            , Html.App.map CsvMsg <| Base.view model.csv
             ]
         , div [ class "Asana-arrow" ]
             [ text "→" ]
         , div [ class "Asana-form" ]
             [ h3 [] [ text "Asana" ]
             , p [ class "Asana-infoText" ] [ text "Select an Asana project:" ]
-            , Html.App.map FormMsg <| Base.viewC model.form
+            , Html.App.map FormMsg <| Base.view model.form
             ]
         ]
 
@@ -186,6 +190,6 @@ viewMatcher props { fieldMatcher } =
     case fieldMatcher of
         Just matcher ->
             div [ class "Asana-matcher" ]
-                [ Html.App.map FieldMatcherMsg <| Base.viewC matcher ]
+                [ Html.App.map FieldMatcherMsg <| Base.view matcher ]
         Nothing ->
             div [ class "Asana-matcher--disabled" ] []

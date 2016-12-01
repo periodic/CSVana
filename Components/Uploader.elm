@@ -1,4 +1,4 @@
-module Components.Uploader exposing (Props, Msg, Component, spec)
+module Components.Uploader exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -22,20 +22,6 @@ type alias Props =
 type Msg =
     RecordProcessed Int (Api.ApiResult Asana.Task)
 
-type alias Spec = Base.Spec Model Msg
-type alias Component = Base.Component Model Msg
-
-spec : Props -> Spec
-spec props =
-    { init = init props
-    , update = update props
-    , view = view props
-    , subscriptions = always Sub.none
-    }
-
---------------------------------------------------------------------------------
--- Private
-
 type Error
     = ParseError
         { msg : String
@@ -46,6 +32,27 @@ type Error
         { msg : String
         , row : Int
         }
+
+type alias Data =
+    { totalRecords : Int
+    , recordsProcessed : Int
+    , errors : List Error
+    }
+
+type alias Instance = Base.Instance Data Msg
+
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update props
+        , view = view props
+        , subscriptions = always Sub.none
+        , get = get props
+        }
+
+--------------------------------------------------------------------------------
+-- Private
 
 type alias Model =
     { recordsProcessed : Int
@@ -76,8 +83,8 @@ init props =
 uploadRecord : Props -> Int -> Record -> Model -> (Model, Cmd Msg)
 uploadRecord props row record model =
     let
-        fieldSpecs = List.indexedMap (\i (t, r) -> (i, t, r)) <| List.map2 (,) props.fieldTargets record
-        (newTask, errs) = List.foldr (updateTask row) (Target.emptyTask props.projectId, []) fieldSpecs
+        fieldDefs = List.indexedMap (\i (t, r) -> (i, t, r)) <| List.map2 (,) props.fieldTargets record
+        (newTask, errs) = List.foldr (updateTask row) (Target.emptyTask props.projectId, []) fieldDefs
         model' = { model | errors = errs ++ model.errors }
         cmd = Cmd.map (RecordProcessed row) <| Api.createTask newTask props.token
     in
@@ -121,3 +128,10 @@ viewError error =
         UploadError { msg, row } ->
             div [ class "Uploader-error" ]
                 [ text <| "Row " ++ toString row ++ ": " ++ msg ]
+
+get : Props -> Model -> Data
+get { records } { recordsProcessed, errors } =
+    { totalRecords = List.length records
+    , recordsProcessed = recordsProcessed
+    , errors = errors
+    }

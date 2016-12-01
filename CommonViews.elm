@@ -20,14 +20,14 @@ errorView error =
     div [ class "ApiError" ]
         [ text <| toString error ]
 
-debugView : (model -> Html msg) -> model -> Html msg
-debugView childView model =
+debugView : (Base.Instance data msg -> Html msg) -> Base.Instance data msg -> Html msg
+debugView childView instance =
     div []
-        [ childView model
+        [ childView instance
         , div [ class "Debug" ]
-            [ text <| toString model ]
+            [ text <| toString <| Base.get instance ]
         ]
 
-withDebug : Base.Spec model msg -> Base.Spec model msg
-withDebug spec =
-    { spec | view = debugView spec.view }
+withDebug : Base.Program (Base.Instance data msg) msg -> Base.Program (Base.Instance data msg) msg
+withDebug program =
+    { program | view = debugView program.view }

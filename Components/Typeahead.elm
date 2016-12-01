@@ -1,4 +1,4 @@
-module Components.Typeahead exposing (Props, Msg, Spec, Component, spec, getSelection)
+module Components.Typeahead exposing (Props, Msg, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -7,11 +7,6 @@ import Html.Events exposing (onClick, onInput, onFocus, onBlur, onMouseOver, onM
 import Asana.Api as Api
 import Asana.Model as Asana exposing (Named)
 import Base
-
-type ResourceStatus a
-    = Unloaded
-    | Loading
-    | Loaded a
 
 type alias Props a =
     { fetcher : String -> Cmd (Api.ApiResult (List a))
@@ -24,22 +19,27 @@ type Msg a
     | InputFocus Bool
     | OptionsHovered Bool
 
-type alias Spec a = Base.Spec (Model a) (Msg a)
-type alias Component a = Base.Component (Model a) (Msg a)
+type alias Data a = Maybe a
 
-spec : Props (Named a) -> Spec (Named a)
-spec props =
-    { init = init props
-    , update = update props
-    , subscriptions = always Sub.none
-    , view = view props
-    }
+type alias Instance a = Base.Instance (Data a) (Msg a)
 
-getSelection : Component a -> Maybe a
-getSelection = Base.stateC >> .selected
+create : Props (Named a) -> (Instance (Named a), Cmd (Msg (Named a)))
+create props =
+    Base.create 
+        { init = init props
+        , update = update props
+        , subscriptions = always Sub.none
+        , view = view props
+        , get = get
+        }
 
 --------------------------------------------------------------------------------
 -- Private
+
+type ResourceStatus a
+    = Unloaded
+    | Loading
+    | Loaded a
 
 type alias Model a =
     { options : ResourceStatus (List a)
@@ -99,6 +99,9 @@ view _ model =
             else [ inputElem ]
     in
         div [ class "Typeahead" ] elems
+
+get : Model a -> Maybe a
+get = .selected
 
 isActive : Model a -> Bool
 isActive model =

@@ -1,32 +1,51 @@
-module Components.WorkspaceSelector exposing (Model, Msg, init, update, view, getValue)
+module Components.WorkspaceSelector exposing (Props, Msg, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on)
 import Json.Decode as Json
 
+import Base
 import Asana.Model as Asana
+
+type alias Props =
+    { workspaces : List Asana.WorkspaceResource
+    }
 
 type Msg =
     Selected (Maybe Asana.WorkspaceId)
 
-type alias Model =
-    { workspaces : List Asana.WorkspaceResource
-    , selected : Maybe Asana.WorkspaceId
-    }
+type alias Data = Maybe Asana.WorkspaceId
+type alias Instance = Base.Instance Data Msg
 
-init : List Asana.WorkspaceResource -> (Model, Cmd Msg)
-init workspaces =
-    ({ workspaces = workspaces, selected = Nothing }, Cmd.none)
+create : Props -> (Instance, Cmd Msg)
+create props =
+    Base.create
+        { init = init props
+        , update = update
+        , view = view props
+        , subscriptions = always Sub.none
+        , get = get
+        }
+
+--------------------------------------------------------------------------------
+-- Private
+
+type alias Model =
+    Maybe Asana.WorkspaceId
+
+init : Props -> (Model, Cmd Msg)
+init { workspaces } =
+    (Nothing, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
-        Selected (mSelected) ->
-            ({ model | selected = mSelected }, Cmd.none)
+        Selected mSelected ->
+            (mSelected, Cmd.none)
 
-view : Model -> Html Msg
-view { workspaces, selected } =
+view : Props -> Model -> Html Msg
+view { workspaces } selected =
     let
         attrs =
             [ class "WorkspaceSelector"
@@ -37,11 +56,8 @@ view { workspaces, selected } =
     in
         select attrs options
 
-getValue : Model -> Maybe Asana.WorkspaceId
-getValue = .selected
-
---------------------------------------------------------------------------------
--- Private
+get : Model -> Maybe Asana.WorkspaceId
+get = identity
 
 onChange : Json.Decoder Msg
 onChange =
