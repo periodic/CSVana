@@ -38,14 +38,14 @@ type alias Model =
 
 view : Props -> TargetSelector.Instance -> Html Msg
 view props inst =
-    div [ class "FieldRow" ]
-        [ div [ class "FieldRow-csv" ]
+    div [ class "FieldRow Grid" ]
+        [ div [ class "FieldRow-csv Cell -5of12" ]
             [ div [ class "FieldRow-csvHeader" ]
                 [ text props.header ]
             , div [ class "FieldRow-csvValues" ]
                 [ Set.toList props.records |> sampleString |> text ]
             ]
-        , div [ class "FieldRow-selector" ]
+        , div [ class "FieldRow-selector Cell -5of12" ]
             [ Base.view inst ]
         ]
 

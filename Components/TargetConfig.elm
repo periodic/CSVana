@@ -4,16 +4,13 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events as Events
 import Set exposing (Set)
 
 import Base
-import Asana.Model as Asana
-
+import CommonViews
 
 type alias Props data msg =
-    { buttonText : String
-    , defaultMap : String -> Maybe data
+    { defaultMap : String -> Maybe data
     , dataView : Maybe data -> (Base.Instance (Maybe data) msg, Cmd msg)
     , records : Set String -- Single column
     }
@@ -79,29 +76,18 @@ subscriptions { views } =
     Array.toList views |> List.indexedMap (ChildMsg >> Base.subscriptionsWith) |> Sub.batch
 
 view : Props data msg -> Model data msg -> Html (Msg msg)
-view { buttonText, records } { views, isOpen } =
+view { records } { views, isOpen } =
     div [ class "TargetConfig" ]
         (if isOpen
-            then [ openButton buttonText, popupView records views ]
-            else [ openButton buttonText ])
-
-openButton : String -> Html (Msg msg)
-openButton buttonText =
-    a [ class "TargetConfig-openButton", Events.onClick OpenPopup ] [ text buttonText ]
-
-closeButton : Html (Msg msg)
-closeButton =
-    a [ class "TargetConfig-closeButton", Events.onClick ClosePopup ] [ text "x" ]
-
+            then [ CommonViews.configButton OpenPopup, popupView records views ]
+            else [ CommonViews.configButton OpenPopup ])
 
 popupView : Set String -> Array (Base.Instance (Maybe data) msg) -> Html (Msg msg)
 popupView records views =
-    div [ class "TargetConfig-popup" ]
-        [ closeButton
-        , div [ class "TargetConfig-recordViews" ]
+    CommonViews.popup "Configure Data Mapping" ClosePopup
+        <| div [ class "TargetConfig-recordViews" ]
             -- Note: Set.toList creates a sorted list.
             (List.indexedMap (,) (Set.toList records) |> List.map (uncurry (recordView views)))
-        ]
 
 recordView : Array (Base.Instance (Maybe data) msg) -> Int -> String -> Html (Msg msg)
 recordView views index record =

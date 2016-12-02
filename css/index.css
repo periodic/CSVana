@@ -5,6 +5,16 @@ body {
     font-size: 14px;
 }
 
+.icon {
+    width: 16px;
+    height: 16px;
+    fill: #cdcfd2;
+}
+
+.closeIcon {
+    font-size: 18px;
+}
+
 .Main {
     width: 840px;
     margin: auto;
@@ -40,18 +50,17 @@ h3 {
 }
 
 .Asana-inputs {
-    display: flex;
-    justify-content: space-between;
+    padding: 15px;
 }
 
-.Asana-form, .Asana-csv {
-    width: 300px;
+.Asana-matcher {
+    border-top: 1px solid #eee;
     padding: 15px;
 }
 
 .Asana-arrow {
-    align-self: center;
     font-size: 28px;
+    text-align: center;
 }
 
 .AsanaForm-workspaces, .AsanaForm-projects {
@@ -63,30 +72,12 @@ h3 {
     margin-top: 5px;
 }
 
-.FieldMatcher {
-    display: flex;
-    flex-direction: column;
-}
-
-.FieldMatcher-fields {
-    display: flex;
-    justify-content: center;
-    border: 1px solid #eee;
-    margin-top: 15px;
-}
-
-.FieldMatcher-csv, .FieldMatcher-targets {
-    width: 400px;
-    padding: 15px;
-}
-
 .FieldMatcher-upload {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #eee;
+    border-top: 1px solid #eee;
     padding: 15px;
-    margin-top: 15px;
 }
 
 .FieldMatcher-button {
@@ -96,6 +87,43 @@ h3 {
 .FieldOptions {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
+}
+
+.FieldRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.FieldRow-csvHeader {
+    font-weight: bold;
+}
+
+.FieldRow-csvValues {
+    font-size: 13px;
+    color: #676d76;
+}
+
+.FieldRow-selector {
+    width: 350px;
+}
+
+.TargetSelector-unselect {
+    display: flex;
+}
+
+.TargetSelector-unselect > div:first-child {
+    flex-grow: 1;
+}
+
+.TargetSelector-unselectButton {
+    margin-left: 10px;
+}
+
+.TargetSelector-configField {
+    display: flex;
+    justify-content: space-between;
 }
 
 .Typeahead {
@@ -123,3 +151,63 @@ h3 {
 .Typeahead-option:hover {
     background-color: #eee;
 }
+
+.Popup-positioner {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.Popup-background {
+    width: 100%;
+    height: 100%;
+    background: #676d76;
+    opacity: 0.7;
+}
+
+.Popup-container {
+    width: 100%;
+    height: 100%;
+    padding-top: 150px;
+}
+
+.Popup-dialog {
+    border: 1px solid #898E95;
+    background-color: white;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.3);
+    width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.Popup .closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.Popup-title {
+    padding: 10px 30px;
+    border-bottom: 1px solid #E1E2E4;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.TargetConfig-recordViews {
+    padding: 15px;
+    justify-content: space-between;
+
+}
+
+.TargetConfig-recordView {
+    display: flex
+}
+

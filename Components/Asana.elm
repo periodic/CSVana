@@ -170,15 +170,15 @@ view props model =
 
 viewInputs : Props -> Model -> Html Msg
 viewInputs props model =
-    div [ class "Asana-inputs" ]
-        [ div [ class "Asana-csv" ]
+    div [ class "Asana-inputs Grid" ]
+        [ div [ class "Asana-csv Cell -5of12" ]
             [ h3 [] [ text "CSV"]
             , p [ class "Asana-infoText" ] [ text "Upload a CSV file:" ]
             , Html.App.map CsvMsg <| Base.view model.csv
             ]
-        , div [ class "Asana-arrow" ]
+        , div [ class "Asana-arrow Cell -2of12" ]
             [ text "→" ]
-        , div [ class "Asana-form" ]
+        , div [ class "Asana-form Cell -5of12" ]
             [ h3 [] [ text "Asana" ]
             , p [ class "Asana-infoText" ] [ text "Select an Asana project:" ]
             , Html.App.map FormMsg <| Base.view model.form

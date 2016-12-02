@@ -1,6 +1,5 @@
 module Components.TargetSelector exposing (Props, Msg, Data, Instance, create)
 
-import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
@@ -11,6 +10,7 @@ import String
 import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
 import Base
+import CommonViews
 import Components.Configs.CompletedConfig as CompletedConfig
 import Components.TargetConfig as TargetConfig
 
@@ -136,15 +136,14 @@ updateModel {records, customFields} str model =
             (Description, Cmd.none)
         "Completion" ->
             TargetConfig.create
-                    { buttonText = "Config"
-                    -- TODO: This mapping should go in with the decoders.
-                    , defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
-                    , dataView = \mValue -> 
-                        CompletedConfig.create { value = Maybe.withDefault False mValue }
-                            -- Transform it to a Just Bool instance from a Bool instance.
-                            |> Base.mapFst (Base.mapOutput Just)
+                -- TODO: This mapping should go in with the decoders.
+                { defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
+                , dataView = \mValue -> 
+                    CompletedConfig.create { value = Maybe.withDefault False mValue }
+                    -- Transform it to a Just Bool instance from a Bool instance.
+                    |> Base.mapFst (Base.mapOutput Just)
                     , records = records
-                    }
+                }
             |> Base.pairMap Completion (Cmd.map CompletionMsg)
         "Due Date" ->
             (DueDate, Cmd.none)
@@ -155,15 +154,22 @@ updateModel {records, customFields} str model =
 
 viewSimpleTarget : String -> Html Msg
 viewSimpleTarget name =
-    withUnselect <| text name
+    withUnselect
+        <| div [ class "TargetSelector-selectedField TargetSelector-simpleField" ]
+            [ span [ class "TargetSelector-targetName" ] [ text name ]
+            ]
 
 viewWithConfig : String -> Html Msg -> Html Msg
 viewWithConfig name config =
-    withUnselect <| div [] [ text name, config ]
+    withUnselect
+        <| div [ class "TargetSelector-selectedField TargetSelector-configField" ]
+            [ span [ class "TargetSelector-targetName" ] [ text name ]
+            , config
+            ]
 
 withUnselect : Html Msg -> Html Msg
 withUnselect inner =
-    div []
+    div [ class "TargetSelector-unselect" ]
         [ inner
-        , a [ Events.onClick (Selection "") ] [ text "x"]
+        , a [ class "TargetSelector-unselectButton", Events.onClick (Selection "") ] [ CommonViews.closeIcon ]
         ]

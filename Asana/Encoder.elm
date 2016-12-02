@@ -29,12 +29,13 @@ encodeCustomFieldData data =
             Encode.string enum.id
 
 encodeTask : Asana.NewTask -> Value
-encodeTask { name, dueAt, dueOn, description, projects, customFields } =
+encodeTask { name, completed, dueAt, dueOn, description, projects, customFields } =
     Encode.object <| List.filterMap identity
         [ Maybe.map (Encode.string >> (,) "name") name
         , Maybe.map (Encode.string >> (,) "notes") description
         , Maybe.map (Encode.string >> (,) "due_at") dueAt
         , Maybe.map (Encode.string >> (,) "due_on") dueOn
+        , Just ("completed", Encode.bool completed)
         , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") projects
         , List.map (Base.mapSnd encodeCustomFieldData) customFields |> Encode.object |> (,) "custom_fields" |> Just
         ]
