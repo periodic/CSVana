@@ -63,7 +63,6 @@ onChange : Json.Decoder Msg
 onChange =
     let
         strToMaybe str =
-            Debug.log "Decoding: " <|
             if str == ""
                 then Nothing
                 else Just str

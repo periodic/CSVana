@@ -114,6 +114,7 @@ type alias CustomFieldValue =
 
 type alias NewTask =
     { name : Maybe String
+    , completed : Bool
     , dueOn : Maybe String
     , dueAt : Maybe String
     , description : Maybe String

@@ -28,7 +28,8 @@ main =
     <| CommonViews.withDebug
     <| Base.asRoot
     <| TargetConfig.create
-        { defaultMap = String.toInt >> Result.toMaybe
+        { buttonText = "Open Demo"
+        , defaultMap = String.toInt >> Result.toMaybe
         , dataView = \value -> 
             Clearable.create
                 { value = value

@@ -87,6 +87,10 @@ staticComponent view =
         , get = always ()
         }
 
+mapOutput : (a -> b) -> Instance a msg -> Instance b msg
+mapOutput f (Instance dict) =
+    Instance { dict | update = dict.update >> mapFst (mapOutput f), get = f dict.get }
+
 -- Utility
 -- TODO: move to it's own file.
 

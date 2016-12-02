@@ -1,6 +1,7 @@
 module Components.TargetSelectorTest exposing (main)
 
 import Html.App
+import Set
 
 import Base
 import Asana.Model as Asana
@@ -25,4 +26,5 @@ main =
     <| Base.asRoot
     <| TargetSelector.create
         { customFields = customFields
+        , records = Set.fromList [ "1", "True", "Done", "Foo", "1" ]
         }

@@ -5,15 +5,17 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
+import Set exposing (Set)
 
 import Base
 import Asana.Model as Asana
 
 
 type alias Props data msg =
-    { defaultMap : String -> Maybe data
+    { buttonText : String
+    , defaultMap : String -> Maybe data
     , dataView : Maybe data -> (Base.Instance (Maybe data) msg, Cmd msg)
-    , records : List String -- Single column
+    , records : Set String -- Single column
     }
 
 type Msg msg
@@ -45,7 +47,7 @@ type alias Model data msg =
 init : Props data msg-> (Model data msg, Cmd (Msg msg))
 init { defaultMap, dataView, records } =
     let
-        mappedRecords = List.map defaultMap records
+        mappedRecords = List.map defaultMap <| Set.toList records
         (views, cmds) = List.foldr (\value (views, cmds) ->
             let 
                 (view, cmd) = dataView value
@@ -77,27 +79,28 @@ subscriptions { views } =
     Array.toList views |> List.indexedMap (ChildMsg >> Base.subscriptionsWith) |> Sub.batch
 
 view : Props data msg -> Model data msg -> Html (Msg msg)
-view { records } { views, isOpen } =
+view { buttonText, records } { views, isOpen } =
     div [ class "TargetConfig" ]
         (if isOpen
-            then [ openButton, popupView records views ]
-            else [ openButton ])
+            then [ openButton buttonText, popupView records views ]
+            else [ openButton buttonText ])
 
-openButton : Html (Msg msg)
-openButton =
-    a [ class "TargetConfig-openButton", Events.onClick OpenPopup ] [ text "Config" ]
+openButton : String -> Html (Msg msg)
+openButton buttonText =
+    a [ class "TargetConfig-openButton", Events.onClick OpenPopup ] [ text buttonText ]
 
 closeButton : Html (Msg msg)
 closeButton =
     a [ class "TargetConfig-closeButton", Events.onClick ClosePopup ] [ text "x" ]
 
 
-popupView : List String -> Array (Base.Instance (Maybe data) msg) -> Html (Msg msg)
+popupView : Set String -> Array (Base.Instance (Maybe data) msg) -> Html (Msg msg)
 popupView records views =
     div [ class "TargetConfig-popup" ]
         [ closeButton
         , div [ class "TargetConfig-recordViews" ]
-            (List.indexedMap (,) records |> List.map (uncurry (recordView views)))
+            -- Note: Set.toList creates a sorted list.
+            (List.indexedMap (,) (Set.toList records) |> List.map (uncurry (recordView views)))
         ]
 
 recordView : Array (Base.Instance (Maybe data) msg) -> Int -> String -> Html (Msg msg)
@@ -116,7 +119,7 @@ recordView views index record =
 get : Props data msg -> Model data msg -> Dict String data
 get { records } { views } =
     let 
-        recordViewPairs = List.map2 (,) records (Array.toList views)
+        recordViewPairs = List.map2 (,) (Set.toList records) (Array.toList views)
         validMappings = List.filterMap (\(record, view) ->
             case Base.get view of
                 Just value ->

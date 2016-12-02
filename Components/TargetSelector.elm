@@ -1,33 +1,39 @@
 module Components.TargetSelector exposing (Props, Msg, Data, Instance, create)
 
+import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
 import Json.Decode as Json
+import Set exposing (Set)
+import String
 
-import Base
 import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
+import Base
+import Components.Configs.CompletedConfig as CompletedConfig
+import Components.TargetConfig as TargetConfig
 
 type alias Props =
     { customFields : List Asana.CustomFieldInfo
+    , records : Set String
     }
 
 type Msg
-    = ClearSelection
-    | Selection (Maybe Target)
+    = Selection String
+    | CompletionMsg (TargetConfig.Msg CompletedConfig.Msg)
 
 type alias Data = Maybe Target
-type alias Instance = Base.Instance Model Msg
+type alias Instance = Base.Instance Data Msg
 
 create : Props -> (Instance, Cmd Msg)
 create props =
     Base.create
-        { init = (Nothing, Cmd.none)
-        , update = update
+        { init = (None, Cmd.none)
+        , update = update props
         , subscriptions = always Sub.none
         , view = view props
-        , get = identity
+        , get = get
         }
 
 --------------------------------------------------------------------------------
@@ -37,140 +43,105 @@ type Model
     = None
     | Name
     | Description
-    | DueDate
-    | DueTime
-    | CustomText Asana.CustomFieldInfo
-    | CustomNumber Asana.CustomFieldInfo
-    | CustomEnum Asana.CustomFieldInfo
+    | Completion (TargetConfig.Instance CompletedConfig.Data CompletedConfig.Msg)
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
-    case msg of
-        ClearSelection ->
-            (Nothing, Cmd.none)
-        Selection target ->
-            (target, Cmd.none)
+get : Model -> Data
+get model =
+    case model of
+        None ->
+            Nothing
+        Name ->
+            Just Target.Name
+        Description ->
+            Just Target.Description
+        Completion inst ->
+            Base.get inst |> Target.Completion |> Just
+
+update : Props -> Msg -> Model -> (Model, Cmd Msg)
+update props msg model =
+    case (msg, model) of
+        (Selection str, _) ->
+            updateModel props str model
+        (CompletionMsg msg', Completion inst) ->
+            Base.updateWith CompletionMsg msg' inst |> Base.mapFst Completion
+        _ ->
+            (model, Cmd.none)
 
 view : Props -> Model -> Html Msg
 view props model =
     case model of
-        Nothing ->
+        None ->
             viewSelect props.customFields
-        Just target ->
-            viewTarget target
+        Name ->
+            viewSimpleTarget "Name"
+        Description ->
+            viewSimpleTarget "Description"
+        Completion config ->
+            viewWithConfig "Completion" (Base.viewWith CompletionMsg config)
 
 viewSelect : List Asana.CustomFieldInfo -> Html Msg
 viewSelect customFields =
     let
-        targets = allTargets customFields
-        options = emptyOption :: List.map viewOption targets
+        options = List.map viewOption (targetStrings customFields)
     in
         select [ class "FieldOptions-select", Events.on "change" (onChange customFields) ] options
 
 onChange : List Asana.CustomFieldInfo -> Json.Decoder Msg
 onChange customFields =
-    Json.map Selection <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
+    Json.map Selection <| Json.at ["target", "value"] Json.string
 
-emptyOption : Html Msg
-emptyOption =
-    option [ value "" ] []
-
-viewOption : Target -> Html Msg
-viewOption target =
-    option [ value <| targetString target ] [ text <| targetString target ]
+viewOption : String -> Html Msg
+viewOption name =
+    option [ value name ] [ text name ]
 
 matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
 matchCustomFieldName str =
     List.head << List.filter (Asana.customFieldName >> (++) "Custom Field: " >> (==) str)
 
-targetString : Target -> String
-targetString target =
-    case target of
-        Target.Name ->
-            "Name"
-        Target.Description ->
-            "Description"
-        Target.DueDate ->
-            "Due Date"
-        Target.DueTime ->
-            "Due Date with time"
-        Target.CustomField customField ->
-            "Custom Field: " ++ Asana.customFieldName customField
+targetStrings : List Asana.CustomFieldInfo -> List String
+targetStrings customFields =
+    [ ""
+    , "Name"
+    , "Description"
+    , "Completion"
+    ]
+    {-
+    , "Due Date"
+    , "Due Date with time"
+    ] ++ List.map (\cf -> "Custom Field: " ++ Asana.customFieldName cf) customFields -}
 
-selectedModel : List Asana.CustomFieldInfo -> String -> Model
-selectedModel customFields str =
+updateModel : Props -> String -> Model -> (Model, Cmd Msg)
+updateModel {records, customFields} str model =
     case str of
         "Name" ->
-            Just Name
+            (Name, Cmd.none)
         "Description" ->
-            Just Description
-        "Due Date" ->
-            Just Target.DueDate
-        "Due Date with time" ->
-            Just Target.DueTime
-        str ->
-            matchCustomFieldName str customFields |> Maybe.map customFieldToModel |> Maybe.withDefault None
+            (Description, Cmd.none)
+        "Completion" ->
+            TargetConfig.create
+                    { buttonText = "Config"
+                    -- TODO: This mapping should go in with the decoders.
+                    , defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
+                    , dataView = \mValue -> 
+                        CompletedConfig.create { value = Maybe.withDefault False mValue }
+                            |> Base.mapFst (Base.mapOutput Just)
+                    , records = records
+                    }
+            |> Base.pairMap Completion (Cmd.map CompletionMsg)
+        _ ->
+            (None, Cmd.none)
 
-customFieldToModel : Asana.CustomFieldInfo -> Model
-customFieldToModel customField =
-    case customField.fieldType of
-        Asana.CustomText ->
-            CustomText customField
-        Asana.CustomNumber ->
-            CustomNumber customField
-        Asana.CustomEnum ->
-            CustomEnum customField
+viewSimpleTarget : String -> Html Msg
+viewSimpleTarget name =
+    withUnselect <| text name
 
-
-allTargets : List Asana.CustomFieldInfo -> List Target
-allTargets customFields =
-    let
-        customFieldTargets = List.map Target.CustomField customFields
-        genericTargets =
-            [ Target.Name
-            , Target.Description
-            , Target.DueDate
-            , Target.DueTime
-            ]
-    in
-        genericTargets ++ customFieldTargets
-
-
-viewTarget : Target -> Html Msg
-viewTarget target =
-    case target of
-        Target.Name ->
-            viewSimpleTarget  target
-        Target.Description ->
-            viewSimpleTarget  target
-        Target.DueDate ->
-            viewMappingTarget target
-        Target.DueTime ->
-            viewMappingTarget target
-        Target.CustomField fieldInfo ->
-            viewMappingTarget target
-
-viewSimpleTarget : Target -> Html Msg
-viewSimpleTarget target =
-    withUnselect <| text <| targetString target
-
-viewMappingTarget : Target -> Html Msg
-viewMappingTarget target =
-    case target of 
-        Target.Name ->
-            Debug.crash "Simple viewed with mapping."
-        Target.Description ->
-            Debug.crash "Simple viewed with mapping."
-        Target.DueDate ->
-            Debug.crash "Unimplemented"
-        Target.DueTime ->
-            Debug.crash "Unimplemented"
-        Target.CustomField fieldInfo ->
-            Debug.crash "Unimplemented"
+viewWithConfig : String -> Html Msg -> Html Msg
+viewWithConfig name config =
+    withUnselect <| div [] [ text name, config ]
 
 withUnselect : Html Msg -> Html Msg
 withUnselect inner =
     div []
         [ inner
-        , a [ Events.onClick ClearSelection ] [ text "x"]
+        , a [ Events.onClick (Selection "") ] [ text "x"]
         ]

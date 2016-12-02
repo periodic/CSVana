@@ -1,6 +1,7 @@
 module Asana.Target exposing (Target(..), emptyTask, updateTask)
 
 import Date exposing (Date)
+import Dict exposing (Dict)
 import Date.Extra.Format as Format
 import Date.Extra.Config.Config_en_us as En_us
 import String
@@ -10,7 +11,7 @@ import Asana.Model as Asana
 type Target
     = Name
     | Description
-    | Completed (Dict String Bool)
+    | Completion (Dict String Bool)
     | DueDate
     | DueTime
     | CustomField Asana.CustomFieldInfo
@@ -22,6 +23,7 @@ emptyTask : Asana.ProjectId -> Asana.NewTask
 emptyTask projectId =
     { name = Nothing
     , description = Nothing
+    , completed = False
     , dueOn = Nothing
     , dueAt = Nothing
     , projects = Just [projectId]
@@ -35,6 +37,12 @@ updateTask target value task =
             Ok { task | name = Just value }
         Description ->
             Ok { task | description = Just value }
+        Completion mappings ->
+            case Dict.get value mappings of
+                Just val ->
+                    Ok { task | completed = val }
+                Nothing ->
+                    Err <| "No config for how to convert '" ++ value ++ "' into a completed status."
         DueDate ->
             case Date.fromString value of
                 Ok date ->
