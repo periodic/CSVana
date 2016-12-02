@@ -3,21 +3,23 @@ module Components.FieldOptions exposing (Props, Msg, Data, Instance, create)
 import Array exposing (Array)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events as Events
-import Json.Decode as Json
+import Set exposing (Set)
 
 import Base
+import Util
 import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
+import Components.FieldRow as FieldRow
 
 type alias Props =
     { customFields : List Asana.CustomFieldInfo
     , numFields : Int
+    , headers : List (String)
+    , records : List (List String)
     }
 
 type Msg
-    = TargetUpdated Int (Maybe Target)
-    | UpdateNumFields Int
+    = ChildMsg Int (FieldRow.Msg)
 
 type alias Data = List (Maybe Target)
 type alias Instance = Base.Instance Data Msg
@@ -28,109 +30,57 @@ create props =
         { init = init props
         , update = update props
         , view = view props
-        , subscriptions = always Sub.none
-        , get = .targets >> Array.toList
+        , subscriptions = subscriptions
+        , get = Array.map (Base.get) >> Array.toList
         }
 
 --------------------------------------------------------------------------------
 -- Private
 
 type alias Model =
-    { targets : Array (Maybe Target)
-    }
+    Array (FieldRow.Instance)
 
 init : Props -> (Model, Cmd Msg)
-init { numFields } =
+init { customFields, records, headers } =
     let
-        targets = Array.repeat numFields Nothing
+        columns = Util.transpose (Debug.log "Row-major: " records) |> Debug.log "Column-major: "
+        fields = List.map2 (,) headers columns
+            |> List.map (\(header, column) ->
+                FieldRow.create
+                    { customFields = customFields
+                    , records = Set.fromList column
+                    , header = header
+                    })
+        instances = List.map fst fields |> Array.fromList
+        cmds = List.indexedMap (\index inst -> snd inst |> Cmd.map (ChildMsg index)) fields |> Cmd.batch
     in
-        ({ targets = targets }, Cmd.none)
+        (instances, cmds)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
     case msg of
-        TargetUpdated index target ->
-            ({ model | targets = Array.set index target model.targets }, Cmd.none)
-        UpdateNumFields numFields -> 
-            let
-                targets = model.targets
-                targets' =
-                    if (numFields <= Array.length targets)
-                        then
-                            Array.slice 0 numFields targets
-                        else
-                            Array.append targets <| Array.repeat (Array.length targets - numFields) Nothing
-            in
-                ({ model | targets = targets' }, Cmd.none)
+        ChildMsg index msg' ->
+            case Array.get index model of
+                Just inst ->
+                    let
+                        (inst', cmd) = Base.updateWith (ChildMsg index) msg' inst
+                    in
+                        (Array.set index inst' model, cmd)
+                Nothing ->
+                    (model, Cmd.none)
+
 
 view : Props -> Model -> Html Msg
-view props {targets} =
+view props model =
     div [ class "FieldOptions" ]
-        (Array.toList <| Array.indexedMap (viewSelect props.customFields) targets)
+        (Array.indexedMap viewSelector model |> Array.toList)
 
-allTargets : List Asana.CustomFieldInfo -> List Target
-allTargets customFields =
-    let
-        customFieldTargets = List.map Target.CustomField customFields
-        genericTargets =
-            [ Target.Name
-            , Target.Description
-            , Target.DueDate
-            , Target.DueTime
-            ]
-    in
-        genericTargets ++ customFieldTargets
+subscriptions : Model -> Sub Msg
+subscriptions =
+    Array.toList >> List.indexedMap (ChildMsg >> Base.subscriptionsWith) >> Sub.batch
 
-viewSelect : List Asana.CustomFieldInfo -> Int -> Maybe Target -> Html Msg
-viewSelect customFields index selectedTarget =
-    let
-        targets = allTargets customFields
-        options = emptyOption selectedTarget :: List.map (viewOption selectedTarget) targets
-    in
-        select [ class "FieldOptions-select", Events.on "change" (onChange index customFields) ] options
-
-emptyOption : Maybe Target -> Html Msg
-emptyOption selectedTarget =
-    option [ selected (selectedTarget == Nothing), value "" ] []
-
-onChange : Int -> List Asana.CustomFieldInfo -> Json.Decoder Msg
-onChange index customFields =
-    Json.map (TargetUpdated index) <| Json.map (targetFromString customFields) <| Json.at ["target", "value"] Json.string
-
-
-viewOption : Maybe Target -> Target -> Html Msg
-viewOption selectedTarget target =
-    option [ selected (selectedTarget == Just target), value <| targetString target ] [ text <| targetString target ]
-
-targetString : Target -> String
-targetString target =
-    case target of
-        Target.Name ->
-            "Name"
-        Target.Description ->
-            "Description"
-        Target.DueDate ->
-            "Due Date"
-        Target.DueTime ->
-            "Due Time"
-        Target.CustomField customField ->
-            "CF: " ++ Asana.customFieldName customField
-
-targetFromString : List Asana.CustomFieldInfo -> String -> Maybe Target
-targetFromString customFields str =
-    case str of
-        "Name" ->
-            Just Target.Name
-        "Description" ->
-            Just Target.Description
-        "Due Date" ->
-            Just Target.DueDate
-        "Due Time" ->
-            Just Target.DueTime
-        str ->
-            matchCustomFieldName str customFields |> Maybe.map Target.CustomField
-
-matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
-matchCustomFieldName str =
-    List.head << List.filter (Asana.customFieldName >> (++) "CF: " >> (==) str)
+viewSelector : Int -> FieldRow.Instance -> Html Msg
+viewSelector index selector =
+    div [ class "FieldOptions-field" ]
+        [ Base.viewWith (ChildMsg index) selector ]
 

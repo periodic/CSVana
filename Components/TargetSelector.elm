@@ -44,6 +44,9 @@ type Model
     | Name
     | Description
     | Completion (TargetConfig.Instance CompletedConfig.Data CompletedConfig.Msg)
+    | DueDate
+    | DueDateWithTime
+    | CustomField Asana.CustomFieldInfo
 
 get : Model -> Data
 get model =
@@ -55,7 +58,13 @@ get model =
         Description ->
             Just Target.Description
         Completion inst ->
-            Base.get inst |> Target.Completion |> Just
+            Just <| Target.Completion <| Base.get inst
+        DueDate ->
+            Just Target.DueDate
+        DueDateWithTime ->
+            Just Target.DueTime
+        CustomField customFieldInfo ->
+            Just <| Target.CustomField customFieldInfo
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
@@ -78,6 +87,12 @@ view props model =
             viewSimpleTarget "Description"
         Completion config ->
             viewWithConfig "Completion" (Base.viewWith CompletionMsg config)
+        DueDate ->
+            viewSimpleTarget "Due Date"
+        DueDateWithTime ->
+            viewSimpleTarget "Due Date With Time"
+        CustomField info ->
+            viewSimpleTarget <| customFieldName info
 
 viewSelect : List Asana.CustomFieldInfo -> Html Msg
 viewSelect customFields =
@@ -94,9 +109,13 @@ viewOption : String -> Html Msg
 viewOption name =
     option [ value name ] [ text name ]
 
+customFieldName : Asana.CustomFieldInfo -> String
+customFieldName info =
+    "Custom Field: " ++ Asana.customFieldName info
+
 matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
 matchCustomFieldName str =
-    List.head << List.filter (Asana.customFieldName >> (++) "Custom Field: " >> (==) str)
+    List.head << List.filter (customFieldName >> (==) str)
 
 targetStrings : List Asana.CustomFieldInfo -> List String
 targetStrings customFields =
@@ -104,11 +123,9 @@ targetStrings customFields =
     , "Name"
     , "Description"
     , "Completion"
-    ]
-    {-
     , "Due Date"
-    , "Due Date with time"
-    ] ++ List.map (\cf -> "Custom Field: " ++ Asana.customFieldName cf) customFields -}
+    , "Due Date With Time"
+    ] ++ List.map customFieldName customFields
 
 updateModel : Props -> String -> Model -> (Model, Cmd Msg)
 updateModel {records, customFields} str model =
@@ -124,12 +141,17 @@ updateModel {records, customFields} str model =
                     , defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
                     , dataView = \mValue -> 
                         CompletedConfig.create { value = Maybe.withDefault False mValue }
+                            -- Transform it to a Just Bool instance from a Bool instance.
                             |> Base.mapFst (Base.mapOutput Just)
                     , records = records
                     }
             |> Base.pairMap Completion (Cmd.map CompletionMsg)
-        _ ->
-            (None, Cmd.none)
+        "Due Date" ->
+            (DueDate, Cmd.none)
+        "Due Date With Time" ->
+            (DueDateWithTime, Cmd.none)
+        str ->
+            matchCustomFieldName str customFields |> Maybe.map CustomField |> Maybe.withDefault None |> flip (,) Cmd.none
 
 viewSimpleTarget : String -> Html Msg
 viewSimpleTarget name =

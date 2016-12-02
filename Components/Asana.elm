@@ -122,7 +122,7 @@ processMessage props msg model =
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
 updateMatcher {token} (model, cmd) =
-    case ( getSelectedProject model, Base.get model.csv) of
+    case (getSelectedProject model, Base.get model.csv) of
         (Just project, Just (headers, records)) ->
             let
                 (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg

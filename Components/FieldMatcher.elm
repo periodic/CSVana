@@ -46,12 +46,14 @@ type alias Model =
     }
 
 init : Props -> (Model, Cmd Msg)
-init {csvHeaders, customFields} =
+init {csvHeaders, csvRecords, customFields} =
     let
         (fieldOptions, fieldOptionsCmd) =
             FieldOptions.create
                 { customFields = customFields
                 , numFields = List.length csvHeaders
+                , records = csvRecords
+                , headers = csvHeaders
                 }
         model =
             { fieldOptions = fieldOptions
@@ -92,10 +94,8 @@ view : Props -> Model -> Html Msg
 view { csvHeaders} { fieldOptions, uploader } =
     div [ class "FieldMatcher" ]
         [ div [ class "FieldMatcher-fields" ]
-            [ div [ class "FieldMatcher-csv" ]
-                [ renderHeaders csvHeaders ]
-            , div [ class "FieldMatcher-targets" ]
-                [ Html.App.map FieldOptionsMsg <| Base.view fieldOptions ]
+            [ div [ class "FieldMatcher-options" ]
+                [ Base.viewWith FieldOptionsMsg fieldOptions ]
             ]
         , div [ class "FieldMatcher-upload" ]
             [ div [ class "FieldMatcher-button" ]
