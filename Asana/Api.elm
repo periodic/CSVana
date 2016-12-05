@@ -15,8 +15,9 @@ apiRoot = "https://app.asana.com/api/1.0"
 type alias Token = String
 type alias ApiResult a = (Result Http.Error a)
 type alias Query = List (String, String)
+type alias ApiRequest a = Token -> Cmd (ApiResult a)
 
-apiGetRequest : String -> Query -> Decoder a -> Token -> Cmd (ApiResult a)
+apiGetRequest : String -> Query -> Decoder a -> ApiRequest a
 apiGetRequest path query decoder token =
   let
       url = Http.url (apiRoot ++ path) query
@@ -33,7 +34,7 @@ apiGetRequest path query decoder token =
   in
       Task.perform Err Ok httpRequest
 
-apiPostRequest : String -> Query -> Value -> Decoder a -> Token -> Cmd (ApiResult a)
+apiPostRequest : String -> Query -> Value -> Decoder a -> ApiRequest a
 apiPostRequest path query body decoder token =
   let
       url = Http.url (apiRoot ++ path) query
@@ -50,12 +51,26 @@ apiPostRequest path query body decoder token =
   in
       Task.perform Err Ok httpRequest
 
+type UserQuery
+    = Me
+    | Id Asana.UserId
+    | Email String
 
-me : Token -> Cmd (ApiResult Asana.User)
+user : UserQuery -> ApiRequest Asana.User
+user user =
+    case user of
+        Me ->
+            apiGetRequest "/users/me" [] Decoder.userDecoder
+        Id id ->
+            apiGetRequest ("/users/" ++ id) [] Decoder.userDecoder
+        Email email ->
+            apiGetRequest ("/users/" ++ email) [] Decoder.userDecoder
+
+me : ApiRequest Asana.User
 me =
-    apiGetRequest "/users/me" [] Decoder.userDecoder
+    user Me
 
-users : Asana.WorkspaceId -> Token -> Cmd (ApiResult (List Asana.User))
+users : Asana.WorkspaceId -> ApiRequest (List Asana.User)
 users workspaceId =
     let
         path = "/workspaces/" ++ workspaceId ++ "/users"
@@ -81,7 +96,7 @@ typeaheadTypeStr resourceType =
         TypeaheadTask ->
             "task"
 
-getTypeaheadOptions : TypeaheadType -> Decoder a -> Asana.Id -> String -> Token -> Cmd (ApiResult (List a))
+getTypeaheadOptions : TypeaheadType -> Decoder a -> Asana.Id -> String -> ApiRequest (List a)
 getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
     let
         resourceTypeStr = typeaheadTypeStr resourceType
@@ -93,25 +108,25 @@ getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
     in
        apiGetRequest path query (Json.Decode.list decoder)
 
-projectTypeahead : Asana.WorkspaceId -> String -> Token -> Cmd (ApiResult (List Asana.ProjectResource))
+projectTypeahead : Asana.WorkspaceId -> String -> ApiRequest (List Asana.ProjectResource)
 projectTypeahead =
     getTypeaheadOptions TypeaheadProject Decoder.resourceDecoder
 
-project : Asana.ProjectId -> Token -> Cmd (ApiResult Asana.Project)
+project : Asana.ProjectId -> ApiRequest Asana.Project
 project projectId =
     let
         path = "/projects/" ++ projectId
     in
         apiGetRequest path [] Decoder.projectDecoder
 
-customField : Asana.CustomFieldId -> Token -> Cmd (ApiResult Asana.CustomFieldInfo)
+customField : Asana.CustomFieldId -> ApiRequest Asana.CustomFieldInfo
 customField customFieldId =
     let
         path = "/custom_fields/" ++ customFieldId
     in
         apiGetRequest path [] Decoder.customFieldInfoDecoder
 
-createTask : Asana.NewTask -> Token -> Cmd (ApiResult Asana.Task)
+createTask : Asana.NewTask -> ApiRequest Asana.Task
 createTask newTask =
     let
         path = "/tasks"

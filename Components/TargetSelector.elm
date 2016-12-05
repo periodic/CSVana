@@ -12,7 +12,9 @@ import Asana.Target as Target exposing (Target)
 import Base
 import CommonViews
 import Components.Configs.CompletedConfig as CompletedConfig
+import Components.Configs.EnumConfig as EnumConfig
 import Components.TargetConfig as TargetConfig
+import Util exposing (..)
 
 type alias Props =
     { customFields : List Asana.CustomFieldInfo
@@ -22,6 +24,7 @@ type alias Props =
 type Msg
     = Selection String
     | CompletionMsg (TargetConfig.Msg CompletedConfig.Msg)
+    | EnumMsg (TargetConfig.Msg EnumConfig.Msg)
 
 type alias Data = Maybe Target
 type alias Instance = Base.Instance Data Msg
@@ -46,6 +49,11 @@ type Model
     | Completion (TargetConfig.Instance CompletedConfig.Data CompletedConfig.Msg)
     | DueDate
     | DueDateWithTime
+    | CustomEnumField
+        Asana.CustomFieldId
+        String
+        (List Asana.CustomFieldEnumValue)
+        (TargetConfig.Instance Asana.CustomFieldEnumValueId EnumConfig.Msg)
     | CustomField Asana.CustomFieldInfo
 
 get : Model -> Data
@@ -63,6 +71,8 @@ get model =
             Just Target.DueDate
         DueDateWithTime ->
             Just Target.DueTime
+        CustomEnumField id name options inst ->
+            Just <| Target.CustomField (Asana.CustomEnumFieldInfo id name options) -- (Base.get inst)
         CustomField customFieldInfo ->
             Just <| Target.CustomField customFieldInfo
 
@@ -91,6 +101,8 @@ view props model =
             viewSimpleTarget "Due Date"
         DueDateWithTime ->
             viewSimpleTarget "Due Date With Time"
+        CustomEnumField _ name options inst ->
+            viewWithConfig (formatCustomEnumName name) <| Base.viewWith EnumMsg inst
         CustomField info ->
             viewSimpleTarget <| customFieldName info
 
@@ -111,11 +123,25 @@ viewOption name =
 
 customFieldName : Asana.CustomFieldInfo -> String
 customFieldName info =
-    "Custom Field: " ++ Asana.customFieldName info
+    case info of
+        Asana.CustomTextFieldInfo _ name ->
+            formatCustomTextName name
+        Asana.CustomNumberFieldInfo _ name _ ->
+            formatCustomNumberName name
+        Asana.CustomEnumFieldInfo _ name _ ->
+            formatCustomEnumName name
 
-matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
-matchCustomFieldName str =
-    List.head << List.filter (customFieldName >> (==) str)
+formatCustomTextName : String -> String
+formatCustomTextName name =
+    "Custom Text: " ++ name
+
+formatCustomNumberName : String -> String
+formatCustomNumberName name =
+    "Custom Number: " ++ name
+
+formatCustomEnumName : String -> String
+formatCustomEnumName name =
+    "Custom Enum: " ++ name
 
 targetStrings : List Asana.CustomFieldInfo -> List String
 targetStrings customFields =
@@ -142,7 +168,7 @@ updateModel {records, customFields} str model =
                     CompletedConfig.create { value = Maybe.withDefault False mValue }
                     -- Transform it to a Just Bool instance from a Bool instance.
                     |> Base.mapFst (Base.mapOutput Just)
-                    , records = records
+                , records = records
                 }
             |> Base.pairMap Completion (Cmd.map CompletionMsg)
         "Due Date" ->
@@ -150,7 +176,25 @@ updateModel {records, customFields} str model =
         "Due Date With Time" ->
             (DueDateWithTime, Cmd.none)
         str ->
-            matchCustomFieldName str customFields |> Maybe.map CustomField |> Maybe.withDefault None |> flip (,) Cmd.none
+            case matchCustomFieldName str customFields of
+                (Just (Asana.CustomEnumFieldInfo id name options)) ->
+                    Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
+                        <| TargetConfig.create
+                            -- TODO: This mapping should go in with the decoders.
+                            { defaultMap = \str -> find (.name >> (==) str) options |> Maybe.map .id
+                            , dataView = \value -> 
+                                EnumConfig.create
+                                    { selectedId = value
+                                    , enumOptions = options
+                                    }
+                            , records = records
+                            }
+                other ->
+                    Maybe.map CustomField other |> Maybe.withDefault None |> flip (,) Cmd.none
+
+matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
+matchCustomFieldName str =
+    List.head << List.filter (customFieldName >> (==) str)
 
 viewSimpleTarget : String -> Html Msg
 viewSimpleTarget name =
