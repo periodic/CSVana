@@ -1,4 +1,4 @@
-module Asana.Api exposing (Token, ApiResult, me, users, projectTypeahead, project, customField, createTask)
+module Asana.Api exposing (Token, ApiResult, me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list, oneOf)
@@ -96,12 +96,24 @@ typeaheadTypeStr resourceType =
         TypeaheadTask ->
             "task"
 
+typeaheadQueryFields : TypeaheadType -> List (String, String)
+typeaheadQueryFields resourceType =
+    case resourceType of
+        TypeaheadProject ->
+            []
+        TypeaheadUser ->
+            [("opt_fields", "name,email,photo")]
+        TypeaheadTag ->
+            []
+        TypeaheadTask ->
+            []
+
 getTypeaheadOptions : TypeaheadType -> Decoder a -> Asana.Id -> String -> ApiRequest (List a)
 getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
     let
         resourceTypeStr = typeaheadTypeStr resourceType
         path = "/workspaces/" ++ workspaceId ++ "/typeahead"
-        query =
+        query = typeaheadQueryFields resourceType ++
             [ ("type", resourceTypeStr)
             , ("query", fragment)
             ]
@@ -111,6 +123,10 @@ getTypeaheadOptions resourceType decoder (workspaceId) fragment  =
 projectTypeahead : Asana.WorkspaceId -> String -> ApiRequest (List Asana.ProjectResource)
 projectTypeahead =
     getTypeaheadOptions TypeaheadProject Decoder.resourceDecoder
+
+userTypeahead : Asana.WorkspaceId -> String -> ApiRequest (List Asana.User)
+userTypeahead =
+    getTypeaheadOptions TypeaheadUser Decoder.userDecoder
 
 project : Asana.ProjectId -> ApiRequest Asana.Project
 project projectId =
