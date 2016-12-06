@@ -22,7 +22,7 @@ create { user } =
 view : Asana.User -> Html msg
 view { name, photo } =
     div [ class "UserInfo" ]
-        [ case photo `Maybe.andThen` .image_36x36 of
+        [ case photo `Maybe.andThen` .image_21x21 of
             Just photo ->
                 img [ class "UserInfo-photo", src photo ] []
             Nothing ->

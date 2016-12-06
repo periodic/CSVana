@@ -27,4 +27,6 @@ main =
     <| TargetSelector.create
         { customFields = customFields
         , records = Set.fromList [ "1", "True", "Done", "Foo", "1" ]
+        , token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRob3JpemF0aW9uIjoyMTU4Njg1MjQ5MzQxNTMsInNjb3BlIjoiZGVmYXVsdCIsImlhdCI6MTQ4MDk4ODA5MCwiZXhwIjoxNDgwOTkxNjkwfQ.EmdQIqGh59YqKzsL83hwQVUEzKqvowtuSKCfo8uEFjY"
+        , workspaceId = "15793206719"
         }

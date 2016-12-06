@@ -8,12 +8,14 @@ import String
 
 import Base
 import Components.TargetSelector as TargetSelector
+import Asana.Api as Api
 import Asana.Model as Asana
 
 type alias Props =
     { customFields : List Asana.CustomFieldInfo
     , records : Set String
     , header : String
+    , apiContext : Api.Context
     }
 
 type alias Msg = TargetSelector.Msg
@@ -23,7 +25,11 @@ type alias Instance = Base.Instance Data Msg
 create : Props -> (Instance, Cmd Msg)
 create props =
     Base.create
-        { init = TargetSelector.create { customFields = props.customFields, records = props.records}
+        { init = TargetSelector.create
+            { customFields = props.customFields
+            , records = props.records
+            , apiContext = props.apiContext
+            }
         , update = Base.update
         , subscriptions = Base.subscriptions
         , view = view props

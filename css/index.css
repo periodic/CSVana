@@ -138,6 +138,7 @@ h3 {
     width: 200px;
     background-color: #fff;
     border: 1px solid #eee;
+    z-index: 200;
 }
 
 .Typeahead-options--empty {
@@ -153,7 +154,7 @@ h3 {
 }
 
 .Popup-positioner {
-    z-index: 1000;
+    z-index: 100;
     position: absolute;
     top: 0;
     left: 0;

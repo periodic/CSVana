@@ -93,8 +93,8 @@ processMessage props msg model =
                 (form', formCmd) = Base.update msg' model.form
                 model' = { model | form = form' }
                 cmd = Cmd.map FormMsg formCmd
-                project = getSelectedProject model
-                project' = getSelectedProject model'
+                project = Base.get model.form
+                project' = Base.get model'.form
             in
                 if project /= project'
                     then updateMatcher props (model', cmd)
@@ -121,9 +121,9 @@ processMessage props msg model =
                     (model, Cmd.none)
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
-updateMatcher {token} (model, cmd) =
-    case (getSelectedProject model, Base.get model.csv) of
-        (Just project, Just (headers, records)) ->
+updateMatcher { token } (model, cmd) =
+    case (Base.get model.form `Maybe.andThen` identity, Base.get model.csv) of
+        (Just (workspaceId, project), Just (headers, records)) ->
             let
                 (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg
                     <| ApiResource.create
@@ -135,11 +135,14 @@ updateMatcher {token} (model, cmd) =
                                 ApiParallelResource.create 
                                     { child = \customFieldInfos ->
                                         FieldMatcher.create
-                                            { token = token
-                                            , projectId = project.id
+                                            { projectId = project.id
                                             , csvHeaders = headers
                                             , csvRecords = records
                                             , customFields = customFieldInfos
+                                            , apiContext =
+                                                { token = token
+                                                , workspaceId = workspaceId
+                                                }
                                             }
                                     , fetches = List.map (flip Api.customField token) customFieldIds
                                     , unloadedView = CommonViews.loadingIndicator
@@ -155,11 +158,6 @@ updateMatcher {token} (model, cmd) =
                 ({ model | fieldMatcher = Just matcher }, matcherCmd)
         _ ->
             ({ model | fieldMatcher = Nothing }, Cmd.none)
-
-
-getSelectedProject : Model -> Maybe Asana.ProjectResource
-getSelectedProject =
-    .form >> Base.get >> flip Maybe.andThen identity
 
 view : Props -> Model -> Html Msg
 view props model =

@@ -10921,9 +10921,9 @@ var _user$project$Asana_Model$CustomFieldValue = F4(
 	function (a, b, c, d) {
 		return {id: a, name: b, fieldType: c, value: d};
 	});
-var _user$project$Asana_Model$NewTask = F7(
-	function (a, b, c, d, e, f, g) {
-		return {name: a, completed: b, dueOn: c, dueAt: d, description: e, projects: f, customFields: g};
+var _user$project$Asana_Model$NewTask = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {name: a, assignee: b, completed: c, dueOn: d, dueAt: e, description: f, projects: g, customFields: h};
 	});
 var _user$project$Asana_Model$CustomUnknown = function (a) {
 	return {ctor: 'CustomUnknown', _0: a};
@@ -11151,8 +11151,7 @@ var _user$project$Asana_Encoder$encodeCustomFieldData = function (data) {
 			return _elm_lang$core$Json_Encode$string(_p0._0.id);
 	}
 };
-var _user$project$Asana_Encoder$encodeTask = function (_p1) {
-	var _p2 = _p1;
+var _user$project$Asana_Encoder$encodeTask = function (task) {
 	return _elm_lang$core$Json_Encode$object(
 		A2(
 			_elm_lang$core$List$filterMap,
@@ -11161,16 +11160,40 @@ var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 				[
 					A2(
 					_elm_lang$core$Maybe$map,
-					function (_p3) {
+					function (_p1) {
 						return A2(
 							F2(
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
 							'name',
+							_elm_lang$core$Json_Encode$string(_p1));
+					},
+					task.name),
+					A2(
+					_elm_lang$core$Maybe$map,
+					function (_p2) {
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							'assignee',
+							_elm_lang$core$Json_Encode$string(_p2));
+					},
+					task.assignee),
+					A2(
+					_elm_lang$core$Maybe$map,
+					function (_p3) {
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							'notes',
 							_elm_lang$core$Json_Encode$string(_p3));
 					},
-					_p2.name),
+					task.description),
 					A2(
 					_elm_lang$core$Maybe$map,
 					function (_p4) {
@@ -11179,10 +11202,10 @@ var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'notes',
+							'due_at',
 							_elm_lang$core$Json_Encode$string(_p4));
 					},
-					_p2.description),
+					task.dueAt),
 					A2(
 					_elm_lang$core$Maybe$map,
 					function (_p5) {
@@ -11191,10 +11214,16 @@ var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'due_at',
+							'due_on',
 							_elm_lang$core$Json_Encode$string(_p5));
 					},
-					_p2.dueAt),
+					task.dueOn),
+					_elm_lang$core$Maybe$Just(
+					{
+						ctor: '_Tuple2',
+						_0: 'completed',
+						_1: _elm_lang$core$Json_Encode$bool(task.completed)
+					}),
 					A2(
 					_elm_lang$core$Maybe$map,
 					function (_p6) {
@@ -11203,29 +11232,11 @@ var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 								function (v0, v1) {
 									return {ctor: '_Tuple2', _0: v0, _1: v1};
 								}),
-							'due_on',
-							_elm_lang$core$Json_Encode$string(_p6));
-					},
-					_p2.dueOn),
-					_elm_lang$core$Maybe$Just(
-					{
-						ctor: '_Tuple2',
-						_0: 'completed',
-						_1: _elm_lang$core$Json_Encode$bool(_p2.completed)
-					}),
-					A2(
-					_elm_lang$core$Maybe$map,
-					function (_p7) {
-						return A2(
-							F2(
-								function (v0, v1) {
-									return {ctor: '_Tuple2', _0: v0, _1: v1};
-								}),
 							'projects',
 							_elm_lang$core$Json_Encode$list(
-								A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p7)));
+								A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p6)));
 					},
-					_p2.projects),
+					task.projects),
 					_elm_lang$core$Maybe$Just(
 					A2(
 						F2(
@@ -11237,18 +11248,18 @@ var _user$project$Asana_Encoder$encodeTask = function (_p1) {
 							A2(
 								_elm_lang$core$List$map,
 								_user$project$Base$mapSnd(_user$project$Asana_Encoder$encodeCustomFieldData),
-								_p2.customFields))))
+								task.customFields))))
 				])));
 };
-var _user$project$Asana_Encoder$encodeDueAt = function (_p8) {
-	var _p9 = _p8;
+var _user$project$Asana_Encoder$encodeDueAt = function (_p7) {
+	var _p8 = _p7;
 	return _elm_lang$core$Json_Encode$string(
-		A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, _p9._0));
+		A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, _p8._0));
 };
-var _user$project$Asana_Encoder$encodeDueOn = function (_p10) {
-	var _p11 = _p10;
+var _user$project$Asana_Encoder$encodeDueOn = function (_p9) {
+	var _p10 = _p9;
 	return _elm_lang$core$Json_Encode$string(
-		A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, _p11._0));
+		A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, _p10._0));
 };
 
 var _user$project$Asana_Decoder$emptyString = function (a) {
@@ -11474,10 +11485,36 @@ var _user$project$Asana_Decoder$taskDecoder = A6(
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_on', _user$project$Asana_Decoder$dueOnDecoder)),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'due_at', _user$project$Asana_Decoder$dueAtDecoder)));
+var _user$project$Asana_Decoder$WorkRequired = function (a) {
+	return {ctor: 'WorkRequired', _0: a};
+};
+var _user$project$Asana_Decoder$Value = function (a) {
+	return {ctor: 'Value', _0: a};
+};
+var _user$project$Asana_Decoder$NoResult = {ctor: 'NoResult'};
 
-var _user$project$Asana_Api$typeaheadTypeStr = function (resourceType) {
+var _user$project$Asana_Api$typeaheadQueryFields = function (resourceType) {
 	var _p0 = resourceType;
 	switch (_p0.ctor) {
+		case 'TypeaheadProject':
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+		case 'TypeaheadUser':
+			return _elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'opt_fields', _1: 'name,email,photo'}
+				]);
+		case 'TypeaheadTag':
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+		default:
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+	}
+};
+var _user$project$Asana_Api$typeaheadTypeStr = function (resourceType) {
+	var _p1 = resourceType;
+	switch (_p1.ctor) {
 		case 'TypeaheadProject':
 			return 'project';
 		case 'TypeaheadUser':
@@ -11511,8 +11548,8 @@ var _user$project$Asana_Api$apiGetRequest = F4(
 		return A3(_elm_lang$core$Task$perform, _elm_lang$core$Result$Err, _elm_lang$core$Result$Ok, httpRequest);
 	});
 var _user$project$Asana_Api$user = function (user) {
-	var _p1 = user;
-	switch (_p1.ctor) {
+	var _p2 = user;
+	switch (_p2.ctor) {
 		case 'Me':
 			return A3(
 				_user$project$Asana_Api$apiGetRequest,
@@ -11523,14 +11560,14 @@ var _user$project$Asana_Api$user = function (user) {
 		case 'Id':
 			return A3(
 				_user$project$Asana_Api$apiGetRequest,
-				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p1._0),
+				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p2._0),
 				_elm_lang$core$Native_List.fromArray(
 					[]),
 				_user$project$Asana_Decoder$userDecoder);
 		default:
 			return A3(
 				_user$project$Asana_Api$apiGetRequest,
-				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p1._0),
+				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p2._0),
 				_elm_lang$core$Native_List.fromArray(
 					[]),
 				_user$project$Asana_Decoder$userDecoder);
@@ -11558,11 +11595,14 @@ var _user$project$Asana_Api$getTypeaheadOptions = F4(
 			'/workspaces/',
 			A2(_elm_lang$core$Basics_ops['++'], workspaceId, '/typeahead'));
 		var resourceTypeStr = _user$project$Asana_Api$typeaheadTypeStr(resourceType);
-		var query = _elm_lang$core$Native_List.fromArray(
-			[
-				{ctor: '_Tuple2', _0: 'type', _1: resourceTypeStr},
-				{ctor: '_Tuple2', _0: 'query', _1: fragment}
-			]);
+		var query = A2(
+			_elm_lang$core$Basics_ops['++'],
+			_user$project$Asana_Api$typeaheadQueryFields(resourceType),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					{ctor: '_Tuple2', _0: 'type', _1: resourceTypeStr},
+					{ctor: '_Tuple2', _0: 'query', _1: fragment}
+				]));
 		return A3(
 			_user$project$Asana_Api$apiGetRequest,
 			path,
@@ -11628,6 +11668,10 @@ var _user$project$Asana_Api$createTask = function (newTask) {
 	var path = '/tasks';
 	return A4(_user$project$Asana_Api$apiPostRequest, path, query, body, _user$project$Asana_Decoder$taskDecoder);
 };
+var _user$project$Asana_Api$Context = F2(
+	function (a, b) {
+		return {token: a, workspaceId: b};
+	});
 var _user$project$Asana_Api$Email = function (a) {
 	return {ctor: 'Email', _0: a};
 };
@@ -11639,6 +11683,7 @@ var _user$project$Asana_Api$me = _user$project$Asana_Api$user(_user$project$Asan
 var _user$project$Asana_Api$TypeaheadTask = {ctor: 'TypeaheadTask'};
 var _user$project$Asana_Api$TypeaheadTag = {ctor: 'TypeaheadTag'};
 var _user$project$Asana_Api$TypeaheadUser = {ctor: 'TypeaheadUser'};
+var _user$project$Asana_Api$userTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadUser, _user$project$Asana_Decoder$userDecoder);
 var _user$project$Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProject'};
 var _user$project$Asana_Api$projectTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadProject, _user$project$Asana_Decoder$resourceDecoder);
 
@@ -11666,13 +11711,29 @@ var _user$project$Asana_Target$updateTask = F3(
 						{
 							description: _elm_lang$core$Maybe$Just(value)
 						}));
-			case 'Completion':
+			case 'Assignee':
 				var _p1 = A2(_elm_lang$core$Dict$get, value, _p0._0);
 				if (_p1.ctor === 'Just') {
 					return _elm_lang$core$Result$Ok(
 						_elm_lang$core$Native_Utils.update(
 							task,
-							{completed: _p1._0}));
+							{
+								assignee: _elm_lang$core$Maybe$Just(_p1._0)
+							}));
+				} else {
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'No config for how to convert \'',
+							A2(_elm_lang$core$Basics_ops['++'], value, '\' into user.')));
+				}
+			case 'Completion':
+				var _p2 = A2(_elm_lang$core$Dict$get, value, _p0._0);
+				if (_p2.ctor === 'Just') {
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{completed: _p2._0}));
 				} else {
 					return _elm_lang$core$Result$Err(
 						A2(
@@ -11681,14 +11742,14 @@ var _user$project$Asana_Target$updateTask = F3(
 							A2(_elm_lang$core$Basics_ops['++'], value, '\' into a completed status.')));
 				}
 			case 'DueDate':
-				var _p2 = _elm_lang$core$Date$fromString(value);
-				if (_p2.ctor === 'Ok') {
+				var _p3 = _elm_lang$core$Date$fromString(value);
+				if (_p3.ctor === 'Ok') {
 					return _elm_lang$core$Result$Ok(
 						_elm_lang$core$Native_Utils.update(
 							task,
 							{
 								dueOn: _elm_lang$core$Maybe$Just(
-									_user$project$Asana_Target$dateToDueOn(_p2._0))
+									_user$project$Asana_Target$dateToDueOn(_p3._0))
 							}));
 				} else {
 					return _elm_lang$core$Result$Err(
@@ -11698,14 +11759,14 @@ var _user$project$Asana_Target$updateTask = F3(
 							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 				}
 			case 'DueTime':
-				var _p3 = _elm_lang$core$Date$fromString(value);
-				if (_p3.ctor === 'Ok') {
+				var _p4 = _elm_lang$core$Date$fromString(value);
+				if (_p4.ctor === 'Ok') {
 					return _elm_lang$core$Result$Ok(
 						_elm_lang$core$Native_Utils.update(
 							task,
 							{
 								dueAt: _elm_lang$core$Maybe$Just(
-									_user$project$Asana_Target$dateToDueAt(_p3._0))
+									_user$project$Asana_Target$dateToDueAt(_p4._0))
 							}));
 				} else {
 					return _elm_lang$core$Result$Err(
@@ -11715,12 +11776,12 @@ var _user$project$Asana_Target$updateTask = F3(
 							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 				}
 			default:
-				var _p4 = _p0._0;
-				switch (_p4.ctor) {
+				var _p5 = _p0._0;
+				switch (_p5.ctor) {
 					case 'CustomTextFieldInfo':
 						var newField = {
 							ctor: '_Tuple2',
-							_0: _p4._0,
+							_0: _p5._0,
 							_1: _user$project$Asana_Model$TextValue(value)
 						};
 						var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
@@ -11729,12 +11790,12 @@ var _user$project$Asana_Target$updateTask = F3(
 								task,
 								{customFields: customFields}));
 					case 'CustomNumberFieldInfo':
-						var _p5 = _elm_lang$core$String$toFloat(value);
-						if (_p5.ctor === 'Ok') {
+						var _p6 = _elm_lang$core$String$toFloat(value);
+						if (_p6.ctor === 'Ok') {
 							var newField = {
 								ctor: '_Tuple2',
-								_0: _p4._0,
-								_1: _user$project$Asana_Model$NumberValue(_p5._0)
+								_0: _p5._0,
+								_1: _user$project$Asana_Model$NumberValue(_p6._0)
 							};
 							var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
 							return _elm_lang$core$Result$Ok(
@@ -11751,7 +11812,7 @@ var _user$project$Asana_Target$updateTask = F3(
 					default:
 						var matchingOptions = A2(
 							_elm_lang$core$List$filter,
-							function (_p6) {
+							function (_p7) {
 								return A2(
 									F2(
 										function (x, y) {
@@ -11760,11 +11821,11 @@ var _user$project$Asana_Target$updateTask = F3(
 									value,
 									function (_) {
 										return _.name;
-									}(_p6));
+									}(_p7));
 							},
-							_p4._2);
-						var _p7 = _elm_lang$core$List$head(matchingOptions);
-						if (_p7.ctor === 'Just') {
+							_p5._2);
+						var _p8 = _elm_lang$core$List$head(matchingOptions);
+						if (_p8.ctor === 'Just') {
 							return _elm_lang$core$Result$Ok(
 								_elm_lang$core$Native_Utils.update(
 									task,
@@ -11773,8 +11834,8 @@ var _user$project$Asana_Target$updateTask = F3(
 											_elm_lang$core$List_ops['::'],
 											{
 												ctor: '_Tuple2',
-												_0: _p4._0,
-												_1: _user$project$Asana_Model$EnumValue(_p7._0)
+												_0: _p5._0,
+												_1: _user$project$Asana_Model$EnumValue(_p8._0)
 											},
 											task.customFields)
 									}));
@@ -11792,6 +11853,7 @@ var _user$project$Asana_Target$emptyTask = function (projectId) {
 	return {
 		name: _elm_lang$core$Maybe$Nothing,
 		description: _elm_lang$core$Maybe$Nothing,
+		assignee: _elm_lang$core$Maybe$Nothing,
 		completed: false,
 		dueOn: _elm_lang$core$Maybe$Nothing,
 		dueAt: _elm_lang$core$Maybe$Nothing,
@@ -11810,33 +11872,25 @@ var _user$project$Asana_Target$DueDate = {ctor: 'DueDate'};
 var _user$project$Asana_Target$Completion = function (a) {
 	return {ctor: 'Completion', _0: a};
 };
+var _user$project$Asana_Target$Assignee = function (a) {
+	return {ctor: 'Assignee', _0: a};
+};
 var _user$project$Asana_Target$Description = {ctor: 'Description'};
 var _user$project$Asana_Target$Name = {ctor: 'Name'};
 
-var _user$project$CommonViews$gearIcon = A2(
-	_elm_lang$svg$Svg$svg,
+var _user$project$CommonViews$iconStyle = _elm_lang$html$Html_Attributes$style(
 	_elm_lang$core$Native_List.fromArray(
 		[
-			_elm_lang$svg$Svg_Attributes$class('icon gearIcon'),
-			_elm_lang$svg$Svg_Attributes$viewBox('0 0 512 512')
-		]),
-	_elm_lang$core$Native_List.fromArray(
-		[
-			A2(
-			_elm_lang$svg$Svg$path,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$svg$Svg_Attributes$d('M512,288v-64l-69.156-11.531c-4.813-20.781-13-40.188-23.969-57.781l40.781-57.063l-45.25-45.25l-57.094,40.75  c-17.594-10.938-37-19.156-57.781-24L288,0h-64l-11.531,69.125c-20.75,4.844-40.188,13.063-57.781,24l-57.094-40.75l-45.25,45.25  l40.781,57.063c-10.969,17.563-19.156,37-23.969,57.781L0,224v64l69.156,11.531c4.813,20.781,13,40.188,23.969,57.781  l-40.781,57.094l45.25,45.25l57.125-40.781c17.563,10.969,37,19.156,57.75,23.969L224,512h64l11.531-69.156  c20.75-4.813,40.188-13,57.781-23.969l57.094,40.781l45.25-45.25l-40.781-57.094c10.969-17.594,19.156-37.031,23.969-57.781L512,288  z M256,384c-70.688,0-128-57.313-128-128s57.313-128,128-128s128,57.313,128,128S326.688,384,256,384z')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[]))
+			{ctor: '_Tuple2', _0: 'width', _1: '16px'},
+			{ctor: '_Tuple2', _0: 'height', _1: '16px'}
 		]));
 var _user$project$CommonViews$closeIcon = A2(
 	_elm_lang$svg$Svg$svg,
 	_elm_lang$core$Native_List.fromArray(
 		[
 			_elm_lang$svg$Svg_Attributes$class('icon closeIcon'),
-			_elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32')
+			_elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32'),
+			_user$project$CommonViews$iconStyle
 		]),
 	_elm_lang$core$Native_List.fromArray(
 		[
@@ -11845,6 +11899,25 @@ var _user$project$CommonViews$closeIcon = A2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$svg$Svg_Attributes$points('24.485,27.314 27.314,24.485 18.828,16 27.314,7.515 24.485,4.686 16,13.172 7.515,4.686 4.686,7.515 13.172,16 4.686,24.485 7.515,27.314 16,18.828 ')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
+var _user$project$CommonViews$gearIcon = A2(
+	_elm_lang$svg$Svg$svg,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$svg$Svg_Attributes$class('icon gearIcon'),
+			_elm_lang$svg$Svg_Attributes$viewBox('0 0 512 512'),
+			_user$project$CommonViews$iconStyle
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$path,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$d('M512,288v-64l-69.156-11.531c-4.813-20.781-13-40.188-23.969-57.781l40.781-57.063l-45.25-45.25l-57.094,40.75  c-17.594-10.938-37-19.156-57.781-24L288,0h-64l-11.531,69.125c-20.75,4.844-40.188,13.063-57.781,24l-57.094-40.75l-45.25,45.25  l40.781,57.063c-10.969,17.563-19.156,37-23.969,57.781L0,224v64l69.156,11.531c4.813,20.781,13,40.188,23.969,57.781  l-40.781,57.094l45.25,45.25l57.125-40.781c17.563,10.969,37,19.156,57.75,23.969L224,512h64l11.531-69.156  c20.75-4.813,40.188-13,57.781-23.969l57.094,40.781l45.25-45.25l-40.781-57.094c10.969-17.594,19.156-37.031,23.969-57.781L512,288  z M256,384c-70.688,0-128-57.313-128-128s57.313-128,128-128s128,57.313,128,128S326.688,384,256,384z')
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[]))
@@ -12061,20 +12134,30 @@ var _user$project$Components_ApiParallelResource$Loading = function (a) {
 var _user$project$Components_ApiParallelResource$init = function (_p4) {
 	var _p5 = _p4;
 	var _p7 = _p5.fetches;
-	var cmd = _elm_lang$core$Platform_Cmd$batch(
-		A2(
-			_elm_lang$core$List$indexedMap,
-			function (_p6) {
-				return _elm_lang$core$Platform_Cmd$map(
-					_user$project$Components_ApiParallelResource$ApiMsg(_p6));
-			},
-			_p7));
-	var model = _user$project$Components_ApiParallelResource$Loading(
-		A2(
-			_elm_lang$core$Array$repeat,
-			_elm_lang$core$List$length(_p7),
-			_elm_lang$core$Maybe$Nothing));
-	return {ctor: '_Tuple2', _0: model, _1: cmd};
+	if (_elm_lang$core$List$isEmpty(_p7)) {
+		return A3(
+			_user$project$Base$pairMap,
+			_user$project$Components_ApiParallelResource$Loaded,
+			_elm_lang$core$Platform_Cmd$map(_user$project$Components_ApiParallelResource$ChildMsg),
+			_p5.child(
+				_elm_lang$core$Native_List.fromArray(
+					[])));
+	} else {
+		var cmd = _elm_lang$core$Platform_Cmd$batch(
+			A2(
+				_elm_lang$core$List$indexedMap,
+				function (_p6) {
+					return _elm_lang$core$Platform_Cmd$map(
+						_user$project$Components_ApiParallelResource$ApiMsg(_p6));
+				},
+				_p7));
+		var model = _user$project$Components_ApiParallelResource$Loading(
+			A2(
+				_elm_lang$core$Array$repeat,
+				_elm_lang$core$List$length(_p7),
+				_elm_lang$core$Maybe$Nothing));
+		return {ctor: '_Tuple2', _0: model, _1: cmd};
+	}
 };
 var _user$project$Components_ApiParallelResource$update = F3(
 	function (props, msg, model) {
@@ -12715,6 +12798,468 @@ var _user$project$Components_Configs_EnumConfig$create = function (props) {
 		});
 };
 
+var _user$project$Components_Configs_UserInfo$view = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('UserInfo')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				function () {
+				var _p2 = A2(
+					_elm_lang$core$Maybe$andThen,
+					_p1.photo,
+					function (_) {
+						return _.image_21x21;
+					});
+				if (_p2.ctor === 'Just') {
+					return A2(
+						_elm_lang$html$Html$img,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('UserInfo-photo'),
+								_elm_lang$html$Html_Attributes$src(_p2._0)
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				} else {
+					return _elm_lang$html$Html$text('');
+				}
+			}(),
+				A2(
+				_elm_lang$html$Html$span,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('UserInfo-name')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(_p1.name)
+					]))
+			]));
+};
+var _user$project$Components_Configs_UserInfo$create = function (_p3) {
+	var _p4 = _p3;
+	return _user$project$Base$staticComponent(
+		_user$project$Components_Configs_UserInfo$view(_p4.user));
+};
+var _user$project$Components_Configs_UserInfo$Props = function (a) {
+	return {user: a};
+};
+
+var _user$project$Components_Typeahead$renderNoResultsOption = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--noResults')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html$text('No Results')
+		]));
+var _user$project$Components_Typeahead$renderLoadingOption = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--loading')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html$text('Loading...')
+		]));
+var _user$project$Components_Typeahead$isActive = function (model) {
+	var _p0 = model.options;
+	if (_p0.ctor === 'Unloaded') {
+		return false;
+	} else {
+		return model.inputFocused || model.optionsHovered;
+	}
+};
+var _user$project$Components_Typeahead$get = function (_) {
+	return _.selected;
+};
+var _user$project$Components_Typeahead$Props = function (a) {
+	return {fetcher: a};
+};
+var _user$project$Components_Typeahead$Model = F5(
+	function (a, b, c, d, e) {
+		return {options: a, fragment: b, selected: c, inputFocused: d, optionsHovered: e};
+	});
+var _user$project$Components_Typeahead$OptionsHovered = function (a) {
+	return {ctor: 'OptionsHovered', _0: a};
+};
+var _user$project$Components_Typeahead$InputFocus = function (a) {
+	return {ctor: 'InputFocus', _0: a};
+};
+var _user$project$Components_Typeahead$Selection = function (a) {
+	return {ctor: 'Selection', _0: a};
+};
+var _user$project$Components_Typeahead$renderUnselected = function (resource) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('Typeahead-option'),
+				_elm_lang$html$Html_Events$onClick(
+				_user$project$Components_Typeahead$Selection(resource))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(resource.name)
+			]));
+};
+var _user$project$Components_Typeahead$renderSelected = function (resource) {
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--selected'),
+				_elm_lang$html$Html_Events$onClick(
+				_user$project$Components_Typeahead$Selection(resource))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(resource.name)
+			]));
+};
+var _user$project$Components_Typeahead$renderOption = F2(
+	function (selected, resource) {
+		var _p1 = selected;
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.eq(_p1._0, resource) ? _user$project$Components_Typeahead$renderSelected(resource) : _user$project$Components_Typeahead$renderUnselected(resource);
+		} else {
+			return _user$project$Components_Typeahead$renderUnselected(resource);
+		}
+	});
+var _user$project$Components_Typeahead$renderOptions = function (_p2) {
+	var _p3 = _p2;
+	var _p4 = _p3.options;
+	switch (_p4.ctor) {
+		case 'Loaded':
+			var _p5 = _p4._0;
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('Typeahead-options'),
+						_elm_lang$html$Html_Events$onMouseOver(
+						_user$project$Components_Typeahead$OptionsHovered(true)),
+						_elm_lang$html$Html_Events$onMouseOut(
+						_user$project$Components_Typeahead$OptionsHovered(false))
+					]),
+				(_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$List$length(_p5),
+					0) > 0) ? A2(
+					_elm_lang$core$List$map,
+					_user$project$Components_Typeahead$renderOption(_p3.selected),
+					_p5) : _elm_lang$core$Native_List.fromArray(
+					[_user$project$Components_Typeahead$renderNoResultsOption]));
+		case 'Loading':
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('Typeahead-options')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[_user$project$Components_Typeahead$renderLoadingOption]));
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class('Typeahead-options--empty')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[]));
+	}
+};
+var _user$project$Components_Typeahead$Input = function (a) {
+	return {ctor: 'Input', _0: a};
+};
+var _user$project$Components_Typeahead$view = F2(
+	function (_p6, model) {
+		var inputElem = A2(
+			_elm_lang$html$Html$input,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Typeahead-input'),
+					_elm_lang$html$Html_Events$onInput(_user$project$Components_Typeahead$Input),
+					_elm_lang$html$Html_Events$onFocus(
+					_user$project$Components_Typeahead$InputFocus(true)),
+					_elm_lang$html$Html_Events$onBlur(
+					_user$project$Components_Typeahead$InputFocus(false)),
+					_elm_lang$html$Html_Attributes$value(model.fragment)
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]));
+		var elems = _user$project$Components_Typeahead$isActive(model) ? _elm_lang$core$Native_List.fromArray(
+			[
+				inputElem,
+				_user$project$Components_Typeahead$renderOptions(model)
+			]) : _elm_lang$core$Native_List.fromArray(
+			[inputElem]);
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Typeahead')
+				]),
+			elems);
+	});
+var _user$project$Components_Typeahead$NewOptions = F2(
+	function (a, b) {
+		return {ctor: 'NewOptions', _0: a, _1: b};
+	});
+var _user$project$Components_Typeahead$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _user$project$Components_Typeahead$Loading = {ctor: 'Loading'};
+var _user$project$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
+var _user$project$Components_Typeahead$init = function (_p7) {
+	var model = {options: _user$project$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _user$project$Components_Typeahead$update = F3(
+	function (_p8, msg, model) {
+		var _p9 = _p8;
+		var _p10 = msg;
+		switch (_p10.ctor) {
+			case 'NewOptions':
+				if (_p10._1.ctor === 'Ok') {
+					return (_elm_lang$core$Native_Utils.eq(_p10._0, model.fragment) && _user$project$Components_Typeahead$isActive(model)) ? {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								options: _user$project$Components_Typeahead$Loaded(_p10._1._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Input':
+				var _p11 = _p10._0;
+				return _elm_lang$core$Native_Utils.eq(_p11, '') ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{options: _user$project$Components_Typeahead$Unloaded, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{options: _user$project$Components_Typeahead$Loading, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing}),
+					_1: A2(
+						_elm_lang$core$Platform_Cmd$map,
+						_user$project$Components_Typeahead$NewOptions(_p11),
+						_p9.fetcher(_p11))
+				};
+			case 'Selection':
+				var _p12 = _p10._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(
+								A2(_elm_lang$core$Debug$log, 'Selection', _p12)),
+							fragment: _p12.name,
+							options: _user$project$Components_Typeahead$Unloaded
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'InputFocus':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							inputFocused: A2(_elm_lang$core$Debug$log, 'Focused', _p10._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							optionsHovered: A2(_elm_lang$core$Debug$log, 'Hovered', _p10._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _user$project$Components_Typeahead$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Typeahead$init(props),
+			update: _user$project$Components_Typeahead$update(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			view: _user$project$Components_Typeahead$view(props),
+			get: _user$project$Components_Typeahead$get
+		});
+};
+
+var _user$project$Components_Configs_UserConfig$get = function (model) {
+	var _p0 = model;
+	if (_p0.ctor === 'Unselected') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(_p0._0.id);
+	}
+};
+var _user$project$Components_Configs_UserConfig$Props = F2(
+	function (a, b) {
+		return {selectedUser: a, apiContext: b};
+	});
+var _user$project$Components_Configs_UserConfig$TypeaheadMsg = function (a) {
+	return {ctor: 'TypeaheadMsg', _0: a};
+};
+var _user$project$Components_Configs_UserConfig$subscriptions = function (model) {
+	var _p1 = model;
+	if (_p1.ctor === 'Unselected') {
+		return A2(_user$project$Base$subscriptionsWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p1._0);
+	} else {
+		return _user$project$Base$subscriptions(_p1._1);
+	}
+};
+var _user$project$Components_Configs_UserConfig$Selection = function (a) {
+	return {ctor: 'Selection', _0: a};
+};
+var _user$project$Components_Configs_UserConfig$view = F2(
+	function (props, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('UserConfig')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					function () {
+					var _p2 = model;
+					if (_p2.ctor === 'Unselected') {
+						return A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('UserConfig--unselected')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_user$project$Base$viewWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p2._0)
+								]));
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html_Attributes$class('UserConfig--selected')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_user$project$Base$view(_p2._1),
+									A2(
+									_elm_lang$html$Html$a,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html_Events$onClick(
+											_user$project$Components_Configs_UserConfig$Selection(_elm_lang$core$Maybe$Nothing))
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[_user$project$CommonViews$closeIcon]))
+								]));
+					}
+				}()
+				]));
+	});
+var _user$project$Components_Configs_UserConfig$Selected = F2(
+	function (a, b) {
+		return {ctor: 'Selected', _0: a, _1: b};
+	});
+var _user$project$Components_Configs_UserConfig$Unselected = function (a) {
+	return {ctor: 'Unselected', _0: a};
+};
+var _user$project$Components_Configs_UserConfig$makeModel = function (_p3) {
+	var _p4 = _p3;
+	var _p7 = _p4.apiContext;
+	var _p5 = _p4.selectedUser;
+	if (_p5.ctor === 'Just') {
+		var _p6 = _p5._0;
+		return A2(
+			_user$project$Base$mapFst,
+			_user$project$Components_Configs_UserConfig$Selected(_p6),
+			_user$project$Components_Configs_UserInfo$create(
+				{user: _p6}));
+	} else {
+		return A3(
+			_user$project$Base$pairMap,
+			_user$project$Components_Configs_UserConfig$Unselected,
+			_elm_lang$core$Platform_Cmd$map(_user$project$Components_Configs_UserConfig$TypeaheadMsg),
+			_user$project$Components_Typeahead$create(
+				{
+					fetcher: A2(
+						_elm_lang$core$Basics$flip,
+						_user$project$Asana_Api$userTypeahead(_p7.workspaceId),
+						_p7.token)
+				}));
+	}
+};
+var _user$project$Components_Configs_UserConfig$init = function (props) {
+	return _user$project$Components_Configs_UserConfig$makeModel(props);
+};
+var _user$project$Components_Configs_UserConfig$update = F3(
+	function (props, msg, model) {
+		var _p8 = msg;
+		if (_p8.ctor === 'Selection') {
+			return _user$project$Components_Configs_UserConfig$makeModel(
+				_elm_lang$core$Native_Utils.update(
+					props,
+					{selectedUser: _p8._0}));
+		} else {
+			var _p9 = model;
+			if (_p9.ctor === 'Unselected') {
+				var _p10 = A3(_user$project$Base$updateWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p8._0, _p9._0);
+				var ta$ = _p10._0;
+				var taCmd = _p10._1;
+				var _p11 = _user$project$Base$get(ta$);
+				if (_p11.ctor === 'Just') {
+					return _user$project$Components_Configs_UserConfig$makeModel(
+						_elm_lang$core$Native_Utils.update(
+							props,
+							{
+								selectedUser: _elm_lang$core$Maybe$Just(_p11._0)
+							}));
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _user$project$Components_Configs_UserConfig$Unselected(ta$),
+						_1: taCmd
+					};
+				}
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
+	});
+var _user$project$Components_Configs_UserConfig$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Configs_UserConfig$init(props),
+			update: _user$project$Components_Configs_UserConfig$update(props),
+			subscriptions: _user$project$Components_Configs_UserConfig$subscriptions,
+			view: _user$project$Components_Configs_UserConfig$view(props),
+			get: _user$project$Components_Configs_UserConfig$get
+		});
+};
+
 var _user$project$Components_TargetConfig$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
@@ -12983,7 +13528,7 @@ var _user$project$Components_TargetSelector$targetStrings = function (customFiel
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		_elm_lang$core$Native_List.fromArray(
-			['', 'Name', 'Description', 'Completion', 'Due Date', 'Due Date With Time']),
+			['', 'Name', 'Description', 'Completion', 'Assignee', 'Due Date', 'Due Date With Time']),
 		A2(_elm_lang$core$List$map, _user$project$Components_TargetSelector$customFieldName, customFields));
 };
 var _user$project$Components_TargetSelector$matchCustomFieldName = function (str) {
@@ -13024,6 +13569,10 @@ var _user$project$Components_TargetSelector$get = function (model) {
 			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Name);
 		case 'Description':
 			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Description);
+		case 'Assignee':
+			return _elm_lang$core$Maybe$Just(
+				_user$project$Asana_Target$Assignee(
+					_user$project$Base$get(_p3._0)));
 		case 'Completion':
 			return _elm_lang$core$Maybe$Just(
 				_user$project$Asana_Target$Completion(
@@ -13041,15 +13590,18 @@ var _user$project$Components_TargetSelector$get = function (model) {
 				_user$project$Asana_Target$CustomField(_p3._0));
 	}
 };
-var _user$project$Components_TargetSelector$Props = F2(
-	function (a, b) {
-		return {customFields: a, records: b};
+var _user$project$Components_TargetSelector$Props = F3(
+	function (a, b, c) {
+		return {customFields: a, records: b, apiContext: c};
 	});
 var _user$project$Components_TargetSelector$EnumMsg = function (a) {
 	return {ctor: 'EnumMsg', _0: a};
 };
 var _user$project$Components_TargetSelector$CompletionMsg = function (a) {
 	return {ctor: 'CompletionMsg', _0: a};
+};
+var _user$project$Components_TargetSelector$AssigneeMsg = function (a) {
+	return {ctor: 'AssigneeMsg', _0: a};
 };
 var _user$project$Components_TargetSelector$Selection = function (a) {
 	return {ctor: 'Selection', _0: a};
@@ -13159,6 +13711,11 @@ var _user$project$Components_TargetSelector$view = F2(
 				return _user$project$Components_TargetSelector$viewSimpleTarget('Name');
 			case 'Description':
 				return _user$project$Components_TargetSelector$viewSimpleTarget('Description');
+			case 'Assignee':
+				return A2(
+					_user$project$Components_TargetSelector$viewWithConfig,
+					'Assignee',
+					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$AssigneeMsg, _p4._0));
 			case 'Completion':
 				return A2(
 					_user$project$Components_TargetSelector$viewWithConfig,
@@ -13190,19 +13747,47 @@ var _user$project$Components_TargetSelector$DueDate = {ctor: 'DueDate'};
 var _user$project$Components_TargetSelector$Completion = function (a) {
 	return {ctor: 'Completion', _0: a};
 };
+var _user$project$Components_TargetSelector$Assignee = function (a) {
+	return {ctor: 'Assignee', _0: a};
+};
+var _user$project$Components_TargetSelector$assigneeComponent = function (_p5) {
+	var _p6 = _p5;
+	var userConfig = function (mValue) {
+		return _user$project$Components_Configs_UserConfig$create(
+			{selectedUser: mValue, apiContext: _p6.apiContext});
+	};
+	var alwaysNothing = _elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing);
+	var _p7 = _user$project$Components_TargetConfig$create(
+		{
+			defaultMap: alwaysNothing,
+			dataView: _elm_lang$core$Basics$always(
+				userConfig(_elm_lang$core$Maybe$Nothing)),
+			records: _p6.records
+		});
+	var target = _p7._0;
+	var targetMsg = _p7._1;
+	return A3(
+		_user$project$Base$pairMap,
+		_user$project$Components_TargetSelector$Assignee,
+		_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$AssigneeMsg),
+		{ctor: '_Tuple2', _0: target, _1: targetMsg});
+};
 var _user$project$Components_TargetSelector$Description = {ctor: 'Description'};
 var _user$project$Components_TargetSelector$Name = {ctor: 'Name'};
 var _user$project$Components_TargetSelector$None = {ctor: 'None'};
 var _user$project$Components_TargetSelector$updateModel = F3(
-	function (_p5, str, model) {
-		var _p6 = _p5;
-		var _p11 = _p6.records;
-		var _p7 = str;
-		switch (_p7) {
+	function (props, str, model) {
+		var _p8 = props;
+		var records = _p8.records;
+		var customFields = _p8.customFields;
+		var _p9 = str;
+		switch (_p9) {
 			case 'Name':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Name, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Description':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Description, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Assignee':
+				return _user$project$Components_TargetSelector$assigneeComponent(props);
 			case 'Completion':
 				return A3(
 					_user$project$Base$pairMap,
@@ -13227,19 +13812,19 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 											value: A2(_elm_lang$core$Maybe$withDefault, false, mValue)
 										}));
 							},
-							records: _p11
+							records: records
 						}));
 			case 'Due Date':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDate, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Due Date With Time':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDateWithTime, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p8 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p7, _p6.customFields);
-				if ((_p8.ctor === 'Just') && (_p8._0.ctor === 'CustomEnumFieldInfo')) {
-					var _p10 = _p8._0._2;
+				var _p10 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p9, customFields);
+				if ((_p10.ctor === 'Just') && (_p10._0.ctor === 'CustomEnumFieldInfo')) {
+					var _p12 = _p10._0._2;
 					return A3(
 						_user$project$Base$pairMap,
-						A3(_user$project$Components_TargetSelector$CustomEnumField, _p8._0._0, _p8._0._1, _p10),
+						A3(_user$project$Components_TargetSelector$CustomEnumField, _p10._0._0, _p10._0._1, _p12),
 						_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$EnumMsg),
 						_user$project$Components_TargetConfig$create(
 							{
@@ -13251,7 +13836,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 										},
 										A2(
 											_user$project$Util$find,
-											function (_p9) {
+											function (_p11) {
 												return A2(
 													F2(
 														function (x, y) {
@@ -13260,15 +13845,15 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 													str,
 													function (_) {
 														return _.name;
-													}(_p9));
+													}(_p11));
 											},
-											_p10));
+											_p12));
 								},
 								dataView: function (value) {
 									return _user$project$Components_Configs_EnumConfig$create(
-										{selectedId: value, enumOptions: _p10});
+										{selectedId: value, enumOptions: _p12});
 								},
-								records: _p11
+								records: records
 							}));
 				} else {
 					return A3(
@@ -13281,33 +13866,42 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						A2(
 							_elm_lang$core$Maybe$withDefault,
 							_user$project$Components_TargetSelector$None,
-							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p8)));
+							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p10)));
 				}
 		}
 	});
 var _user$project$Components_TargetSelector$update = F3(
 	function (props, msg, model) {
-		var _p12 = {ctor: '_Tuple2', _0: msg, _1: model};
-		_v6_2:
+		var _p13 = {ctor: '_Tuple2', _0: msg, _1: model};
+		_v6_3:
 		do {
-			if (_p12.ctor === '_Tuple2') {
-				switch (_p12._0.ctor) {
+			if (_p13.ctor === '_Tuple2') {
+				switch (_p13._0.ctor) {
 					case 'Selection':
-						return A3(_user$project$Components_TargetSelector$updateModel, props, _p12._0._0, model);
+						return A3(_user$project$Components_TargetSelector$updateModel, props, _p13._0._0, model);
+					case 'AssigneeMsg':
+						if (_p13._1.ctor === 'Assignee') {
+							return A2(
+								_user$project$Base$mapFst,
+								_user$project$Components_TargetSelector$Assignee,
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p13._0._0, _p13._1._0));
+						} else {
+							break _v6_3;
+						}
 					case 'CompletionMsg':
-						if (_p12._1.ctor === 'Completion') {
+						if (_p13._1.ctor === 'Completion') {
 							return A2(
 								_user$project$Base$mapFst,
 								_user$project$Components_TargetSelector$Completion,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p12._0._0, _p12._1._0));
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p13._0._0, _p13._1._0));
 						} else {
-							break _v6_2;
+							break _v6_3;
 						}
 					default:
-						break _v6_2;
+						break _v6_3;
 				}
 			} else {
-				break _v6_2;
+				break _v6_3;
 			}
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -13389,21 +13983,21 @@ var _user$project$Components_FieldRow$create = function (props) {
 	return _user$project$Base$create(
 		{
 			init: _user$project$Components_TargetSelector$create(
-				{customFields: props.customFields, records: props.records}),
+				{customFields: props.customFields, records: props.records, apiContext: props.apiContext}),
 			update: _user$project$Base$update,
 			subscriptions: _user$project$Base$subscriptions,
 			view: _user$project$Components_FieldRow$view(props),
 			get: _user$project$Base$get
 		});
 };
-var _user$project$Components_FieldRow$Props = F3(
-	function (a, b, c) {
-		return {customFields: a, records: b, header: c};
+var _user$project$Components_FieldRow$Props = F4(
+	function (a, b, c, d) {
+		return {customFields: a, records: b, header: c, apiContext: d};
 	});
 
-var _user$project$Components_FieldOptions$Props = F4(
-	function (a, b, c, d) {
-		return {customFields: a, numFields: b, headers: c, records: d};
+var _user$project$Components_FieldOptions$Props = F5(
+	function (a, b, c, d, e) {
+		return {customFields: a, numFields: b, headers: c, records: d, apiContext: e};
 	});
 var _user$project$Components_FieldOptions$ChildMsg = F2(
 	function (a, b) {
@@ -13424,7 +14018,8 @@ var _user$project$Components_FieldOptions$init = function (_p0) {
 				{
 					customFields: _p1.customFields,
 					records: _elm_lang$core$Set$fromList(_p3._1),
-					header: _p3._0
+					header: _p3._0,
+					apiContext: _p1.apiContext
 				});
 		},
 		A3(
@@ -13809,7 +14404,7 @@ var _user$project$Components_FieldMatcher$renderHeaders = function (headers) {
 };
 var _user$project$Components_FieldMatcher$Props = F5(
 	function (a, b, c, d, e) {
-		return {token: a, projectId: b, csvHeaders: c, csvRecords: d, customFields: e};
+		return {projectId: a, csvHeaders: b, csvRecords: c, customFields: d, apiContext: e};
 	});
 var _user$project$Components_FieldMatcher$Model = F2(
 	function (a, b) {
@@ -13841,7 +14436,8 @@ var _user$project$Components_FieldMatcher$init = function (_p1) {
 			customFields: _p2.customFields,
 			numFields: _elm_lang$core$List$length(_p4),
 			records: _p2.csvRecords,
-			headers: _p4
+			headers: _p4,
+			apiContext: _p2.apiContext
 		});
 	var fieldOptions = _p3._0;
 	var fieldOptionsCmd = _p3._1;
@@ -13888,7 +14484,7 @@ var _user$project$Components_FieldMatcher$update = F3(
 			default:
 				var _p9 = _user$project$Components_Uploader$create(
 					{
-						token: props.token,
+						token: props.apiContext.token,
 						projectId: props.projectId,
 						records: props.csvRecords,
 						fieldTargets: _user$project$Base$get(model.fieldOptions)
@@ -13989,263 +14585,6 @@ var _user$project$Components_FieldMatcher$create = function (props) {
 		});
 };
 
-var _user$project$Components_Typeahead$renderNoResultsOption = A2(
-	_elm_lang$html$Html$div,
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--noResults')
-		]),
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html$text('No Results')
-		]));
-var _user$project$Components_Typeahead$renderLoadingOption = A2(
-	_elm_lang$html$Html$div,
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--loading')
-		]),
-	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html$text('Loading...')
-		]));
-var _user$project$Components_Typeahead$isActive = function (model) {
-	var _p0 = model.options;
-	if (_p0.ctor === 'Unloaded') {
-		return false;
-	} else {
-		return model.inputFocused || model.optionsHovered;
-	}
-};
-var _user$project$Components_Typeahead$get = function (_) {
-	return _.selected;
-};
-var _user$project$Components_Typeahead$Props = function (a) {
-	return {fetcher: a};
-};
-var _user$project$Components_Typeahead$Model = F5(
-	function (a, b, c, d, e) {
-		return {options: a, fragment: b, selected: c, inputFocused: d, optionsHovered: e};
-	});
-var _user$project$Components_Typeahead$OptionsHovered = function (a) {
-	return {ctor: 'OptionsHovered', _0: a};
-};
-var _user$project$Components_Typeahead$InputFocus = function (a) {
-	return {ctor: 'InputFocus', _0: a};
-};
-var _user$project$Components_Typeahead$Selection = function (a) {
-	return {ctor: 'Selection', _0: a};
-};
-var _user$project$Components_Typeahead$renderUnselected = function (resource) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('Typeahead-option'),
-				_elm_lang$html$Html_Events$onClick(
-				_user$project$Components_Typeahead$Selection(resource))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(resource.name)
-			]));
-};
-var _user$project$Components_Typeahead$renderSelected = function (resource) {
-	return A2(
-		_elm_lang$html$Html$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--selected'),
-				_elm_lang$html$Html_Events$onClick(
-				_user$project$Components_Typeahead$Selection(resource))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(resource.name)
-			]));
-};
-var _user$project$Components_Typeahead$renderOption = F2(
-	function (selected, resource) {
-		var _p1 = selected;
-		if (_p1.ctor === 'Just') {
-			return _elm_lang$core$Native_Utils.eq(_p1._0, resource) ? _user$project$Components_Typeahead$renderSelected(resource) : _user$project$Components_Typeahead$renderUnselected(resource);
-		} else {
-			return _user$project$Components_Typeahead$renderUnselected(resource);
-		}
-	});
-var _user$project$Components_Typeahead$renderOptions = function (_p2) {
-	var _p3 = _p2;
-	var _p4 = _p3.options;
-	switch (_p4.ctor) {
-		case 'Loaded':
-			var _p5 = _p4._0;
-			return A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('Typeahead-options'),
-						_elm_lang$html$Html_Events$onMouseOver(
-						_user$project$Components_Typeahead$OptionsHovered(true)),
-						_elm_lang$html$Html_Events$onMouseOut(
-						_user$project$Components_Typeahead$OptionsHovered(false))
-					]),
-				(_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$List$length(_p5),
-					0) > 0) ? A2(
-					_elm_lang$core$List$map,
-					_user$project$Components_Typeahead$renderOption(_p3.selected),
-					_p5) : _elm_lang$core$Native_List.fromArray(
-					[_user$project$Components_Typeahead$renderNoResultsOption]));
-		case 'Loading':
-			return A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('Typeahead-options')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[_user$project$Components_Typeahead$renderLoadingOption]));
-		default:
-			return A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('Typeahead-options--empty')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[]));
-	}
-};
-var _user$project$Components_Typeahead$Input = function (a) {
-	return {ctor: 'Input', _0: a};
-};
-var _user$project$Components_Typeahead$view = F2(
-	function (_p6, model) {
-		var inputElem = A2(
-			_elm_lang$html$Html$input,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$class('Typeahead-input'),
-					_elm_lang$html$Html_Events$onInput(_user$project$Components_Typeahead$Input),
-					_elm_lang$html$Html_Events$onFocus(
-					_user$project$Components_Typeahead$InputFocus(true)),
-					_elm_lang$html$Html_Events$onBlur(
-					_user$project$Components_Typeahead$InputFocus(false)),
-					_elm_lang$html$Html_Attributes$value(model.fragment)
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[]));
-		var elems = _user$project$Components_Typeahead$isActive(model) ? _elm_lang$core$Native_List.fromArray(
-			[
-				inputElem,
-				_user$project$Components_Typeahead$renderOptions(model)
-			]) : _elm_lang$core$Native_List.fromArray(
-			[inputElem]);
-		return A2(
-			_elm_lang$html$Html$div,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$class('Typeahead')
-				]),
-			elems);
-	});
-var _user$project$Components_Typeahead$NewOptions = F2(
-	function (a, b) {
-		return {ctor: 'NewOptions', _0: a, _1: b};
-	});
-var _user$project$Components_Typeahead$Loaded = function (a) {
-	return {ctor: 'Loaded', _0: a};
-};
-var _user$project$Components_Typeahead$Loading = {ctor: 'Loading'};
-var _user$project$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
-var _user$project$Components_Typeahead$init = function (_p7) {
-	var model = {options: _user$project$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
-var _user$project$Components_Typeahead$update = F3(
-	function (_p8, msg, model) {
-		var _p9 = _p8;
-		var _p10 = msg;
-		switch (_p10.ctor) {
-			case 'NewOptions':
-				if (_p10._1.ctor === 'Ok') {
-					return (_elm_lang$core$Native_Utils.eq(_p10._0, model.fragment) && _user$project$Components_Typeahead$isActive(model)) ? {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								options: _user$project$Components_Typeahead$Loaded(_p10._1._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'Input':
-				var _p11 = _p10._0;
-				return _elm_lang$core$Native_Utils.eq(_p11, '') ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{options: _user$project$Components_Typeahead$Unloaded, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{options: _user$project$Components_Typeahead$Loading, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing}),
-					_1: A2(
-						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_Typeahead$NewOptions(_p11),
-						_p9.fetcher(_p11))
-				};
-			case 'Selection':
-				var _p12 = _p10._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							selected: _elm_lang$core$Maybe$Just(
-								A2(_elm_lang$core$Debug$log, 'Selection', _p12)),
-							fragment: _p12.name,
-							options: _user$project$Components_Typeahead$Unloaded
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'InputFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							inputFocused: A2(_elm_lang$core$Debug$log, 'Focused', _p10._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							optionsHovered: A2(_elm_lang$core$Debug$log, 'Hovered', _p10._0)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Components_Typeahead$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Typeahead$init(props),
-			update: _user$project$Components_Typeahead$update(props),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			view: _user$project$Components_Typeahead$view(props),
-			get: _user$project$Components_Typeahead$get
-		});
-};
-
 var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) {
 	var _p1 = _p0;
 	return A2(
@@ -14324,13 +14663,21 @@ var _user$project$Components_WorkspaceSelector$create = function (props) {
 };
 
 var _user$project$Components_Form$get = function (_p0) {
-	return A3(
-		_elm_lang$core$Basics$flip,
+	var _p1 = _p0;
+	var _p2 = _p1.workspaceSelector;
+	var workspace = _user$project$Base$get(_p2);
+	return A2(
 		_elm_lang$core$Maybe$andThen,
-		_user$project$Base$get,
-		function (_) {
-			return _.projectTypeahead;
-		}(_p0));
+		_user$project$Base$get(_p2),
+		function (workspace) {
+			return A2(
+				_elm_lang$core$Maybe$map,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					})(workspace),
+				A2(_elm_lang$core$Maybe$andThen, _p1.projectTypeahead, _user$project$Base$get));
+		});
 };
 var _user$project$Components_Form$Props = F2(
 	function (a, b) {
@@ -14344,13 +14691,13 @@ var _user$project$Components_Form$ProjectTypeaheadMsg = function (a) {
 	return {ctor: 'ProjectTypeaheadMsg', _0: a};
 };
 var _user$project$Components_Form$updateProject = F3(
-	function (_p1, msg, model) {
-		var _p2 = _p1;
-		var _p3 = model.projectTypeahead;
-		if (_p3.ctor === 'Just') {
-			var _p4 = A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectTypeaheadMsg, msg, _p3._0);
-			var typeahead$ = _p4._0;
-			var cmd = _p4._1;
+	function (_p3, msg, model) {
+		var _p4 = _p3;
+		var _p5 = model.projectTypeahead;
+		if (_p5.ctor === 'Just') {
+			var _p6 = A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectTypeaheadMsg, msg, _p5._0);
+			var typeahead$ = _p6._0;
+			var cmd = _p6._1;
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -14367,18 +14714,18 @@ var _user$project$Components_Form$updateProject = F3(
 var _user$project$Components_Form$WorkspaceSelectorMsg = function (a) {
 	return {ctor: 'WorkspaceSelectorMsg', _0: a};
 };
-var _user$project$Components_Form$init = function (_p5) {
-	var _p6 = _p5;
-	var _p7 = _user$project$Components_WorkspaceSelector$create(
+var _user$project$Components_Form$init = function (_p7) {
+	var _p8 = _p7;
+	var _p9 = _user$project$Components_WorkspaceSelector$create(
 		{
 			workspaces: A2(
 				_elm_lang$core$Maybe$withDefault,
 				_elm_lang$core$Native_List.fromArray(
 					[]),
-				_p6.user.workspaces)
+				_p8.user.workspaces)
 		});
-	var wss = _p7._0;
-	var wsscmd = _p7._1;
+	var wss = _p9._0;
+	var wsscmd = _p9._1;
 	var model = {workspaceSelector: wss, projectTypeahead: _elm_lang$core$Maybe$Nothing};
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
@@ -14388,14 +14735,14 @@ var _user$project$Components_Form$init = function (_p5) {
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
 var _user$project$Components_Form$updateWorkspace = F3(
-	function (_p8, msg, model) {
-		var _p9 = _p8;
-		var _p10 = A3(_user$project$Base$updateWith, _user$project$Components_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
-		var wss$ = _p10._0;
-		var wsscmd = _p10._1;
-		var _p11 = function () {
-			var _p12 = _user$project$Base$get(wss$);
-			if (_p12.ctor === 'Just') {
+	function (_p10, msg, model) {
+		var _p11 = _p10;
+		var _p12 = A3(_user$project$Base$updateWith, _user$project$Components_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
+		var wss$ = _p12._0;
+		var wsscmd = _p12._1;
+		var _p13 = function () {
+			var _p14 = _user$project$Base$get(wss$);
+			if (_p14.ctor === 'Just') {
 				return A2(
 					_user$project$Base$mapFst,
 					_elm_lang$core$Maybe$Just,
@@ -14405,15 +14752,15 @@ var _user$project$Components_Form$updateWorkspace = F3(
 						_user$project$Components_Typeahead$create(
 							{
 								fetcher: function (fragment) {
-									return A3(_user$project$Asana_Api$projectTypeahead, _p12._0, fragment, _p9.token);
+									return A3(_user$project$Asana_Api$projectTypeahead, _p14._0, fragment, _p11.token);
 								}
 							})));
 			} else {
 				return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		}();
-		var typeahead = _p11._0;
-		var typeaheadCmd = _p11._1;
+		var typeahead = _p13._0;
+		var typeaheadCmd = _p13._1;
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[wsscmd, typeaheadCmd]));
@@ -14427,19 +14774,19 @@ var _user$project$Components_Form$updateWorkspace = F3(
 	});
 var _user$project$Components_Form$update = F3(
 	function (props, msg, model) {
-		var _p13 = msg;
-		if (_p13.ctor === 'WorkspaceSelectorMsg') {
-			return A3(_user$project$Components_Form$updateWorkspace, props, _p13._0, model);
+		var _p15 = msg;
+		if (_p15.ctor === 'WorkspaceSelectorMsg') {
+			return A3(_user$project$Components_Form$updateWorkspace, props, _p15._0, model);
 		} else {
-			return A3(_user$project$Components_Form$updateProject, props, _p13._0, model);
+			return A3(_user$project$Components_Form$updateProject, props, _p15._0, model);
 		}
 	});
 var _user$project$Components_Form$view = F2(
-	function (_p14, model) {
+	function (_p16, model) {
 		var projects = function () {
-			var _p15 = model.projectTypeahead;
-			if (_p15.ctor === 'Just') {
-				return A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectTypeaheadMsg, _p15._0);
+			var _p17 = model.projectTypeahead;
+			if (_p17.ctor === 'Just') {
+				return A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectTypeaheadMsg, _p17._0);
 			} else {
 				return A2(
 					_elm_lang$html$Html$div,
@@ -14518,16 +14865,6 @@ var _user$project$Components_Form$create = function (props) {
 		});
 };
 
-var _user$project$Components_Asana$getSelectedProject = function (_p0) {
-	return A3(
-		_elm_lang$core$Basics$flip,
-		_elm_lang$core$Maybe$andThen,
-		_elm_lang$core$Basics$identity,
-		_user$project$Base$get(
-			function (_) {
-				return _.form;
-			}(_p0)));
-};
 var _user$project$Components_Asana$Props = function (a) {
 	return {token: a};
 };
@@ -14539,62 +14876,71 @@ var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
 	return {ctor: 'FieldMatcherMsg', _0: a};
 };
 var _user$project$Components_Asana$updateMatcher = F2(
-	function (_p2, _p1) {
-		var _p3 = _p2;
-		var _p10 = _p3.token;
-		var _p4 = _p1;
-		var _p9 = _p4._0;
-		var _p5 = {
+	function (_p1, _p0) {
+		var _p2 = _p1;
+		var _p9 = _p2.token;
+		var _p3 = _p0;
+		var _p8 = _p3._0;
+		var _p4 = {
 			ctor: '_Tuple2',
-			_0: _user$project$Components_Asana$getSelectedProject(_p9),
-			_1: _user$project$Base$get(_p9.csv)
+			_0: A2(
+				_elm_lang$core$Maybe$andThen,
+				_user$project$Base$get(_p8.form),
+				_elm_lang$core$Basics$identity),
+			_1: _user$project$Base$get(_p8.csv)
 		};
-		if ((((_p5.ctor === '_Tuple2') && (_p5._0.ctor === 'Just')) && (_p5._1.ctor === 'Just')) && (_p5._1._0.ctor === '_Tuple2')) {
-			var _p8 = _p5._1._0._0;
-			var _p6 = A2(
+		if (((((_p4.ctor === '_Tuple2') && (_p4._0.ctor === 'Just')) && (_p4._0._0.ctor === '_Tuple2')) && (_p4._1.ctor === 'Just')) && (_p4._1._0.ctor === '_Tuple2')) {
+			var _p7 = _p4._1._0._0;
+			var _p5 = A2(
 				_user$project$Base$mapCmd,
 				_user$project$Components_Asana$FieldMatcherMsg,
 				_user$project$Components_ApiResource$create(
 					{
 						child: function (project) {
-							var numFields = _elm_lang$core$List$length(_p8);
+							var numFields = _elm_lang$core$List$length(_p7);
 							var customFieldIds = A2(
 								_elm_lang$core$List$map,
-								function (_p7) {
+								function (_p6) {
 									return function (_) {
 										return _.id;
 									}(
 										function (_) {
 											return _.customField;
-										}(_p7));
+										}(_p6));
 								},
 								project.customFieldSettings);
 							return _user$project$Components_ApiParallelResource$create(
 								{
 									child: function (customFieldInfos) {
 										return _user$project$Components_FieldMatcher$create(
-											{token: _p10, projectId: project.id, csvHeaders: _p8, csvRecords: _p5._1._0._1, customFields: customFieldInfos});
+											{
+												projectId: project.id,
+												csvHeaders: _p7,
+												csvRecords: _p4._1._0._1,
+												customFields: customFieldInfos,
+												apiContext: {token: _p9, workspaceId: _p4._0._0._0}
+											});
 									},
 									fetches: A2(
 										_elm_lang$core$List$map,
-										A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p10),
+										A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
 										customFieldIds),
 									unloadedView: _user$project$CommonViews$loadingIndicator,
 									loadingView: _user$project$CommonViews$loadingIndicator,
 									errorView: _user$project$CommonViews$errorView
 								});
 						},
-						fetch: A2(_user$project$Asana_Api$project, _p5._0._0.id, _p10),
+						fetch: A2(_user$project$Asana_Api$project, _p4._0._0._1.id, _p9),
 						unloadedView: _user$project$CommonViews$loadingIndicator,
 						loadingView: _user$project$CommonViews$loadingIndicator,
 						errorView: _user$project$CommonViews$errorView
 					}));
-			var matcher = _p6._0;
-			var matcherCmd = _p6._1;
+			var matcher = _p5._0;
+			var matcherCmd = _p5._1;
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p9,
+					_p8,
 					{
 						fieldMatcher: _elm_lang$core$Maybe$Just(matcher)
 					}),
@@ -14604,17 +14950,17 @@ var _user$project$Components_Asana$updateMatcher = F2(
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p9,
+					_p8,
 					{fieldMatcher: _elm_lang$core$Maybe$Nothing}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		}
 	});
 var _user$project$Components_Asana$viewMatcher = F2(
-	function (props, _p11) {
-		var _p12 = _p11;
-		var _p13 = _p12.fieldMatcher;
-		if (_p13.ctor === 'Just') {
+	function (props, _p10) {
+		var _p11 = _p10;
+		var _p12 = _p11.fieldMatcher;
+		if (_p12.ctor === 'Just') {
 			return A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -14626,7 +14972,7 @@ var _user$project$Components_Asana$viewMatcher = F2(
 						A2(
 						_elm_lang$html$Html_App$map,
 						_user$project$Components_Asana$FieldMatcherMsg,
-						_user$project$Base$view(_p13._0))
+						_user$project$Base$view(_p12._0))
 					]));
 		} else {
 			return A2(
@@ -14645,32 +14991,32 @@ var _user$project$Components_Asana$CsvMsg = function (a) {
 var _user$project$Components_Asana$FormMsg = function (a) {
 	return {ctor: 'FormMsg', _0: a};
 };
-var _user$project$Components_Asana$init = function (_p14) {
-	var _p15 = _p14;
-	var _p18 = _p15.token;
-	var _p16 = A2(
+var _user$project$Components_Asana$init = function (_p13) {
+	var _p14 = _p13;
+	var _p17 = _p14.token;
+	var _p15 = A2(
 		_user$project$Base$mapCmd,
 		_user$project$Components_Asana$CsvMsg,
 		_user$project$Components_Csv$create(
 			{}));
-	var csv = _p16._0;
-	var csvCmd = _p16._1;
-	var _p17 = A2(
+	var csv = _p15._0;
+	var csvCmd = _p15._1;
+	var _p16 = A2(
 		_user$project$Base$mapCmd,
 		_user$project$Components_Asana$FormMsg,
 		_user$project$Components_ApiResource$create(
 			{
 				child: function (user) {
 					return _user$project$Components_Form$create(
-						{token: _p18, user: user});
+						{token: _p17, user: user});
 				},
-				fetch: _user$project$Asana_Api$me(_p18),
+				fetch: _user$project$Asana_Api$me(_p17),
 				unloadedView: _user$project$CommonViews$loadingIndicator,
 				loadingView: _user$project$CommonViews$loadingIndicator,
 				errorView: _user$project$CommonViews$errorView
 			}));
-	var form = _p17._0;
-	var formCmd = _p17._1;
+	var form = _p16._0;
+	var formCmd = _p16._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		_elm_lang$core$Native_List.fromArray(
 			[formCmd, csvCmd]));
@@ -14681,40 +15027,40 @@ var _user$project$Components_Asana$init = function (_p14) {
 	};
 };
 var _user$project$Components_Asana$subscriptions = F2(
-	function (_p20, _p19) {
-		var _p21 = _p19;
+	function (_p19, _p18) {
+		var _p20 = _p18;
 		var csvSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$CsvMsg,
-			_user$project$Base$subscriptions(_p21.csv));
+			_user$project$Base$subscriptions(_p20.csv));
 		var formSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
 			_user$project$Components_Asana$FormMsg,
-			_user$project$Base$subscriptions(_p21.form));
+			_user$project$Base$subscriptions(_p20.form));
 		return _elm_lang$core$Platform_Sub$batch(
 			_elm_lang$core$Native_List.fromArray(
 				[formSubs, csvSubs]));
 	});
 var _user$project$Components_Asana$processMessage = F3(
 	function (props, msg, model) {
-		var _p22 = msg;
-		switch (_p22.ctor) {
+		var _p21 = msg;
+		switch (_p21.ctor) {
 			case 'FormMsg':
-				var project = _user$project$Components_Asana$getSelectedProject(model);
-				var _p23 = A2(_user$project$Base$update, _p22._0, model.form);
-				var form$ = _p23._0;
-				var formCmd = _p23._1;
+				var project = _user$project$Base$get(model.form);
+				var _p22 = A2(_user$project$Base$update, _p21._0, model.form);
+				var form$ = _p22._0;
+				var formCmd = _p22._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{form: form$});
-				var project$ = _user$project$Components_Asana$getSelectedProject(model$);
+				var project$ = _user$project$Base$get(model$.form);
 				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FormMsg, formCmd);
 				return (!_elm_lang$core$Native_Utils.eq(project, project$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: cmd}) : {ctor: '_Tuple2', _0: model$, _1: cmd};
 			case 'CsvMsg':
-				var _p24 = A2(
+				var _p23 = A2(
 					_elm_lang$core$Maybe$withDefault,
 					{
 						ctor: '_Tuple2',
@@ -14724,14 +15070,14 @@ var _user$project$Components_Asana$processMessage = F3(
 							[])
 					},
 					_user$project$Base$get(model.csv));
-				var headers = _p24._0;
-				var _p25 = A3(_user$project$Base$updateWith, _user$project$Components_Asana$CsvMsg, _p22._0, model.csv);
-				var csv$ = _p25._0;
-				var csvCmd = _p25._1;
+				var headers = _p23._0;
+				var _p24 = A3(_user$project$Base$updateWith, _user$project$Components_Asana$CsvMsg, _p21._0, model.csv);
+				var csv$ = _p24._0;
+				var csvCmd = _p24._1;
 				var model$ = _elm_lang$core$Native_Utils.update(
 					model,
 					{csv: csv$});
-				var _p26 = A2(
+				var _p25 = A2(
 					_elm_lang$core$Maybe$withDefault,
 					{
 						ctor: '_Tuple2',
@@ -14741,17 +15087,17 @@ var _user$project$Components_Asana$processMessage = F3(
 							[])
 					},
 					_user$project$Base$get(csv$));
-				var headers$ = _p26._0;
+				var headers$ = _p25._0;
 				return (!_elm_lang$core$Native_Utils.eq(headers, headers$)) ? A2(
 					_user$project$Components_Asana$updateMatcher,
 					props,
 					{ctor: '_Tuple2', _0: model$, _1: csvCmd}) : {ctor: '_Tuple2', _0: model$, _1: csvCmd};
 			default:
-				var _p27 = model.fieldMatcher;
-				if (_p27.ctor === 'Just') {
-					var _p28 = A2(_user$project$Base$update, _p22._0, _p27._0);
-					var matcher$ = _p28._0;
-					var matcherCmd = _p28._1;
+				var _p26 = model.fieldMatcher;
+				if (_p26.ctor === 'Just') {
+					var _p27 = A2(_user$project$Base$update, _p21._0, _p26._0);
+					var matcher$ = _p27._0;
+					var matcherCmd = _p27._1;
 					var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FieldMatcherMsg, matcherCmd);
 					return {
 						ctor: '_Tuple2',

@@ -3,7 +3,6 @@ module Components.Configs.UserConfig exposing (Props, Msg, Data, Instance, creat
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
-import Json.Decode as Json
 
 import Base
 import Asana.Model as Asana
@@ -14,8 +13,7 @@ import Components.Typeahead as Typeahead
 
 type alias Props =
     { selectedUser : Maybe Asana.User
-    , token : Api.Token
-    , workspaceId : Asana.WorkspaceId
+    , apiContext : Api.Context
     }
 
 type Msg
@@ -48,13 +46,13 @@ init props =
     makeModel props
 
 makeModel : Props -> (Model, Cmd Msg)
-makeModel { token, workspaceId, selectedUser } =
+makeModel { selectedUser, apiContext } =
     case selectedUser of
         Just user ->
             UserInfo.create { user = user }
                 |> Base.mapFst (Selected user)
         Nothing ->
-            Typeahead.create { fetcher = flip (Api.userTypeahead workspaceId) token }
+            Typeahead.create { fetcher = flip (Api.userTypeahead apiContext.workspaceId) apiContext.token }
                 |> Base.pairMap Unselected (Cmd.map TypeaheadMsg)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
@@ -65,7 +63,14 @@ update props msg model =
         TypeaheadMsg msg' ->
             case model of
                 Unselected ta ->
-                    Base.updateWith TypeaheadMsg msg' ta |> Base.mapFst Unselected
+                    let
+                        (ta', taCmd) = Base.updateWith TypeaheadMsg msg' ta
+                    in
+                        case Base.get ta' of
+                            Just user ->
+                                makeModel { props | selectedUser = Just user }
+                            Nothing ->
+                                (Unselected ta', taCmd)
                 _ ->
                     (model, Cmd.none)
 
@@ -74,9 +79,11 @@ view props model =
     div [ class "UserConfig" ]
         [ case model of
             Unselected typeahead ->
-                Base.viewWith TypeaheadMsg typeahead
+                div [ class "UserConfig--unselected" ]
+                    [ Base.viewWith TypeaheadMsg typeahead ]
             Selected _ userInfo ->
-                Base.view userInfo
+                div [ class "UserConfig--selected" ]
+                    [ Base.view userInfo, a [ Events.onClick (Selection Nothing) ] [ CommonViews.closeIcon ] ]
         ]
 
 subscriptions : Model -> Sub Msg

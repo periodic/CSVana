@@ -7,6 +7,7 @@ import Set exposing (Set)
 
 import Base
 import Util
+import Asana.Api as Api
 import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
 import Components.FieldRow as FieldRow
@@ -16,6 +17,7 @@ type alias Props =
     , numFields : Int
     , headers : List (String)
     , records : List (List String)
+    , apiContext : Api.Context
     }
 
 type Msg
@@ -41,7 +43,7 @@ type alias Model =
     Array (FieldRow.Instance)
 
 init : Props -> (Model, Cmd Msg)
-init { customFields, records, headers } =
+init { customFields, records, headers, apiContext } =
     let
         columns = Util.transpose (Debug.log "Row-major: " records) |> Debug.log "Column-major: "
         fields = List.map2 (,) headers columns
@@ -50,6 +52,7 @@ init { customFields, records, headers } =
                     { customFields = customFields
                     , records = Set.fromList column
                     , header = header
+                    , apiContext = apiContext
                     })
         instances = List.map fst fields |> Array.fromList
         cmds = List.indexedMap (\index inst -> snd inst |> Cmd.map (ChildMsg index)) fields |> Cmd.batch

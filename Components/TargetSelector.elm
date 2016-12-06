@@ -7,22 +7,26 @@ import Json.Decode as Json
 import Set exposing (Set)
 import String
 
+import Asana.Api as Api
 import Asana.Model as Asana
 import Asana.Target as Target exposing (Target)
 import Base
 import CommonViews
 import Components.Configs.CompletedConfig as CompletedConfig
 import Components.Configs.EnumConfig as EnumConfig
+import Components.Configs.UserConfig as UserConfig
 import Components.TargetConfig as TargetConfig
 import Util exposing (..)
 
 type alias Props =
     { customFields : List Asana.CustomFieldInfo
     , records : Set String
+    , apiContext : Api.Context
     }
 
 type Msg
     = Selection String
+    | AssigneeMsg (TargetConfig.Msg UserConfig.Msg)
     | CompletionMsg (TargetConfig.Msg CompletedConfig.Msg)
     | EnumMsg (TargetConfig.Msg EnumConfig.Msg)
 
@@ -46,6 +50,7 @@ type Model
     = None
     | Name
     | Description
+    | Assignee (TargetConfig.Instance Asana.UserId UserConfig.Msg)
     | Completion (TargetConfig.Instance CompletedConfig.Data CompletedConfig.Msg)
     | DueDate
     | DueDateWithTime
@@ -65,6 +70,8 @@ get model =
             Just Target.Name
         Description ->
             Just Target.Description
+        Assignee inst ->
+            Just <| Target.Assignee <| Base.get inst
         Completion inst ->
             Just <| Target.Completion <| Base.get inst
         DueDate ->
@@ -81,6 +88,8 @@ update props msg model =
     case (msg, model) of
         (Selection str, _) ->
             updateModel props str model
+        (AssigneeMsg msg', Assignee inst) ->
+            Base.updateWith AssigneeMsg msg' inst |> Base.mapFst Assignee
         (CompletionMsg msg', Completion inst) ->
             Base.updateWith CompletionMsg msg' inst |> Base.mapFst Completion
         _ ->
@@ -95,6 +104,8 @@ view props model =
             viewSimpleTarget "Name"
         Description ->
             viewSimpleTarget "Description"
+        Assignee config ->
+            viewWithConfig "Assignee" (Base.viewWith AssigneeMsg config)
         Completion config ->
             viewWithConfig "Completion" (Base.viewWith CompletionMsg config)
         DueDate ->
@@ -149,48 +160,54 @@ targetStrings customFields =
     , "Name"
     , "Description"
     , "Completion"
+    , "Assignee"
     , "Due Date"
     , "Due Date With Time"
     ] ++ List.map customFieldName customFields
 
 updateModel : Props -> String -> Model -> (Model, Cmd Msg)
-updateModel {records, customFields} str model =
-    case str of
-        "Name" ->
-            (Name, Cmd.none)
-        "Description" ->
-            (Description, Cmd.none)
-        "Completion" ->
-            TargetConfig.create
-                -- TODO: This mapping should go in with the decoders.
-                { defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
-                , dataView = \mValue -> 
-                    CompletedConfig.create { value = Maybe.withDefault False mValue }
-                    -- Transform it to a Just Bool instance from a Bool instance.
-                    |> Base.mapFst (Base.mapOutput Just)
-                , records = records
-                }
-            |> Base.pairMap Completion (Cmd.map CompletionMsg)
-        "Due Date" ->
-            (DueDate, Cmd.none)
-        "Due Date With Time" ->
-            (DueDateWithTime, Cmd.none)
-        str ->
-            case matchCustomFieldName str customFields of
-                (Just (Asana.CustomEnumFieldInfo id name options)) ->
-                    Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
-                        <| TargetConfig.create
-                            -- TODO: This mapping should go in with the decoders.
-                            { defaultMap = \str -> find (.name >> (==) str) options |> Maybe.map .id
-                            , dataView = \value -> 
-                                EnumConfig.create
-                                    { selectedId = value
-                                    , enumOptions = options
-                                    }
-                            , records = records
-                            }
-                other ->
-                    Maybe.map CustomField other |> Maybe.withDefault None |> flip (,) Cmd.none
+updateModel props str model =
+    let
+        {records, customFields } = props
+    in
+        case str of
+            "Name" ->
+                (Name, Cmd.none)
+            "Description" ->
+                (Description, Cmd.none)
+            "Assignee" ->
+                assigneeComponent props
+            "Completion" ->
+                Base.pairMap Completion (Cmd.map CompletionMsg)
+                <| TargetConfig.create
+                    -- TODO: This mapping should go in with the decoders.
+                    { defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
+                    , dataView = \mValue -> 
+                        CompletedConfig.create { value = Maybe.withDefault False mValue }
+                        -- Transform it to a Just Bool instance from a Bool instance.
+                        |> Base.mapFst (Base.mapOutput Just)
+                    , records = records
+                    }
+            "Due Date" ->
+                (DueDate, Cmd.none)
+            "Due Date With Time" ->
+                (DueDateWithTime, Cmd.none)
+            str ->
+                case matchCustomFieldName str customFields of
+                    (Just (Asana.CustomEnumFieldInfo id name options)) ->
+                        Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
+                            <| TargetConfig.create
+                                -- TODO: This mapping should go in with the decoders.
+                                { defaultMap = \str -> find (.name >> (==) str) options |> Maybe.map .id
+                                , dataView = \value -> 
+                                    EnumConfig.create
+                                        { selectedId = value
+                                        , enumOptions = options
+                                        }
+                                , records = records
+                                }
+                    other ->
+                        Maybe.map CustomField other |> Maybe.withDefault None |> flip (,) Cmd.none
 
 matchCustomFieldName : String -> List Asana.CustomFieldInfo -> Maybe Asana.CustomFieldInfo
 matchCustomFieldName str =
@@ -217,3 +234,26 @@ withUnselect inner =
         [ inner
         , a [ class "TargetSelector-unselectButton", Events.onClick (Selection "") ] [ CommonViews.closeIcon ]
         ]
+
+assigneeComponent : Props -> (Model, Cmd Msg)
+assigneeComponent { records, apiContext } =
+    let
+        alwaysNothing : String -> Maybe Asana.UserId
+        alwaysNothing = always Nothing
+
+        userConfig : Maybe Asana.User -> (UserConfig.Instance, Cmd UserConfig.Msg)
+        userConfig mValue =
+                    UserConfig.create
+                        { selectedUser = mValue
+                        , apiContext = apiContext
+                        }
+
+        (target, targetMsg) =
+            TargetConfig.create
+                -- TODO: How to load the default map dynamically...
+                { defaultMap = alwaysNothing
+                , dataView = always (userConfig Nothing)
+                , records = records
+                }
+    in
+       Base.pairMap Assignee (Cmd.map AssigneeMsg) (target, targetMsg)

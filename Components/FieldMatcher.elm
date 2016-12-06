@@ -12,11 +12,11 @@ import Components.FieldOptions as FieldOptions
 import Components.Uploader as Uploader
 
 type alias Props =
-    { token : Api.Token
-    , projectId : Asana.ProjectId
+    { projectId : Asana.ProjectId
     , csvHeaders : List String
     , csvRecords : List (List String)
     , customFields : List Asana.CustomFieldInfo
+    , apiContext : Api.Context
     }
 
 type Msg
@@ -46,7 +46,7 @@ type alias Model =
     }
 
 init : Props -> (Model, Cmd Msg)
-init {csvHeaders, csvRecords, customFields} =
+init {csvHeaders, csvRecords, customFields, apiContext} =
     let
         (fieldOptions, fieldOptionsCmd) =
             FieldOptions.create
@@ -54,6 +54,7 @@ init {csvHeaders, csvRecords, customFields} =
                 , numFields = List.length csvHeaders
                 , records = csvRecords
                 , headers = csvHeaders
+                , apiContext = apiContext
                 }
         model =
             { fieldOptions = fieldOptions
@@ -82,7 +83,7 @@ update props msg model =
         StartUpload ->
             let
                 (uploader, uploaderCmd) = Uploader.create
-                    { token = props.token
+                    { token = props.apiContext.token
                     , projectId = props.projectId
                     , records = props.csvRecords
                     , fieldTargets = Base.get model.fieldOptions

@@ -11,6 +11,7 @@ import Asana.Model as Asana
 type Target
     = Name
     | Description
+    | Assignee (Dict String Asana.UserId)
     | Completion (Dict String Bool)
     | DueDate
     | DueTime
@@ -23,6 +24,7 @@ emptyTask : Asana.ProjectId -> Asana.NewTask
 emptyTask projectId =
     { name = Nothing
     , description = Nothing
+    , assignee = Nothing
     , completed = False
     , dueOn = Nothing
     , dueAt = Nothing
@@ -37,6 +39,12 @@ updateTask target value task =
             Ok { task | name = Just value }
         Description ->
             Ok { task | description = Just value }
+        Assignee mappings ->
+            case Dict.get value mappings of
+                Just val ->
+                    Ok { task | assignee = Just val }
+                Nothing ->
+                    task
         Completion mappings ->
             case Dict.get value mappings of
                 Just val ->

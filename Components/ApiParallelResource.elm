@@ -52,12 +52,17 @@ get resource =
             Nothing
 
 init : Props data model msg -> (Model data model msg, Cmd (Msg data msg))
-init { fetches } =
-    let
-        model = Loading <| Array.repeat (List.length fetches) Nothing
-        cmd = Cmd.batch <| List.indexedMap (Cmd.map << ApiMsg) fetches
-    in
-        (model , cmd)
+init { fetches, child } =
+    if List.isEmpty fetches
+        -- Automatically load if there is nothing to fetch.
+        -- TODO: Combine this with the logic in update.
+        then Base.pairMap Loaded (Cmd.map ChildMsg) <| child []
+        else
+            let
+                model = Loading <| Array.repeat (List.length fetches) Nothing
+                cmd = Cmd.batch <| List.indexedMap (Cmd.map << ApiMsg) fetches
+            in
+                (model , cmd)
 
 -- Note, the type of the resource currently doesn't matter because it gets replaced...
 update : Props data model msg -> Msg data msg -> Model data model msg -> (Model data model msg, Cmd (Msg data msg))

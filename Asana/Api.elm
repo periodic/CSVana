@@ -1,4 +1,4 @@
-module Asana.Api exposing (Token, ApiResult, me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
+module Asana.Api exposing (Token, ApiResult, ApiRequest, Context, me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list, oneOf)
@@ -16,6 +16,11 @@ type alias Token = String
 type alias ApiResult a = (Result Http.Error a)
 type alias Query = List (String, String)
 type alias ApiRequest a = Token -> Cmd (ApiResult a)
+
+type alias Context =
+    { token : Token
+    , workspaceId : Asana.WorkspaceId
+    }
 
 apiGetRequest : String -> Query -> Decoder a -> ApiRequest a
 apiGetRequest path query decoder token =

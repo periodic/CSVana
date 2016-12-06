@@ -18,7 +18,7 @@ type Msg
     = WorkspaceSelectorMsg WorkspaceSelector.Msg
     | ProjectTypeaheadMsg (Typeahead.Msg Asana.ProjectResource)
 
-type alias Data = Maybe Asana.ProjectResource
+type alias Data = Maybe (Asana.WorkspaceId, Asana.ProjectResource)
 type alias Instance = Base.Instance Data Msg
 
 create : Props -> (Instance, Cmd Msg)
@@ -41,9 +41,13 @@ type alias Model =
     }
 
 
-get : Model -> Maybe Asana.ProjectResource
-get =
-    .projectTypeahead >> flip Maybe.andThen Base.get
+get : Model -> Maybe (Asana.WorkspaceId, Asana.ProjectResource)
+get { workspaceSelector, projectTypeahead } =
+    let
+        workspace = Base.get workspaceSelector
+    in
+        Base.get workspaceSelector
+            `Maybe.andThen` (\workspace -> projectTypeahead `Maybe.andThen` Base.get |> Maybe.map ((,) workspace))
 
 init : Props -> (Model, Cmd Msg)
 init {token, user} =

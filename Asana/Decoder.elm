@@ -1,12 +1,18 @@
 module Asana.Decoder exposing (..)
 
-import Json.Decode exposing (..)
-import Result
-import Maybe
 import Date
+import Http
+import Json.Decode exposing (..)
+import Maybe
+import Result
 import String
 
 import Asana.Model as Asana
+
+type DecodeResult a
+    = NoResult
+    | Value a
+    | WorkRequired (Cmd (Maybe a))
 
 dateDecoder : Decoder Date.Date
 dateDecoder =
