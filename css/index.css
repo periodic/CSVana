@@ -204,11 +204,11 @@ h3 {
 
 .TargetConfig-recordViews {
     padding: 15px;
-    justify-content: space-between;
-
 }
 
 .TargetConfig-recordView {
-    display: flex
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
 }
 

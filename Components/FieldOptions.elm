@@ -45,7 +45,7 @@ type alias Model =
 init : Props -> (Model, Cmd Msg)
 init { customFields, records, headers, apiContext } =
     let
-        columns = Util.transpose (Debug.log "Row-major: " records) |> Debug.log "Column-major: "
+        columns = Util.transpose records
         fields = List.map2 (,) headers columns
             |> List.map (\(header, column) ->
                 FieldRow.create

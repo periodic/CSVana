@@ -58,7 +58,7 @@ view props inst =
 sampleString : List String -> String
 sampleString samples =
     let
-        shownSamples = List.take 3 samples |> String.join ", "
+        shownSamples =  List.filter (String.isEmpty >> not) samples |> List.take 3 |> String.join ", "
     in
         if List.length samples > 3
             then shownSamples ++ "…"

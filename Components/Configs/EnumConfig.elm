@@ -7,16 +7,17 @@ import Json.Decode as Json
 
 import Base
 import Asana.Model as Asana
+import Util
 
 type alias Props =
-    { selectedId : Maybe Asana.CustomFieldEnumValueId
+    { selectedId : Maybe Asana.CustomFieldEnumValue
     , enumOptions : List Asana.CustomFieldEnumValue
     }
 
 type Msg
     = NewValue (Maybe Asana.CustomFieldEnumValueId)
 
-type alias Data = Maybe Asana.CustomFieldEnumValueId
+type alias Data = Maybe Asana.CustomFieldEnumValue
 
 type alias Instance = Base.Instance Data Msg
 
@@ -24,7 +25,7 @@ create : Props -> (Instance, Cmd Msg)
 create props =
     Base.create
         { init = init props
-        , update = update
+        , update = update props
         , subscriptions = always Sub.none
         , view = view props
         , get = identity
@@ -34,17 +35,17 @@ create props =
 -- Private
 
 type alias Model =
-     Maybe Asana.CustomFieldEnumValueId
+     Maybe Asana.CustomFieldEnumValue
 
 init : Props -> (Model, Cmd Msg)
 init { selectedId } =
     (selectedId, Cmd.none)
 
-update : Msg -> Model -> (Model, Cmd Msg)
-update msg model =
+update : Props -> Msg -> Model -> (Model, Cmd Msg)
+update { enumOptions } msg model =
     case msg of
         NewValue selectedId ->
-            (selectedId, Cmd.none)
+            (selectedId `Maybe.andThen` \id -> Util.find (.id >> (==) id) enumOptions, Cmd.none)
 
 view : Props -> Model -> Html Msg
 view props val =
@@ -59,13 +60,13 @@ onChange =
         |> Json.map (\id -> if id == "" then Nothing else Just id)
         |> Json.map NewValue
 
-emptyOption : Maybe Asana.CustomFieldEnumValueId -> Html msg
-emptyOption selectedId =
-    option [ value "", selected (selectedId == Nothing) ]
+emptyOption : Maybe Asana.CustomFieldEnumValue -> Html msg
+emptyOption selectedValue =
+    option [ value "", selected (selectedValue == Nothing) ]
         [ text "" ]
 
-enumOption : Maybe Asana.CustomFieldEnumValueId -> Asana.CustomFieldEnumValue -> Html msg
-enumOption selectedId enumValue =
-    option [ value enumValue.id, selected (Just enumValue.id == selectedId) ]
+enumOption : Maybe Asana.CustomFieldEnumValue -> Asana.CustomFieldEnumValue -> Html msg
+enumOption selectedValue enumValue =
+    option [ value enumValue.id, selected (Just enumValue == selectedValue) ]
         [ text enumValue.name ]
 

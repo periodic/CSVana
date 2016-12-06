@@ -77,11 +77,11 @@ update { fetcher } msg model =
                else ({ model | options = Loading, fragment = fragment, selected = Nothing },
                     Cmd.map (NewOptions fragment) <| fetcher fragment)
         Selection val ->
-            ({ model | selected = Just (Debug.log "Selection" val), fragment = val.name, options = Unloaded }, Cmd.none)
+            ({ model | selected = Just val, fragment = val.name, options = Unloaded }, Cmd.none)
         InputFocus val ->
-            ({ model | inputFocused = (Debug.log "Focused" val) }, Cmd.none)
+            ({ model | inputFocused = val }, Cmd.none)
         OptionsHovered val ->
-            ({ model | optionsHovered = (Debug.log "Hovered" val) }, Cmd.none)
+            ({ model | optionsHovered = val }, Cmd.none)
 
 view : Props (Named a) -> Model (Named a) -> Html (Msg (Named a))
 view _ model =

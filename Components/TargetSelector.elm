@@ -58,7 +58,7 @@ type Model
         Asana.CustomFieldId
         String
         (List Asana.CustomFieldEnumValue)
-        (TargetConfig.Instance Asana.CustomFieldEnumValueId EnumConfig.Msg)
+        (TargetConfig.Instance Asana.CustomFieldEnumValue EnumConfig.Msg)
     | CustomField Asana.CustomFieldInfo
 
 get : Model -> Data
@@ -79,9 +79,15 @@ get model =
         DueDateWithTime ->
             Just Target.DueTime
         CustomEnumField id name options inst ->
-            Just <| Target.CustomField (Asana.CustomEnumFieldInfo id name options) -- (Base.get inst)
+            Just <| Target.CustomEnum id <| Base.get inst
         CustomField customFieldInfo ->
-            Just <| Target.CustomField customFieldInfo
+            case customFieldInfo of
+                Asana.CustomTextFieldInfo id _ ->
+                    Just <| Target.CustomText id
+                Asana.CustomNumberFieldInfo id _ _ ->
+                    Just <| Target.CustomNumber id
+                _ ->
+                    Nothing
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
@@ -92,6 +98,9 @@ update props msg model =
             Base.updateWith AssigneeMsg msg' inst |> Base.mapFst Assignee
         (CompletionMsg msg', Completion inst) ->
             Base.updateWith CompletionMsg msg' inst |> Base.mapFst Completion
+        (EnumMsg msg', CustomEnumField id name options inst) ->
+            Base.updateWith EnumMsg msg' inst |> Base.mapFst (CustomEnumField id name options)
+        -- Careful, this is a catchall for all the cases where the message does not match the model.
         _ ->
             (model, Cmd.none)
 
@@ -198,7 +207,7 @@ updateModel props str model =
                         Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
                             <| TargetConfig.create
                                 -- TODO: This mapping should go in with the decoders.
-                                { defaultMap = \str -> find (.name >> (==) str) options |> Maybe.map .id
+                                { defaultMap = \str -> find (.name >> (==) str) options
                                 , dataView = \value -> 
                                     EnumConfig.create
                                         { selectedId = value

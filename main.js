@@ -11721,11 +11721,7 @@ var _user$project$Asana_Target$updateTask = F3(
 								assignee: _elm_lang$core$Maybe$Just(_p1._0)
 							}));
 				} else {
-					return _elm_lang$core$Result$Err(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'No config for how to convert \'',
-							A2(_elm_lang$core$Basics_ops['++'], value, '\' into user.')));
+					return _elm_lang$core$Result$Ok(task);
 				}
 			case 'Completion':
 				var _p2 = A2(_elm_lang$core$Dict$get, value, _p0._0);
@@ -11775,77 +11771,55 @@ var _user$project$Asana_Target$updateTask = F3(
 							'Could not parse date from \'',
 							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
 				}
+			case 'CustomText':
+				var newField = {
+					ctor: '_Tuple2',
+					_0: _p0._0,
+					_1: _user$project$Asana_Model$TextValue(value)
+				};
+				var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{customFields: customFields}));
+			case 'CustomNumber':
+				var _p5 = _elm_lang$core$String$toFloat(value);
+				if (_p5.ctor === 'Ok') {
+					var newField = {
+						ctor: '_Tuple2',
+						_0: _p0._0,
+						_1: _user$project$Asana_Model$NumberValue(_p5._0)
+					};
+					var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{customFields: customFields}));
+				} else {
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Could not parse number from \'',
+							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+				}
 			default:
-				var _p5 = _p0._0;
-				switch (_p5.ctor) {
-					case 'CustomTextFieldInfo':
-						var newField = {
-							ctor: '_Tuple2',
-							_0: _p5._0,
-							_1: _user$project$Asana_Model$TextValue(value)
-						};
-						var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
-						return _elm_lang$core$Result$Ok(
-							_elm_lang$core$Native_Utils.update(
-								task,
-								{customFields: customFields}));
-					case 'CustomNumberFieldInfo':
-						var _p6 = _elm_lang$core$String$toFloat(value);
-						if (_p6.ctor === 'Ok') {
-							var newField = {
-								ctor: '_Tuple2',
-								_0: _p5._0,
-								_1: _user$project$Asana_Model$NumberValue(_p6._0)
-							};
-							var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
-							return _elm_lang$core$Result$Ok(
-								_elm_lang$core$Native_Utils.update(
-									task,
-									{customFields: customFields}));
-						} else {
-							return _elm_lang$core$Result$Err(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'Could not parse number from \'',
-									A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
-						}
-					default:
-						var matchingOptions = A2(
-							_elm_lang$core$List$filter,
-							function (_p7) {
-								return A2(
-									F2(
-										function (x, y) {
-											return _elm_lang$core$Native_Utils.eq(x, y);
-										}),
-									value,
-									function (_) {
-										return _.name;
-									}(_p7));
-							},
-							_p5._2);
-						var _p8 = _elm_lang$core$List$head(matchingOptions);
-						if (_p8.ctor === 'Just') {
-							return _elm_lang$core$Result$Ok(
-								_elm_lang$core$Native_Utils.update(
-									task,
+				var _p6 = A2(_elm_lang$core$Dict$get, value, _p0._1);
+				if (_p6.ctor === 'Just') {
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{
+								customFields: A2(
+									_elm_lang$core$List_ops['::'],
 									{
-										customFields: A2(
-											_elm_lang$core$List_ops['::'],
-											{
-												ctor: '_Tuple2',
-												_0: _p5._0,
-												_1: _user$project$Asana_Model$EnumValue(_p8._0)
-											},
-											task.customFields)
-									}));
-						} else {
-							return _elm_lang$core$String$isEmpty(value) ? _elm_lang$core$Result$Ok(task) : _elm_lang$core$Result$Err(
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									'Could not parse a valid enum option from \'',
-									A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
-						}
+										ctor: '_Tuple2',
+										_0: _p0._0,
+										_1: _user$project$Asana_Model$EnumValue(_p6._0)
+									},
+									task.customFields)
+							}));
+				} else {
+					return _elm_lang$core$Result$Ok(task);
 				}
 		}
 	});
@@ -11864,8 +11838,15 @@ var _user$project$Asana_Target$emptyTask = function (projectId) {
 			[])
 	};
 };
-var _user$project$Asana_Target$CustomField = function (a) {
-	return {ctor: 'CustomField', _0: a};
+var _user$project$Asana_Target$CustomEnum = F2(
+	function (a, b) {
+		return {ctor: 'CustomEnum', _0: a, _1: b};
+	});
+var _user$project$Asana_Target$CustomNumber = function (a) {
+	return {ctor: 'CustomNumber', _0: a};
+};
+var _user$project$Asana_Target$CustomText = function (a) {
+	return {ctor: 'CustomText', _0: a};
 };
 var _user$project$Asana_Target$DueTime = {ctor: 'DueTime'};
 var _user$project$Asana_Target$DueDate = {ctor: 'DueDate'};
@@ -12702,7 +12683,7 @@ var _user$project$Components_Configs_CompletedConfig$create = function (props) {
 };
 
 var _user$project$Components_Configs_EnumConfig$enumOption = F2(
-	function (selectedId, enumValue) {
+	function (selectedValue, enumValue) {
 		return A2(
 			_elm_lang$html$Html$option,
 			_elm_lang$core$Native_List.fromArray(
@@ -12710,36 +12691,59 @@ var _user$project$Components_Configs_EnumConfig$enumOption = F2(
 					_elm_lang$html$Html_Attributes$value(enumValue.id),
 					_elm_lang$html$Html_Attributes$selected(
 					_elm_lang$core$Native_Utils.eq(
-						_elm_lang$core$Maybe$Just(enumValue.id),
-						selectedId))
+						_elm_lang$core$Maybe$Just(enumValue),
+						selectedValue))
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html$text(enumValue.name)
 				]));
 	});
-var _user$project$Components_Configs_EnumConfig$emptyOption = function (selectedId) {
+var _user$project$Components_Configs_EnumConfig$emptyOption = function (selectedValue) {
 	return A2(
 		_elm_lang$html$Html$option,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html_Attributes$value(''),
 				_elm_lang$html$Html_Attributes$selected(
-				_elm_lang$core$Native_Utils.eq(selectedId, _elm_lang$core$Maybe$Nothing))
+				_elm_lang$core$Native_Utils.eq(selectedValue, _elm_lang$core$Maybe$Nothing))
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html$text('')
 			]));
 };
-var _user$project$Components_Configs_EnumConfig$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		return {ctor: '_Tuple2', _0: _p0._0, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$Components_Configs_EnumConfig$update = F3(
+	function (_p0, msg, model) {
+		var _p1 = _p0;
+		var _p2 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: A2(
+				_elm_lang$core$Maybe$andThen,
+				_p2._0,
+				function (id) {
+					return A2(
+						_user$project$Util$find,
+						function (_p3) {
+							return A2(
+								F2(
+									function (x, y) {
+										return _elm_lang$core$Native_Utils.eq(x, y);
+									}),
+								id,
+								function (_) {
+									return _.id;
+								}(_p3));
+						},
+						_p1.enumOptions);
+				}),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
 	});
-var _user$project$Components_Configs_EnumConfig$init = function (_p1) {
-	var _p2 = _p1;
-	return {ctor: '_Tuple2', _0: _p2.selectedId, _1: _elm_lang$core$Platform_Cmd$none};
+var _user$project$Components_Configs_EnumConfig$init = function (_p4) {
+	var _p5 = _p4;
+	return {ctor: '_Tuple2', _0: _p5.selectedId, _1: _elm_lang$core$Platform_Cmd$none};
 };
 var _user$project$Components_Configs_EnumConfig$Props = F2(
 	function (a, b) {
@@ -12791,7 +12795,7 @@ var _user$project$Components_Configs_EnumConfig$create = function (props) {
 	return _user$project$Base$create(
 		{
 			init: _user$project$Components_Configs_EnumConfig$init(props),
-			update: _user$project$Components_Configs_EnumConfig$update,
+			update: _user$project$Components_Configs_EnumConfig$update(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
 			view: _user$project$Components_Configs_EnumConfig$view(props),
 			get: _elm_lang$core$Basics$identity
@@ -13067,8 +13071,7 @@ var _user$project$Components_Typeahead$update = F3(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							selected: _elm_lang$core$Maybe$Just(
-								A2(_elm_lang$core$Debug$log, 'Selection', _p12)),
+							selected: _elm_lang$core$Maybe$Just(_p12),
 							fragment: _p12.name,
 							options: _user$project$Components_Typeahead$Unloaded
 						}),
@@ -13079,9 +13082,7 @@ var _user$project$Components_Typeahead$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							inputFocused: A2(_elm_lang$core$Debug$log, 'Focused', _p10._0)
-						}),
+						{inputFocused: _p10._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
@@ -13089,9 +13090,7 @@ var _user$project$Components_Typeahead$update = F3(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							optionsHovered: A2(_elm_lang$core$Debug$log, 'Hovered', _p10._0)
-						}),
+						{optionsHovered: _p10._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
@@ -13583,11 +13582,22 @@ var _user$project$Components_TargetSelector$get = function (model) {
 			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$DueTime);
 		case 'CustomEnumField':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Asana_Target$CustomField(
-					A3(_user$project$Asana_Model$CustomEnumFieldInfo, _p3._0, _p3._1, _p3._2)));
+				A2(
+					_user$project$Asana_Target$CustomEnum,
+					_p3._0,
+					_user$project$Base$get(_p3._3)));
 		default:
-			return _elm_lang$core$Maybe$Just(
-				_user$project$Asana_Target$CustomField(_p3._0));
+			var _p4 = _p3._0;
+			switch (_p4.ctor) {
+				case 'CustomTextFieldInfo':
+					return _elm_lang$core$Maybe$Just(
+						_user$project$Asana_Target$CustomText(_p4._0));
+				case 'CustomNumberFieldInfo':
+					return _elm_lang$core$Maybe$Just(
+						_user$project$Asana_Target$CustomNumber(_p4._0));
+				default:
+					return _elm_lang$core$Maybe$Nothing;
+			}
 	}
 };
 var _user$project$Components_TargetSelector$Props = F3(
@@ -13703,8 +13713,8 @@ var _user$project$Components_TargetSelector$viewWithConfig = F2(
 	});
 var _user$project$Components_TargetSelector$view = F2(
 	function (props, model) {
-		var _p4 = model;
-		switch (_p4.ctor) {
+		var _p5 = model;
+		switch (_p5.ctor) {
 			case 'None':
 				return _user$project$Components_TargetSelector$viewSelect(props.customFields);
 			case 'Name':
@@ -13715,12 +13725,12 @@ var _user$project$Components_TargetSelector$view = F2(
 				return A2(
 					_user$project$Components_TargetSelector$viewWithConfig,
 					'Assignee',
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$AssigneeMsg, _p4._0));
+					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$AssigneeMsg, _p5._0));
 			case 'Completion':
 				return A2(
 					_user$project$Components_TargetSelector$viewWithConfig,
 					'Completion',
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$CompletionMsg, _p4._0));
+					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$CompletionMsg, _p5._0));
 			case 'DueDate':
 				return _user$project$Components_TargetSelector$viewSimpleTarget('Due Date');
 			case 'DueDateWithTime':
@@ -13728,11 +13738,11 @@ var _user$project$Components_TargetSelector$view = F2(
 			case 'CustomEnumField':
 				return A2(
 					_user$project$Components_TargetSelector$viewWithConfig,
-					_user$project$Components_TargetSelector$formatCustomEnumName(_p4._1),
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$EnumMsg, _p4._3));
+					_user$project$Components_TargetSelector$formatCustomEnumName(_p5._1),
+					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$EnumMsg, _p5._3));
 			default:
 				return _user$project$Components_TargetSelector$viewSimpleTarget(
-					_user$project$Components_TargetSelector$customFieldName(_p4._0));
+					_user$project$Components_TargetSelector$customFieldName(_p5._0));
 		}
 	});
 var _user$project$Components_TargetSelector$CustomField = function (a) {
@@ -13750,22 +13760,22 @@ var _user$project$Components_TargetSelector$Completion = function (a) {
 var _user$project$Components_TargetSelector$Assignee = function (a) {
 	return {ctor: 'Assignee', _0: a};
 };
-var _user$project$Components_TargetSelector$assigneeComponent = function (_p5) {
-	var _p6 = _p5;
+var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
+	var _p7 = _p6;
 	var userConfig = function (mValue) {
 		return _user$project$Components_Configs_UserConfig$create(
-			{selectedUser: mValue, apiContext: _p6.apiContext});
+			{selectedUser: mValue, apiContext: _p7.apiContext});
 	};
 	var alwaysNothing = _elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing);
-	var _p7 = _user$project$Components_TargetConfig$create(
+	var _p8 = _user$project$Components_TargetConfig$create(
 		{
 			defaultMap: alwaysNothing,
 			dataView: _elm_lang$core$Basics$always(
 				userConfig(_elm_lang$core$Maybe$Nothing)),
-			records: _p6.records
+			records: _p7.records
 		});
-	var target = _p7._0;
-	var targetMsg = _p7._1;
+	var target = _p8._0;
+	var targetMsg = _p8._1;
 	return A3(
 		_user$project$Base$pairMap,
 		_user$project$Components_TargetSelector$Assignee,
@@ -13777,11 +13787,11 @@ var _user$project$Components_TargetSelector$Name = {ctor: 'Name'};
 var _user$project$Components_TargetSelector$None = {ctor: 'None'};
 var _user$project$Components_TargetSelector$updateModel = F3(
 	function (props, str, model) {
-		var _p8 = props;
-		var records = _p8.records;
-		var customFields = _p8.customFields;
-		var _p9 = str;
-		switch (_p9) {
+		var _p9 = props;
+		var records = _p9.records;
+		var customFields = _p9.customFields;
+		var _p10 = str;
+		switch (_p10) {
 			case 'Name':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Name, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Description':
@@ -13819,39 +13829,34 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 			case 'Due Date With Time':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDateWithTime, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p10 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p9, customFields);
-				if ((_p10.ctor === 'Just') && (_p10._0.ctor === 'CustomEnumFieldInfo')) {
-					var _p12 = _p10._0._2;
+				var _p11 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p10, customFields);
+				if ((_p11.ctor === 'Just') && (_p11._0.ctor === 'CustomEnumFieldInfo')) {
+					var _p13 = _p11._0._2;
 					return A3(
 						_user$project$Base$pairMap,
-						A3(_user$project$Components_TargetSelector$CustomEnumField, _p10._0._0, _p10._0._1, _p12),
+						A3(_user$project$Components_TargetSelector$CustomEnumField, _p11._0._0, _p11._0._1, _p13),
 						_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$EnumMsg),
 						_user$project$Components_TargetConfig$create(
 							{
 								defaultMap: function (str) {
 									return A2(
-										_elm_lang$core$Maybe$map,
-										function (_) {
-											return _.id;
+										_user$project$Util$find,
+										function (_p12) {
+											return A2(
+												F2(
+													function (x, y) {
+														return _elm_lang$core$Native_Utils.eq(x, y);
+													}),
+												str,
+												function (_) {
+													return _.name;
+												}(_p12));
 										},
-										A2(
-											_user$project$Util$find,
-											function (_p11) {
-												return A2(
-													F2(
-														function (x, y) {
-															return _elm_lang$core$Native_Utils.eq(x, y);
-														}),
-													str,
-													function (_) {
-														return _.name;
-													}(_p11));
-											},
-											_p12));
+										_p13);
 								},
 								dataView: function (value) {
 									return _user$project$Components_Configs_EnumConfig$create(
-										{selectedId: value, enumOptions: _p12});
+										{selectedId: value, enumOptions: _p13});
 								},
 								records: records
 							}));
@@ -13866,42 +13871,49 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						A2(
 							_elm_lang$core$Maybe$withDefault,
 							_user$project$Components_TargetSelector$None,
-							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p10)));
+							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p11)));
 				}
 		}
 	});
 var _user$project$Components_TargetSelector$update = F3(
 	function (props, msg, model) {
-		var _p13 = {ctor: '_Tuple2', _0: msg, _1: model};
-		_v6_3:
+		var _p14 = {ctor: '_Tuple2', _0: msg, _1: model};
+		_v7_4:
 		do {
-			if (_p13.ctor === '_Tuple2') {
-				switch (_p13._0.ctor) {
+			if (_p14.ctor === '_Tuple2') {
+				switch (_p14._0.ctor) {
 					case 'Selection':
-						return A3(_user$project$Components_TargetSelector$updateModel, props, _p13._0._0, model);
+						return A3(_user$project$Components_TargetSelector$updateModel, props, _p14._0._0, model);
 					case 'AssigneeMsg':
-						if (_p13._1.ctor === 'Assignee') {
+						if (_p14._1.ctor === 'Assignee') {
 							return A2(
 								_user$project$Base$mapFst,
 								_user$project$Components_TargetSelector$Assignee,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p13._0._0, _p13._1._0));
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p14._0._0, _p14._1._0));
 						} else {
-							break _v6_3;
+							break _v7_4;
 						}
 					case 'CompletionMsg':
-						if (_p13._1.ctor === 'Completion') {
+						if (_p14._1.ctor === 'Completion') {
 							return A2(
 								_user$project$Base$mapFst,
 								_user$project$Components_TargetSelector$Completion,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p13._0._0, _p13._1._0));
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p14._0._0, _p14._1._0));
 						} else {
-							break _v6_3;
+							break _v7_4;
 						}
 					default:
-						break _v6_3;
+						if (_p14._1.ctor === 'CustomEnumField') {
+							return A2(
+								_user$project$Base$mapFst,
+								A3(_user$project$Components_TargetSelector$CustomEnumField, _p14._1._0, _p14._1._1, _p14._1._2),
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p14._0._0, _p14._1._3));
+						} else {
+							break _v7_4;
+						}
 				}
 			} else {
-				break _v6_3;
+				break _v7_4;
 			}
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -13921,7 +13933,10 @@ var _user$project$Components_FieldRow$sampleString = function (samples) {
 	var shownSamples = A2(
 		_elm_lang$core$String$join,
 		', ',
-		A2(_elm_lang$core$List$take, 3, samples));
+		A2(
+			_elm_lang$core$List$take,
+			3,
+			A2(_elm_lang$core$List$filter, _elm_lang$core$String$isEmpty, samples)));
 	return (_elm_lang$core$Native_Utils.cmp(
 		_elm_lang$core$List$length(samples),
 		3) > 0) ? A2(_elm_lang$core$Basics_ops['++'], shownSamples, '…') : shownSamples;
@@ -14005,11 +14020,7 @@ var _user$project$Components_FieldOptions$ChildMsg = F2(
 	});
 var _user$project$Components_FieldOptions$init = function (_p0) {
 	var _p1 = _p0;
-	var columns = A2(
-		_elm_lang$core$Debug$log,
-		'Column-major: ',
-		_user$project$Util$transpose(
-			A2(_elm_lang$core$Debug$log, 'Row-major: ', _p1.records)));
+	var columns = _user$project$Util$transpose(_p1.records);
 	var fields = A2(
 		_elm_lang$core$List$map,
 		function (_p2) {

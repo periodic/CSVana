@@ -15,7 +15,9 @@ type Target
     | Completion (Dict String Bool)
     | DueDate
     | DueTime
-    | CustomField Asana.CustomFieldInfo
+    | CustomText Asana.CustomFieldId
+    | CustomNumber Asana.CustomFieldId
+    | CustomEnum Asana.CustomFieldId (Dict String Asana.CustomFieldEnumValue)
 
 type alias Mapping a =
     String -> Result (Maybe a)
@@ -44,7 +46,7 @@ updateTask target value task =
                 Just val ->
                     Ok { task | assignee = Just val }
                 Nothing ->
-                    task
+                    Ok task
         Completion mappings ->
             case Dict.get value mappings of
                 Just val ->
@@ -63,35 +65,28 @@ updateTask target value task =
                     Ok { task | dueAt = Just <| dateToDueAt date }
                 Err msg ->
                     Err <| "Could not parse date from '" ++ value ++ "'"
-        CustomField field ->
-            case field of
-                Asana.CustomTextFieldInfo id _ ->
+        CustomText id ->
+            let
+                newField = (id, Asana.TextValue value)
+                customFields = newField :: task.customFields
+            in
+                Ok { task | customFields = customFields }
+        CustomNumber id ->
+            case String.toFloat value of
+                Ok num ->
                     let
-                        newField = (id, Asana.TextValue value)
+                        newField = (id, Asana.NumberValue num)
                         customFields = newField :: task.customFields
                     in
                         Ok { task | customFields = customFields }
-                Asana.CustomNumberFieldInfo id _ _ ->
-                    case String.toFloat value of
-                        Ok num ->
-                            let
-                                newField = (id, Asana.NumberValue num)
-                                customFields = newField :: task.customFields
-                            in
-                                Ok { task | customFields = customFields }
-                        Err msg ->
-                            Err <| "Could not parse number from '" ++ value ++ "'"
-                Asana.CustomEnumFieldInfo id _ options ->
-                    let
-                        matchingOptions = List.filter (.name >> (==) value) options
-                    in
-                        case List.head matchingOptions of
-                            Just option ->
-                                Ok { task | customFields = (id, Asana.EnumValue option) :: task.customFields }
-                            Nothing ->
-                                if String.isEmpty value
-                                    then Ok task
-                                    else Err <| "Could not parse a valid enum option from '" ++ value ++ "'"
+                Err msg ->
+                    Err <| "Could not parse number from '" ++ value ++ "'"
+        CustomEnum id mappings ->
+            case Dict.get value mappings of
+                Just option ->
+                    Ok { task | customFields = (id, Asana.EnumValue option) :: task.customFields }
+                Nothing ->
+                    Ok task
 
 dateToDueOn : Date -> String
 dateToDueOn date =
