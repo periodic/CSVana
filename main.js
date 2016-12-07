@@ -15795,7 +15795,24 @@ var _user$project$Main$urlUpdate = F2(
 var _user$project$Main$subscriptions = _user$project$Base$subscriptions;
 var _user$project$Main$update = _user$project$Base$update;
 var _user$project$Main$init = function (location) {
-	var _p0 = A2(_elm_lang$core$String$contains, 'localhost', location.origin) ? {ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'} : {ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'};
+	var _p0 = A2(
+		_elm_lang$core$Maybe$withDefault,
+		{ctor: '_Tuple2', _0: '', _1: ''},
+		_elm_lang$core$List$head(
+			A2(
+				_elm_lang$core$List$filter,
+				function (_p1) {
+					return A2(
+						_elm_lang$core$String$contains,
+						location.origin,
+						_elm_lang$core$Basics$snd(_p1));
+				},
+				_elm_lang$core$Native_List.fromArray(
+					[
+						{ctor: '_Tuple2', _0: '192968333753040', _1: 'https://localhost:8000'},
+						{ctor: '_Tuple2', _0: '217803124707970', _1: 'https://periodic.github.io/CSVana'},
+						{ctor: '_Tuple2', _0: '226996294984037', _1: 'https://asana.github.io/CSVana'}
+					]))));
 	var clientId = _p0._0;
 	var baseRedirectUrl = _p0._1;
 	var oauthProps = {

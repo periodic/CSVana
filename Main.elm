@@ -17,9 +17,13 @@ init : Navigation.Location -> (Model, Cmd Msg)
 init location =
     let
         (clientId, baseRedirectUrl) =
-            if String.contains "localhost" location.origin
-                then ("192968333753040", "https://localhost:8000")
-                else ("217803124707970", "https://periodic.github.io/CSVana")
+            Maybe.withDefault ("", "")
+            <| List.head
+            <| List.filter (snd >> String.contains location.origin)
+                [ ("192968333753040", "https://localhost:8000")
+                , ("217803124707970", "https://periodic.github.io/CSVana")
+                , ("226996294984037", "https://asana.github.io/CSVana")
+                ]
         oauthProps =
                 { baseAuthUrl = "https://app.asana.com/-/oauth_authorize"
                 , clientId = clientId
