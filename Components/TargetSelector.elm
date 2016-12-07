@@ -190,7 +190,7 @@ updateModel props str model =
                 Base.pairMap Completion (Cmd.map CompletionMsg)
                 <| TargetConfig.create
                     -- TODO: This mapping should go in with the decoders.
-                    { defaultMap = \str -> Just <| String.isEmpty str || String.toLower str == "true" || String.toLower str == "done"
+                    { defaultMap = \str -> Just <| String.toLower str == "true" || String.toLower str == "done"
                     , dataView = \mValue -> 
                         CompletedConfig.create { value = Maybe.withDefault False mValue }
                         -- Transform it to a Just Bool instance from a Bool instance.

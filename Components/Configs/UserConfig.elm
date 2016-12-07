@@ -83,7 +83,12 @@ view props model =
                     [ Base.viewWith TypeaheadMsg typeahead ]
             Selected _ userInfo ->
                 div [ class "UserConfig--selected" ]
-                    [ Base.view userInfo, a [ Events.onClick (Selection Nothing) ] [ CommonViews.closeIcon ] ]
+                    [ Base.view userInfo
+                    , a [ Events.onClick (Selection Nothing)
+                        , class "UserConfig-clearButton"
+                        ]
+                        [ CommonViews.closeIcon ]
+                    ]
         ]
 
 subscriptions : Model -> Sub Msg

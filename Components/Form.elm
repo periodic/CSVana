@@ -1,7 +1,7 @@
 module Components.Form exposing (Props, Data, Msg, Instance, create)
 
 import Html exposing (Html, div, text, input, label, h3)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, disabled, type')
 
 import Asana.Api as Api
 import Asana.Model as Asana
@@ -110,7 +110,7 @@ view _ model =
                 Just typeahead ->
                     Base.viewWith ProjectTypeaheadMsg typeahead
                 Nothing ->
-                    div [] [ input [] [] ]
+                    div [] [ input [ class "AsanaForm-projectInput--disabled", type' "text", disabled True ] [] ]
     in
         div [ class "AsanaForm" ]
             [ div [ class "AsanaForm-workspaces" ]

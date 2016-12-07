@@ -88,6 +88,7 @@ view _ model =
     let
         inputElem = input
             [ class "Typeahead-input"
+            , type' "text"
             , onInput Input
             , onFocus <| InputFocus True
             , onBlur <| InputFocus False

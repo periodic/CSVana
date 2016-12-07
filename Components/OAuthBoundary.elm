@@ -1,8 +1,9 @@
 module Components.OAuthBoundary exposing (Instance, Msg, Data, Props, create)
 
 import Html.App
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, div, text, input)
+import Html.Attributes exposing (class, type', value)
+import Html.Events as Events
 
 import Asana.Api exposing (Token)
 import Base
@@ -10,6 +11,7 @@ import OAuth.OAuth as OAuth
 
 type Msg msg
     = OAuthMsg OAuth.Msg
+    | StartAuth
     | ChildMsg msg
 
 type alias Props data msg =
@@ -54,6 +56,15 @@ init {baseAuthUrl, clientId, baseRedirectUrl} =
 update : Props data msg -> Msg msg -> Model data msg -> (Model data msg, Cmd (Msg msg))
 update props msg model =
     case msg of
+        StartAuth ->
+            case OAuth.getState model.oauth of
+                OAuth.Ready ->
+                    let
+                        (oauth', oauthCmd) = Base.mapCmd OAuthMsg <| OAuth.authenticate model.oauth
+                    in
+                        ({ model | oauth = oauth' }, oauthCmd)
+                _ ->
+                    (model, Cmd.none)
         OAuthMsg msg' ->
             updateOAuth props msg' model
         ChildMsg msg' ->
@@ -74,14 +85,7 @@ updateOAuth props msg model =
                         in
                             ({ model | oauth = oauth', child = Just child }, cmd)
                     Nothing ->
-                        case OAuth.getState oauth' of
-                            OAuth.Ready ->
-                                let
-                                    (oauth2, oauthCmd2) = Base.mapCmd OAuthMsg <| OAuth.authenticate oauth'
-                                in
-                                    ({ model | oauth = oauth2 }, Cmd.batch [oauthCmd1, oauthCmd2])
-                            _ ->
-                                ({ model | oauth = oauth' }, oauthCmd1)
+                        ({ model | oauth = oauth' }, oauthCmd1)
 
 updateChild : msg -> Model data msg -> (Model data msg, Cmd (Msg msg))
 updateChild msg model =
@@ -100,8 +104,18 @@ view _ model =
         Just child ->
             Html.App.map ChildMsg <| Base.view child
         _ ->
-            div [ class "OAuthBoundary--authorizing" ]
-                [ text "Authorizing" ]
+            unauthenticatedView
+
+unauthenticatedView : Html (Msg msg)
+unauthenticatedView =
+    div [ class "OAuthBoundary OAuthBoundary--authorizing" ]
+        [ input [ type' "button"
+                , class "OAuthBoundary-authenticateButton button primary"
+                , Events.onClick StartAuth 
+                , value "Connect to Asana"
+                ]
+            [ text "Connect to Asana" ]
+        ]
 
 subscriptions : Props data msg -> Model data msg -> Sub (Msg msg)
 subscriptions _ {oauth, child} =

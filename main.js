@@ -11738,38 +11738,46 @@ var _user$project$Asana_Target$updateTask = F3(
 							A2(_elm_lang$core$Basics_ops['++'], value, '\' into a completed status.')));
 				}
 			case 'DueDate':
-				var _p3 = _elm_lang$core$Date$fromString(value);
-				if (_p3.ctor === 'Ok') {
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{
-								dueOn: _elm_lang$core$Maybe$Just(
-									_user$project$Asana_Target$dateToDueOn(_p3._0))
-							}));
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
 				} else {
-					return _elm_lang$core$Result$Err(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Could not parse date from \'',
-							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					var _p3 = _elm_lang$core$Date$fromString(value);
+					if (_p3.ctor === 'Ok') {
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{
+									dueOn: _elm_lang$core$Maybe$Just(
+										_user$project$Asana_Target$dateToDueOn(_p3._0))
+								}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse date from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
 				}
 			case 'DueTime':
-				var _p4 = _elm_lang$core$Date$fromString(value);
-				if (_p4.ctor === 'Ok') {
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{
-								dueAt: _elm_lang$core$Maybe$Just(
-									_user$project$Asana_Target$dateToDueAt(_p4._0))
-							}));
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
 				} else {
-					return _elm_lang$core$Result$Err(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Could not parse date from \'',
-							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					var _p4 = _elm_lang$core$Date$fromString(value);
+					if (_p4.ctor === 'Ok') {
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{
+									dueAt: _elm_lang$core$Maybe$Just(
+										_user$project$Asana_Target$dateToDueAt(_p4._0))
+								}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse date from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
 				}
 			case 'CustomText':
 				var newField = {
@@ -12824,7 +12832,7 @@ var _user$project$Components_Configs_UserInfo$view = function (_p0) {
 						_elm_lang$html$Html$img,
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html_Attributes$class('UserInfo-photo'),
+								_elm_lang$html$Html_Attributes$class('UserInfo-photo avatar'),
 								_elm_lang$html$Html_Attributes$src(_p2._0)
 							]),
 						_elm_lang$core$Native_List.fromArray(
@@ -12991,6 +12999,7 @@ var _user$project$Components_Typeahead$view = F2(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html_Attributes$class('Typeahead-input'),
+					_elm_lang$html$Html_Attributes$type$('text'),
 					_elm_lang$html$Html_Events$onInput(_user$project$Components_Typeahead$Input),
 					_elm_lang$html$Html_Events$onFocus(
 					_user$project$Components_Typeahead$InputFocus(true)),
@@ -13170,7 +13179,8 @@ var _user$project$Components_Configs_UserConfig$view = F2(
 									_elm_lang$core$Native_List.fromArray(
 										[
 											_elm_lang$html$Html_Events$onClick(
-											_user$project$Components_Configs_UserConfig$Selection(_elm_lang$core$Maybe$Nothing))
+											_user$project$Components_Configs_UserConfig$Selection(_elm_lang$core$Maybe$Nothing)),
+											_elm_lang$html$Html_Attributes$class('UserConfig-clearButton')
 										]),
 									_elm_lang$core$Native_List.fromArray(
 										[_user$project$CommonViews$closeIcon]))
@@ -13443,8 +13453,8 @@ var _user$project$Components_TargetConfig$recordView = F3(
 			return _elm_lang$core$Native_Utils.crashCase(
 				'Components.TargetConfig',
 				{
-					start: {line: 94, column: 5},
-					end: {line: 103, column: 84}
+					start: {line: 105, column: 5},
+					end: {line: 114, column: 84}
 				},
 				_p21)('Attempting to render a record for which there is no view.');
 		}
@@ -13459,19 +13469,50 @@ var _user$project$Components_TargetConfig$popupView = F2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html_Attributes$class('TargetConfig-recordViews')
+						_elm_lang$html$Html_Attributes$class('TargetConfig-content')
 					]),
-				A2(
-					_elm_lang$core$List$map,
-					_elm_lang$core$Basics$uncurry(
-						_user$project$Components_TargetConfig$recordView(views)),
-					A2(
-						_elm_lang$core$List$indexedMap,
-						F2(
-							function (v0, v1) {
-								return {ctor: '_Tuple2', _0: v0, _1: v1};
-							}),
-						_elm_lang$core$Set$toList(records)))));
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('TargetConfig-recordViews')
+							]),
+						A2(
+							_elm_lang$core$List$map,
+							_elm_lang$core$Basics$uncurry(
+								_user$project$Components_TargetConfig$recordView(views)),
+							A2(
+								_elm_lang$core$List$indexedMap,
+								F2(
+									function (v0, v1) {
+										return {ctor: '_Tuple2', _0: v0, _1: v1};
+									}),
+								_elm_lang$core$Set$toList(records)))),
+						A2(
+						_elm_lang$html$Html$div,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html_Attributes$class('TargetConfig-actions')
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(
+								_elm_lang$html$Html$input,
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html_Attributes$type$('button'),
+										_elm_lang$html$Html_Attributes$class('TargetConfig-closeButton button primary'),
+										_elm_lang$html$Html_Attributes$value('Done'),
+										_elm_lang$html$Html_Events$onClick(_user$project$Components_TargetConfig$ClosePopup)
+									]),
+								_elm_lang$core$Native_List.fromArray(
+									[
+										_elm_lang$html$Html$text('Done')
+									]))
+							]))
+					])));
 	});
 var _user$project$Components_TargetConfig$view = F2(
 	function (_p24, _p23) {
@@ -13807,11 +13848,11 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						{
 							defaultMap: function (str) {
 								return _elm_lang$core$Maybe$Just(
-									_elm_lang$core$String$isEmpty(str) || (_elm_lang$core$Native_Utils.eq(
+									_elm_lang$core$Native_Utils.eq(
 										_elm_lang$core$String$toLower(str),
 										'true') || _elm_lang$core$Native_Utils.eq(
 										_elm_lang$core$String$toLower(str),
-										'done')));
+										'done'));
 							},
 							dataView: function (mValue) {
 								return A2(
@@ -13930,15 +13971,19 @@ var _user$project$Components_TargetSelector$create = function (props) {
 };
 
 var _user$project$Components_FieldRow$sampleString = function (samples) {
+	var validSamples = A2(
+		_elm_lang$core$List$filter,
+		function (_p0) {
+			return _elm_lang$core$Basics$not(
+				_elm_lang$core$String$isEmpty(_p0));
+		},
+		samples);
 	var shownSamples = A2(
 		_elm_lang$core$String$join,
 		', ',
-		A2(
-			_elm_lang$core$List$take,
-			3,
-			A2(_elm_lang$core$List$filter, _elm_lang$core$String$isEmpty, samples)));
+		A2(_elm_lang$core$List$take, 3, validSamples));
 	return (_elm_lang$core$Native_Utils.cmp(
-		_elm_lang$core$List$length(samples),
+		_elm_lang$core$List$length(validSamples),
 		3) > 0) ? A2(_elm_lang$core$Basics_ops['++'], shownSamples, '…') : shownSamples;
 };
 var _user$project$Components_FieldRow$view = F2(
@@ -14188,7 +14233,9 @@ var _user$project$Components_Uploader$viewError = function (error) {
 var _user$project$Components_Uploader$view = F2(
 	function (_p6, _p5) {
 		var _p7 = _p6;
+		var _p10 = _p7.records;
 		var _p8 = _p5;
+		var _p9 = _p8.recordsProcessed;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -14205,14 +14252,16 @@ var _user$project$Components_Uploader$view = F2(
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							_elm_lang$html$Html$text(
+							_elm_lang$core$Native_Utils.eq(
+							_p9,
+							_elm_lang$core$List$length(_p10)) ? _elm_lang$html$Html$text('Complete') : _elm_lang$html$Html$text(
 							_elm_lang$core$String$concat(
 								_elm_lang$core$Native_List.fromArray(
 									[
-										_elm_lang$core$Basics$toString(_p8.recordsProcessed),
+										_elm_lang$core$Basics$toString(_p9),
 										' / ',
 										_elm_lang$core$Basics$toString(
-										_elm_lang$core$List$length(_p7.records))
+										_elm_lang$core$List$length(_p10))
 									])))
 						])),
 					A2(
@@ -14245,8 +14294,8 @@ var _user$project$Components_Uploader$UploadError = function (a) {
 };
 var _user$project$Components_Uploader$update = F3(
 	function (props, msg, model) {
-		var _p9 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
-		if (_p9._1.ctor === 'Ok') {
+		var _p11 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		if (_p11._1.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
@@ -14264,8 +14313,8 @@ var _user$project$Components_Uploader$update = F3(
 							_elm_lang$core$List_ops['::'],
 							_user$project$Components_Uploader$UploadError(
 								{
-									msg: _elm_lang$core$Basics$toString(_p9._1._0),
-									row: _p9._0
+									msg: _elm_lang$core$Basics$toString(_p11._1._0),
+									row: _p11._0
 								}),
 							model.errors)
 					}),
@@ -14277,29 +14326,29 @@ var _user$project$Components_Uploader$ParseError = function (a) {
 	return {ctor: 'ParseError', _0: a};
 };
 var _user$project$Components_Uploader$updateTask = F3(
-	function (row, _p11, _p10) {
-		var _p12 = _p11;
-		var _p13 = _p10;
-		var _p17 = _p13._0;
-		var _p16 = _p13._1;
-		var _p14 = _p12._1;
-		if (_p14.ctor === 'Just') {
-			var _p15 = A3(_user$project$Asana_Target$updateTask, _p14._0, _p12._2, _p17);
-			if (_p15.ctor === 'Ok') {
-				return {ctor: '_Tuple2', _0: _p15._0, _1: _p16};
+	function (row, _p13, _p12) {
+		var _p14 = _p13;
+		var _p15 = _p12;
+		var _p19 = _p15._0;
+		var _p18 = _p15._1;
+		var _p16 = _p14._1;
+		if (_p16.ctor === 'Just') {
+			var _p17 = A3(_user$project$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
+			if (_p17.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p17._0, _1: _p18};
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _p17,
+					_0: _p19,
 					_1: A2(
 						_elm_lang$core$List_ops['::'],
 						_user$project$Components_Uploader$ParseError(
-							{msg: _p15._0, row: row, col: _p12._0}),
-						_p16)
+							{msg: _p17._0, row: row, col: _p14._0}),
+						_p18)
 				};
 			}
 		} else {
-			return {ctor: '_Tuple2', _0: _p17, _1: _p16};
+			return {ctor: '_Tuple2', _0: _p19, _1: _p18};
 		}
 	});
 var _user$project$Components_Uploader$uploadRecord = F4(
@@ -14307,9 +14356,9 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 		var fieldDefs = A2(
 			_elm_lang$core$List$indexedMap,
 			F2(
-				function (i, _p18) {
-					var _p19 = _p18;
-					return {ctor: '_Tuple3', _0: i, _1: _p19._0, _2: _p19._1};
+				function (i, _p20) {
+					var _p21 = _p20;
+					return {ctor: '_Tuple3', _0: i, _1: _p21._0, _2: _p21._1};
 				}),
 			A3(
 				_elm_lang$core$List$map2,
@@ -14319,7 +14368,7 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 					}),
 				props.fieldTargets,
 				record));
-		var _p20 = A3(
+		var _p22 = A3(
 			_elm_lang$core$List$foldr,
 			_user$project$Components_Uploader$updateTask(row),
 			{
@@ -14329,8 +14378,8 @@ var _user$project$Components_Uploader$uploadRecord = F4(
 					[])
 			},
 			fieldDefs);
-		var newTask = _p20._0;
-		var errs = _p20._1;
+		var newTask = _p22._0;
+		var errs = _p22._1;
 		var model$ = _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -14348,19 +14397,19 @@ var _user$project$Components_Uploader$init = function (props) {
 		errors: _elm_lang$core$Native_List.fromArray(
 			[])
 	};
-	var _p21 = A3(
+	var _p23 = A3(
 		_elm_lang$core$List$foldr,
 		F2(
-			function (_p23, _p22) {
-				var _p24 = _p23;
-				var _p25 = _p22;
-				var _p26 = A4(_user$project$Components_Uploader$uploadRecord, props, _p24._0, _p24._1, _p25._0);
-				var model$ = _p26._0;
-				var cmd = _p26._1;
+			function (_p25, _p24) {
+				var _p26 = _p25;
+				var _p27 = _p24;
+				var _p28 = A4(_user$project$Components_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
+				var model$ = _p28._0;
+				var cmd = _p28._1;
 				return {
 					ctor: '_Tuple2',
 					_0: model$,
-					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p25._1)
+					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p27._1)
 				};
 			}),
 		{
@@ -14376,8 +14425,8 @@ var _user$project$Components_Uploader$init = function (props) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
 			props.records));
-	var model$ = _p21._0;
-	var cmds = _p21._1;
+	var model$ = _p23._0;
+	var cmds = _p23._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
 	return {ctor: '_Tuple2', _0: model$, _1: cmd};
 };
@@ -14808,7 +14857,11 @@ var _user$project$Components_Form$view = F2(
 							A2(
 							_elm_lang$html$Html$input,
 							_elm_lang$core$Native_List.fromArray(
-								[]),
+								[
+									_elm_lang$html$Html_Attributes$class('AsanaForm-projectInput--disabled'),
+									_elm_lang$html$Html_Attributes$type$('text'),
+									_elm_lang$html$Html_Attributes$disabled(true)
+								]),
 							_elm_lang$core$Native_List.fromArray(
 								[]))
 						]));
@@ -15429,6 +15482,29 @@ var _user$project$Components_OAuthBoundary$updateChild = F2(
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
+var _user$project$Components_OAuthBoundary$StartAuth = {ctor: 'StartAuth'};
+var _user$project$Components_OAuthBoundary$unauthenticatedView = A2(
+	_elm_lang$html$Html$div,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$html$Html_Attributes$class('OAuthBoundary OAuthBoundary--authorizing')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$html$Html$input,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$type$('button'),
+					_elm_lang$html$Html_Attributes$class('OAuthBoundary-authenticateButton button primary'),
+					_elm_lang$html$Html_Events$onClick(_user$project$Components_OAuthBoundary$StartAuth),
+					_elm_lang$html$Html_Attributes$value('Connect to Asana')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text('Connect to Asana')
+				]))
+		]));
 var _user$project$Components_OAuthBoundary$view = F2(
 	function (_p5, model) {
 		var _p6 = model.child;
@@ -15438,16 +15514,7 @@ var _user$project$Components_OAuthBoundary$view = F2(
 				_user$project$Components_OAuthBoundary$ChildMsg,
 				_user$project$Base$view(_p6._0));
 		} else {
-			return A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('OAuthBoundary--authorizing')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Authorizing')
-					]));
+			return _user$project$Components_OAuthBoundary$unauthenticatedView;
 		}
 	});
 var _user$project$Components_OAuthBoundary$OAuthMsg = function (a) {
@@ -15495,41 +15562,42 @@ var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 				_1: cmd
 			};
 		} else {
-			var _p13 = _user$project$OAuth_OAuth$getState(oauth$);
-			if (_p13.ctor === 'Ready') {
-				var _p14 = A2(
-					_user$project$Base$mapCmd,
-					_user$project$Components_OAuthBoundary$OAuthMsg,
-					_user$project$OAuth_OAuth$authenticate(oauth$));
-				var oauth2 = _p14._0;
-				var oauthCmd2 = _p14._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{oauth: oauth2}),
-					_1: _elm_lang$core$Platform_Cmd$batch(
-						_elm_lang$core$Native_List.fromArray(
-							[oauthCmd1, oauthCmd2]))
-				};
-			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{oauth: oauth$}),
-					_1: oauthCmd1
-				};
-			}
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Native_Utils.update(
+					model,
+					{oauth: oauth$}),
+				_1: oauthCmd1
+			};
 		}
 	});
 var _user$project$Components_OAuthBoundary$update = F3(
 	function (props, msg, model) {
-		var _p15 = msg;
-		if (_p15.ctor === 'OAuthMsg') {
-			return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p15._0, model);
-		} else {
-			return A2(_user$project$Components_OAuthBoundary$updateChild, _p15._0, model);
+		var _p13 = msg;
+		switch (_p13.ctor) {
+			case 'StartAuth':
+				var _p14 = _user$project$OAuth_OAuth$getState(model.oauth);
+				if (_p14.ctor === 'Ready') {
+					var _p15 = A2(
+						_user$project$Base$mapCmd,
+						_user$project$Components_OAuthBoundary$OAuthMsg,
+						_user$project$OAuth_OAuth$authenticate(model.oauth));
+					var oauth$ = _p15._0;
+					var oauthCmd = _p15._1;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{oauth: oauth$}),
+						_1: oauthCmd
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'OAuthMsg':
+				return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p13._0, model);
+			default:
+				return A2(_user$project$Components_OAuthBoundary$updateChild, _p13._0, model);
 		}
 	});
 var _user$project$Components_OAuthBoundary$subscriptions = F2(

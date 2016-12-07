@@ -114,7 +114,9 @@ view : Props -> Model -> Html Msg
 view { records } { recordsProcessed, errors } =
     div [ class "Uploader" ]
         [ div [ class "Uploader-progress" ]
-            [ text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
+            [ if recordsProcessed == List.length records
+                then text "Complete"
+                else text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
         , div [ class "Uploader-errors" ]
             (List.map viewError errors)
         ]

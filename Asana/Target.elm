@@ -54,12 +54,14 @@ updateTask target value task =
                 Nothing ->
                     Err <| "No config for how to convert '" ++ value ++ "' into a completed status."
         DueDate ->
+            if String.isEmpty value then Ok task else
             case Date.fromString value of
                 Ok date ->
                     Ok { task | dueOn = Just <| dateToDueOn date }
                 Err msg ->
                     Err <| "Could not parse date from '" ++ value ++ "'"
         DueTime ->
+            if String.isEmpty value then Ok task else
             case Date.fromString value of
                 Ok date ->
                     Ok { task | dueAt = Just <| dateToDueAt date }

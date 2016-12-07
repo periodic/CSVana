@@ -24,7 +24,7 @@ view { name, photo } =
     div [ class "UserInfo" ]
         [ case photo `Maybe.andThen` .image_21x21 of
             Just photo ->
-                img [ class "UserInfo-photo", src photo ] []
+                img [ class "UserInfo-photo avatar", src photo ] []
             Nothing ->
                 text ""
         , span [ class "UserInfo-name" ]

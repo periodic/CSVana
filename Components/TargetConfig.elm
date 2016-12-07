@@ -4,6 +4,7 @@ import Array exposing (Array)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events as Events
 import Set exposing (Set)
 
 import Base
@@ -85,9 +86,19 @@ view { records } { views, isOpen } =
 popupView : Set String -> Array (Base.Instance (Maybe data) msg) -> Html (Msg msg)
 popupView records views =
     CommonViews.popup "Configure Data Mapping" ClosePopup
-        <| div [ class "TargetConfig-recordViews" ]
-            -- Note: Set.toList creates a sorted list.
-            (List.indexedMap (,) (Set.toList records) |> List.map (uncurry (recordView views)))
+        <| div [ class "TargetConfig-content" ]
+            [ div [ class "TargetConfig-recordViews" ]
+                -- Note: Set.toList creates a sorted list.
+                (List.indexedMap (,) (Set.toList records) |> List.map (uncurry (recordView views)))
+            , div [ class "TargetConfig-actions" ]
+                [ input [ type' "button"
+                        , class "TargetConfig-closeButton button primary"
+                        , value "Done"
+                        , Events.onClick ClosePopup
+                        ]
+                        [ text "Done" ]
+                ]
+            ]
 
 recordView : Array (Base.Instance (Maybe data) msg) -> Int -> String -> Html (Msg msg)
 recordView views index record =

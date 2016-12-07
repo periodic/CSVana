@@ -99,11 +99,7 @@ view { csvHeaders} { fieldOptions, uploader } =
                 [ Base.viewWith FieldOptionsMsg fieldOptions ]
             ]
         , div [ class "FieldMatcher-upload" ]
-            [ div [ class "FieldMatcher-button" ]
-                [ button [ onClick StartUpload ] [ text "Import" ] ]
-            , div [ class "FieldMatcher-progress" ]
-                [ renderUploader uploader ]
-            ]
+            [ renderUploader ]
         ]
 
 renderHeaders : List String -> Html Msg
@@ -122,4 +118,5 @@ renderUploader mUploader =
         Just uploader ->
             Html.App.map UploaderMsg <| Base.view uploader
         Nothing ->
-            text "Click to start the import."
+            div [ class "FieldMatcher-button" ]
+                [ button [ onClick StartUpload, class "button primary" ] [ text "Import" ] ]
