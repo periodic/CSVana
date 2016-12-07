@@ -15,7 +15,8 @@ select {
 }
 
 input[type=text] {
-    width: 176px; /* 200 - 2*10 (padding) - 2*2 (border) */
+    box-sizing: border-box;
+    width: 200px;
     padding: 2px 10px;
     border: 1px solid #CDCFD2;
 }
@@ -302,6 +303,8 @@ h3 {
     border-bottom: 1px solid #E1E2E4;
     font-size: 16px;
     font-weight: bold;
+    height: 25px;
+    line-height: 25px;
 }
 
 .TargetConfig-recordViews {
@@ -311,7 +314,11 @@ h3 {
 .TargetConfig-recordView {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    align-items: center;
+    height: 33px;
+    border-bottom: 1px solid #E1E2E4;
 }
 
 .TargetConfig-actions {
@@ -322,11 +329,14 @@ h3 {
 .UserConfig--selected {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background: #f8f8f9;
     border: 1px solid #e1e2e4;
     color: #676d76;
     border-radius: 15px;
     padding: 5px;
+    box-sizing: border-box;
+    width:200px;
 }
 
 .UserConfig-clearButton {

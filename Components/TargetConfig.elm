@@ -80,7 +80,7 @@ update { dataView } msg model =
                     (model, Cmd.none)
         WorkComplete index data ->
             let
-                (child, cmd) = dataView data
+                (child, cmd) = dataView <| Debug.log ("Data fetched for " ++ toString index) data
             in
                 ({ model | views = Array.set index (Just child) model.views }, Cmd.map (ChildMsg index) cmd)
         OpenPopup ->

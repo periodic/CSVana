@@ -20,7 +20,7 @@ type Msg
     = Selection (Maybe Asana.User)
     | TypeaheadMsg (Typeahead.Msg Asana.User)
 
-type alias Data = Maybe Asana.UserId
+type alias Data = Maybe Asana.User
 
 type alias Instance = Base.Instance Data Msg
 
@@ -105,5 +105,5 @@ get model =
         Unselected _ ->
             Nothing
         Selected user _ ->
-            Just user.id
+            Just user
 

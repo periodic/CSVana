@@ -1,5 +1,6 @@
 module Components.TargetSelector exposing (Props, Msg, Data, Instance, create)
 
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events as Events
@@ -26,7 +27,7 @@ type alias Props =
 
 type Msg
     = Selection String
-    | AssigneeMsg (TargetConfig.Msg Asana.UserId UserConfig.Msg)
+    | AssigneeMsg (TargetConfig.Msg Asana.User UserConfig.Msg)
     | CompletionMsg (TargetConfig.Msg Bool CompletedConfig.Msg)
     | EnumMsg (TargetConfig.Msg Asana.CustomFieldEnumValue EnumConfig.Msg)
 
@@ -50,7 +51,7 @@ type Model
     = None
     | Name
     | Description
-    | Assignee (TargetConfig.Instance Asana.UserId UserConfig.Msg)
+    | Assignee (TargetConfig.Instance Asana.User UserConfig.Msg)
     | Completion (TargetConfig.Instance Bool CompletedConfig.Msg)
     | DueDate
     | DueDateWithTime
@@ -71,7 +72,7 @@ get model =
         Description ->
             Just Target.Description
         Assignee inst ->
-            Just <| Target.Assignee <| Base.get inst
+            Just <| Target.Assignee <| Dict.map (always .id) <| Base.get inst
         Completion inst ->
             Just <| Target.Completion <| Base.get inst
         DueDate ->
@@ -247,8 +248,13 @@ withUnselect inner =
 assigneeComponent : Props -> (Model, Cmd Msg)
 assigneeComponent { records, apiContext } =
     let
-        alwaysNothing : String -> TargetConfig.MapResult Asana.UserId
-        alwaysNothing = always <| TargetConfig.Value Nothing
+        lookupUser : String -> TargetConfig.MapResult Asana.User
+        lookupUser value =
+            if String.isEmpty value
+                then TargetConfig.Value Nothing
+                else Api.user (Api.Email value) apiContext.token
+                        |> Cmd.map Result.toMaybe
+                        |> TargetConfig.NeedsWork
 
         userConfig : Maybe Asana.User -> (UserConfig.Instance, Cmd UserConfig.Msg)
         userConfig mValue =
@@ -260,8 +266,8 @@ assigneeComponent { records, apiContext } =
         (target, targetMsg) =
             TargetConfig.create
                 -- TODO: How to load the default map dynamically...
-                { defaultMap = alwaysNothing
-                , dataView = always (userConfig Nothing)
+                { defaultMap = lookupUser
+                , dataView = userConfig
                 , records = records
                 }
     in

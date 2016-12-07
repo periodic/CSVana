@@ -1,4 +1,4 @@
-module Asana.Api exposing (Token, ApiResult, ApiRequest, Context, me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
+module Asana.Api exposing (Token, ApiResult, ApiRequest, Context, UserQuery(..), me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
 
 import Http
 import Json.Decode exposing (Decoder, (:=), list, oneOf)
