@@ -180,11 +180,8 @@ h3 {
     flex-direction: column;
     align-items: center;
     border-top: 1px solid #eee;
-    padding: 15px;
-}
-
-.FieldMatcher-button {
-    padding: 10px 0;
+    padding-top: 15px;
+    margin-top: 15px;
 }
 
 .FieldOptions {
@@ -355,4 +352,23 @@ h3 {
 
 .avatar {
     border-radius: 50%;
+}
+
+.LoadingIndicator {
+    text-align: center;
+}
+
+.spinner {
+    animation: Spinner-rotation 0.67s linear infinite;
+    width: 32px;
+    height: 32px;
+}
+
+@keyframes Spinner-rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

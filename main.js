@@ -11867,6 +11867,68 @@ var _user$project$Asana_Target$Assignee = function (a) {
 var _user$project$Asana_Target$Description = {ctor: 'Description'};
 var _user$project$Asana_Target$Name = {ctor: 'Name'};
 
+var _user$project$CommonViews$spinner = A2(
+	_elm_lang$svg$Svg$svg,
+	_elm_lang$core$Native_List.fromArray(
+		[
+			_elm_lang$svg$Svg_Attributes$class('spinner'),
+			_elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32')
+		]),
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(
+			_elm_lang$svg$Svg$linearGradient,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$id('Spinner-linearGradient'),
+					_elm_lang$svg$Svg_Attributes$gradientUnits('userSpaceOnUse'),
+					_elm_lang$svg$Svg_Attributes$x1('1.7804'),
+					_elm_lang$svg$Svg_Attributes$y1('16.0379'),
+					_elm_lang$svg$Svg_Attributes$x2('30.1439'),
+					_elm_lang$svg$Svg_Attributes$y2('16.0379')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$svg$Svg$stop,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$offset('0.4169'),
+							_elm_lang$svg$Svg_Attributes$stopColor('#F9747F')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[])),
+					A2(
+					_elm_lang$svg$Svg$stop,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$offset('0.764'),
+							_elm_lang$svg$Svg_Attributes$stopColor('#FA7996')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[])),
+					A2(
+					_elm_lang$svg$Svg$stop,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$svg$Svg_Attributes$offset('0.9376'),
+							_elm_lang$svg$Svg_Attributes$stopColor('#F7D59C')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[]))
+				])),
+			A2(
+			_elm_lang$svg$Svg$circle,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$svg$Svg_Attributes$cx('16'),
+					_elm_lang$svg$Svg_Attributes$cy('16'),
+					_elm_lang$svg$Svg_Attributes$r('12.7'),
+					_elm_lang$svg$Svg_Attributes$style('fill: none; stroke: url(\"#Spinner-linearGradient\"); stroke-width: 2;')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[]))
+		]));
 var _user$project$CommonViews$iconStyle = _elm_lang$html$Html_Attributes$style(
 	_elm_lang$core$Native_List.fromArray(
 		[
@@ -12058,9 +12120,7 @@ var _user$project$CommonViews$loadingIndicator = A2(
 			_elm_lang$html$Html_Attributes$class('LoadingIndicator')
 		]),
 	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html$text('Loading...')
-		]));
+		[_user$project$CommonViews$spinner]));
 var _user$project$CommonViews$unloadedView = A2(
 	_elm_lang$html$Html$div,
 	_elm_lang$core$Native_List.fromArray(
@@ -12879,9 +12939,7 @@ var _user$project$Components_Typeahead$renderLoadingOption = A2(
 			_elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--loading')
 		]),
 	_elm_lang$core$Native_List.fromArray(
-		[
-			_elm_lang$html$Html$text('Loading...')
-		]));
+		[_user$project$CommonViews$loadingIndicator]));
 var _user$project$Components_Typeahead$isActive = function (model) {
 	var _p0 = model.options;
 	if (_p0.ctor === 'Unloaded') {
@@ -13199,7 +13257,7 @@ var _user$project$Components_Configs_UserConfig$Unselected = function (a) {
 var _user$project$Components_Configs_UserConfig$makeModel = function (_p3) {
 	var _p4 = _p3;
 	var _p7 = _p4.apiContext;
-	var _p5 = A2(_elm_lang$core$Debug$log, 'Creating UserConfig for ', _p4.selectedUser);
+	var _p5 = _p4.selectedUser;
 	if (_p5.ctor === 'Just') {
 		var _p6 = _p5._0;
 		return A2(
@@ -13864,34 +13922,25 @@ var _user$project$Components_TargetSelector$Assignee = function (a) {
 };
 var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
 	var _p7 = _p6;
-	var _p10 = _p7.apiContext;
+	var _p9 = _p7.apiContext;
 	var userConfig = function (mValue) {
 		return _user$project$Components_Configs_UserConfig$create(
-			{
-				selectedUser: A2(_elm_lang$core$Debug$log, 'Creating new UserConfig for', mValue),
-				apiContext: _p10
-			});
+			{selectedUser: mValue, apiContext: _p9});
 	};
 	var lookupUser = function (value) {
 		return _elm_lang$core$String$isEmpty(value) ? _user$project$Components_TargetConfig$Value(_elm_lang$core$Maybe$Nothing) : _user$project$Components_TargetConfig$NeedsWork(
 			A2(
 				_elm_lang$core$Platform_Cmd$map,
-				function (_p8) {
-					return _elm_lang$core$Result$toMaybe(
-						A2(
-							_elm_lang$core$Debug$log,
-							A2(_elm_lang$core$Basics_ops['++'], 'User for ', value),
-							_p8));
-				},
+				_elm_lang$core$Result$toMaybe,
 				A2(
 					_user$project$Asana_Api$user,
 					_user$project$Asana_Api$Email(value),
-					_p10.token)));
+					_p9.token)));
 	};
-	var _p9 = _user$project$Components_TargetConfig$create(
+	var _p8 = _user$project$Components_TargetConfig$create(
 		{defaultMap: lookupUser, dataView: userConfig, records: _p7.records});
-	var target = _p9._0;
-	var targetMsg = _p9._1;
+	var target = _p8._0;
+	var targetMsg = _p8._1;
 	return A3(
 		_user$project$Base$pairMap,
 		_user$project$Components_TargetSelector$Assignee,
@@ -13903,11 +13952,11 @@ var _user$project$Components_TargetSelector$Name = {ctor: 'Name'};
 var _user$project$Components_TargetSelector$None = {ctor: 'None'};
 var _user$project$Components_TargetSelector$updateModel = F3(
 	function (props, str, model) {
-		var _p11 = props;
-		var records = _p11.records;
-		var customFields = _p11.customFields;
-		var _p12 = str;
-		switch (_p12) {
+		var _p10 = props;
+		var records = _p10.records;
+		var customFields = _p10.customFields;
+		var _p11 = str;
+		switch (_p11) {
 			case 'Name':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Name, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Description':
@@ -13946,12 +13995,12 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 			case 'Due Date With Time':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDateWithTime, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p13 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p12, customFields);
-				if ((_p13.ctor === 'Just') && (_p13._0.ctor === 'CustomEnumFieldInfo')) {
-					var _p15 = _p13._0._2;
+				var _p12 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p11, customFields);
+				if ((_p12.ctor === 'Just') && (_p12._0.ctor === 'CustomEnumFieldInfo')) {
+					var _p14 = _p12._0._2;
 					return A3(
 						_user$project$Base$pairMap,
-						A3(_user$project$Components_TargetSelector$CustomEnumField, _p13._0._0, _p13._0._1, _p15),
+						A3(_user$project$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
 						_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$EnumMsg),
 						_user$project$Components_TargetConfig$create(
 							{
@@ -13959,7 +14008,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 									return _user$project$Components_TargetConfig$Value(
 										A2(
 											_user$project$Util$find,
-											function (_p14) {
+											function (_p13) {
 												return A2(
 													F2(
 														function (x, y) {
@@ -13968,13 +14017,13 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 													str,
 													function (_) {
 														return _.name;
-													}(_p14));
+													}(_p13));
 											},
-											_p15));
+											_p14));
 								},
 								dataView: function (value) {
 									return _user$project$Components_Configs_EnumConfig$create(
-										{selectedId: value, enumOptions: _p15});
+										{selectedId: value, enumOptions: _p14});
 								},
 								records: records
 							}));
@@ -13989,43 +14038,43 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						A2(
 							_elm_lang$core$Maybe$withDefault,
 							_user$project$Components_TargetSelector$None,
-							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p13)));
+							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p12)));
 				}
 		}
 	});
 var _user$project$Components_TargetSelector$update = F3(
 	function (props, msg, model) {
-		var _p16 = {ctor: '_Tuple2', _0: msg, _1: model};
+		var _p15 = {ctor: '_Tuple2', _0: msg, _1: model};
 		_v7_4:
 		do {
-			if (_p16.ctor === '_Tuple2') {
-				switch (_p16._0.ctor) {
+			if (_p15.ctor === '_Tuple2') {
+				switch (_p15._0.ctor) {
 					case 'Selection':
-						return A3(_user$project$Components_TargetSelector$updateModel, props, _p16._0._0, model);
+						return A3(_user$project$Components_TargetSelector$updateModel, props, _p15._0._0, model);
 					case 'AssigneeMsg':
-						if (_p16._1.ctor === 'Assignee') {
+						if (_p15._1.ctor === 'Assignee') {
 							return A2(
 								_user$project$Base$mapFst,
 								_user$project$Components_TargetSelector$Assignee,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p16._0._0, _p16._1._0));
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p15._0._0, _p15._1._0));
 						} else {
 							break _v7_4;
 						}
 					case 'CompletionMsg':
-						if (_p16._1.ctor === 'Completion') {
+						if (_p15._1.ctor === 'Completion') {
 							return A2(
 								_user$project$Base$mapFst,
 								_user$project$Components_TargetSelector$Completion,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p16._0._0, _p16._1._0));
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p15._0._0, _p15._1._0));
 						} else {
 							break _v7_4;
 						}
 					default:
-						if (_p16._1.ctor === 'CustomEnumField') {
+						if (_p15._1.ctor === 'CustomEnumField') {
 							return A2(
 								_user$project$Base$mapFst,
-								A3(_user$project$Components_TargetSelector$CustomEnumField, _p16._1._0, _p16._1._1, _p16._1._2),
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p16._0._0, _p16._1._3));
+								A3(_user$project$Components_TargetSelector$CustomEnumField, _p15._1._0, _p15._1._1, _p15._1._2),
+								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p15._0._0, _p15._1._3));
 						} else {
 							break _v7_4;
 						}

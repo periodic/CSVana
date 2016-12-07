@@ -7,6 +7,7 @@ import Html.Events exposing (onClick, onInput, onFocus, onBlur, onMouseOver, onM
 import Asana.Api as Api
 import Asana.Model as Asana exposing (Named)
 import Base
+import CommonViews
 
 type alias Props a =
     { fetcher : String -> Cmd (Api.ApiResult (List a))
@@ -158,7 +159,7 @@ renderLoadingOption : Html (Msg a)
 renderLoadingOption =
     div [ class "Typeahead-option Typeahead-option--loading"
         ]
-        [ text "Loading..." ]
+        [ CommonViews.loadingIndicator ]
 
 renderNoResultsOption : Html (Msg a)
 renderNoResultsOption =
