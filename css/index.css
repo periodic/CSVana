@@ -372,3 +372,8 @@ h3 {
     transform: rotate(360deg);
   }
 }
+
+.ApiError {
+    color: #fff;
+    font-weight: bold;
+}

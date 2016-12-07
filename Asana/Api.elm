@@ -26,7 +26,10 @@ apiGetRequest : String -> Query -> Decoder a -> ApiRequest a
 apiGetRequest path query decoder token =
   let
       url = Http.url (apiRoot ++ path) query
-      headers = [("Authorization", "Bearer " ++ token)]
+      headers =
+          [ ("Authorization", "Bearer " ++ token)
+          -- , ("Asana-Fast-Api", "true" )
+          ]
       request =
           { url = url
           , headers = headers
@@ -43,7 +46,10 @@ apiPostRequest : String -> Query -> Value -> Decoder a -> ApiRequest a
 apiPostRequest path query body decoder token =
   let
       url = Http.url (apiRoot ++ path) query
-      headers = [("Authorization", "Bearer " ++ token)]
+      headers =
+          [ ("Authorization", "Bearer " ++ token)
+          -- , ("Asana-Fast-Api", "true" )
+          ]
       request =
           { url = url
           , headers = headers
