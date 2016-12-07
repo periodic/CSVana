@@ -11,12 +11,20 @@ body, input, select {
 select {
     background-color: white;
     width: 200px;
-    border-color: initial;
+    border: 1px solid #CDCFD2;
 }
 
 input[type=text] {
     width: 176px; /* 200 - 2*10 (padding) - 2*2 (border) */
     padding: 2px 10px;
+    border: 1px solid #CDCFD2;
+}
+
+select:hover,
+select:active,
+input[type=text]:hover,
+input[type=text]:focus {
+    border-color: #A1A4AA;
 }
 
 .button.primary {

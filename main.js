@@ -13281,19 +13281,20 @@ var _user$project$Components_TargetConfig$get = F2(
 				}),
 			_elm_lang$core$Set$toList(_p2.records),
 			_elm_lang$core$Array$toList(_p3.views));
-		var validMappings = A2(
+		var validMappings = A3(
+			_elm_lang$core$Basics$flip,
 			_elm_lang$core$List$filterMap,
+			recordViewPairs,
 			function (_p4) {
 				var _p5 = _p4;
-				var _p6 = _user$project$Base$get(_p5._1);
+				var _p6 = A2(_elm_lang$core$Maybe$andThen, _p5._1, _user$project$Base$get);
 				if (_p6.ctor === 'Just') {
 					return _elm_lang$core$Maybe$Just(
 						{ctor: '_Tuple2', _0: _p5._0, _1: _p6._0});
 				} else {
 					return _elm_lang$core$Maybe$Nothing;
 				}
-			},
-			recordViewPairs);
+			});
 		return _elm_lang$core$Dict$fromList(validMappings);
 	});
 var _user$project$Components_TargetConfig$Props = F3(
@@ -13304,8 +13305,18 @@ var _user$project$Components_TargetConfig$Model = F2(
 	function (a, b) {
 		return {views: a, isOpen: b};
 	});
+var _user$project$Components_TargetConfig$NeedsWork = function (a) {
+	return {ctor: 'NeedsWork', _0: a};
+};
+var _user$project$Components_TargetConfig$Value = function (a) {
+	return {ctor: 'Value', _0: a};
+};
 var _user$project$Components_TargetConfig$ClosePopup = {ctor: 'ClosePopup'};
 var _user$project$Components_TargetConfig$OpenPopup = {ctor: 'OpenPopup'};
+var _user$project$Components_TargetConfig$WorkComplete = F2(
+	function (a, b) {
+		return {ctor: 'WorkComplete', _0: a, _1: b};
+	});
 var _user$project$Components_TargetConfig$ChildMsg = F2(
 	function (a, b) {
 		return {ctor: 'ChildMsg', _0: a, _1: b};
@@ -13316,38 +13327,35 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 		_elm_lang$core$List$map,
 		_p8.defaultMap,
 		_elm_lang$core$Set$toList(_p8.records));
-	var _p9 = A3(
-		_elm_lang$core$List$foldr,
-		F2(
-			function (value, _p10) {
-				var _p11 = _p10;
-				var _p12 = _p8.dataView(value);
-				var view = _p12._0;
-				var cmd = _p12._1;
-				return {
-					ctor: '_Tuple2',
-					_0: A2(_elm_lang$core$List_ops['::'], view, _p11._0),
-					_1: A2(_elm_lang$core$List_ops['::'], cmd, _p11._1)
-				};
-			}),
-		{
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Native_List.fromArray(
-				[]),
-			_1: _elm_lang$core$Native_List.fromArray(
-				[])
-		},
-		mappedRecords);
+	var _p9 = _elm_lang$core$List$unzip(
+		A3(
+			_elm_lang$core$Basics$flip,
+			_elm_lang$core$List$indexedMap,
+			mappedRecords,
+			F2(
+				function (index, result) {
+					var _p10 = result;
+					if (_p10.ctor === 'Value') {
+						return A3(
+							_user$project$Base$pairMap,
+							_elm_lang$core$Maybe$Just,
+							_elm_lang$core$Platform_Cmd$map(
+								_user$project$Components_TargetConfig$ChildMsg(index)),
+							_p8.dataView(_p10._0));
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Maybe$Nothing,
+							_1: A2(
+								_elm_lang$core$Platform_Cmd$map,
+								_user$project$Components_TargetConfig$WorkComplete(index),
+								_p10._0)
+						};
+					}
+				})));
 	var views = _p9._0;
 	var cmds = _p9._1;
-	var cmd = _elm_lang$core$Platform_Cmd$batch(
-		A2(
-			_elm_lang$core$List$indexedMap,
-			function (_p13) {
-				return _elm_lang$core$Platform_Cmd$map(
-					_user$project$Components_TargetConfig$ChildMsg(_p13));
-			},
-			cmds));
+	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
 	return {
 		ctor: '_Tuple2',
 		_0: {
@@ -13357,33 +13365,63 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 		_1: cmd
 	};
 };
-var _user$project$Components_TargetConfig$update = F2(
-	function (msg, model) {
-		var _p14 = msg;
-		switch (_p14.ctor) {
+var _user$project$Components_TargetConfig$update = F3(
+	function (_p11, msg, model) {
+		var _p12 = _p11;
+		var _p13 = msg;
+		switch (_p13.ctor) {
 			case 'ChildMsg':
-				var _p17 = _p14._0;
-				var _p15 = A2(_elm_lang$core$Array$get, _p17, model.views);
-				if (_p15.ctor === 'Just') {
-					var _p16 = A3(
-						_user$project$Base$updateWith,
-						_user$project$Components_TargetConfig$ChildMsg(_p17),
-						_p14._1,
-						_p15._0);
-					var child$ = _p16._0;
-					var cmd = _p16._1;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								views: A3(_elm_lang$core$Array$set, _p17, child$, model.views)
-							}),
-						_1: cmd
-					};
+				var _p16 = _p13._0;
+				var _p14 = A2(_elm_lang$core$Array$get, _p16, model.views);
+				if (_p14.ctor === 'Just') {
+					if (_p14._0.ctor === 'Just') {
+						var _p15 = A3(
+							_user$project$Base$updateWith,
+							_user$project$Components_TargetConfig$ChildMsg(_p16),
+							_p13._1,
+							_p14._0._0);
+						var child$ = _p15._0;
+						var cmd = _p15._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									views: A3(
+										_elm_lang$core$Array$set,
+										_p16,
+										_elm_lang$core$Maybe$Just(child$),
+										model.views)
+								}),
+							_1: cmd
+						};
+					} else {
+						return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					}
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
+			case 'WorkComplete':
+				var _p18 = _p13._0;
+				var _p17 = _p12.dataView(_p13._1);
+				var child = _p17._0;
+				var cmd = _p17._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							views: A3(
+								_elm_lang$core$Array$set,
+								_p18,
+								_elm_lang$core$Maybe$Just(child),
+								model.views)
+						}),
+					_1: A2(
+						_elm_lang$core$Platform_Cmd$map,
+						_user$project$Components_TargetConfig$ChildMsg(_p18),
+						cmd)
+				};
 			case 'OpenPopup':
 				return {
 					ctor: '_Tuple2',
@@ -13402,62 +13440,72 @@ var _user$project$Components_TargetConfig$update = F2(
 				};
 		}
 	});
-var _user$project$Components_TargetConfig$subscriptions = function (_p18) {
-	var _p19 = _p18;
+var _user$project$Components_TargetConfig$subscriptions = function (_p19) {
+	var _p20 = _p19;
 	return _elm_lang$core$Platform_Sub$batch(
 		A2(
-			_elm_lang$core$List$indexedMap,
-			function (_p20) {
-				return _user$project$Base$subscriptionsWith(
-					_user$project$Components_TargetConfig$ChildMsg(_p20));
-			},
-			_elm_lang$core$Array$toList(_p19.views)));
+			_elm_lang$core$List$map,
+			_elm_lang$core$Maybe$withDefault(_elm_lang$core$Platform_Sub$none),
+			A2(
+				_elm_lang$core$List$indexedMap,
+				function (_p21) {
+					return _elm_lang$core$Maybe$map(
+						_user$project$Base$subscriptionsWith(
+							_user$project$Components_TargetConfig$ChildMsg(_p21)));
+				},
+				_elm_lang$core$Array$toList(_p20.views))));
 };
 var _user$project$Components_TargetConfig$recordView = F3(
 	function (views, index, record) {
-		var _p21 = A2(_elm_lang$core$Array$get, index, views);
-		if (_p21.ctor === 'Just') {
-			return A2(
-				_elm_lang$html$Html$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class('TargetConfig-recordView')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_elm_lang$html$Html$div,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Attributes$class('TargetConfig-recordView-record')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text(record)
-							])),
-						A2(
-						_elm_lang$html$Html$div,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html_Attributes$class('TargetConfig-recordView-view')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								A2(
-								_user$project$Base$viewWith,
-								_user$project$Components_TargetConfig$ChildMsg(index),
-								_p21._0)
-							]))
-					]));
-		} else {
-			return _elm_lang$core$Native_Utils.crashCase(
-				'Components.TargetConfig',
-				{
-					start: {line: 105, column: 5},
-					end: {line: 114, column: 84}
-				},
-				_p21)('Attempting to render a record for which there is no view.');
-		}
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('TargetConfig-recordView')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('TargetConfig-recordView-record')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(record)
+						])),
+					A2(
+					_elm_lang$html$Html$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Attributes$class('TargetConfig-recordView-view')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							function () {
+							var _p22 = A2(_elm_lang$core$Array$get, index, views);
+							if (_p22.ctor === 'Just') {
+								if (_p22._0.ctor === 'Just') {
+									return A2(
+										_user$project$Base$viewWith,
+										_user$project$Components_TargetConfig$ChildMsg(index),
+										_p22._0._0);
+								} else {
+									return _user$project$CommonViews$loadingIndicator;
+								}
+							} else {
+								return _elm_lang$core$Native_Utils.crashCase(
+									'Components.TargetConfig',
+									{
+										start: {line: 128, column: 15},
+										end: {line: 134, column: 92}
+									},
+									_p22)('Attempting to render a record for which there is no view.');
+							}
+						}()
+						]))
+				]));
 	});
 var _user$project$Components_TargetConfig$popupView = F2(
 	function (records, views) {
@@ -13515,19 +13563,19 @@ var _user$project$Components_TargetConfig$popupView = F2(
 					])));
 	});
 var _user$project$Components_TargetConfig$view = F2(
-	function (_p24, _p23) {
-		var _p25 = _p24;
-		var _p26 = _p23;
+	function (_p25, _p24) {
+		var _p26 = _p25;
+		var _p27 = _p24;
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_elm_lang$html$Html_Attributes$class('TargetConfig')
 				]),
-			_p26.isOpen ? _elm_lang$core$Native_List.fromArray(
+			_p27.isOpen ? _elm_lang$core$Native_List.fromArray(
 				[
 					_user$project$CommonViews$configButton(_user$project$Components_TargetConfig$OpenPopup),
-					A2(_user$project$Components_TargetConfig$popupView, _p25.records, _p26.views)
+					A2(_user$project$Components_TargetConfig$popupView, _p26.records, _p27.views)
 				]) : _elm_lang$core$Native_List.fromArray(
 				[
 					_user$project$CommonViews$configButton(_user$project$Components_TargetConfig$OpenPopup)
@@ -13537,7 +13585,7 @@ var _user$project$Components_TargetConfig$create = function (props) {
 	return _user$project$Base$create(
 		{
 			init: _user$project$Components_TargetConfig$init(props),
-			update: _user$project$Components_TargetConfig$update,
+			update: _user$project$Components_TargetConfig$update(props),
 			subscriptions: _user$project$Components_TargetConfig$subscriptions,
 			view: _user$project$Components_TargetConfig$view(props),
 			get: _user$project$Components_TargetConfig$get(props)
@@ -13807,7 +13855,8 @@ var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
 		return _user$project$Components_Configs_UserConfig$create(
 			{selectedUser: mValue, apiContext: _p7.apiContext});
 	};
-	var alwaysNothing = _elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing);
+	var alwaysNothing = _elm_lang$core$Basics$always(
+		_user$project$Components_TargetConfig$Value(_elm_lang$core$Maybe$Nothing));
 	var _p8 = _user$project$Components_TargetConfig$create(
 		{
 			defaultMap: alwaysNothing,
@@ -13847,12 +13896,13 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 					_user$project$Components_TargetConfig$create(
 						{
 							defaultMap: function (str) {
-								return _elm_lang$core$Maybe$Just(
-									_elm_lang$core$Native_Utils.eq(
-										_elm_lang$core$String$toLower(str),
-										'true') || _elm_lang$core$Native_Utils.eq(
-										_elm_lang$core$String$toLower(str),
-										'done'));
+								return _user$project$Components_TargetConfig$Value(
+									_elm_lang$core$Maybe$Just(
+										_elm_lang$core$Native_Utils.eq(
+											_elm_lang$core$String$toLower(str),
+											'true') || _elm_lang$core$Native_Utils.eq(
+											_elm_lang$core$String$toLower(str),
+											'done')));
 							},
 							dataView: function (mValue) {
 								return A2(
@@ -13880,20 +13930,21 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						_user$project$Components_TargetConfig$create(
 							{
 								defaultMap: function (str) {
-									return A2(
-										_user$project$Util$find,
-										function (_p12) {
-											return A2(
-												F2(
-													function (x, y) {
-														return _elm_lang$core$Native_Utils.eq(x, y);
-													}),
-												str,
-												function (_) {
-													return _.name;
-												}(_p12));
-										},
-										_p13);
+									return _user$project$Components_TargetConfig$Value(
+										A2(
+											_user$project$Util$find,
+											function (_p12) {
+												return A2(
+													F2(
+														function (x, y) {
+															return _elm_lang$core$Native_Utils.eq(x, y);
+														}),
+													str,
+													function (_) {
+														return _.name;
+													}(_p12));
+											},
+											_p13));
 								},
 								dataView: function (value) {
 									return _user$project$Components_Configs_EnumConfig$create(
@@ -14482,7 +14533,26 @@ var _user$project$Components_FieldMatcher$renderUploader = function (mUploader) 
 			_user$project$Components_FieldMatcher$UploaderMsg,
 			_user$project$Base$view(_p0._0));
 	} else {
-		return _elm_lang$html$Html$text('Click to start the import.');
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('FieldMatcher-button')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_elm_lang$html$Html$button,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html_Events$onClick(_user$project$Components_FieldMatcher$StartUpload),
+							_elm_lang$html$Html_Attributes$class('button primary')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text('Import')
+						]))
+				]));
 	}
 };
 var _user$project$Components_FieldMatcher$FieldOptionsMsg = function (a) {
@@ -14601,35 +14671,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('FieldMatcher-button')
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									A2(
-									_elm_lang$html$Html$button,
-									_elm_lang$core$Native_List.fromArray(
-										[
-											_elm_lang$html$Html_Events$onClick(_user$project$Components_FieldMatcher$StartUpload)
-										]),
-									_elm_lang$core$Native_List.fromArray(
-										[
-											_elm_lang$html$Html$text('Import')
-										]))
-								])),
-							A2(
-							_elm_lang$html$Html$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html_Attributes$class('FieldMatcher-progress')
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_user$project$Components_FieldMatcher$renderUploader(_p13.uploader)
-								]))
+							_user$project$Components_FieldMatcher$renderUploader(_p13.uploader)
 						]))
 				]));
 	});

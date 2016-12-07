@@ -26,9 +26,9 @@ type alias Props =
 
 type Msg
     = Selection String
-    | AssigneeMsg (TargetConfig.Msg UserConfig.Msg)
-    | CompletionMsg (TargetConfig.Msg CompletedConfig.Msg)
-    | EnumMsg (TargetConfig.Msg EnumConfig.Msg)
+    | AssigneeMsg (TargetConfig.Msg Asana.UserId UserConfig.Msg)
+    | CompletionMsg (TargetConfig.Msg Bool CompletedConfig.Msg)
+    | EnumMsg (TargetConfig.Msg Asana.CustomFieldEnumValue EnumConfig.Msg)
 
 type alias Data = Maybe Target
 type alias Instance = Base.Instance Data Msg
@@ -51,7 +51,7 @@ type Model
     | Name
     | Description
     | Assignee (TargetConfig.Instance Asana.UserId UserConfig.Msg)
-    | Completion (TargetConfig.Instance CompletedConfig.Data CompletedConfig.Msg)
+    | Completion (TargetConfig.Instance Bool CompletedConfig.Msg)
     | DueDate
     | DueDateWithTime
     | CustomEnumField
@@ -190,7 +190,7 @@ updateModel props str model =
                 Base.pairMap Completion (Cmd.map CompletionMsg)
                 <| TargetConfig.create
                     -- TODO: This mapping should go in with the decoders.
-                    { defaultMap = \str -> Just <| String.toLower str == "true" || String.toLower str == "done"
+                    { defaultMap = \str -> TargetConfig.Value <| Just <| String.toLower str == "true" || String.toLower str == "done"
                     , dataView = \mValue -> 
                         CompletedConfig.create { value = Maybe.withDefault False mValue }
                         -- Transform it to a Just Bool instance from a Bool instance.
@@ -207,7 +207,7 @@ updateModel props str model =
                         Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
                             <| TargetConfig.create
                                 -- TODO: This mapping should go in with the decoders.
-                                { defaultMap = \str -> find (.name >> (==) str) options
+                                { defaultMap = \str -> TargetConfig.Value <| find (.name >> (==) str) options
                                 , dataView = \value -> 
                                     EnumConfig.create
                                         { selectedId = value
@@ -247,8 +247,8 @@ withUnselect inner =
 assigneeComponent : Props -> (Model, Cmd Msg)
 assigneeComponent { records, apiContext } =
     let
-        alwaysNothing : String -> Maybe Asana.UserId
-        alwaysNothing = always Nothing
+        alwaysNothing : String -> TargetConfig.MapResult Asana.UserId
+        alwaysNothing = always <| TargetConfig.Value Nothing
 
         userConfig : Maybe Asana.User -> (UserConfig.Instance, Cmd UserConfig.Msg)
         userConfig mValue =

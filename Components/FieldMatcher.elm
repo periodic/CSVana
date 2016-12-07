@@ -99,7 +99,7 @@ view { csvHeaders} { fieldOptions, uploader } =
                 [ Base.viewWith FieldOptionsMsg fieldOptions ]
             ]
         , div [ class "FieldMatcher-upload" ]
-            [ renderUploader ]
+            [ renderUploader uploader ]
         ]
 
 renderHeaders : List String -> Html Msg
