@@ -74,6 +74,7 @@ updateTask target value task =
             in
                 Ok { task | customFields = customFields }
         CustomNumber id ->
+            if String.isEmpty value then Ok task else
             case String.toFloat value of
                 Ok num ->
                     let

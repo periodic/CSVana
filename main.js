@@ -11791,24 +11791,28 @@ var _user$project$Asana_Target$updateTask = F3(
 						task,
 						{customFields: customFields}));
 			case 'CustomNumber':
-				var _p5 = _elm_lang$core$String$toFloat(value);
-				if (_p5.ctor === 'Ok') {
-					var newField = {
-						ctor: '_Tuple2',
-						_0: _p0._0,
-						_1: _user$project$Asana_Model$NumberValue(_p5._0)
-					};
-					var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{customFields: customFields}));
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
 				} else {
-					return _elm_lang$core$Result$Err(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'Could not parse number from \'',
-							A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					var _p5 = _elm_lang$core$String$toFloat(value);
+					if (_p5.ctor === 'Ok') {
+						var newField = {
+							ctor: '_Tuple2',
+							_0: _p0._0,
+							_1: _user$project$Asana_Model$NumberValue(_p5._0)
+						};
+						var customFields = A2(_elm_lang$core$List_ops['::'], newField, task.customFields);
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{customFields: customFields}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse number from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
 				}
 			default:
 				var _p6 = A2(_elm_lang$core$Dict$get, value, _p0._1);
@@ -11866,6 +11870,13 @@ var _user$project$Asana_Target$Assignee = function (a) {
 };
 var _user$project$Asana_Target$Description = {ctor: 'Description'};
 var _user$project$Asana_Target$Name = {ctor: 'Name'};
+
+var _user$project$Asana_Urls$project = function (projectId) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'https://app.asana.com/0/',
+		A2(_elm_lang$core$Basics_ops['++'], projectId, '/list'));
+};
 
 var _user$project$CommonViews$spinner = A2(
 	_elm_lang$svg$Svg$svg,
@@ -14356,12 +14367,57 @@ var _user$project$Components_Uploader$viewError = function (error) {
 				]));
 	}
 };
-var _user$project$Components_Uploader$view = F2(
+var _user$project$Components_Uploader$viewProgress = F2(
 	function (_p6, _p5) {
 		var _p7 = _p6;
-		var _p10 = _p7.records;
 		var _p8 = _p5;
-		var _p9 = _p8.recordsProcessed;
+		return A2(
+			_elm_lang$html$Html$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--working')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					_elm_lang$core$String$concat(
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$core$Basics$toString(_p8.recordsProcessed),
+								' / ',
+								_elm_lang$core$Basics$toString(
+								_elm_lang$core$List$length(_p7.records))
+							])))
+				]));
+	});
+var _user$project$Components_Uploader$viewComplete = function (_p9) {
+	var _p10 = _p9;
+	return A2(
+		_elm_lang$html$Html$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--complete')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text('Complete.'),
+				_elm_lang$html$Html$text('You can view your '),
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$href(
+						_user$project$Asana_Urls$project(_p10.projectId))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('project in Asana')
+					])),
+				_elm_lang$html$Html$text('.')
+			]));
+};
+var _user$project$Components_Uploader$view = F2(
+	function (props, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -14370,33 +14426,16 @@ var _user$project$Components_Uploader$view = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(
-					_elm_lang$html$Html$div,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html_Attributes$class('Uploader-progress')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$core$Native_Utils.eq(
-							_p9,
-							_elm_lang$core$List$length(_p10)) ? _elm_lang$html$Html$text('Complete') : _elm_lang$html$Html$text(
-							_elm_lang$core$String$concat(
-								_elm_lang$core$Native_List.fromArray(
-									[
-										_elm_lang$core$Basics$toString(_p9),
-										' / ',
-										_elm_lang$core$Basics$toString(
-										_elm_lang$core$List$length(_p10))
-									])))
-						])),
+					_elm_lang$core$Native_Utils.eq(
+					model.recordsProcessed,
+					_elm_lang$core$List$length(props.records)) ? _user$project$Components_Uploader$viewComplete(props) : A2(_user$project$Components_Uploader$viewProgress, props, model),
 					A2(
 					_elm_lang$html$Html$div,
 					_elm_lang$core$Native_List.fromArray(
 						[
 							_elm_lang$html$Html_Attributes$class('Uploader-errors')
 						]),
-					A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, _p8.errors))
+					A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, model.errors))
 				]));
 	});
 var _user$project$Components_Uploader$Props = F4(

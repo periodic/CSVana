@@ -31,4 +31,3 @@ find pred xs =
             else List.tail xs `Maybe.andThen` find pred
         Nothing ->
             List.tail xs `Maybe.andThen` find pred
-

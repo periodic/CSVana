@@ -8,6 +8,7 @@ import String
 import Asana.Api as Api
 import Asana.Model as Asana
 import Asana.Target as Target
+import Asana.Urls as Urls
 import Base exposing (..)
 
 type alias Record = List String
@@ -111,14 +112,28 @@ updateTask row (col, mTarget, value) (task, errors) =
             (task, errors)
 
 view : Props -> Model -> Html Msg
-view { records } { recordsProcessed, errors } =
+view props model =
     div [ class "Uploader" ]
-        [ div [ class "Uploader-progress" ]
-            [ if recordsProcessed == List.length records
-                then text "Complete"
-                else text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ] ]
+        [ if model.recordsProcessed == List.length props.records
+                then viewComplete props
+                else viewProgress props model
         , div [ class "Uploader-errors" ]
-            (List.map viewError errors)
+            (List.map viewError model.errors)
+        ]
+
+viewComplete : Props -> Html Msg
+viewComplete { projectId } = 
+    div [ class "Uploader-progress Uploader-progress--complete" ]
+        [ text "Complete."
+        , text "You can view your "
+        , a [ href (Urls.project projectId) ] [ text "project in Asana" ]
+        , text "."
+        ]
+
+viewProgress : Props -> Model -> Html Msg
+viewProgress { records } { recordsProcessed } =
+    div [ class "Uploader-progress Uploader-progress--working" ]
+        [ text <| String.concat [ toString recordsProcessed, " / ", toString <| List.length records ]
         ]
 
 viewError : Error -> Html Msg
