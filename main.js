@@ -12148,40 +12148,75 @@ var _user$project$Components_ApiParallelResource$get = function (resource) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Components_ApiParallelResource$Props = F5(
-	function (a, b, c, d, e) {
-		return {child: a, fetches: b, unloadedView: c, loadingView: d, errorView: e};
+var _user$project$Components_ApiParallelResource$getLoaded = function (fetches) {
+	getLoaded:
+	while (true) {
+		var _p1 = _elm_lang$core$List$head(fetches);
+		if (_p1.ctor === 'Just') {
+			if (_p1._0.ctor === 'Done') {
+				return A2(
+					_elm_lang$core$List_ops['::'],
+					_p1._0._0,
+					_user$project$Components_ApiParallelResource$getLoaded(
+						A2(_elm_lang$core$List$drop, 1, fetches)));
+			} else {
+				var _v2 = A2(_elm_lang$core$List$drop, 1, fetches);
+				fetches = _v2;
+				continue getLoaded;
+			}
+		} else {
+			return _elm_lang$core$Native_List.fromArray(
+				[]);
+		}
+	}
+};
+var _user$project$Components_ApiParallelResource$isLoaded = function (fetch) {
+	var _p2 = fetch;
+	if (_p2.ctor === 'InProgress') {
+		return false;
+	} else {
+		return true;
+	}
+};
+var _user$project$Components_ApiParallelResource$max_retries = 3;
+var _user$project$Components_ApiParallelResource$Props = F4(
+	function (a, b, c, d) {
+		return {child: a, fetches: b, loadingView: c, errorView: d};
 	});
 var _user$project$Components_ApiParallelResource$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
 var _user$project$Components_ApiParallelResource$subscriptions = F2(
-	function (_p1, model) {
-		var _p2 = model;
-		if (_p2.ctor === 'Loaded') {
-			return A2(_user$project$Base$subscriptionsWith, _user$project$Components_ApiParallelResource$ChildMsg, _p2._0);
+	function (_p3, model) {
+		var _p4 = model;
+		if (_p4.ctor === 'Loaded') {
+			return A2(_user$project$Base$subscriptionsWith, _user$project$Components_ApiParallelResource$ChildMsg, _p4._0);
 		} else {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	});
 var _user$project$Components_ApiParallelResource$view = F2(
 	function (props, resource) {
-		var _p3 = resource;
-		switch (_p3.ctor) {
-			case 'Unloaded':
-				return props.unloadedView;
+		var _p5 = resource;
+		switch (_p5.ctor) {
 			case 'Loading':
 				return props.loadingView;
 			case 'Error':
-				return props.errorView(_p3._0);
+				return props.errorView(_p5._0);
 			default:
-				return A2(_user$project$Base$viewWith, _user$project$Components_ApiParallelResource$ChildMsg, _p3._0);
+				return A2(_user$project$Base$viewWith, _user$project$Components_ApiParallelResource$ChildMsg, _p5._0);
 		}
 	});
 var _user$project$Components_ApiParallelResource$ApiMsg = F2(
 	function (a, b) {
 		return {ctor: 'ApiMsg', _0: a, _1: b};
 	});
+var _user$project$Components_ApiParallelResource$Done = function (a) {
+	return {ctor: 'Done', _0: a};
+};
+var _user$project$Components_ApiParallelResource$InProgress = function (a) {
+	return {ctor: 'InProgress', _0: a};
+};
 var _user$project$Components_ApiParallelResource$Loaded = function (a) {
 	return {ctor: 'Loaded', _0: a};
 };
@@ -12191,57 +12226,56 @@ var _user$project$Components_ApiParallelResource$Error = function (a) {
 var _user$project$Components_ApiParallelResource$Loading = function (a) {
 	return {ctor: 'Loading', _0: a};
 };
-var _user$project$Components_ApiParallelResource$init = function (_p4) {
-	var _p5 = _p4;
-	var _p7 = _p5.fetches;
-	if (_elm_lang$core$List$isEmpty(_p7)) {
+var _user$project$Components_ApiParallelResource$init = function (_p6) {
+	var _p7 = _p6;
+	var _p9 = _p7.fetches;
+	if (_elm_lang$core$List$isEmpty(_p9)) {
 		return A3(
 			_user$project$Base$pairMap,
 			_user$project$Components_ApiParallelResource$Loaded,
 			_elm_lang$core$Platform_Cmd$map(_user$project$Components_ApiParallelResource$ChildMsg),
-			_p5.child(
+			_p7.child(
 				_elm_lang$core$Native_List.fromArray(
 					[])));
 	} else {
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			A2(
 				_elm_lang$core$List$indexedMap,
-				function (_p6) {
+				function (_p8) {
 					return _elm_lang$core$Platform_Cmd$map(
-						_user$project$Components_ApiParallelResource$ApiMsg(_p6));
+						_user$project$Components_ApiParallelResource$ApiMsg(_p8));
 				},
-				_p7));
+				_p9));
 		var model = _user$project$Components_ApiParallelResource$Loading(
 			A2(
 				_elm_lang$core$Array$repeat,
-				_elm_lang$core$List$length(_p7),
-				_elm_lang$core$Maybe$Nothing));
+				_elm_lang$core$List$length(_p9),
+				_user$project$Components_ApiParallelResource$InProgress(1)));
 		return {ctor: '_Tuple2', _0: model, _1: cmd};
 	}
 };
 var _user$project$Components_ApiParallelResource$update = F3(
 	function (props, msg, model) {
-		var _p8 = msg;
-		if (_p8.ctor === 'ApiMsg') {
-			var _p9 = {ctor: '_Tuple2', _0: model, _1: _p8._1};
-			if (_p9._1.ctor === 'Ok') {
-				if (_p9._0.ctor === 'Loading') {
+		var _p10 = msg;
+		if (_p10.ctor === 'ApiMsg') {
+			var _p17 = _p10._0;
+			var _p11 = {ctor: '_Tuple2', _0: model, _1: _p10._1};
+			if (_p11._0.ctor === 'Loading') {
+				if (_p11._1.ctor === 'Ok') {
 					var loadingData = A3(
 						_elm_lang$core$Array$set,
-						_p8._0,
-						_elm_lang$core$Maybe$Just(_p9._1._0),
-						_p9._0._0);
+						_p17,
+						_user$project$Components_ApiParallelResource$Done(_p11._1._0),
+						_p11._0._0);
 					if (A2(
 						_elm_lang$core$List$all,
-						_user$project$Base$isJust,
+						_user$project$Components_ApiParallelResource$isLoaded,
 						_elm_lang$core$Array$toList(loadingData))) {
-						var loadedData = A2(
-							_elm_lang$core$List$filterMap,
-							_elm_lang$core$Basics$identity,
+						var loadedData = _user$project$Components_ApiParallelResource$getLoaded(
 							_elm_lang$core$Array$toList(loadingData));
-						var _p10 = props.child(loadedData);
-						var child = _p10._0;
-						var childCmd = _p10._1;
+						var _p12 = props.child(loadedData);
+						var child = _p12._0;
+						var childCmd = _p12._1;
 						return {
 							ctor: '_Tuple2',
 							_0: _user$project$Components_ApiParallelResource$Loaded(child),
@@ -12255,23 +12289,61 @@ var _user$project$Components_ApiParallelResource$update = F3(
 						};
 					}
 				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+					var _p16 = _p11._1._0;
+					var _p15 = _p11._0._0;
+					var _p13 = {
+						ctor: '_Tuple2',
+						_0: A2(_elm_lang$core$Array$get, _p17, _p15),
+						_1: _p16
+					};
+					if ((((_p13.ctor === '_Tuple2') && (_p13._0.ctor === 'Just')) && (_p13._0._0.ctor === 'InProgress')) && (_p13._1.ctor === 'BadResponse')) {
+						var _p14 = _p13._0._0._0;
+						if ((_elm_lang$core$Native_Utils.cmp(_p14, _user$project$Components_ApiParallelResource$max_retries) < 0) && (!_elm_lang$core$Native_Utils.eq(_p13._1._0, 404))) {
+							var fetch = A2(
+								_elm_lang$core$Platform_Cmd$map,
+								_user$project$Components_ApiParallelResource$ApiMsg(_p17),
+								A2(
+									_elm_lang$core$Maybe$withDefault,
+									_elm_lang$core$Platform_Cmd$none,
+									_elm_lang$core$List$head(
+										A2(_elm_lang$core$List$drop, _p17, props.fetches))));
+							return {
+								ctor: '_Tuple2',
+								_0: _user$project$Components_ApiParallelResource$Loading(
+									A3(
+										_elm_lang$core$Array$set,
+										_p17,
+										_user$project$Components_ApiParallelResource$InProgress(_p14 + 1),
+										_p15)),
+								_1: fetch
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _user$project$Components_ApiParallelResource$Error(
+									A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
+								_1: _elm_lang$core$Platform_Cmd$none
+							};
+						}
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _user$project$Components_ApiParallelResource$Error(
+								A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
 				}
 			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Components_ApiParallelResource$Error(
-						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p9._1._0)),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		} else {
-			var _p11 = model;
-			if (_p11.ctor === 'Loaded') {
+			var _p18 = model;
+			if (_p18.ctor === 'Loaded') {
 				return A2(
 					_user$project$Base$mapFst,
 					_user$project$Components_ApiParallelResource$Loaded,
-					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p8._0, _p11._0));
+					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p10._0, _p18._0));
 			} else {
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
@@ -12287,7 +12359,6 @@ var _user$project$Components_ApiParallelResource$create = function (props) {
 			get: _user$project$Components_ApiParallelResource$get
 		});
 };
-var _user$project$Components_ApiParallelResource$Unloaded = {ctor: 'Unloaded'};
 
 var _user$project$Components_ApiResource$get = function (model) {
 	var _p0 = model;
@@ -12298,56 +12369,47 @@ var _user$project$Components_ApiResource$get = function (model) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Components_ApiResource$isUnloaded = function (model) {
-	var _p1 = model;
-	if (_p1.ctor === 'Unloaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
+var _user$project$Components_ApiResource$max_retries = 3;
 var _user$project$Components_ApiResource$isLoaded = function (model) {
-	var _p2 = model;
-	if (_p2.ctor === 'Loaded') {
+	var _p1 = model;
+	if (_p1.ctor === 'Loaded') {
 		return true;
 	} else {
 		return false;
 	}
 };
-var _user$project$Components_ApiResource$Props = F5(
-	function (a, b, c, d, e) {
-		return {child: a, fetch: b, unloadedView: c, loadingView: d, errorView: e};
+var _user$project$Components_ApiResource$Props = F4(
+	function (a, b, c, d) {
+		return {child: a, fetch: b, loadingView: c, errorView: d};
 	});
 var _user$project$Components_ApiResource$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
 var _user$project$Components_ApiResource$subscriptions = F2(
-	function (_p3, model) {
-		var _p4 = model;
-		if (_p4.ctor === 'Loaded') {
+	function (_p2, model) {
+		var _p3 = model;
+		if (_p3.ctor === 'Loaded') {
 			return A2(
 				_elm_lang$core$Platform_Sub$map,
 				_user$project$Components_ApiResource$ChildMsg,
-				_user$project$Base$subscriptions(_p4._0));
+				_user$project$Base$subscriptions(_p3._0));
 		} else {
 			return _elm_lang$core$Platform_Sub$none;
 		}
 	});
 var _user$project$Components_ApiResource$view = F2(
 	function (props, resource) {
-		var _p5 = resource;
-		switch (_p5.ctor) {
-			case 'Unloaded':
-				return props.unloadedView;
+		var _p4 = resource;
+		switch (_p4.ctor) {
 			case 'Loading':
 				return props.loadingView;
 			case 'Error':
-				return props.errorView(_p5._0);
+				return props.errorView(_p4._0);
 			default:
 				return A2(
 					_elm_lang$html$Html_App$map,
 					_user$project$Components_ApiResource$ChildMsg,
-					_user$project$Base$view(_p5._0));
+					_user$project$Base$view(_p4._0));
 		}
 	});
 var _user$project$Components_ApiResource$ApiMsg = function (a) {
@@ -12359,54 +12421,90 @@ var _user$project$Components_ApiResource$Loaded = function (a) {
 var _user$project$Components_ApiResource$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
-var _user$project$Components_ApiResource$update = F3(
-	function (props, msg, model) {
-		var _p6 = msg;
-		if (_p6.ctor === 'ApiMsg') {
-			var _p7 = _p6._0;
-			if (_p7.ctor === 'Ok') {
-				var _p8 = props.child(_p7._0);
-				var child = _p8._0;
-				var childCmd = _p8._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Components_ApiResource$Loaded(child),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
-				};
-			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Components_ApiResource$Error(
-						A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p7._0)),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			}
-		} else {
-			var _p9 = model;
-			if (_p9.ctor === 'Loaded') {
-				var _p10 = A2(_user$project$Base$update, _p6._0, _p9._0);
-				var child$ = _p10._0;
-				var childCmd = _p10._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _user$project$Components_ApiResource$Loaded(child$),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
-				};
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
-		}
-	});
-var _user$project$Components_ApiResource$Loading = {ctor: 'Loading'};
-var _user$project$Components_ApiResource$Unloaded = {ctor: 'Unloaded'};
-var _user$project$Components_ApiResource$init = function (_p11) {
-	var _p12 = _p11;
+var _user$project$Components_ApiResource$Loading = function (a) {
+	return {ctor: 'Loading', _0: a};
+};
+var _user$project$Components_ApiResource$init = function (_p5) {
+	var _p6 = _p5;
 	return {
 		ctor: '_Tuple2',
-		_0: _user$project$Components_ApiResource$Unloaded,
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, _p12.fetch)
+		_0: _user$project$Components_ApiResource$Loading(1),
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, _p6.fetch)
 	};
 };
+var _user$project$Components_ApiResource$update = F3(
+	function (props, msg, model) {
+		var _p7 = {ctor: '_Tuple2', _0: msg, _1: model};
+		_v5_2:
+		do {
+			if (_p7.ctor === '_Tuple2') {
+				if (_p7._0.ctor === 'ApiMsg') {
+					if (_p7._1.ctor === 'Loading') {
+						var _p12 = _p7._1._0;
+						var _p8 = _p7._0._0;
+						if (_p8.ctor === 'Ok') {
+							var _p9 = props.child(_p8._0);
+							var child = _p9._0;
+							var childCmd = _p9._1;
+							return {
+								ctor: '_Tuple2',
+								_0: _user$project$Components_ApiResource$Loaded(child),
+								_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
+							};
+						} else {
+							var _p11 = _p8._0;
+							if (_elm_lang$core$Native_Utils.cmp(_p12, _user$project$Components_ApiResource$max_retries) > -1) {
+								return {
+									ctor: '_Tuple2',
+									_0: _user$project$Components_ApiResource$Error(
+										A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								var _p10 = _p11;
+								if (_p10.ctor === 'BadResponse') {
+									return _elm_lang$core$Native_Utils.eq(_p10._0, 404) ? {
+										ctor: '_Tuple2',
+										_0: _user$project$Components_ApiResource$Error(
+											A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
+										_1: _elm_lang$core$Platform_Cmd$none
+									} : {
+										ctor: '_Tuple2',
+										_0: _user$project$Components_ApiResource$Loading(_p12 + 1),
+										_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, props.fetch)
+									};
+								} else {
+									return {
+										ctor: '_Tuple2',
+										_0: _user$project$Components_ApiResource$Loading(_p12 + 1),
+										_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, props.fetch)
+									};
+								}
+							}
+						}
+					} else {
+						break _v5_2;
+					}
+				} else {
+					if (_p7._1.ctor === 'Loaded') {
+						var _p13 = A2(_user$project$Base$update, _p7._0._0, _p7._1._0);
+						var child$ = _p13._0;
+						var childCmd = _p13._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _user$project$Components_ApiResource$Loaded(child$),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
+						};
+					} else {
+						break _v5_2;
+					}
+				}
+			} else {
+				break _v5_2;
+			}
+		} while(false);
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	});
 var _user$project$Components_ApiResource$create = function (props) {
 	return _user$project$Base$create(
 		{
@@ -15145,13 +15243,11 @@ var _user$project$Components_Asana$updateMatcher = F2(
 										_elm_lang$core$List$map,
 										A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
 										customFieldIds),
-									unloadedView: _user$project$CommonViews$loadingIndicator,
 									loadingView: _user$project$CommonViews$loadingIndicator,
 									errorView: _user$project$CommonViews$errorView
 								});
 						},
 						fetch: A2(_user$project$Asana_Api$project, _p4._0._0._1.id, _p9),
-						unloadedView: _user$project$CommonViews$loadingIndicator,
 						loadingView: _user$project$CommonViews$loadingIndicator,
 						errorView: _user$project$CommonViews$errorView
 					}));
@@ -15231,7 +15327,6 @@ var _user$project$Components_Asana$init = function (_p13) {
 						{token: _p17, user: user});
 				},
 				fetch: _user$project$Asana_Api$me(_p17),
-				unloadedView: _user$project$CommonViews$loadingIndicator,
 				loadingView: _user$project$CommonViews$loadingIndicator,
 				errorView: _user$project$CommonViews$errorView
 			}));

@@ -10,7 +10,6 @@ import Base
 type alias Props data model msg =
     { child : List data -> (Base.Instance model msg, Cmd msg)
     , fetches : List (Cmd (ApiResult data))
-    , unloadedView : Html (Msg data msg)
     , loadingView : Html (Msg data msg)
     , errorView : Http.Error -> Html (Msg data msg)
     }
@@ -37,9 +36,33 @@ create props =
 --------------------------------------------------------------------------------
 -- Private
 
+max_retries : Int
+max_retries = 3
+
+type Fetch data
+    = InProgress Int
+    | Done data
+
+isLoaded : Fetch a -> Bool
+isLoaded fetch =
+    case fetch of
+        InProgress _ ->
+            False
+        Done _ ->
+            True
+
+getLoaded : List (Fetch a) -> List a
+getLoaded fetches =
+    case List.head fetches of
+        Just (Done a) ->
+            a :: (getLoaded <| List.drop 1 fetches)
+        Just (InProgress _) ->
+            getLoaded <| List.drop 1 fetches
+        Nothing ->
+            []
+
 type Model data model msg
-    = Unloaded
-    | Loading (Array.Array (Maybe data))
+    = Loading (Array.Array (Fetch data))
     | Error Http.Error
     | Loaded (Base.Instance model msg)
 
@@ -54,15 +77,15 @@ get resource =
 init : Props data model msg -> (Model data model msg, Cmd (Msg data msg))
 init { fetches, child } =
     if List.isEmpty fetches
-        -- Automatically load if there is nothing to fetch.
-        -- TODO: Combine this with the logic in update.
-        then Base.pairMap Loaded (Cmd.map ChildMsg) <| child []
-        else
-            let
-                model = Loading <| Array.repeat (List.length fetches) Nothing
-                cmd = Cmd.batch <| List.indexedMap (Cmd.map << ApiMsg) fetches
-            in
-                (model , cmd)
+    -- Automatically load if there is nothing to fetch.
+    -- TODO: Combine this with the logic in update.
+    then Base.pairMap Loaded (Cmd.map ChildMsg) <| child []
+    else
+        let
+            model = Loading <| Array.repeat (List.length fetches) (InProgress 1)
+            cmd = Cmd.batch <| List.indexedMap (Cmd.map << ApiMsg) fetches
+        in
+            (model , cmd)
 
 -- Note, the type of the resource currently doesn't matter because it gets replaced...
 update : Props data model msg -> Msg data msg -> Model data model msg -> (Model data model msg, Cmd (Msg data msg))
@@ -72,19 +95,34 @@ update props msg model =
             case (model, apiResult) of 
                 (Loading data, Ok datum) ->
                     let
-                        loadingData = Array.set index (Just datum) data
+                        loadingData = Array.set index (Done datum) data
                     in
-                        if List.all Base.isJust <| Array.toList loadingData
-                            then 
+                        if List.all isLoaded <| Array.toList loadingData
+                        then 
+                            let
+                                loadedData = getLoaded <| Array.toList loadingData
+                                (child, childCmd) = props.child loadedData
+                            in
+                                (Loaded child, Cmd.map ChildMsg childCmd)
+                        else
+                            (Loading loadingData, Cmd.none)
+                (Loading data, Err err) ->
+                    case (Array.get index data, err) of
+                        (Just (InProgress attempts), Http.BadResponse statusCode _) ->
+                            if attempts < max_retries && statusCode /= 404
+                            then
                                 let
-                                    loadedData = List.filterMap identity <| Array.toList loadingData
-                                    (child, childCmd) = props.child loadedData
+                                    fetch =
+                                        List.drop index props.fetches
+                                        |> List.head
+                                        |> Maybe.withDefault (Cmd.none)
+                                        |> Cmd.map (ApiMsg index)
                                 in
-                                    (Loaded child, Cmd.map ChildMsg childCmd)
+                                    (Loading (Array.set index (InProgress (attempts + 1)) data), fetch)
                             else
-                                (Loading loadingData, Cmd.none)
-                (_, Err msg) ->
-                    (Error (Debug.log "ApiResource received an HTTP error" msg), Cmd.none)
+                                (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
+                        _ ->
+                            (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
                 (_, _) ->
                     (model, Cmd.none)
         ChildMsg msg ->
@@ -106,8 +144,6 @@ subscriptions _ model =
 view : Props data model msg -> Model data model msg -> Html (Msg data msg)
 view props resource =
     case resource of
-        Unloaded ->
-            props.unloadedView
         Loading _ ->
             props.loadingView
         Error error ->

@@ -60,7 +60,6 @@ init {token} =
                     , user = user
                     }
             , fetch = Api.me token
-            , unloadedView = CommonViews.loadingIndicator
             , loadingView = CommonViews.loadingIndicator
             , errorView = CommonViews.errorView
             }
@@ -145,12 +144,10 @@ updateMatcher { token } (model, cmd) =
                                                 }
                                             }
                                     , fetches = List.map (flip Api.customField token) customFieldIds
-                                    , unloadedView = CommonViews.loadingIndicator
                                     , loadingView = CommonViews.loadingIndicator
                                     , errorView = CommonViews.errorView
                                     }
                         , fetch = Api.project project.id token
-                        , unloadedView = CommonViews.loadingIndicator
                         , loadingView = CommonViews.loadingIndicator
                         , errorView = CommonViews.errorView
                         }
