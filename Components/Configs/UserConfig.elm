@@ -60,17 +60,17 @@ update props msg model =
     case msg of
         Selection selectedUser ->
             makeModel { props | selectedUser = selectedUser }
-        TypeaheadMsg msg' ->
+        TypeaheadMsg msg_ ->
             case model of
                 Unselected ta ->
                     let
-                        (ta', taCmd) = Base.updateWith TypeaheadMsg msg' ta
+                        (ta_, taCmd) = Base.updateWith TypeaheadMsg msg_ ta
                     in
-                        case Base.get ta' of
+                        case Base.get ta_ of
                             Just user ->
                                 makeModel { props | selectedUser = Just user }
                             Nothing ->
-                                (Unselected ta', taCmd)
+                                (Unselected ta_, taCmd)
                 _ ->
                     (model, Cmd.none)
 

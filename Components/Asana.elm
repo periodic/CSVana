@@ -1,7 +1,6 @@
 module Components.Asana exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (Html, div, h3, text, p)
-import Html.App
 import Html.Attributes exposing (class)
 
 import Asana.Api as Api
@@ -87,41 +86,41 @@ update =
 processMessage : Props -> Msg -> Model -> (Model, Cmd Msg)
 processMessage props msg model =
     case msg of
-        FormMsg msg' ->
+        FormMsg msg_ ->
             let
-                (form', formCmd) = Base.update msg' model.form
-                model' = { model | form = form' }
+                (form_, formCmd) = Base.update msg_ model.form
+                model_ = { model | form = form_ }
                 cmd = Cmd.map FormMsg formCmd
                 project = Base.get model.form
-                project' = Base.get model'.form
+                project_ = Base.get model_.form
             in
-                if project /= project'
-                    then updateMatcher props (model', cmd)
-                    else (model', cmd)
-        CsvMsg msg' ->
+                if project /= project_
+                    then updateMatcher props (model_, cmd)
+                    else (model_, cmd)
+        CsvMsg msg_ ->
             let
-                (csv', csvCmd) = Base.updateWith CsvMsg msg' model.csv
-                model' = { model | csv = csv' }
+                (csv_, csvCmd) = Base.updateWith CsvMsg msg_ model.csv
+                model_ = { model | csv = csv_ }
                 (headers, _) = Base.get model.csv |> Maybe.withDefault ([], [])
-                (headers', _) = Base.get csv' |> Maybe.withDefault ([], [])
+                (headers_, _) = Base.get csv_ |> Maybe.withDefault ([], [])
             in
-                if headers /= headers'
-                    then updateMatcher props (model', csvCmd)
-                    else (model', csvCmd)
-        FieldMatcherMsg msg' ->
+                if headers /= headers_
+                    then updateMatcher props (model_, csvCmd)
+                    else (model_, csvCmd)
+        FieldMatcherMsg msg_ ->
             case model.fieldMatcher of
                 Just matcher ->
                     let
-                        (matcher', matcherCmd) = Base.update msg' matcher
+                        (matcher_, matcherCmd) = Base.update msg_ matcher
                         cmd = Cmd.map FieldMatcherMsg matcherCmd
                     in
-                        ({ model | fieldMatcher = Just matcher' }, cmd)
+                        ({ model | fieldMatcher = Just matcher_ }, cmd)
                 Nothing ->
                     (model, Cmd.none)
 
 updateMatcher : Props -> (Model, Cmd Msg) -> (Model, Cmd Msg)
 updateMatcher { token } (model, cmd) =
-    case (Base.get model.form `Maybe.andThen` identity, Base.get model.csv) of
+    case (Base.get model.form |> Maybe.andThen identity, Base.get model.csv) of
         (Just (workspaceId, project), Just (headers, records)) ->
             let
                 (matcher, matcherCmd) = Base.mapCmd FieldMatcherMsg
@@ -169,14 +168,14 @@ viewInputs props model =
         [ div [ class "Asana-csv Cell -5of12" ]
             [ h3 [] [ text "CSV"]
             , p [ class "Asana-infoText" ] [ text "Upload a CSV file:" ]
-            , Html.App.map CsvMsg <| Base.view model.csv
+            , Base.viewWith CsvMsg model.csv
             ]
         , div [ class "Asana-arrow Cell -2of12" ]
             [ text "→" ]
         , div [ class "Asana-form Cell -5of12" ]
             [ h3 [] [ text "Asana" ]
             , p [ class "Asana-infoText" ] [ text "Select an Asana project:" ]
-            , Html.App.map FormMsg <| Base.view model.form
+            , Base.viewWith FormMsg model.form
             ]
         ]
 
@@ -185,6 +184,6 @@ viewMatcher props { fieldMatcher } =
     case fieldMatcher of
         Just matcher ->
             div [ class "Asana-matcher" ]
-                [ Html.App.map FieldMatcherMsg <| Base.view matcher ]
+                [ Base.viewWith FieldMatcherMsg matcher ]
         Nothing ->
             div [ class "Asana-matcher--disabled" ] []

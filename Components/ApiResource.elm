@@ -1,7 +1,6 @@
 module Components.ApiResource exposing (Props, Instance, Msg, create)
 
 import Html exposing (Html)
-import Html.App as App exposing (map)
 import Http
 
 import Asana.Api exposing (ApiResult)
@@ -61,12 +60,12 @@ init : Props data model msg -> (Model model msg, Cmd (Msg data msg))
 init { fetch } =
     (Loading 1, Cmd.map ApiMsg fetch)
 
--- Note, the type of the resource currently doesn't matter because it gets replaced...
+-- Note, the type of the resource currently doesn_t matter because it gets replaced...
 update : Props data model msg -> Msg data msg -> Model model msg -> (Model model msg, Cmd (Msg data msg))
 update props msg model =
     case (msg, model) of
         (ApiMsg apiResult, Loading attempts) ->
-            case apiResult of 
+            case apiResult of
                 Ok data ->
                     let
                         (child, childCmd) = props.child data
@@ -74,20 +73,25 @@ update props msg model =
                         (Loaded child, Cmd.map ChildMsg childCmd)
                 Err err ->
                     if attempts >= max_retries
-                        then (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
-                        else 
+                        then
+                            (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
+                        else
                             case err of
-                                Http.BadResponse statusCode _ ->
-                                    if statusCode == 404
-                                        then (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
+                                Http.BadStatus response ->
+                                    if response.status.code == 404
+                                        then (Error (Debug.log "Could not find the expected resource" err), Cmd.none)
                                         else (Loading (attempts + 1), Cmd.map ApiMsg props.fetch)
-                                _ ->
+                                Http.Timeout ->
                                     (Loading (attempts + 1), Cmd.map ApiMsg props.fetch)
+                                Http.NetworkError ->
+                                    (Loading (attempts + 1), Cmd.map ApiMsg props.fetch)
+                                _ ->
+                                    (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
         (ChildMsg msg, Loaded child) ->
             let
-                (child', childCmd) = Base.update msg child
+                (child_, childCmd) = Base.update msg child
             in
-                (Loaded child', Cmd.map ChildMsg childCmd)
+                (Loaded child_, Cmd.map ChildMsg childCmd)
         _ ->
             -- TODO: Log something here.
             (model, Cmd.none)
@@ -108,4 +112,4 @@ view props resource =
         Error error ->
             props.errorView error
         Loaded child ->
-            App.map ChildMsg <| Base.view child
+            Base.viewWith ChildMsg child

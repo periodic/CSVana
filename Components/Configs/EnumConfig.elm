@@ -45,7 +45,7 @@ update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update { enumOptions } msg model =
     case msg of
         NewValue selectedId ->
-            (selectedId `Maybe.andThen` \id -> Util.find (.id >> (==) id) enumOptions, Cmd.none)
+            (selectedId |> Maybe.andThen (\id -> Util.find (.id >> (==) id) enumOptions), Cmd.none)
 
 view : Props -> Model -> Html Msg
 view props val =

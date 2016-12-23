@@ -28,6 +28,6 @@ find pred xs =
         Just x ->
             if pred x
             then Just x
-            else List.tail xs `Maybe.andThen` find pred
+            else List.tail xs |> Maybe.andThen (find pred)
         Nothing ->
-            List.tail xs `Maybe.andThen` find pred
+            List.tail xs |> Maybe.andThen (find pred)

@@ -9,7 +9,9 @@ import Base
 import Components.Asana as Asana
 import Components.OAuthBoundary as OAuthBoundary
 
-type alias Msg = OAuthBoundary.Msg Asana.Msg
+type Msg
+    = OAuthMsg (OAuthBoundary.Msg Asana.Msg)
+    | LocationChange Navigation.Location
 type alias Model =
     OAuthBoundary.Instance Asana.Data Asana.Msg
 
@@ -19,7 +21,7 @@ init location =
         (clientId, baseRedirectUrl) =
             Maybe.withDefault ("", "")
             <| List.head
-            <| List.filter (snd >> String.contains location.origin)
+            <| List.filter (Tuple.second >> String.contains location.origin)
                 [ ("192968333753040", "https://localhost:8000")
                 , ("217803124707970", "https://periodic.github.io/CSVana")
                 , ("226996294984037", "https://asana.github.io/CSVana")
@@ -32,17 +34,18 @@ init location =
                     Asana.create { token = token }
                 }
     in
-        OAuthBoundary.create oauthProps
+        OAuthBoundary.create oauthProps |> Base.mapCmd OAuthMsg
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update = Base.update
+update msg model=
+    case msg of
+        OAuthMsg msg_ ->
+            Base.updateWith OAuthMsg msg_ model
+        _ ->
+            (model, Cmd.none)
 
 subscriptions : Model -> Sub Msg
-subscriptions = Base.subscriptions
-
-urlUpdate : Navigation.Location -> Model -> (Model, Cmd Msg)
-urlUpdate location model =
-    (model, Cmd.none)
+subscriptions = Base.subscriptionsWith OAuthMsg
 
 view : Model -> Html Msg
 view model =
@@ -50,16 +53,14 @@ view model =
         [ header [ class "Main-header" ]
             [ h1 [] [ text "CSVana" ] ]
         , div [ class "Main-form" ]
-            [ Base.view model ]
+            [ Base.viewWith OAuthMsg model ]
         ]
 
-main : Program Never
+main : Program Never Model Msg
 main =
-    Navigation.program
-        (Navigation.makeParser identity)
+    Navigation.program LocationChange
         { init = init
         , update = update
-        , urlUpdate = urlUpdate
         , subscriptions = subscriptions
         , view = view
         }

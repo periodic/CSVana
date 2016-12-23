@@ -1,7 +1,6 @@
 module Components.FieldMatcher exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
-import Html.App
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
@@ -66,18 +65,18 @@ init {csvHeaders, csvRecords, customFields, apiContext} =
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
     case msg of
-        FieldOptionsMsg msg' ->
+        FieldOptionsMsg msg_ ->
             let
-                (fieldOptions', fieldOptionsCmd) = Base.update msg' model.fieldOptions
+                (fieldOptions_, fieldOptionsCmd) = Base.update msg_ model.fieldOptions
             in
-                ({ model | fieldOptions = fieldOptions' }, Cmd.map FieldOptionsMsg fieldOptionsCmd)
-        UploaderMsg msg' ->
+                ({ model | fieldOptions = fieldOptions_ }, Cmd.map FieldOptionsMsg fieldOptionsCmd)
+        UploaderMsg msg_ ->
             case model.uploader of
                 Just uploader ->
                     let
-                        (uploader', uploaderCmd) = Base.update msg' uploader
+                        (uploader_, uploaderCmd) = Base.update msg_ uploader
                     in
-                        ({ model | uploader = Just uploader' }, Cmd.map UploaderMsg uploaderCmd)
+                        ({ model | uploader = Just uploader_ }, Cmd.map UploaderMsg uploaderCmd)
                 Nothing ->
                     (model, Cmd.none)
         StartUpload ->
@@ -116,7 +115,7 @@ renderUploader : Maybe Uploader.Instance -> Html Msg
 renderUploader mUploader =
     case mUploader of
         Just uploader ->
-            Html.App.map UploaderMsg <| Base.view uploader
+            Base.viewWith UploaderMsg uploader
         Nothing ->
             div [ class "FieldMatcher-button" ]
                 [ button [ onClick StartUpload, class "button primary" ] [ text "Import" ] ]

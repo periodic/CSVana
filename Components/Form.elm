@@ -1,7 +1,7 @@
 module Components.Form exposing (Props, Data, Msg, Instance, create)
 
 import Html exposing (Html, div, text, input, label, h3)
-import Html.Attributes exposing (class, disabled, type')
+import Html.Attributes exposing (class, disabled, type_)
 
 import Asana.Api as Api
 import Asana.Model as Asana
@@ -47,7 +47,7 @@ get { workspaceSelector, projectTypeahead } =
         workspace = Base.get workspaceSelector
     in
         Base.get workspaceSelector
-            `Maybe.andThen` (\workspace -> projectTypeahead `Maybe.andThen` Base.get |> Maybe.map ((,) workspace))
+            |> Maybe.andThen (\workspace -> projectTypeahead |> Maybe.andThen Base.get |> Maybe.map ((,) workspace))
 
 init : Props -> (Model, Cmd Msg)
 init {token, user} =
@@ -66,28 +66,28 @@ init {token, user} =
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
     case msg of
-        WorkspaceSelectorMsg msg' ->
-            updateWorkspace props msg' model
-        ProjectTypeaheadMsg msg' ->
-            updateProject props msg' model
+        WorkspaceSelectorMsg msg_ ->
+            updateWorkspace props msg_ model
+        ProjectTypeaheadMsg msg_ ->
+            updateProject props msg_ model
 
 updateProject : Props -> (Typeahead.Msg Asana.ProjectResource) -> Model -> (Model, Cmd Msg)
 updateProject {token} msg model =
     case model.projectTypeahead of
         Just typeahead ->
             let
-                (typeahead', cmd) = Base.updateWith ProjectTypeaheadMsg msg typeahead
+                (typeahead_, cmd) = Base.updateWith ProjectTypeaheadMsg msg typeahead
             in
-                ({ model | projectTypeahead = Just typeahead' }, cmd)
+                ({ model | projectTypeahead = Just typeahead_ }, cmd)
         Nothing ->
             (model, Cmd.none)
 
 updateWorkspace : Props -> WorkspaceSelector.Msg -> Model -> (Model, Cmd Msg)
 updateWorkspace { token } msg model =
     let
-        (wss', wsscmd) = Base.updateWith WorkspaceSelectorMsg msg model.workspaceSelector
+        (wss_, wsscmd) = Base.updateWith WorkspaceSelectorMsg msg model.workspaceSelector
         (typeahead, typeaheadCmd) =
-            case Base.get wss' of
+            case Base.get wss_ of
                 Just workspaceId ->
                     -- TODO: Only create a new typeahead if the workspace changes.
                     Base.mapFst Just
@@ -98,7 +98,7 @@ updateWorkspace { token } msg model =
                     (Nothing, Cmd.none)
         cmd = Cmd.batch [wsscmd, typeaheadCmd]
     in
-        ({ model | workspaceSelector = wss', projectTypeahead = typeahead }, cmd)
+        ({ model | workspaceSelector = wss_, projectTypeahead = typeahead }, cmd)
 
 view : Props -> Model -> Html Msg
 view _ model =
@@ -110,7 +110,7 @@ view _ model =
                 Just typeahead ->
                     Base.viewWith ProjectTypeaheadMsg typeahead
                 Nothing ->
-                    div [] [ input [ class "AsanaForm-projectInput--disabled", type' "text", disabled True ] [] ]
+                    div [] [ input [ class "AsanaForm-projectInput--disabled", type_ "text", disabled True ] [] ]
     in
         div [ class "AsanaForm" ]
             [ div [ class "AsanaForm-workspaces" ]

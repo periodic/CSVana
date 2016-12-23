@@ -34,7 +34,7 @@ create props =
 
 numFields : Data -> Maybe Int
 numFields =
-    Maybe.map (fst >> List.length)
+    Maybe.map (Tuple.first >> List.length)
 
 --------------------------------------------------------------------------------
 -- Private
@@ -58,7 +58,7 @@ update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update _ msg model =
     case msg of
         MoreData chunk ->
-            ({model | csvData = Just (Csv.parse chunk) }, Cmd.none)
+            ({model | csvData = Csv.parse chunk |> Result.toMaybe }, Cmd.none)
         NewFiles files ->
             case List.head files of
                 Just file ->
@@ -75,9 +75,9 @@ view : Props -> Model -> Html Msg
 view _ model =
     div [ class "Csv" ] 
         [ div [ class "Csv-fileInput" ]
-            [ input [ type' "file", FileReader.onFileInput (NewFiles) ] [] ]
+            [ input [ type_ "file", FileReader.onFileInput (NewFiles) ] [] ]
         , div [ class "Csv-headerInput" ]
-            [ input [ type' "checkbox", onClick (HasHeaderRow <| not model.hasHeaderRow), checked model.hasHeaderRow ] []
+            [ input [ type_ "checkbox", onClick (HasHeaderRow <| not model.hasHeaderRow), checked model.hasHeaderRow ] []
             , text "Header Row"
             ]
         ]

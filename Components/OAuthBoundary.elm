@@ -1,8 +1,7 @@
 module Components.OAuthBoundary exposing (Instance, Msg, Data, Props, create)
 
-import Html.App
 import Html exposing (Html, div, text, input)
-import Html.Attributes exposing (class, type', value)
+import Html.Attributes exposing (class, type_, value)
 import Html.Events as Events
 
 import Asana.Api exposing (Token)
@@ -60,22 +59,22 @@ update props msg model =
             case OAuth.getState model.oauth of
                 OAuth.Ready ->
                     let
-                        (oauth', oauthCmd) = Base.mapCmd OAuthMsg <| OAuth.authenticate model.oauth
+                        (oauth_, oauthCmd) = Base.mapCmd OAuthMsg <| OAuth.authenticate model.oauth
                     in
-                        ({ model | oauth = oauth' }, oauthCmd)
+                        ({ model | oauth = oauth_ }, oauthCmd)
                 _ ->
                     (model, Cmd.none)
-        OAuthMsg msg' ->
-            updateOAuth props msg' model
-        ChildMsg msg' ->
-            updateChild msg' model
+        OAuthMsg msg_ ->
+            updateOAuth props msg_ model
+        ChildMsg msg_ ->
+            updateChild msg_ model
 
 updateOAuth : Props data msg -> OAuth.Msg -> Model data msg -> (Model data msg, Cmd (Msg msg))
 updateOAuth props msg model =
             let
-                (oauth', oauthCmd1) = Base.mapCmd OAuthMsg <| OAuth.update msg model.oauth
+                (oauth_, oauthCmd1) = Base.mapCmd OAuthMsg <| OAuth.update msg model.oauth
             in
-                case OAuth.getToken oauth' of
+                case OAuth.getToken oauth_ of
                     Just token ->
                         let
                             (child, childCmd) =
@@ -83,18 +82,18 @@ updateOAuth props msg model =
                                     |> Base.mapCmd ChildMsg
                             cmd = Cmd.batch [ oauthCmd1, childCmd ]
                         in
-                            ({ model | oauth = oauth', child = Just child }, cmd)
+                            ({ model | oauth = oauth_, child = Just child }, cmd)
                     Nothing ->
-                        ({ model | oauth = oauth' }, oauthCmd1)
+                        ({ model | oauth = oauth_ }, oauthCmd1)
 
 updateChild : msg -> Model data msg -> (Model data msg, Cmd (Msg msg))
 updateChild msg model =
     case model.child of
         Just child ->
             let
-                (child', childCmd) = Base.mapCmd ChildMsg <| Base.update msg child
+                (child_, childCmd) = Base.mapCmd ChildMsg <| Base.update msg child
             in
-                ({ model | child = Just child' }, childCmd)
+                ({ model | child = Just child_ }, childCmd)
         _ ->
             (model, Cmd.none)
 
@@ -102,14 +101,14 @@ view : Props data msg -> Model data msg -> Html (Msg msg)
 view _ model =
     case model.child of
         Just child ->
-            Html.App.map ChildMsg <| Base.view child
+            Base.viewWith ChildMsg child
         _ ->
             unauthenticatedView
 
 unauthenticatedView : Html (Msg msg)
 unauthenticatedView =
     div [ class "OAuthBoundary OAuthBoundary--authorizing" ]
-        [ input [ type' "button"
+        [ input [ type_ "button"
                 , class "OAuthBoundary-authenticateButton button primary"
                 , Events.onClick StartAuth 
                 , value "Connect to Asana"

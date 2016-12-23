@@ -1,7 +1,7 @@
 Name,Description,Completed,Assignee,Date Only,Date With Time,Custom String,Custom Number,Custom Enum
-"Task 1","Desc 1",true,drewhaven@asana.com,"2016-11-24T08:00:00Z","","String1","1" ,"Option 1"
+"Task 1","Desc 1",true,drewhaven@asana.com,"2016-11-24T08:00:00Z","","String1","1","Option 1"
 "Task 2","Desc 2",Done,Drew,"2016-11-24","","String2","2.00","Option 2"
 "Task 3","Desc 3",yes,Amy,"11/24/2016 16:00:00","","String3","3.0001","Invalid"
 "Task 4","Desc 4",no,Drew 2,"","2016-11-24","String4","-4",""
 "Task 5","Desc 5",false,,"","2016-11-24T08:00:00Z","String5","",""
-"Task 6","Desc 6","",,"11/24/2016 12:00:00","String6","1e5",""
+"Task name, with commas!","Desc 6","",,"11/24/2016 12:00:00","String6","1e5",""

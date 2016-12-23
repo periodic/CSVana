@@ -95,12 +95,12 @@ update props msg model =
     case (msg, model) of
         (Selection str, _) ->
             updateModel props str model
-        (AssigneeMsg msg', Assignee inst) ->
-            Base.updateWith AssigneeMsg msg' inst |> Base.mapFst Assignee
-        (CompletionMsg msg', Completion inst) ->
-            Base.updateWith CompletionMsg msg' inst |> Base.mapFst Completion
-        (EnumMsg msg', CustomEnumField id name options inst) ->
-            Base.updateWith EnumMsg msg' inst |> Base.mapFst (CustomEnumField id name options)
+        (AssigneeMsg msg_, Assignee inst) ->
+            Base.updateWith AssigneeMsg msg_ inst |> Base.mapFst Assignee
+        (CompletionMsg msg_, Completion inst) ->
+            Base.updateWith CompletionMsg msg_ inst |> Base.mapFst Completion
+        (EnumMsg msg_, CustomEnumField id name options inst) ->
+            Base.updateWith EnumMsg msg_ inst |> Base.mapFst (CustomEnumField id name options)
         -- Careful, this is a catchall for all the cases where the message does not match the model.
         _ ->
             (model, Cmd.none)

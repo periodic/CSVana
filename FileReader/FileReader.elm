@@ -1,6 +1,6 @@
 port module FileReader.FileReader exposing (..)
 
-import Json.Decode exposing (Decoder, at, object3, string, int, value, keyValuePairs, maybe, (:=), map)
+import Json.Decode exposing (Decoder, at, map3, string, int, value, keyValuePairs, maybe, field, map)
 import Html exposing (Attribute)
 import Html.Events exposing (on)
 
@@ -23,11 +23,11 @@ onFileInput wrapper =
 parseFiles : Decoder (List FileInfo)
 parseFiles =
     at [ "target", "files" ] <|
-        map (List.filterMap snd) (keyValuePairs <| maybe fileInfoParser)
+        map (List.filterMap Tuple.second) (keyValuePairs <| maybe fileInfoParser)
 
 fileInfoParser : Decoder FileInfo
 fileInfoParser =
-    object3 FileInfo
-        ("name" := string)
-        ("size" := int)
+    map3 FileInfo
+        (field "name" string)
+        (field "size" int)
         value

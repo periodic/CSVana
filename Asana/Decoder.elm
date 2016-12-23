@@ -1,7 +1,6 @@
 module Asana.Decoder exposing (..)
 
 import Date
-import Http
 import Json.Decode exposing (..)
 import Maybe
 import Result
@@ -16,7 +15,7 @@ type DecodeResult a
 
 dateDecoder : Decoder Date.Date
 dateDecoder =
-    string `andThen` (\str ->
+    string |> andThen (\str ->
         case Date.fromString str of
             Ok date ->
                 succeed date
@@ -33,43 +32,43 @@ dueAtDecoder =
 
 
 resourceDecoder : Decoder Asana.Resource
-resourceDecoder = object2 Asana.Resource
-  ("id" := map toString int)
-  ("name" := string)
+resourceDecoder = map2 Asana.Resource
+  (field "id" <| map toString int)
+  (field "name" string)
 
 userDecoder : Decoder Asana.User
-userDecoder = object5 Asana.User
-  ("id" := map toString int)
-  ("name" := string)
-  (maybe <| "email" := string)
-  (maybe <| "photo" := photosDecoder)
-  (maybe <| "workspaces" := list workspaceDecoder)
+userDecoder = map5 Asana.User
+  (field "id" <| map toString int)
+  (field "name" string)
+  (maybe <| field "email" string)
+  (maybe <| field "photo" photosDecoder)
+  (maybe <| field "workspaces" <| list workspaceDecoder)
 
 photosDecoder : Decoder Asana.Photos
-photosDecoder = object5 Asana.Photos
-  (maybe <| "image_21x21" := string)
-  (maybe <| "image_27x27" := string)
-  (maybe <| "image_36x36" := string)
-  (maybe <| "image_60x60" := string)
-  (maybe <| "image_128x128" := string)
+photosDecoder = map5 Asana.Photos
+  (maybe <| field "image_21x21" string)
+  (maybe <| field "image_27x27" string)
+  (maybe <| field "image_36x36" string)
+  (maybe <| field "image_60x60" string)
+  (maybe <| field "image_128x128" string)
 
 workspaceDecoder : Decoder Asana.Workspace
-workspaceDecoder = object2 Asana.Workspace
-  ("id" := map toString int)
-  ("name" := string)
+workspaceDecoder = map2 Asana.Workspace
+  (field "id" <| map toString int)
+  (field "name" string)
 
 
 projectDecoder : Decoder Asana.Project
-projectDecoder = object3 Asana.Project
-  ("id" := map toString int)
-  ("name" := string)
-  ("custom_field_settings" := list customFieldSettingDecoder)
+projectDecoder = map3 Asana.Project
+  (field "id" <| map toString int)
+  (field "name" string)
+  (field "custom_field_settings" <| list customFieldSettingDecoder)
 
 
 customFieldSettingDecoder : Decoder Asana.CustomFieldSetting
-customFieldSettingDecoder = object2 Asana.CustomFieldSetting
-    ("id" := map toString int)
-    ("custom_field" := customFieldDecoder)
+customFieldSettingDecoder = map2 Asana.CustomFieldSetting
+    (field "id" <| map toString int)
+    (field "custom_field" customFieldDecoder)
 
 customFieldTypeDecoder : Decoder Asana.CustomFieldType
 customFieldTypeDecoder = 
@@ -88,40 +87,40 @@ enumOptionDecoder : Decoder Asana.EnumOption
 enumOptionDecoder = resourceDecoder
 
 customFieldDecoder : Decoder Asana.CustomField
-customFieldDecoder = object3 Asana.CustomField
-    ("id" := map toString int)
-    ("type" := customFieldTypeDecoder)
-    ("name" := string)
+customFieldDecoder = map3 Asana.CustomField
+    (field "id" <| map toString int)
+    (field "type" customFieldTypeDecoder)
+    (field "name" string)
 
 customFieldInfoDecoder : Decoder Asana.CustomFieldInfo
 customFieldInfoDecoder =
-    ("type" := customFieldTypeDecoder)
-    |> flip andThen (\fieldType ->
+    (field "type" customFieldTypeDecoder)
+    |> andThen (\fieldType ->
         case fieldType of
             Asana.CustomText ->
-                object2 Asana.CustomTextFieldInfo
-                    ("id" := map toString int)
-                    ("name" := string)
+                map2 Asana.CustomTextFieldInfo
+                    (field "id" <| map toString int)
+                    (field "name" string)
             Asana.CustomNumber ->
-                object3 Asana.CustomNumberFieldInfo
-                    ("id" := map toString int)
-                    ("name" := string)
-                    ("precision" := int)
+                map3 Asana.CustomNumberFieldInfo
+                    (field "id" <| map toString int)
+                    (field "name" string)
+                    (field "precision" int)
             Asana.CustomEnum ->
-                object3 Asana.CustomEnumFieldInfo
-                    ("id" := map toString int)
-                    ("name" := string)
-                    ("enum_options" := list enumOptionDecoder)
+                map3 Asana.CustomEnumFieldInfo
+                    (field "id" <| map toString int)
+                    (field "name" string)
+                    (field "enum_options" <| list enumOptionDecoder)
             Asana.CustomUnknown str ->
                 fail <| "Got an unknown custom field type '" ++ str ++ "'.")
 
 taskDecoder : Decoder Asana.Task
-taskDecoder = object5 Asana.Task
-    ("id" := map toString int)
-    (maybe <| "name" := string)
-    (maybe <| "description" := string)
-    (maybe <| "due_on" := dueOnDecoder)
-    (maybe <| "due_at" := dueAtDecoder)
+taskDecoder = map5 Asana.Task
+    (field "id" <| map toString int)
+    (maybe <| field "name" string)
+    (maybe <| field "description" string)
+    (maybe <| field "due_on" dueOnDecoder)
+    (maybe <| field "due_at" dueAtDecoder)
 
 enumValueDecoder : Decoder Asana.CustomFieldEnumValue
 enumValueDecoder = resourceDecoder
@@ -129,16 +128,16 @@ enumValueDecoder = resourceDecoder
 customFieldDataDecoder : Decoder Asana.CustomFieldData
 customFieldDataDecoder =
     oneOf
-        [ (map Asana.TextValue <| "text_value" := string)
-        , (map Asana.NumberValue <| "number_value" := float)
-        , (map Asana.EnumValue <| "enum_value" := enumValueDecoder)
+        [ (map Asana.TextValue <| field "text_value" string)
+        , (map Asana.NumberValue <| field "number_value" float)
+        , (map Asana.EnumValue <| field "enum_value" enumValueDecoder)
         ]
 
 customFieldValueDecoder : Decoder Asana.CustomFieldValue
-customFieldValueDecoder = object4 Asana.CustomFieldValue
-    ("id" := map toString int)
-    ("name" := string)
-    ("type" := customFieldTypeDecoder)
+customFieldValueDecoder = map4 Asana.CustomFieldValue
+    (field "id" <| map toString int)
+    (field "name" string)
+    (field "type" customFieldTypeDecoder)
     (customFieldDataDecoder)
 
 --------------------------------------------------------------------------------
@@ -161,7 +160,7 @@ emptyOrNull decoder =
 
 emptyString : a -> Decoder a
 emptyString a =
-    string `andThen` (\str ->
+    string |> andThen (\str ->
         if String.isEmpty str
             then succeed a
             else fail "String is not empty.")

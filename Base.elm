@@ -1,7 +1,6 @@
 module Base exposing (..)
 
 import Html exposing (Html)
-import Html.App
 
 type alias Program model msg =
     { init : (model, Cmd msg)
@@ -63,7 +62,7 @@ view (Instance { view }) =
 
 viewWith : (msg1 -> msg2) -> Instance model msg1 -> Html msg2
 viewWith f =
-    view >> Html.App.map f
+    view >> Html.map f
 
 get : Instance data msg -> data
 get (Instance { get }) =

@@ -54,21 +54,21 @@ init { customFields, records, headers, apiContext } =
                     , header = header
                     , apiContext = apiContext
                     })
-        instances = List.map fst fields |> Array.fromList
-        cmds = List.indexedMap (\index inst -> snd inst |> Cmd.map (ChildMsg index)) fields |> Cmd.batch
+        instances = List.map Tuple.first fields |> Array.fromList
+        cmds = List.indexedMap (\index inst -> Tuple.second inst |> Cmd.map (ChildMsg index)) fields |> Cmd.batch
     in
         (instances, cmds)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
     case msg of
-        ChildMsg index msg' ->
+        ChildMsg index msg_ ->
             case Array.get index model of
                 Just inst ->
                     let
-                        (inst', cmd) = Base.updateWith (ChildMsg index) msg' inst
+                        (inst_, cmd) = Base.updateWith (ChildMsg index) msg_ inst
                     in
-                        (Array.set index inst' model, cmd)
+                        (Array.set index inst_ model, cmd)
                 Nothing ->
                     (model, Cmd.none)
 

@@ -107,22 +107,26 @@ update props msg model =
                         else
                             (Loading loadingData, Cmd.none)
                 (Loading data, Err err) ->
-                    case (Array.get index data, err) of
-                        (Just (InProgress attempts), Http.BadResponse statusCode _) ->
-                            if attempts < max_retries && statusCode /= 404
-                            then
-                                let
-                                    fetch =
-                                        List.drop index props.fetches
-                                        |> List.head
-                                        |> Maybe.withDefault (Cmd.none)
-                                        |> Cmd.map (ApiMsg index)
-                                in
+                    let
+                        fetch =
+                            List.drop index props.fetches
+                            |> List.head
+                            |> Maybe.withDefault (Cmd.none)
+                            |> Cmd.map (ApiMsg index)
+                    in
+                        case (Array.get index data, err) of
+                            (Just (InProgress attempts), Http.BadStatus response) ->
+                                if attempts < max_retries && response.status.code /= 404
+                                then
                                     (Loading (Array.set index (InProgress (attempts + 1)) data), fetch)
-                            else
+                                else
+                                    (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
+                            (Just (InProgress attempts), Http.Timeout) ->
+                                (Loading (Array.set index (InProgress (attempts + 1)) data), fetch)
+                            (Just (InProgress attempts), Http.NetworkError) ->
+                                (Loading (Array.set index (InProgress (attempts + 1)) data), fetch)
+                            _ ->
                                 (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
-                        _ ->
-                            (Error (Debug.log "ApiResource received an HTTP error" err), Cmd.none)
                 (_, _) ->
                     (model, Cmd.none)
         ChildMsg msg ->

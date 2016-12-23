@@ -86,11 +86,11 @@ getToken { state } =
 authenticate : Model -> (Model, Cmd Msg)
 authenticate model =
     let
-        model' = { model | state = InProgress }
+        model_ = { model | state = InProgress }
         url = buildAuthUrl model
     in
         if model.state == Ready
-            then (model', startAuth url)
+            then (model_, startAuth url)
             else (model, Cmd.none)
 
 --------------------------------------------------------------------------------

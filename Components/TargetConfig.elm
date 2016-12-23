@@ -67,13 +67,13 @@ init { defaultMap, dataView, records } =
 update : Props data msg -> Msg data msg -> Model data msg -> (Model data msg, Cmd (Msg data msg))
 update { dataView } msg model =
     case msg of
-        ChildMsg index msg' ->
+        ChildMsg index msg_ ->
             case Array.get index model.views of
                 Just (Just child) ->
                     let
-                        (child', cmd) = Base.updateWith (ChildMsg index) msg' child
+                        (child_, cmd) = Base.updateWith (ChildMsg index) msg_ child
                     in
-                        ({ model | views = Array.set index (Just child') model.views }, cmd)
+                        ({ model | views = Array.set index (Just child_) model.views }, cmd)
                 Just Nothing ->
                     (model, Cmd.none)
                 Nothing ->
@@ -110,7 +110,7 @@ popupView records views =
                 -- Note: Set.toList creates a sorted list.
                 (List.indexedMap (,) (Set.toList records) |> List.map (uncurry (recordView views)))
             , div [ class "TargetConfig-actions" ]
-                [ input [ type' "button"
+                [ input [ type_ "button"
                         , class "TargetConfig-closeButton button primary"
                         , value "Done"
                         , Events.onClick ClosePopup
@@ -141,7 +141,7 @@ get { records } { views } =
         recordViewPairs = List.map2 (,) (Set.toList records) (Array.toList views)
         validMappings = flip List.filterMap recordViewPairs
             <| \(record, view) ->
-                        case Maybe.andThen view Base.get of
+                        case view |> Maybe.andThen Base.get of
                             Just value ->
                                 Just (record, value)
                             Nothing ->

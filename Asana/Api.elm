@@ -1,9 +1,8 @@
 module Asana.Api exposing (Token, ApiResult, ApiRequest, Context, UserQuery(..), me, user, users, projectTypeahead, userTypeahead, project, customField, createTask)
 
 import Http
-import Json.Decode exposing (Decoder, (:=), list, oneOf)
+import Json.Decode exposing (Decoder, field, list, oneOf, decodeString)
 import Json.Encode as Encode exposing (Value)
-import Task
 
 import Asana.Model as Asana
 import Asana.Encoder as Encoder
@@ -22,45 +21,55 @@ type alias Context =
     , workspaceId : Asana.WorkspaceId
     }
 
+buildUrl : String -> String -> Query -> String
+buildUrl origin path query =
+    let
+        base = origin ++ path
+        queryString = query
+            |> List.map (\(k,v) -> Http.encodeUri k ++ "=" ++ Http.encodeUri v)
+            |> String.join "&"
+    in
+        if String.isEmpty queryString
+            then base
+            else base ++ "?" ++ queryString
+
 apiGetRequest : String -> Query -> Decoder a -> ApiRequest a
 apiGetRequest path query decoder token =
   let
-      url = Http.url (apiRoot ++ path) query
+      url = buildUrl apiRoot path query
       headers =
-          [ ("Authorization", "Bearer " ++ token)
-          -- , ("Asana-Fast-Api", "true" )
+          [ Http.header "Authorization" ("Bearer " ++ token)
           ]
-      request =
-          { url = url
+      request = Http.request
+          { method = "GET"
+          , url = url
           , headers = headers
-          , verb = "GET"
-          , body = Http.empty
+          , body = Http.emptyBody
+          , expect = Http.expectJson (field "data" decoder)
+          , timeout = Nothing
+          , withCredentials = False
           }
-      httpRequest =
-          Http.send Http.defaultSettings request
-          |> Http.fromJson ("data" := decoder)
   in
-      Task.perform Err Ok httpRequest
+      Http.send identity request
 
 apiPostRequest : String -> Query -> Value -> Decoder a -> ApiRequest a
 apiPostRequest path query body decoder token =
   let
-      url = Http.url (apiRoot ++ path) query
+      url = buildUrl apiRoot path query
       headers =
-          [ ("Authorization", "Bearer " ++ token)
-          -- , ("Asana-Fast-Api", "true" )
+          [ Http.header "Authorization" ("Bearer " ++ token)
           ]
-      request =
-          { url = url
+      request = Http.request
+          { method = "POST"
+          , url = url
           , headers = headers
-          , verb = "POST"
-          , body = Http.string <| Encode.encode 4 <| Encode.object [("data", body)]
+          , body = Http.jsonBody <| Encode.object [("data", body)]
+          , expect = Http.expectJson (field "data" decoder)
+          , timeout = Nothing
+          , withCredentials = False
           }
-      httpRequest =
-          Http.send Http.defaultSettings request
-          |> Http.fromJson ("data" := decoder)
   in
-      Task.perform Err Ok httpRequest
+      Http.send identity request
 
 type UserQuery
     = Me

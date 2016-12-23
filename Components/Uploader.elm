@@ -67,29 +67,29 @@ init props =
             { recordsProcessed = 0
             , errors = []
             }
-        (model', cmds) =
+        (model_, cmds) =
             List.foldr
                 (\(row, record) (model, cmds) ->
                     let
-                        (model', cmd) = uploadRecord props row record model
+                        (model_, cmd) = uploadRecord props row record model
                     in
-                        (model', cmd :: cmds))
+                        (model_, cmd :: cmds))
                 (model, [])
                 (List.indexedMap (,) props.records)
         cmd =
             Cmd.batch cmds
     in
-        (model', cmd)
+        (model_, cmd)
 
 uploadRecord : Props -> Int -> Record -> Model -> (Model, Cmd Msg)
 uploadRecord props row record model =
     let
         fieldDefs = List.indexedMap (\i (t, r) -> (i, t, r)) <| List.map2 (,) props.fieldTargets record
         (newTask, errs) = List.foldr (updateTask row) (Target.emptyTask props.projectId, []) fieldDefs
-        model' = { model | errors = errs ++ model.errors }
+        model_ = { model | errors = errs ++ model.errors }
         cmd = Cmd.map (RecordProcessed row) <| Api.createTask newTask props.token
     in
-        (model', cmd)
+        (model_, cmd)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =
@@ -104,8 +104,8 @@ updateTask row (col, mTarget, value) (task, errors) =
     case mTarget of
         Just target -> 
             case Target.updateTask target value task of
-                Ok task' ->
-                    (task', errors)
+                Ok task_ ->
+                    (task_, errors)
                 Err msg ->
                     (task, ParseError { msg = msg, row = row, col = col } :: errors)
         Nothing ->
