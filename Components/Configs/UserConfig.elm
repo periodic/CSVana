@@ -50,10 +50,10 @@ makeModel { selectedUser, apiContext } =
     case selectedUser of
         Just user ->
             UserInfo.create { user = user }
-                |> Base.mapFst (Selected user)
+                |> Base.mapFirst (Selected user)
         Nothing ->
             Typeahead.create { fetcher = flip (Api.userTypeahead apiContext.workspaceId) apiContext.token }
-                |> Base.pairMap Unselected (Cmd.map TypeaheadMsg)
+                |> Base.mapPair Unselected (Cmd.map TypeaheadMsg)
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =

@@ -12475,7 +12475,7 @@ var _user$project$Base$isJust = function (maybe) {
 		return false;
 	}
 };
-var _user$project$Base$pairMap = F3(
+var _user$project$Base$mapPair = F3(
 	function (f, g, _p1) {
 		var _p2 = _p1;
 		return {
@@ -12484,7 +12484,7 @@ var _user$project$Base$pairMap = F3(
 			_1: g(_p2._1)
 		};
 	});
-var _user$project$Base$mapSnd = F2(
+var _user$project$Base$mapSecond = F2(
 	function (f, _p3) {
 		var _p4 = _p3;
 		return {
@@ -12494,10 +12494,10 @@ var _user$project$Base$mapSnd = F2(
 		};
 	});
 var _user$project$Base$mapCmd = function (f) {
-	return _user$project$Base$mapSnd(
+	return _user$project$Base$mapSecond(
 		_elm_lang$core$Platform_Cmd$map(f));
 };
-var _user$project$Base$mapFst = F2(
+var _user$project$Base$mapFirst = F2(
 	function (f, _p5) {
 		var _p6 = _p5;
 		return {
@@ -12570,7 +12570,7 @@ var _user$project$Base$createWithState = F2(
 			{
 				update: function (_p20) {
 					return A2(
-						_user$project$Base$mapFst,
+						_user$project$Base$mapFirst,
 						_user$project$Base$createWithState(component),
 						A3(_elm_lang$core$Basics$flip, component.update, state, _p20));
 				},
@@ -12617,7 +12617,7 @@ var _user$project$Base$mapOutput = F2(
 				{
 					update: function (_p24) {
 						return A2(
-							_user$project$Base$mapFst,
+							_user$project$Base$mapFirst,
 							_user$project$Base$mapOutput(f),
 							_p25.update(_p24));
 					},
@@ -12746,7 +12746,7 @@ var _user$project$Asana_Encoder$encodeTask = function (task) {
 													_elm_lang$core$Json_Encode$object(
 														A2(
 															_elm_lang$core$List$map,
-															_user$project$Base$mapSnd(_user$project$Asana_Encoder$encodeCustomFieldData),
+															_user$project$Base$mapSecond(_user$project$Asana_Encoder$encodeCustomFieldData),
 															task.customFields)))),
 											_1: {ctor: '[]'}
 										}
@@ -13895,7 +13895,7 @@ var _user$project$Components_ApiParallelResource$init = function (_p6) {
 	var _p9 = _p7.fetches;
 	if (_elm_lang$core$List$isEmpty(_p9)) {
 		return A3(
-			_user$project$Base$pairMap,
+			_user$project$Base$mapPair,
 			_user$project$Components_ApiParallelResource$Loaded,
 			_elm_lang$core$Platform_Cmd$map(_user$project$Components_ApiParallelResource$ChildMsg),
 			_p7.child(
@@ -14031,7 +14031,7 @@ var _user$project$Components_ApiParallelResource$update = F3(
 			var _p18 = model;
 			if (_p18.ctor === 'Loaded') {
 				return A2(
-					_user$project$Base$mapFst,
+					_user$project$Base$mapFirst,
 					_user$project$Components_ApiParallelResource$Loaded,
 					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p10._0, _p18._0));
 			} else {
@@ -14498,6 +14498,45 @@ var _user$project$Util$transpose = function (data) {
 		_1: _user$project$Util$transpose(tails)
 	};
 };
+var _user$project$Util$isJust = function (maybe) {
+	var _p3 = maybe;
+	if (_p3.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Util$mapPair = F3(
+	function (f, g, _p4) {
+		var _p5 = _p4;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p5._0),
+			_1: g(_p5._1)
+		};
+	});
+var _user$project$Util$mapSecond = F2(
+	function (f, _p6) {
+		var _p7 = _p6;
+		return {
+			ctor: '_Tuple2',
+			_0: _p7._0,
+			_1: f(_p7._1)
+		};
+	});
+var _user$project$Util$mapCmd = function (f) {
+	return _user$project$Util$mapSecond(
+		_elm_lang$core$Platform_Cmd$map(f));
+};
+var _user$project$Util$mapFirst = F2(
+	function (f, _p8) {
+		var _p9 = _p8;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p9._0),
+			_1: _p9._1
+		};
+	});
 
 var _user$project$Components_Configs_CompletedConfig$update = F2(
 	function (msg, model) {
@@ -15226,13 +15265,13 @@ var _user$project$Components_Configs_UserConfig$makeModel = function (_p3) {
 	if (_p5.ctor === 'Just') {
 		var _p6 = _p5._0;
 		return A2(
-			_user$project$Base$mapFst,
+			_user$project$Base$mapFirst,
 			_user$project$Components_Configs_UserConfig$Selected(_p6),
 			_user$project$Components_Configs_UserInfo$create(
 				{user: _p6}));
 	} else {
 		return A3(
-			_user$project$Base$pairMap,
+			_user$project$Base$mapPair,
 			_user$project$Components_Configs_UserConfig$Unselected,
 			_elm_lang$core$Platform_Cmd$map(_user$project$Components_Configs_UserConfig$TypeaheadMsg),
 			_user$project$Components_Typeahead$create(
@@ -15360,7 +15399,7 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 					var _p10 = result;
 					if (_p10.ctor === 'Value') {
 						return A3(
-							_user$project$Base$pairMap,
+							_user$project$Base$mapPair,
 							_elm_lang$core$Maybe$Just,
 							_elm_lang$core$Platform_Cmd$map(
 								_user$project$Components_TargetConfig$ChildMsg(index)),
@@ -16004,7 +16043,7 @@ var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
 	var target = _p8._0;
 	var targetMsg = _p8._1;
 	return A3(
-		_user$project$Base$pairMap,
+		_user$project$Base$mapPair,
 		_user$project$Components_TargetSelector$Assignee,
 		_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$AssigneeMsg),
 		{ctor: '_Tuple2', _0: target, _1: targetMsg});
@@ -16027,7 +16066,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 				return _user$project$Components_TargetSelector$assigneeComponent(props);
 			case 'Completion':
 				return A3(
-					_user$project$Base$pairMap,
+					_user$project$Base$mapPair,
 					_user$project$Components_TargetSelector$Completion,
 					_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$CompletionMsg),
 					_user$project$Components_TargetConfig$create(
@@ -16043,7 +16082,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 							},
 							dataView: function (mValue) {
 								return A2(
-									_user$project$Base$mapFst,
+									_user$project$Base$mapFirst,
 									_user$project$Base$mapOutput(_elm_lang$core$Maybe$Just),
 									_user$project$Components_Configs_CompletedConfig$create(
 										{
@@ -16061,7 +16100,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 				if ((_p12.ctor === 'Just') && (_p12._0.ctor === 'CustomEnumFieldInfo')) {
 					var _p14 = _p12._0._2;
 					return A3(
-						_user$project$Base$pairMap,
+						_user$project$Base$mapPair,
 						A3(_user$project$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
 						_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$EnumMsg),
 						_user$project$Components_TargetConfig$create(
@@ -16116,7 +16155,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					case 'AssigneeMsg':
 						if (_p15._1.ctor === 'Assignee') {
 							return A2(
-								_user$project$Base$mapFst,
+								_user$project$Base$mapFirst,
 								_user$project$Components_TargetSelector$Assignee,
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p15._0._0, _p15._1._0));
 						} else {
@@ -16125,7 +16164,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					case 'CompletionMsg':
 						if (_p15._1.ctor === 'Completion') {
 							return A2(
-								_user$project$Base$mapFst,
+								_user$project$Base$mapFirst,
 								_user$project$Components_TargetSelector$Completion,
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p15._0._0, _p15._1._0));
 						} else {
@@ -16134,7 +16173,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					default:
 						if (_p15._1.ctor === 'CustomEnumField') {
 							return A2(
-								_user$project$Base$mapFst,
+								_user$project$Base$mapFirst,
 								A3(_user$project$Components_TargetSelector$CustomEnumField, _p15._1._0, _p15._1._1, _p15._1._2),
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p15._0._0, _p15._1._3));
 						} else {
@@ -17092,7 +17131,7 @@ var _user$project$Components_Form$updateWorkspace = F3(
 			var _p14 = _user$project$Base$get(wss_);
 			if (_p14.ctor === 'Just') {
 				return A2(
-					_user$project$Base$mapFst,
+					_user$project$Base$mapFirst,
 					_elm_lang$core$Maybe$Just,
 					A2(
 						_user$project$Base$mapCmd,
@@ -17376,14 +17415,14 @@ var _user$project$Components_Asana$init = function (_p13) {
 	var _p14 = _p13;
 	var _p17 = _p14.token;
 	var _p15 = A2(
-		_user$project$Base$mapCmd,
+		_user$project$Util$mapCmd,
 		_user$project$Components_Asana$CsvMsg,
 		_user$project$Components_Csv$create(
 			{}));
 	var csv = _p15._0;
 	var csvCmd = _p15._1;
 	var _p16 = A2(
-		_user$project$Base$mapCmd,
+		_user$project$Util$mapCmd,
 		_user$project$Components_Asana$FormMsg,
 		_user$project$Components_ApiResource$create(
 			{
@@ -17869,7 +17908,7 @@ var _user$project$Components_OAuthBoundary$updateChild = F2(
 		var _p3 = model.child;
 		if (_p3.ctor === 'Just') {
 			var _p4 = A2(
-				_user$project$Base$mapCmd,
+				_user$project$Util$mapCmd,
 				_user$project$Components_OAuthBoundary$ChildMsg,
 				A2(_user$project$Base$update, msg, _p3._0));
 			var child_ = _p4._0;
@@ -17950,7 +17989,7 @@ var _user$project$Components_OAuthBoundary$init = function (_p7) {
 var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 	function (props, msg, model) {
 		var _p10 = A2(
-			_user$project$Base$mapCmd,
+			_user$project$Util$mapCmd,
 			_user$project$Components_OAuthBoundary$OAuthMsg,
 			A2(_user$project$OAuth_OAuth$update, msg, model.oauth));
 		var oauth_ = _p10._0;
@@ -17958,7 +17997,7 @@ var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 		var _p11 = _user$project$OAuth_OAuth$getToken(oauth_);
 		if (_p11.ctor === 'Just') {
 			var _p12 = A2(
-				_user$project$Base$mapCmd,
+				_user$project$Util$mapCmd,
 				_user$project$Components_OAuthBoundary$ChildMsg,
 				props.child(_p11._0));
 			var child = _p12._0;
@@ -18001,7 +18040,7 @@ var _user$project$Components_OAuthBoundary$update = F3(
 				var _p14 = _user$project$OAuth_OAuth$getState(model.oauth);
 				if (_p14.ctor === 'Ready') {
 					var _p15 = A2(
-						_user$project$Base$mapCmd,
+						_user$project$Util$mapCmd,
 						_user$project$Components_OAuthBoundary$OAuthMsg,
 						_user$project$OAuth_OAuth$authenticate(model.oauth));
 					var oauth_ = _p15._0;

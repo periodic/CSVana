@@ -26,7 +26,7 @@ type Instance data msg
 createWithState : Component model data msg -> model -> Instance data msg
 createWithState component state =
     Instance
-        { update = mapFst (createWithState component) << flip component.update state
+        { update = mapFirst (createWithState component) << flip component.update state
         , view = component.view state
         , subscriptions = component.subscriptions state
         , get = component.get state
@@ -88,25 +88,25 @@ staticComponent view =
 
 mapOutput : (a -> b) -> Instance a msg -> Instance b msg
 mapOutput f (Instance dict) =
-    Instance { dict | update = dict.update >> mapFst (mapOutput f), get = f dict.get }
+    Instance { dict | update = dict.update >> mapFirst (mapOutput f), get = f dict.get }
 
 -- Utility
 -- TODO: move to it's own file.
 
-mapFst : (a -> b) -> (a, c) -> (b, c)
-mapFst f (a, c) =
+mapFirst : (a -> b) -> (a, c) -> (b, c)
+mapFirst f (a, c) =
     (f a, c)
 
-mapSnd : (a -> b) -> (c, a) -> (c, b)
-mapSnd f (c, a) =
+mapSecond : (a -> b) -> (c, a) -> (c, b)
+mapSecond f (c, a) =
     (c, f a)
 
-pairMap : (a -> c) -> (b -> d) -> (a, b) -> (c, d)
-pairMap f g (a, b) =
+mapPair : (a -> c) -> (b -> d) -> (a, b) -> (c, d)
+mapPair f g (a, b) =
     (f a, g b)
 
 mapCmd : (a -> b) -> (c, Cmd a) -> (c, Cmd b)
-mapCmd f = mapSnd (Cmd.map f)
+mapCmd f = mapSecond (Cmd.map f)
 
 isJust : Maybe a -> Bool
 isJust maybe =

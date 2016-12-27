@@ -12,6 +12,7 @@ import Components.ApiParallelResource as ApiParallelResource
 import Components.Csv as Csv
 import Components.FieldMatcher as FieldMatcher
 import Components.Form as Form
+import Util
 
 type alias Props =
     { token : Api.Token
@@ -52,7 +53,7 @@ type alias Model =
 init : Props -> (Model, Cmd Msg)
 init {token} =
     let
-        (form, formCmd) = Base.mapCmd FormMsg <| ApiResource.create
+        (form, formCmd) = Util.mapCmd FormMsg <| ApiResource.create
             { child = \user ->
                 Form.create
                     { token = token
@@ -62,7 +63,7 @@ init {token} =
             , loadingView = CommonViews.loadingIndicator
             , errorView = CommonViews.errorView
             }
-        (csv, csvCmd) = Base.mapCmd CsvMsg <| Csv.create {}
+        (csv, csvCmd) = Csv.create {} |> Util.mapCmd CsvMsg
         cmd = Cmd.batch [formCmd, csvCmd ]
     in
         ({ form = form

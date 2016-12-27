@@ -96,11 +96,11 @@ update props msg model =
         (Selection str, _) ->
             updateModel props str model
         (AssigneeMsg msg_, Assignee inst) ->
-            Base.updateWith AssigneeMsg msg_ inst |> Base.mapFst Assignee
+            Base.updateWith AssigneeMsg msg_ inst |> Base.mapFirst Assignee
         (CompletionMsg msg_, Completion inst) ->
-            Base.updateWith CompletionMsg msg_ inst |> Base.mapFst Completion
+            Base.updateWith CompletionMsg msg_ inst |> Base.mapFirst Completion
         (EnumMsg msg_, CustomEnumField id name options inst) ->
-            Base.updateWith EnumMsg msg_ inst |> Base.mapFst (CustomEnumField id name options)
+            Base.updateWith EnumMsg msg_ inst |> Base.mapFirst (CustomEnumField id name options)
         -- Careful, this is a catchall for all the cases where the message does not match the model.
         _ ->
             (model, Cmd.none)
@@ -188,14 +188,14 @@ updateModel props str model =
             "Assignee" ->
                 assigneeComponent props
             "Completion" ->
-                Base.pairMap Completion (Cmd.map CompletionMsg)
+                Base.mapPair Completion (Cmd.map CompletionMsg)
                 <| TargetConfig.create
                     -- TODO: This mapping should go in with the decoders.
                     { defaultMap = \str -> TargetConfig.Value <| Just <| String.toLower str == "true" || String.toLower str == "done"
                     , dataView = \mValue -> 
                         CompletedConfig.create { value = Maybe.withDefault False mValue }
                         -- Transform it to a Just Bool instance from a Bool instance.
-                        |> Base.mapFst (Base.mapOutput Just)
+                        |> Base.mapFirst (Base.mapOutput Just)
                     , records = records
                     }
             "Due Date" ->
@@ -205,7 +205,7 @@ updateModel props str model =
             str ->
                 case matchCustomFieldName str customFields of
                     (Just (Asana.CustomEnumFieldInfo id name options)) ->
-                        Base.pairMap (CustomEnumField id name options) (Cmd.map EnumMsg)
+                        Base.mapPair (CustomEnumField id name options) (Cmd.map EnumMsg)
                             <| TargetConfig.create
                                 -- TODO: This mapping should go in with the decoders.
                                 { defaultMap = \str -> TargetConfig.Value <| find (.name >> (==) str) options
@@ -271,4 +271,4 @@ assigneeComponent { records, apiContext } =
                 , records = records
                 }
     in
-       Base.pairMap Assignee (Cmd.map AssigneeMsg) (target, targetMsg)
+       Base.mapPair Assignee (Cmd.map AssigneeMsg) (target, targetMsg)

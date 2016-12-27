@@ -38,6 +38,6 @@ encodeTask task =
         , Maybe.map (Encode.string >> (,) "due_on") task.dueOn
         , Just ("completed", Encode.bool task.completed)
         , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") task.projects
-        , List.map (Base.mapSnd encodeCustomFieldData) task.customFields |> Encode.object |> (,) "custom_fields" |> Just
+        , List.map (Base.mapSecond encodeCustomFieldData) task.customFields |> Encode.object |> (,) "custom_fields" |> Just
         ]
 

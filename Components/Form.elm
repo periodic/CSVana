@@ -90,7 +90,7 @@ updateWorkspace { token } msg model =
             case Base.get wss_ of
                 Just workspaceId ->
                     -- TODO: Only create a new typeahead if the workspace changes.
-                    Base.mapFst Just
+                    Base.mapFirst Just
                     <| Base.mapCmd ProjectTypeaheadMsg
                     <| Typeahead.create
                         { fetcher = \fragment -> Api.projectTypeahead workspaceId fragment token }

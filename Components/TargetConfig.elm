@@ -57,7 +57,7 @@ init { defaultMap, dataView, records } =
                 <| (\index result ->
                     case result of
                         Value data ->
-                            dataView data |> Base.pairMap Just (Cmd.map <| ChildMsg index)
+                            dataView data |> Base.mapPair Just (Cmd.map <| ChildMsg index)
                         NeedsWork cmd ->
                             (Nothing, Cmd.map (WorkComplete index) cmd))
         cmd = Cmd.batch cmds

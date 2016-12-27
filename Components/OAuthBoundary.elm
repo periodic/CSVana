@@ -7,6 +7,7 @@ import Html.Events as Events
 import Asana.Api exposing (Token)
 import Base
 import OAuth.OAuth as OAuth
+import Util
 
 type Msg msg
     = OAuthMsg OAuth.Msg
@@ -59,7 +60,7 @@ update props msg model =
             case OAuth.getState model.oauth of
                 OAuth.Ready ->
                     let
-                        (oauth_, oauthCmd) = Base.mapCmd OAuthMsg <| OAuth.authenticate model.oauth
+                        (oauth_, oauthCmd) = OAuth.authenticate model.oauth |> Util.mapCmd OAuthMsg
                     in
                         ({ model | oauth = oauth_ }, oauthCmd)
                 _ ->
@@ -72,14 +73,12 @@ update props msg model =
 updateOAuth : Props data msg -> OAuth.Msg -> Model data msg -> (Model data msg, Cmd (Msg msg))
 updateOAuth props msg model =
             let
-                (oauth_, oauthCmd1) = Base.mapCmd OAuthMsg <| OAuth.update msg model.oauth
+                (oauth_, oauthCmd1) = OAuth.update msg model.oauth |> Util.mapCmd OAuthMsg
             in
                 case OAuth.getToken oauth_ of
                     Just token ->
                         let
-                            (child, childCmd) =
-                                props.child token
-                                    |> Base.mapCmd ChildMsg
+                            (child, childCmd) = props.child token |> Util.mapCmd ChildMsg
                             cmd = Cmd.batch [ oauthCmd1, childCmd ]
                         in
                             ({ model | oauth = oauth_, child = Just child }, cmd)
@@ -91,7 +90,7 @@ updateChild msg model =
     case model.child of
         Just child ->
             let
-                (child_, childCmd) = Base.mapCmd ChildMsg <| Base.update msg child
+                (child_, childCmd) = Base.update msg child |> Util.mapCmd ChildMsg
             in
                 ({ model | child = Just child_ }, childCmd)
         _ ->

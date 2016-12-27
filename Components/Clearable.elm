@@ -43,10 +43,10 @@ init props =
     case props.value of
         Just data ->
             props.fullView data
-                |> Base.pairMap (Full data) (Cmd.map FullMsg)
+                |> Base.mapPair (Full data) (Cmd.map FullMsg)
         Nothing ->
             props.emptyView
-                |> Base.pairMap Empty (Cmd.map EmptyMsg)
+                |> Base.mapPair Empty (Cmd.map EmptyMsg)
 
 update : Props data msg1 msg2 -> Msg msg1 msg2 -> Model data msg1 msg2 -> (Model data msg1 msg2, Cmd (Msg msg1 msg2))
 update props msg model =
@@ -58,15 +58,15 @@ update props msg model =
                 case Base.get emptyInst' of
                     Just val ->
                         props.fullView val
-                            |> Base.pairMap (Full val) (Cmd.map FullMsg)
+                            |> Base.mapPair (Full val) (Cmd.map FullMsg)
                     Nothing ->
                         (Empty emptyInst', emptyCmd)
         (FullMsg msg', Full value inst) ->
             Base.updateWith FullMsg msg' inst
-                |> Base.mapFst (Full value)
+                |> Base.mapFirst (Full value)
         (Clear, Full _ inst) ->
             props.emptyView
-                |> Base.pairMap Empty (Cmd.map EmptyMsg)
+                |> Base.mapPair Empty (Cmd.map EmptyMsg)
         _ ->
             (model, Cmd.none)
 
