@@ -96,11 +96,14 @@ update props msg model =
         (Selection str, _) ->
             updateModel props str model
         (AssigneeMsg msg_, Assignee inst) ->
-            Base.updateWith AssigneeMsg msg_ inst |> Base.mapFirst Assignee
+            Base.updateWith AssigneeMsg msg_ inst
+                |> mapComponent Assignee
         (CompletionMsg msg_, Completion inst) ->
-            Base.updateWith CompletionMsg msg_ inst |> Base.mapFirst Completion
+            Base.updateWith CompletionMsg msg_ inst 
+                |> mapComponent Completion
         (EnumMsg msg_, CustomEnumField id name options inst) ->
-            Base.updateWith EnumMsg msg_ inst |> Base.mapFirst (CustomEnumField id name options)
+            Base.updateWith EnumMsg msg_ inst 
+                |> mapComponent (CustomEnumField id name options)
         -- Careful, this is a catchall for all the cases where the message does not match the model.
         _ ->
             (model, Cmd.none)
@@ -188,16 +191,17 @@ updateModel props str model =
             "Assignee" ->
                 assigneeComponent props
             "Completion" ->
-                Base.mapPair Completion (Cmd.map CompletionMsg)
-                <| TargetConfig.create
+                TargetConfig.create
                     -- TODO: This mapping should go in with the decoders.
                     { defaultMap = \str -> TargetConfig.Value <| Just <| String.toLower str == "true" || String.toLower str == "done"
                     , dataView = \mValue -> 
                         CompletedConfig.create { value = Maybe.withDefault False mValue }
-                        -- Transform it to a Just Bool instance from a Bool instance.
-                        |> Base.mapFirst (Base.mapOutput Just)
+                            -- Transform it to a Just Bool instance from a Bool instance.
+                            |> mapComponent (Base.mapOutput Just)
                     , records = records
                     }
+                    |> mapComponent Completion
+                    |> mapCmd CompletionMsg
             "Due Date" ->
                 (DueDate, Cmd.none)
             "Due Date With Time" ->
@@ -205,17 +209,18 @@ updateModel props str model =
             str ->
                 case matchCustomFieldName str customFields of
                     (Just (Asana.CustomEnumFieldInfo id name options)) ->
-                        Base.mapPair (CustomEnumField id name options) (Cmd.map EnumMsg)
-                            <| TargetConfig.create
-                                -- TODO: This mapping should go in with the decoders.
-                                { defaultMap = \str -> TargetConfig.Value <| find (.name >> (==) str) options
-                                , dataView = \value -> 
-                                    EnumConfig.create
-                                        { selectedId = value
-                                        , enumOptions = options
-                                        }
-                                , records = records
-                                }
+                         TargetConfig.create
+                            -- TODO: This mapping should go in with the decoders.
+                            { defaultMap = \str -> TargetConfig.Value <| find (.name >> (==) str) options
+                            , dataView = \value -> 
+                                EnumConfig.create
+                                    { selectedId = value
+                                    , enumOptions = options
+                                    }
+                            , records = records
+                            }
+                            |> mapComponent (CustomEnumField id name options)
+                            |> mapCmd EnumMsg
                     other ->
                         Maybe.map CustomField other |> Maybe.withDefault None |> flip (,) Cmd.none
 
@@ -271,4 +276,5 @@ assigneeComponent { records, apiContext } =
                 , records = records
                 }
     in
-       Base.mapPair Assignee (Cmd.map AssigneeMsg) (target, targetMsg)
+       (Assignee target, Cmd.map AssigneeMsg targetMsg)
+

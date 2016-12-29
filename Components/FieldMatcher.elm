@@ -2,13 +2,12 @@ module Components.FieldMatcher exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 
 import Asana.Api as Api
 import Asana.Model as Asana
+import Asana.Target as Target
 import Base
 import Components.FieldOptions as FieldOptions
-import Components.Uploader as Uploader
 
 type alias Props =
     { projectId : Asana.ProjectId
@@ -20,10 +19,8 @@ type alias Props =
 
 type Msg
     = FieldOptionsMsg FieldOptions.Msg
-    | UploaderMsg Uploader.Msg
-    | StartUpload
 
-type alias Data = ()
+type alias Data = FieldOptions.Data
 type alias Instance = Base.Instance Data Msg
 
 create : Props -> (Instance, Cmd Msg)
@@ -33,7 +30,7 @@ create props =
         , update = update props
         , view = view props
         , subscriptions = always Sub.none
-        , get = always ()
+        , get = get props
         }
 
 --------------------------------------------------------------------------------
@@ -41,7 +38,6 @@ create props =
 
 type alias Model =
     { fieldOptions : FieldOptions.Instance
-    , uploader : Maybe Uploader.Instance
     }
 
 init : Props -> (Model, Cmd Msg)
@@ -57,7 +53,6 @@ init {csvHeaders, csvRecords, customFields, apiContext} =
                 }
         model =
             { fieldOptions = fieldOptions
-            , uploader = Nothing
             }
     in
         (model, Cmd.map FieldOptionsMsg fieldOptionsCmd)
@@ -70,35 +65,14 @@ update props msg model =
                 (fieldOptions_, fieldOptionsCmd) = Base.update msg_ model.fieldOptions
             in
                 ({ model | fieldOptions = fieldOptions_ }, Cmd.map FieldOptionsMsg fieldOptionsCmd)
-        UploaderMsg msg_ ->
-            case model.uploader of
-                Just uploader ->
-                    let
-                        (uploader_, uploaderCmd) = Base.update msg_ uploader
-                    in
-                        ({ model | uploader = Just uploader_ }, Cmd.map UploaderMsg uploaderCmd)
-                Nothing ->
-                    (model, Cmd.none)
-        StartUpload ->
-            let
-                (uploader, uploaderCmd) = Uploader.create
-                    { token = props.apiContext.token
-                    , projectId = props.projectId
-                    , records = props.csvRecords
-                    , fieldTargets = Base.get model.fieldOptions
-                    }
-            in
-                ({ model | uploader = Just uploader }, Cmd.map UploaderMsg uploaderCmd)
 
 view : Props -> Model -> Html Msg
-view { csvHeaders} { fieldOptions, uploader } =
+view { csvHeaders} { fieldOptions } =
     div [ class "FieldMatcher" ]
         [ div [ class "FieldMatcher-fields" ]
             [ div [ class "FieldMatcher-options" ]
                 [ Base.viewWith FieldOptionsMsg fieldOptions ]
             ]
-        , div [ class "FieldMatcher-upload" ]
-            [ renderUploader uploader ]
         ]
 
 renderHeaders : List String -> Html Msg
@@ -111,11 +85,6 @@ renderHeader header =
     div [ class "CsvHeaders-header" ]
         [ text header ]
 
-renderUploader : Maybe Uploader.Instance -> Html Msg
-renderUploader mUploader =
-    case mUploader of
-        Just uploader ->
-            Base.viewWith UploaderMsg uploader
-        Nothing ->
-            div [ class "FieldMatcher-button" ]
-                [ button [ onClick StartUpload, class "button primary" ] [ text "Import" ] ]
+get : Props -> Model -> List (Maybe Target.Target)
+get _ { fieldOptions } =
+    Base.get fieldOptions

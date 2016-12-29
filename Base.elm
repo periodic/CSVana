@@ -2,6 +2,8 @@ module Base exposing (..)
 
 import Html exposing (Html)
 
+import Util
+
 type alias Program model msg =
     { init : (model, Cmd msg)
     , update : msg -> model -> (model, Cmd msg)
@@ -26,7 +28,7 @@ type Instance data msg
 createWithState : Component model data msg -> model -> Instance data msg
 createWithState component state =
     Instance
-        { update = mapFirst (createWithState component) << flip component.update state
+        { update = Tuple.mapFirst (createWithState component) << flip component.update state
         , view = component.view state
         , subscriptions = component.subscriptions state
         , get = component.get state
@@ -46,7 +48,7 @@ update msg (Instance { update }) =
 
 updateWith : (msg1 -> msg2) -> msg1 -> Instance model msg1 -> (Instance model msg1, Cmd msg2)
 updateWith f msg =
-    update msg >> mapCmd f
+    update msg >> Util.mapCmd f
 
 subscriptions : Instance model msg -> Sub msg
 subscriptions (Instance { subscriptions }) =
@@ -88,30 +90,4 @@ staticComponent view =
 
 mapOutput : (a -> b) -> Instance a msg -> Instance b msg
 mapOutput f (Instance dict) =
-    Instance { dict | update = dict.update >> mapFirst (mapOutput f), get = f dict.get }
-
--- Utility
--- TODO: move to it's own file.
-
-mapFirst : (a -> b) -> (a, c) -> (b, c)
-mapFirst f (a, c) =
-    (f a, c)
-
-mapSecond : (a -> b) -> (c, a) -> (c, b)
-mapSecond f (c, a) =
-    (c, f a)
-
-mapPair : (a -> c) -> (b -> d) -> (a, b) -> (c, d)
-mapPair f g (a, b) =
-    (f a, g b)
-
-mapCmd : (a -> b) -> (c, Cmd a) -> (c, Cmd b)
-mapCmd f = mapSecond (Cmd.map f)
-
-isJust : Maybe a -> Bool
-isJust maybe =
-    case maybe of
-        Just _ ->
-            True
-        Nothing ->
-            False
+    Instance { dict | update = dict.update >> Tuple.mapFirst (mapOutput f), get = f dict.get }

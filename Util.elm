@@ -16,6 +16,10 @@ mapCmd : (msg1 -> msg2) -> (a, Cmd msg1) -> (a, Cmd msg2)
 mapCmd f =
     mapSecond (Cmd.map f)
 
+mapComponent : (a -> b) -> (a, Cmd msg1) -> (b, Cmd msg1)
+mapComponent =
+    mapFirst
+
 isJust : Maybe a -> Bool
 isJust maybe =
     case maybe of
@@ -23,6 +27,9 @@ isJust maybe =
             True
         Nothing ->
             False
+
+isNothing : Maybe a -> Bool
+isNothing = isJust >> not
 
 transpose : List (List a) -> List (List a)
 transpose data =

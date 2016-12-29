@@ -6,6 +6,7 @@ import Http
 
 import Asana.Api exposing (ApiResult)
 import Base
+import Util
 
 type alias Props data model msg =
     { child : List data -> (Base.Instance model msg, Cmd msg)
@@ -79,7 +80,9 @@ init { fetches, child } =
     if List.isEmpty fetches
     -- Automatically load if there is nothing to fetch.
     -- TODO: Combine this with the logic in update.
-    then Base.mapPair Loaded (Cmd.map ChildMsg) <| child []
+    then child []
+        |> Util.mapCmd ChildMsg
+        |> Util.mapComponent Loaded
     else
         let
             model = Loading <| Array.repeat (List.length fetches) (InProgress 1)
@@ -132,7 +135,8 @@ update props msg model =
         ChildMsg msg ->
             case model of
                 Loaded child ->
-                    Base.mapFirst Loaded <| Base.updateWith ChildMsg msg child
+                    Base.updateWith ChildMsg msg child
+                        |> Util.mapComponent Loaded
                 _ ->
                     -- TODO: Log something here.
                     (model, Cmd.none)

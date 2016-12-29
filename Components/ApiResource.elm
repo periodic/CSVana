@@ -1,4 +1,4 @@
-module Components.ApiResource exposing (Props, Instance, Msg, create)
+module Components.ApiResource exposing (Props, Instance, Msg, Data, create)
 
 import Html exposing (Html)
 import Http
@@ -17,7 +17,8 @@ type Msg data msg
     = ApiMsg (ApiResult data)
     | ChildMsg msg
 
-type alias Instance data model msg = Base.Instance (Maybe model) (Msg data msg)
+type alias Data model = Maybe model
+type alias Instance data model msg = Base.Instance (Data model) (Msg data msg)
 
 create : Props data model childMsg -> (Instance data model childMsg, Cmd (Msg data childMsg))
 create props =

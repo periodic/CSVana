@@ -1,4 +1,4 @@
-module Components.Uploader exposing (Props, Msg, Data, Instance, create)
+module Components.Uploader.Uploader exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -5,7 +5,6 @@ import Maybe
 import Date.Extra.Format as Format
 import Date.Extra.Config.Config_en_us as En_us
 
-import Base
 import Asana.Model as Asana
 
 encodeDueOn : Asana.DueOn -> Value
@@ -38,6 +37,6 @@ encodeTask task =
         , Maybe.map (Encode.string >> (,) "due_on") task.dueOn
         , Just ("completed", Encode.bool task.completed)
         , Maybe.map (List.map Encode.string >> Encode.list >> (,) "projects") task.projects
-        , List.map (Base.mapSecond encodeCustomFieldData) task.customFields |> Encode.object |> (,) "custom_fields" |> Just
+        , List.map (Tuple.mapSecond encodeCustomFieldData) task.customFields |> Encode.object |> (,) "custom_fields" |> Just
         ]
 

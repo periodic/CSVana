@@ -67,6 +67,7 @@ type alias EnumOption =
     }
 
 type alias CustomFieldId = Id
+type alias CustomFieldResource = Resource
 type alias CustomField =
     { id : Id
     , fieldType : CustomFieldType

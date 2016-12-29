@@ -10,6 +10,7 @@ import Asana.Api as Api
 import CommonViews
 import Components.Configs.UserInfo as UserInfo
 import Components.Typeahead as Typeahead
+import Util
 
 type alias Props =
     { selectedUser : Maybe Asana.User
@@ -50,10 +51,11 @@ makeModel { selectedUser, apiContext } =
     case selectedUser of
         Just user ->
             UserInfo.create { user = user }
-                |> Base.mapFirst (Selected user)
+                |> Util.mapComponent (Selected user)
         Nothing ->
             Typeahead.create { fetcher = flip (Api.userTypeahead apiContext.workspaceId) apiContext.token }
-                |> Base.mapPair Unselected (Cmd.map TypeaheadMsg)
+                |> Util.mapComponent Unselected 
+                |> Util.mapCmd TypeaheadMsg
 
 update : Props -> Msg -> Model -> (Model, Cmd Msg)
 update props msg model =

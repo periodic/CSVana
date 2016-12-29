@@ -12467,164 +12467,6 @@ var _user$project$Asana_Model$TextValue = function (a) {
 	return {ctor: 'TextValue', _0: a};
 };
 
-var _user$project$Base$isJust = function (maybe) {
-	var _p0 = maybe;
-	if (_p0.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Base$mapPair = F3(
-	function (f, g, _p1) {
-		var _p2 = _p1;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p2._0),
-			_1: g(_p2._1)
-		};
-	});
-var _user$project$Base$mapSecond = F2(
-	function (f, _p3) {
-		var _p4 = _p3;
-		return {
-			ctor: '_Tuple2',
-			_0: _p4._0,
-			_1: f(_p4._1)
-		};
-	});
-var _user$project$Base$mapCmd = function (f) {
-	return _user$project$Base$mapSecond(
-		_elm_lang$core$Platform_Cmd$map(f));
-};
-var _user$project$Base$mapFirst = F2(
-	function (f, _p5) {
-		var _p6 = _p5;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p6._0),
-			_1: _p6._1
-		};
-	});
-var _user$project$Base$get = function (_p7) {
-	var _p8 = _p7;
-	return _p8._0.get;
-};
-var _user$project$Base$view = function (_p9) {
-	var _p10 = _p9;
-	return _p10._0.view;
-};
-var _user$project$Base$viewWith = function (f) {
-	return function (_p11) {
-		return A2(
-			_elm_lang$html$Html$map,
-			f,
-			_user$project$Base$view(_p11));
-	};
-};
-var _user$project$Base$subscriptions = function (_p12) {
-	var _p13 = _p12;
-	return _p13._0.subscriptions;
-};
-var _user$project$Base$subscriptionsWith = function (f) {
-	return function (_p14) {
-		return A2(
-			_elm_lang$core$Platform_Sub$map,
-			f,
-			_user$project$Base$subscriptions(_p14));
-	};
-};
-var _user$project$Base$update = F2(
-	function (msg, _p15) {
-		var _p16 = _p15;
-		return _p16._0.update(msg);
-	});
-var _user$project$Base$updateWith = F2(
-	function (f, msg) {
-		return function (_p17) {
-			return A2(
-				_user$project$Base$mapCmd,
-				f,
-				A2(_user$project$Base$update, msg, _p17));
-		};
-	});
-var _user$project$Base$asRoot = function (_p18) {
-	var _p19 = _p18;
-	return {
-		init: {ctor: '_Tuple2', _0: _p19._0, _1: _p19._1},
-		update: _user$project$Base$update,
-		subscriptions: _user$project$Base$subscriptions,
-		view: _user$project$Base$view
-	};
-};
-var _user$project$Base$Program = F4(
-	function (a, b, c, d) {
-		return {init: a, update: b, view: c, subscriptions: d};
-	});
-var _user$project$Base$Instance = function (a) {
-	return {ctor: 'Instance', _0: a};
-};
-var _user$project$Base$createWithState = F2(
-	function (component, state) {
-		return _user$project$Base$Instance(
-			{
-				update: function (_p20) {
-					return A2(
-						_user$project$Base$mapFirst,
-						_user$project$Base$createWithState(component),
-						A3(_elm_lang$core$Basics$flip, component.update, state, _p20));
-				},
-				view: component.view(state),
-				subscriptions: component.subscriptions(state),
-				get: component.get(state)
-			});
-	});
-var _user$project$Base$create = function (component) {
-	var _p21 = component.init;
-	var state = _p21._0;
-	var cmd = _p21._1;
-	var instance = A2(_user$project$Base$createWithState, component, state);
-	return {ctor: '_Tuple2', _0: instance, _1: cmd};
-};
-var _user$project$Base$staticComponent = function (view) {
-	return _user$project$Base$create(
-		{
-			init: {
-				ctor: '_Tuple2',
-				_0: {ctor: '_Tuple0'},
-				_1: _elm_lang$core$Platform_Cmd$none
-			},
-			view: _elm_lang$core$Basics$always(view),
-			update: _elm_lang$core$Basics$always(
-				_elm_lang$core$Basics$always(
-					{
-						ctor: '_Tuple2',
-						_0: {ctor: '_Tuple0'},
-						_1: _elm_lang$core$Platform_Cmd$none
-					})),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _elm_lang$core$Basics$always(
-				{ctor: '_Tuple0'})
-		});
-};
-var _user$project$Base$mapOutput = F2(
-	function (f, _p22) {
-		var _p23 = _p22;
-		var _p25 = _p23._0;
-		return _user$project$Base$Instance(
-			_elm_lang$core$Native_Utils.update(
-				_p25,
-				{
-					update: function (_p24) {
-						return A2(
-							_user$project$Base$mapFirst,
-							_user$project$Base$mapOutput(f),
-							_p25.update(_p24));
-					},
-					get: f(_p25.get)
-				}));
-	});
-
 var _user$project$Asana_Encoder$encodeCustomFieldData = function (data) {
 	var _p0 = data;
 	switch (_p0.ctor) {
@@ -12746,7 +12588,7 @@ var _user$project$Asana_Encoder$encodeTask = function (task) {
 													_elm_lang$core$Json_Encode$object(
 														A2(
 															_elm_lang$core$List$map,
-															_user$project$Base$mapSecond(_user$project$Asana_Encoder$encodeCustomFieldData),
+															_elm_lang$core$Tuple$mapSecond(_user$project$Asana_Encoder$encodeCustomFieldData),
 															task.customFields)))),
 											_1: {ctor: '[]'}
 										}
@@ -13425,6 +13267,233 @@ var _user$project$Asana_Urls$project = function (projectId) {
 		A2(_elm_lang$core$Basics_ops['++'], projectId, '/list'));
 };
 
+var _user$project$Util$find = F2(
+	function (pred, xs) {
+		var _p0 = _elm_lang$core$List$head(xs);
+		if (_p0.ctor === 'Just') {
+			var _p1 = _p0._0;
+			return pred(_p1) ? _elm_lang$core$Maybe$Just(_p1) : A2(
+				_elm_lang$core$Maybe$andThen,
+				_user$project$Util$find(pred),
+				_elm_lang$core$List$tail(xs));
+		} else {
+			return A2(
+				_elm_lang$core$Maybe$andThen,
+				_user$project$Util$find(pred),
+				_elm_lang$core$List$tail(xs));
+		}
+	});
+var _user$project$Util$catMaybes = function (xs) {
+	catMaybes:
+	while (true) {
+		var _p2 = {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$List$head(xs),
+			_1: _elm_lang$core$List$tail(xs)
+		};
+		_v1_2:
+		do {
+			if (_p2._0.ctor === 'Just') {
+				if (_p2._1.ctor === 'Just') {
+					if (_p2._0._0.ctor === 'Just') {
+						return {
+							ctor: '::',
+							_0: _p2._0._0._0,
+							_1: _user$project$Util$catMaybes(_p2._1._0)
+						};
+					} else {
+						var _v2 = _p2._1._0;
+						xs = _v2;
+						continue catMaybes;
+					}
+				} else {
+					break _v1_2;
+				}
+			} else {
+				if (_p2._1.ctor === 'Nothing') {
+					break _v1_2;
+				} else {
+					return {ctor: '[]'};
+				}
+			}
+		} while(false);
+		return {ctor: '[]'};
+	}
+};
+var _user$project$Util$transpose = function (data) {
+	var tails = _user$project$Util$catMaybes(
+		A2(_elm_lang$core$List$map, _elm_lang$core$List$tail, data));
+	var heads = _user$project$Util$catMaybes(
+		A2(_elm_lang$core$List$map, _elm_lang$core$List$head, data));
+	return _elm_lang$core$List$isEmpty(heads) ? {ctor: '[]'} : {
+		ctor: '::',
+		_0: heads,
+		_1: _user$project$Util$transpose(tails)
+	};
+};
+var _user$project$Util$isJust = function (maybe) {
+	var _p3 = maybe;
+	if (_p3.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Util$isNothing = function (_p4) {
+	return !_user$project$Util$isJust(_p4);
+};
+var _user$project$Util$mapPair = F3(
+	function (f, g, _p5) {
+		var _p6 = _p5;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p6._0),
+			_1: g(_p6._1)
+		};
+	});
+var _user$project$Util$mapSecond = F2(
+	function (f, _p7) {
+		var _p8 = _p7;
+		return {
+			ctor: '_Tuple2',
+			_0: _p8._0,
+			_1: f(_p8._1)
+		};
+	});
+var _user$project$Util$mapCmd = function (f) {
+	return _user$project$Util$mapSecond(
+		_elm_lang$core$Platform_Cmd$map(f));
+};
+var _user$project$Util$mapFirst = F2(
+	function (f, _p9) {
+		var _p10 = _p9;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p10._0),
+			_1: _p10._1
+		};
+	});
+var _user$project$Util$mapComponent = _user$project$Util$mapFirst;
+
+var _user$project$Base$get = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.get;
+};
+var _user$project$Base$view = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.view;
+};
+var _user$project$Base$viewWith = function (f) {
+	return function (_p4) {
+		return A2(
+			_elm_lang$html$Html$map,
+			f,
+			_user$project$Base$view(_p4));
+	};
+};
+var _user$project$Base$subscriptions = function (_p5) {
+	var _p6 = _p5;
+	return _p6._0.subscriptions;
+};
+var _user$project$Base$subscriptionsWith = function (f) {
+	return function (_p7) {
+		return A2(
+			_elm_lang$core$Platform_Sub$map,
+			f,
+			_user$project$Base$subscriptions(_p7));
+	};
+};
+var _user$project$Base$update = F2(
+	function (msg, _p8) {
+		var _p9 = _p8;
+		return _p9._0.update(msg);
+	});
+var _user$project$Base$updateWith = F2(
+	function (f, msg) {
+		return function (_p10) {
+			return A2(
+				_user$project$Util$mapCmd,
+				f,
+				A2(_user$project$Base$update, msg, _p10));
+		};
+	});
+var _user$project$Base$asRoot = function (_p11) {
+	var _p12 = _p11;
+	return {
+		init: {ctor: '_Tuple2', _0: _p12._0, _1: _p12._1},
+		update: _user$project$Base$update,
+		subscriptions: _user$project$Base$subscriptions,
+		view: _user$project$Base$view
+	};
+};
+var _user$project$Base$Program = F4(
+	function (a, b, c, d) {
+		return {init: a, update: b, view: c, subscriptions: d};
+	});
+var _user$project$Base$Instance = function (a) {
+	return {ctor: 'Instance', _0: a};
+};
+var _user$project$Base$createWithState = F2(
+	function (component, state) {
+		return _user$project$Base$Instance(
+			{
+				update: function (_p13) {
+					return A2(
+						_elm_lang$core$Tuple$mapFirst,
+						_user$project$Base$createWithState(component),
+						A3(_elm_lang$core$Basics$flip, component.update, state, _p13));
+				},
+				view: component.view(state),
+				subscriptions: component.subscriptions(state),
+				get: component.get(state)
+			});
+	});
+var _user$project$Base$create = function (component) {
+	var _p14 = component.init;
+	var state = _p14._0;
+	var cmd = _p14._1;
+	var instance = A2(_user$project$Base$createWithState, component, state);
+	return {ctor: '_Tuple2', _0: instance, _1: cmd};
+};
+var _user$project$Base$staticComponent = function (view) {
+	return _user$project$Base$create(
+		{
+			init: {
+				ctor: '_Tuple2',
+				_0: {ctor: '_Tuple0'},
+				_1: _elm_lang$core$Platform_Cmd$none
+			},
+			view: _elm_lang$core$Basics$always(view),
+			update: _elm_lang$core$Basics$always(
+				_elm_lang$core$Basics$always(
+					{
+						ctor: '_Tuple2',
+						_0: {ctor: '_Tuple0'},
+						_1: _elm_lang$core$Platform_Cmd$none
+					})),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _elm_lang$core$Basics$always(
+				{ctor: '_Tuple0'})
+		});
+};
+var _user$project$Base$mapOutput = F2(
+	function (f, _p15) {
+		var _p16 = _p15;
+		var _p18 = _p16._0;
+		return _user$project$Base$Instance(
+			_elm_lang$core$Native_Utils.update(
+				_p18,
+				{
+					update: function (_p17) {
+						return A2(
+							_elm_lang$core$Tuple$mapFirst,
+							_user$project$Base$mapOutput(f),
+							_p18.update(_p17));
+					},
+					get: f(_p18.get)
+				}));
+	});
+
 var _user$project$CommonViews$spinner = A2(
 	_elm_lang$svg$Svg$svg,
 	{
@@ -13894,12 +13963,14 @@ var _user$project$Components_ApiParallelResource$init = function (_p6) {
 	var _p7 = _p6;
 	var _p9 = _p7.fetches;
 	if (_elm_lang$core$List$isEmpty(_p9)) {
-		return A3(
-			_user$project$Base$mapPair,
+		return A2(
+			_user$project$Util$mapComponent,
 			_user$project$Components_ApiParallelResource$Loaded,
-			_elm_lang$core$Platform_Cmd$map(_user$project$Components_ApiParallelResource$ChildMsg),
-			_p7.child(
-				{ctor: '[]'}));
+			A2(
+				_user$project$Util$mapCmd,
+				_user$project$Components_ApiParallelResource$ChildMsg,
+				_p7.child(
+					{ctor: '[]'})));
 	} else {
 		var cmd = _elm_lang$core$Platform_Cmd$batch(
 			A2(
@@ -14031,7 +14102,7 @@ var _user$project$Components_ApiParallelResource$update = F3(
 			var _p18 = model;
 			if (_p18.ctor === 'Loaded') {
 				return A2(
-					_user$project$Base$mapFirst,
+					_user$project$Util$mapComponent,
 					_user$project$Components_ApiParallelResource$Loaded,
 					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p10._0, _p18._0));
 			} else {
@@ -14216,327 +14287,6 @@ var _user$project$Components_ApiResource$create = function (props) {
 			get: _user$project$Components_ApiResource$get
 		});
 };
-
-var _user$project$FileReader_FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
-	'readFile',
-	function (v) {
-		return {name: v.name, size: v.size, blob: v.blob};
-	});
-var _user$project$FileReader_FileReader$fileChunk = _elm_lang$core$Native_Platform.incomingPort('fileChunk', _elm_lang$core$Json_Decode$string);
-var _user$project$FileReader_FileReader$FileInfo = F3(
-	function (a, b, c) {
-		return {name: a, size: b, blob: c};
-	});
-var _user$project$FileReader_FileReader$fileInfoParser = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$FileReader_FileReader$FileInfo,
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int),
-	_elm_lang$core$Json_Decode$value);
-var _user$project$FileReader_FileReader$parseFiles = A2(
-	_elm_lang$core$Json_Decode$at,
-	{
-		ctor: '::',
-		_0: 'target',
-		_1: {
-			ctor: '::',
-			_0: 'files',
-			_1: {ctor: '[]'}
-		}
-	},
-	A2(
-		_elm_lang$core$Json_Decode$map,
-		_elm_lang$core$List$filterMap(_elm_lang$core$Tuple$second),
-		_elm_lang$core$Json_Decode$keyValuePairs(
-			_elm_lang$core$Json_Decode$maybe(_user$project$FileReader_FileReader$fileInfoParser))));
-var _user$project$FileReader_FileReader$onFileInput = function (wrapper) {
-	return A2(
-		_elm_lang$html$Html_Events$on,
-		'change',
-		A2(_elm_lang$core$Json_Decode$map, wrapper, _user$project$FileReader_FileReader$parseFiles));
-};
-
-var _user$project$Components_Csv$headers = function (_p0) {
-	return A2(
-		_elm_lang$core$Maybe$map,
-		function (_) {
-			return _.headers;
-		},
-		function (_) {
-			return _.csvData;
-		}(_p0));
-};
-var _user$project$Components_Csv$records = function (_p1) {
-	var _p2 = _p1;
-	var _p3 = _p2.csvData;
-	if (_p3.ctor === 'Just') {
-		var _p4 = _p3._0;
-		return _p2.hasHeaderRow ? _elm_lang$core$Maybe$Just(_p4.records) : ((_elm_lang$core$List$isEmpty(_p4.records) && _elm_lang$core$List$isEmpty(_p4.headers)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
-			{ctor: '::', _0: _p4.headers, _1: _p4.records}));
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Components_Csv$get = F2(
-	function (_p5, model) {
-		return A3(
-			_elm_lang$core$Maybe$map2,
-			F2(
-				function (v0, v1) {
-					return {ctor: '_Tuple2', _0: v0, _1: v1};
-				}),
-			_user$project$Components_Csv$headers(model),
-			_user$project$Components_Csv$records(model));
-	});
-var _user$project$Components_Csv$update = F3(
-	function (_p6, msg, model) {
-		var _p7 = msg;
-		switch (_p7.ctor) {
-			case 'MoreData':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							csvData: _elm_lang$core$Result$toMaybe(
-								_periodic$elm_csv$Csv$parse(_p7._0))
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewFiles':
-				var _p8 = _elm_lang$core$List$head(_p7._0);
-				if (_p8.ctor === 'Just') {
-					return {
-						ctor: '_Tuple2',
-						_0: model,
-						_1: _user$project$FileReader_FileReader$readFile(_p8._0)
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{hasHeaderRow: _p7._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Components_Csv$init = function (_p9) {
-	var model = {csvData: _elm_lang$core$Maybe$Nothing, hasHeaderRow: true};
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
-var _user$project$Components_Csv$numFields = _elm_lang$core$Maybe$map(
-	function (_p10) {
-		return _elm_lang$core$List$length(
-			_elm_lang$core$Tuple$first(_p10));
-	});
-var _user$project$Components_Csv$Props = {};
-var _user$project$Components_Csv$Model = F2(
-	function (a, b) {
-		return {csvData: a, hasHeaderRow: b};
-	});
-var _user$project$Components_Csv$HasHeaderRow = function (a) {
-	return {ctor: 'HasHeaderRow', _0: a};
-};
-var _user$project$Components_Csv$MoreData = function (a) {
-	return {ctor: 'MoreData', _0: a};
-};
-var _user$project$Components_Csv$subscriptions = F2(
-	function (_p12, _p11) {
-		return _user$project$FileReader_FileReader$fileChunk(_user$project$Components_Csv$MoreData);
-	});
-var _user$project$Components_Csv$NewFiles = function (a) {
-	return {ctor: 'NewFiles', _0: a};
-};
-var _user$project$Components_Csv$view = F2(
-	function (_p13, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Csv'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('Csv-fileInput'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$input,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$type_('file'),
-								_1: {
-									ctor: '::',
-									_0: _user$project$FileReader_FileReader$onFileInput(_user$project$Components_Csv$NewFiles),
-									_1: {ctor: '[]'}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('Csv-headerInput'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$input,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Components_Csv$HasHeaderRow(!model.hasHeaderRow)),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$checked(model.hasHeaderRow),
-											_1: {ctor: '[]'}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Header Row'),
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Components_Csv$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Csv$init(props),
-			update: _user$project$Components_Csv$update(props),
-			subscriptions: _user$project$Components_Csv$subscriptions(props),
-			view: _user$project$Components_Csv$view(props),
-			get: _user$project$Components_Csv$get(props)
-		});
-};
-
-var _user$project$Util$find = F2(
-	function (pred, xs) {
-		var _p0 = _elm_lang$core$List$head(xs);
-		if (_p0.ctor === 'Just') {
-			var _p1 = _p0._0;
-			return pred(_p1) ? _elm_lang$core$Maybe$Just(_p1) : A2(
-				_elm_lang$core$Maybe$andThen,
-				_user$project$Util$find(pred),
-				_elm_lang$core$List$tail(xs));
-		} else {
-			return A2(
-				_elm_lang$core$Maybe$andThen,
-				_user$project$Util$find(pred),
-				_elm_lang$core$List$tail(xs));
-		}
-	});
-var _user$project$Util$catMaybes = function (xs) {
-	catMaybes:
-	while (true) {
-		var _p2 = {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$List$head(xs),
-			_1: _elm_lang$core$List$tail(xs)
-		};
-		_v1_2:
-		do {
-			if (_p2._0.ctor === 'Just') {
-				if (_p2._1.ctor === 'Just') {
-					if (_p2._0._0.ctor === 'Just') {
-						return {
-							ctor: '::',
-							_0: _p2._0._0._0,
-							_1: _user$project$Util$catMaybes(_p2._1._0)
-						};
-					} else {
-						var _v2 = _p2._1._0;
-						xs = _v2;
-						continue catMaybes;
-					}
-				} else {
-					break _v1_2;
-				}
-			} else {
-				if (_p2._1.ctor === 'Nothing') {
-					break _v1_2;
-				} else {
-					return {ctor: '[]'};
-				}
-			}
-		} while(false);
-		return {ctor: '[]'};
-	}
-};
-var _user$project$Util$transpose = function (data) {
-	var tails = _user$project$Util$catMaybes(
-		A2(_elm_lang$core$List$map, _elm_lang$core$List$tail, data));
-	var heads = _user$project$Util$catMaybes(
-		A2(_elm_lang$core$List$map, _elm_lang$core$List$head, data));
-	return _elm_lang$core$List$isEmpty(heads) ? {ctor: '[]'} : {
-		ctor: '::',
-		_0: heads,
-		_1: _user$project$Util$transpose(tails)
-	};
-};
-var _user$project$Util$isJust = function (maybe) {
-	var _p3 = maybe;
-	if (_p3.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Util$mapPair = F3(
-	function (f, g, _p4) {
-		var _p5 = _p4;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p5._0),
-			_1: g(_p5._1)
-		};
-	});
-var _user$project$Util$mapSecond = F2(
-	function (f, _p6) {
-		var _p7 = _p6;
-		return {
-			ctor: '_Tuple2',
-			_0: _p7._0,
-			_1: f(_p7._1)
-		};
-	});
-var _user$project$Util$mapCmd = function (f) {
-	return _user$project$Util$mapSecond(
-		_elm_lang$core$Platform_Cmd$map(f));
-};
-var _user$project$Util$mapFirst = F2(
-	function (f, _p8) {
-		var _p9 = _p8;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p9._0),
-			_1: _p9._1
-		};
-	});
 
 var _user$project$Components_Configs_CompletedConfig$update = F2(
 	function (msg, model) {
@@ -15265,22 +15015,24 @@ var _user$project$Components_Configs_UserConfig$makeModel = function (_p3) {
 	if (_p5.ctor === 'Just') {
 		var _p6 = _p5._0;
 		return A2(
-			_user$project$Base$mapFirst,
+			_user$project$Util$mapComponent,
 			_user$project$Components_Configs_UserConfig$Selected(_p6),
 			_user$project$Components_Configs_UserInfo$create(
 				{user: _p6}));
 	} else {
-		return A3(
-			_user$project$Base$mapPair,
-			_user$project$Components_Configs_UserConfig$Unselected,
-			_elm_lang$core$Platform_Cmd$map(_user$project$Components_Configs_UserConfig$TypeaheadMsg),
-			_user$project$Components_Typeahead$create(
-				{
-					fetcher: A2(
-						_elm_lang$core$Basics$flip,
-						_user$project$Asana_Api$userTypeahead(_p7.workspaceId),
-						_p7.token)
-				}));
+		return A2(
+			_user$project$Util$mapCmd,
+			_user$project$Components_Configs_UserConfig$TypeaheadMsg,
+			A2(
+				_user$project$Util$mapComponent,
+				_user$project$Components_Configs_UserConfig$Unselected,
+				_user$project$Components_Typeahead$create(
+					{
+						fetcher: A2(
+							_elm_lang$core$Basics$flip,
+							_user$project$Asana_Api$userTypeahead(_p7.workspaceId),
+							_p7.token)
+					})));
 	}
 };
 var _user$project$Components_Configs_UserConfig$init = function (props) {
@@ -15329,6 +15081,318 @@ var _user$project$Components_Configs_UserConfig$create = function (props) {
 			view: _user$project$Components_Configs_UserConfig$view(props),
 			get: _user$project$Components_Configs_UserConfig$get
 		});
+};
+
+var _user$project$FileReader_FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
+	'readFile',
+	function (v) {
+		return {name: v.name, size: v.size, blob: v.blob};
+	});
+var _user$project$FileReader_FileReader$fileChunk = _elm_lang$core$Native_Platform.incomingPort('fileChunk', _elm_lang$core$Json_Decode$string);
+var _user$project$FileReader_FileReader$FileInfo = F3(
+	function (a, b, c) {
+		return {name: a, size: b, blob: c};
+	});
+var _user$project$FileReader_FileReader$fileInfoParser = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_user$project$FileReader_FileReader$FileInfo,
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int),
+	_elm_lang$core$Json_Decode$value);
+var _user$project$FileReader_FileReader$parseFiles = A2(
+	_elm_lang$core$Json_Decode$at,
+	{
+		ctor: '::',
+		_0: 'target',
+		_1: {
+			ctor: '::',
+			_0: 'files',
+			_1: {ctor: '[]'}
+		}
+	},
+	A2(
+		_elm_lang$core$Json_Decode$map,
+		_elm_lang$core$List$filterMap(_elm_lang$core$Tuple$second),
+		_elm_lang$core$Json_Decode$keyValuePairs(
+			_elm_lang$core$Json_Decode$maybe(_user$project$FileReader_FileReader$fileInfoParser))));
+var _user$project$FileReader_FileReader$onFileInput = function (wrapper) {
+	return A2(
+		_elm_lang$html$Html_Events$on,
+		'change',
+		A2(_elm_lang$core$Json_Decode$map, wrapper, _user$project$FileReader_FileReader$parseFiles));
+};
+
+var _user$project$Components_Csv_Form$headers = function (_p0) {
+	var _p1 = _p0;
+	var _p2 = _p1.csvData;
+	if (_p2.ctor === 'Success') {
+		return _elm_lang$core$Maybe$Just(_p2._0.headers);
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Components_Csv_Form$records = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4.csvData;
+	if (_p5.ctor === 'Success') {
+		var _p6 = _p5._0;
+		return _p4.hasHeaderRow ? _elm_lang$core$Maybe$Just(_p6.records) : ((_elm_lang$core$List$isEmpty(_p6.records) && _elm_lang$core$List$isEmpty(_p6.headers)) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
+			{ctor: '::', _0: _p6.headers, _1: _p6.records}));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Components_Csv_Form$get = F2(
+	function (_p7, model) {
+		return A3(
+			_elm_lang$core$Maybe$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			_user$project$Components_Csv_Form$headers(model),
+			_user$project$Components_Csv_Form$records(model));
+	});
+var _user$project$Components_Csv_Form$viewStatus = function (upload) {
+	var _p8 = upload;
+	switch (_p8.ctor) {
+		case 'Success':
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('Csv-headers'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					function (e) {
+						return A2(
+							_elm_lang$html$Html$span,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: e,
+								_1: {ctor: '[]'}
+							});
+					},
+					A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0.headers)));
+		case 'Error':
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('Csv-errors'),
+					_1: {ctor: '[]'}
+				},
+				A2(
+					_elm_lang$core$List$map,
+					function (e) {
+						return A2(
+							_elm_lang$html$Html$p,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: e,
+								_1: {ctor: '[]'}
+							});
+					},
+					A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0)));
+		default:
+			return _elm_lang$html$Html$text('');
+	}
+};
+var _user$project$Components_Csv_Form$Props = {};
+var _user$project$Components_Csv_Form$Model = F2(
+	function (a, b) {
+		return {csvData: a, hasHeaderRow: b};
+	});
+var _user$project$Components_Csv_Form$HasHeaderRow = function (a) {
+	return {ctor: 'HasHeaderRow', _0: a};
+};
+var _user$project$Components_Csv_Form$MoreData = function (a) {
+	return {ctor: 'MoreData', _0: a};
+};
+var _user$project$Components_Csv_Form$subscriptions = F2(
+	function (_p10, _p9) {
+		return _user$project$FileReader_FileReader$fileChunk(_user$project$Components_Csv_Form$MoreData);
+	});
+var _user$project$Components_Csv_Form$NewFiles = function (a) {
+	return {ctor: 'NewFiles', _0: a};
+};
+var _user$project$Components_Csv_Form$view = F2(
+	function (_p11, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Csv'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('Csv-fileInput'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$input,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('file'),
+								_1: {
+									ctor: '::',
+									_0: _user$project$FileReader_FileReader$onFileInput(_user$project$Components_Csv_Form$NewFiles),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Csv-headerInput'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$input,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$type_('checkbox'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(
+											_user$project$Components_Csv_Form$HasHeaderRow(!model.hasHeaderRow)),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$checked(model.hasHeaderRow),
+											_1: {ctor: '[]'}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Header Row'),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Components_Csv_Form$viewStatus(model.csvData),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$Components_Csv_Form$Success = function (a) {
+	return {ctor: 'Success', _0: a};
+};
+var _user$project$Components_Csv_Form$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _user$project$Components_Csv_Form$parseData = function (chunk) {
+	var _p12 = _periodic$elm_csv$Csv$parse(chunk);
+	if (_p12.ctor === 'Ok') {
+		return _user$project$Components_Csv_Form$Success(_p12._0);
+	} else {
+		return _user$project$Components_Csv_Form$Error(_p12._0);
+	}
+};
+var _user$project$Components_Csv_Form$update = F3(
+	function (_p13, msg, model) {
+		var _p14 = msg;
+		switch (_p14.ctor) {
+			case 'MoreData':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							csvData: _user$project$Components_Csv_Form$parseData(_p14._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NewFiles':
+				var _p15 = _elm_lang$core$List$head(_p14._0);
+				if (_p15.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$FileReader_FileReader$readFile(_p15._0)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{hasHeaderRow: _p14._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _user$project$Components_Csv_Form$Empty = {ctor: 'Empty'};
+var _user$project$Components_Csv_Form$init = function (_p16) {
+	var model = {csvData: _user$project$Components_Csv_Form$Empty, hasHeaderRow: true};
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _user$project$Components_Csv_Form$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Csv_Form$init(props),
+			update: _user$project$Components_Csv_Form$update(props),
+			subscriptions: _user$project$Components_Csv_Form$subscriptions(props),
+			view: _user$project$Components_Csv_Form$view(props),
+			get: _user$project$Components_Csv_Form$get(props)
+		});
+};
+
+var _user$project$Components_Csv_Summary$view = function (csvData) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('CsvSummary'),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$List$intersperse,
+			_elm_lang$html$Html$text(','),
+			A2(
+				_elm_lang$core$List$map,
+				function (header) {
+					return A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(header),
+							_1: {ctor: '[]'}
+						});
+				},
+				_elm_lang$core$Tuple$first(csvData))));
+};
+var _user$project$Components_Csv_Summary$create = function (_p0) {
+	var _p1 = _p0;
+	return _user$project$Base$staticComponent(
+		_user$project$Components_Csv_Summary$view(_p1.csvData));
+};
+var _user$project$Components_Csv_Summary$Props = function (a) {
+	return {csvData: a};
 };
 
 var _user$project$Components_TargetConfig$get = F2(
@@ -15399,7 +15463,7 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 					var _p10 = result;
 					if (_p10.ctor === 'Value') {
 						return A3(
-							_user$project$Base$mapPair,
+							_user$project$Util$mapPair,
 							_elm_lang$core$Maybe$Just,
 							_elm_lang$core$Platform_Cmd$map(
 								_user$project$Components_TargetConfig$ChildMsg(index)),
@@ -15573,8 +15637,8 @@ var _user$project$Components_TargetConfig$recordView = F3(
 									return _elm_lang$core$Native_Utils.crashCase(
 										'Components.TargetConfig',
 										{
-											start: {line: 128, column: 15},
-											end: {line: 134, column: 92}
+											start: {line: 129, column: 15},
+											end: {line: 135, column: 92}
 										},
 										_p22)('Attempting to render a record for which there is no view.');
 								}
@@ -16042,11 +16106,11 @@ var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
 		{defaultMap: lookupUser, dataView: userConfig, records: _p7.records});
 	var target = _p8._0;
 	var targetMsg = _p8._1;
-	return A3(
-		_user$project$Base$mapPair,
-		_user$project$Components_TargetSelector$Assignee,
-		_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$AssigneeMsg),
-		{ctor: '_Tuple2', _0: target, _1: targetMsg});
+	return {
+		ctor: '_Tuple2',
+		_0: _user$project$Components_TargetSelector$Assignee(target),
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_TargetSelector$AssigneeMsg, targetMsg)
+	};
 };
 var _user$project$Components_TargetSelector$Description = {ctor: 'Description'};
 var _user$project$Components_TargetSelector$Name = {ctor: 'Name'};
@@ -16065,32 +16129,34 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 			case 'Assignee':
 				return _user$project$Components_TargetSelector$assigneeComponent(props);
 			case 'Completion':
-				return A3(
-					_user$project$Base$mapPair,
-					_user$project$Components_TargetSelector$Completion,
-					_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$CompletionMsg),
-					_user$project$Components_TargetConfig$create(
-						{
-							defaultMap: function (str) {
-								return _user$project$Components_TargetConfig$Value(
-									_elm_lang$core$Maybe$Just(
-										_elm_lang$core$Native_Utils.eq(
-											_elm_lang$core$String$toLower(str),
-											'true') || _elm_lang$core$Native_Utils.eq(
-											_elm_lang$core$String$toLower(str),
-											'done')));
-							},
-							dataView: function (mValue) {
-								return A2(
-									_user$project$Base$mapFirst,
-									_user$project$Base$mapOutput(_elm_lang$core$Maybe$Just),
-									_user$project$Components_Configs_CompletedConfig$create(
-										{
-											value: A2(_elm_lang$core$Maybe$withDefault, false, mValue)
-										}));
-							},
-							records: records
-						}));
+				return A2(
+					_user$project$Util$mapCmd,
+					_user$project$Components_TargetSelector$CompletionMsg,
+					A2(
+						_user$project$Util$mapComponent,
+						_user$project$Components_TargetSelector$Completion,
+						_user$project$Components_TargetConfig$create(
+							{
+								defaultMap: function (str) {
+									return _user$project$Components_TargetConfig$Value(
+										_elm_lang$core$Maybe$Just(
+											_elm_lang$core$Native_Utils.eq(
+												_elm_lang$core$String$toLower(str),
+												'true') || _elm_lang$core$Native_Utils.eq(
+												_elm_lang$core$String$toLower(str),
+												'done')));
+								},
+								dataView: function (mValue) {
+									return A2(
+										_user$project$Util$mapComponent,
+										_user$project$Base$mapOutput(_elm_lang$core$Maybe$Just),
+										_user$project$Components_Configs_CompletedConfig$create(
+											{
+												value: A2(_elm_lang$core$Maybe$withDefault, false, mValue)
+											}));
+								},
+								records: records
+							})));
 			case 'Due Date':
 				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDate, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Due Date With Time':
@@ -16099,35 +16165,37 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 				var _p12 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p11, customFields);
 				if ((_p12.ctor === 'Just') && (_p12._0.ctor === 'CustomEnumFieldInfo')) {
 					var _p14 = _p12._0._2;
-					return A3(
-						_user$project$Base$mapPair,
-						A3(_user$project$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
-						_elm_lang$core$Platform_Cmd$map(_user$project$Components_TargetSelector$EnumMsg),
-						_user$project$Components_TargetConfig$create(
-							{
-								defaultMap: function (str) {
-									return _user$project$Components_TargetConfig$Value(
-										A2(
-											_user$project$Util$find,
-											function (_p13) {
-												return A2(
-													F2(
-														function (x, y) {
-															return _elm_lang$core$Native_Utils.eq(x, y);
-														}),
-													str,
-													function (_) {
-														return _.name;
-													}(_p13));
-											},
-											_p14));
-								},
-								dataView: function (value) {
-									return _user$project$Components_Configs_EnumConfig$create(
-										{selectedId: value, enumOptions: _p14});
-								},
-								records: records
-							}));
+					return A2(
+						_user$project$Util$mapCmd,
+						_user$project$Components_TargetSelector$EnumMsg,
+						A2(
+							_user$project$Util$mapComponent,
+							A3(_user$project$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
+							_user$project$Components_TargetConfig$create(
+								{
+									defaultMap: function (str) {
+										return _user$project$Components_TargetConfig$Value(
+											A2(
+												_user$project$Util$find,
+												function (_p13) {
+													return A2(
+														F2(
+															function (x, y) {
+																return _elm_lang$core$Native_Utils.eq(x, y);
+															}),
+														str,
+														function (_) {
+															return _.name;
+														}(_p13));
+												},
+												_p14));
+									},
+									dataView: function (value) {
+										return _user$project$Components_Configs_EnumConfig$create(
+											{selectedId: value, enumOptions: _p14});
+									},
+									records: records
+								})));
 				} else {
 					return A3(
 						_elm_lang$core$Basics$flip,
@@ -16155,7 +16223,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					case 'AssigneeMsg':
 						if (_p15._1.ctor === 'Assignee') {
 							return A2(
-								_user$project$Base$mapFirst,
+								_user$project$Util$mapComponent,
 								_user$project$Components_TargetSelector$Assignee,
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p15._0._0, _p15._1._0));
 						} else {
@@ -16164,7 +16232,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					case 'CompletionMsg':
 						if (_p15._1.ctor === 'Completion') {
 							return A2(
-								_user$project$Base$mapFirst,
+								_user$project$Util$mapComponent,
 								_user$project$Components_TargetSelector$Completion,
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p15._0._0, _p15._1._0));
 						} else {
@@ -16173,7 +16241,7 @@ var _user$project$Components_TargetSelector$update = F3(
 					default:
 						if (_p15._1.ctor === 'CustomEnumField') {
 							return A2(
-								_user$project$Base$mapFirst,
+								_user$project$Util$mapComponent,
 								A3(_user$project$Components_TargetSelector$CustomEnumField, _p15._1._0, _p15._1._1, _p15._1._2),
 								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p15._0._0, _p15._1._3));
 						} else {
@@ -16419,332 +16487,11 @@ var _user$project$Components_FieldOptions$create = function (props) {
 		});
 };
 
-var _user$project$Components_Uploader$get = F2(
+var _user$project$Components_FieldMatcher$get = F2(
 	function (_p1, _p0) {
-		var _p2 = _p1;
-		var _p3 = _p0;
-		return {
-			totalRecords: _elm_lang$core$List$length(_p2.records),
-			recordsProcessed: _p3.recordsProcessed,
-			errors: _p3.errors
-		};
+		var _p2 = _p0;
+		return _user$project$Base$get(_p2.fieldOptions);
 	});
-var _user$project$Components_Uploader$viewError = function (error) {
-	var _p4 = error;
-	if (_p4.ctor === 'ParseError') {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Uploader-error'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'Row ',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(_p4._0.row),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								', Col ',
-								A2(
-									_elm_lang$core$Basics_ops['++'],
-									_elm_lang$core$Basics$toString(_p4._0.col),
-									A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg)))))),
-				_1: {ctor: '[]'}
-			});
-	} else {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Uploader-error'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'Row ',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							_elm_lang$core$Basics$toString(_p4._0.row),
-							A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg)))),
-				_1: {ctor: '[]'}
-			});
-	}
-};
-var _user$project$Components_Uploader$viewProgress = F2(
-	function (_p6, _p5) {
-		var _p7 = _p6;
-		var _p8 = _p5;
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--working'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(
-					_elm_lang$core$String$concat(
-						{
-							ctor: '::',
-							_0: _elm_lang$core$Basics$toString(_p8.recordsProcessed),
-							_1: {
-								ctor: '::',
-								_0: ' / ',
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Basics$toString(
-										_elm_lang$core$List$length(_p7.records)),
-									_1: {ctor: '[]'}
-								}
-							}
-						})),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Components_Uploader$viewComplete = function (_p9) {
-	var _p10 = _p9;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--complete'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('Complete.'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('You can view your '),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$a,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$href(
-								_user$project$Asana_Urls$project(_p10.projectId)),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('project in Asana'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('.'),
-						_1: {ctor: '[]'}
-					}
-				}
-			}
-		});
-};
-var _user$project$Components_Uploader$view = F2(
-	function (props, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Uploader'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$core$Native_Utils.eq(
-					model.recordsProcessed,
-					_elm_lang$core$List$length(props.records)) ? _user$project$Components_Uploader$viewComplete(props) : A2(_user$project$Components_Uploader$viewProgress, props, model),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('Uploader-errors'),
-							_1: {ctor: '[]'}
-						},
-						A2(_elm_lang$core$List$map, _user$project$Components_Uploader$viewError, model.errors)),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Components_Uploader$Props = F4(
-	function (a, b, c, d) {
-		return {token: a, projectId: b, records: c, fieldTargets: d};
-	});
-var _user$project$Components_Uploader$Data = F3(
-	function (a, b, c) {
-		return {totalRecords: a, recordsProcessed: b, errors: c};
-	});
-var _user$project$Components_Uploader$Model = F2(
-	function (a, b) {
-		return {recordsProcessed: a, errors: b};
-	});
-var _user$project$Components_Uploader$RecordProcessed = F2(
-	function (a, b) {
-		return {ctor: 'RecordProcessed', _0: a, _1: b};
-	});
-var _user$project$Components_Uploader$UploadError = function (a) {
-	return {ctor: 'UploadError', _0: a};
-};
-var _user$project$Components_Uploader$update = F3(
-	function (props, msg, model) {
-		var _p11 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
-		if (_p11._1.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{recordsProcessed: model.recordsProcessed + 1}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						errors: {
-							ctor: '::',
-							_0: _user$project$Components_Uploader$UploadError(
-								{
-									msg: _elm_lang$core$Basics$toString(_p11._1._0),
-									row: _p11._0
-								}),
-							_1: model.errors
-						}
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
-		}
-	});
-var _user$project$Components_Uploader$ParseError = function (a) {
-	return {ctor: 'ParseError', _0: a};
-};
-var _user$project$Components_Uploader$updateTask = F3(
-	function (row, _p13, _p12) {
-		var _p14 = _p13;
-		var _p15 = _p12;
-		var _p19 = _p15._0;
-		var _p18 = _p15._1;
-		var _p16 = _p14._1;
-		if (_p16.ctor === 'Just') {
-			var _p17 = A3(_user$project$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
-			if (_p17.ctor === 'Ok') {
-				return {ctor: '_Tuple2', _0: _p17._0, _1: _p18};
-			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: _p19,
-					_1: {
-						ctor: '::',
-						_0: _user$project$Components_Uploader$ParseError(
-							{msg: _p17._0, row: row, col: _p14._0}),
-						_1: _p18
-					}
-				};
-			}
-		} else {
-			return {ctor: '_Tuple2', _0: _p19, _1: _p18};
-		}
-	});
-var _user$project$Components_Uploader$uploadRecord = F4(
-	function (props, row, record, model) {
-		var fieldDefs = A2(
-			_elm_lang$core$List$indexedMap,
-			F2(
-				function (i, _p20) {
-					var _p21 = _p20;
-					return {ctor: '_Tuple3', _0: i, _1: _p21._0, _2: _p21._1};
-				}),
-			A3(
-				_elm_lang$core$List$map2,
-				F2(
-					function (v0, v1) {
-						return {ctor: '_Tuple2', _0: v0, _1: v1};
-					}),
-				props.fieldTargets,
-				record));
-		var _p22 = A3(
-			_elm_lang$core$List$foldr,
-			_user$project$Components_Uploader$updateTask(row),
-			{
-				ctor: '_Tuple2',
-				_0: _user$project$Asana_Target$emptyTask(props.projectId),
-				_1: {ctor: '[]'}
-			},
-			fieldDefs);
-		var newTask = _p22._0;
-		var errs = _p22._1;
-		var model_ = _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				errors: A2(_elm_lang$core$Basics_ops['++'], errs, model.errors)
-			});
-		var cmd = A2(
-			_elm_lang$core$Platform_Cmd$map,
-			_user$project$Components_Uploader$RecordProcessed(row),
-			A2(_user$project$Asana_Api$createTask, newTask, props.token));
-		return {ctor: '_Tuple2', _0: model_, _1: cmd};
-	});
-var _user$project$Components_Uploader$init = function (props) {
-	var model = {
-		recordsProcessed: 0,
-		errors: {ctor: '[]'}
-	};
-	var _p23 = A3(
-		_elm_lang$core$List$foldr,
-		F2(
-			function (_p25, _p24) {
-				var _p26 = _p25;
-				var _p27 = _p24;
-				var _p28 = A4(_user$project$Components_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
-				var model_ = _p28._0;
-				var cmd = _p28._1;
-				return {
-					ctor: '_Tuple2',
-					_0: model_,
-					_1: {ctor: '::', _0: cmd, _1: _p27._1}
-				};
-			}),
-		{
-			ctor: '_Tuple2',
-			_0: model,
-			_1: {ctor: '[]'}
-		},
-		A2(
-			_elm_lang$core$List$indexedMap,
-			F2(
-				function (v0, v1) {
-					return {ctor: '_Tuple2', _0: v0, _1: v1};
-				}),
-			props.records));
-	var model_ = _p23._0;
-	var cmds = _p23._1;
-	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
-	return {ctor: '_Tuple2', _0: model_, _1: cmd};
-};
-var _user$project$Components_Uploader$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Uploader$init(props),
-			update: _user$project$Components_Uploader$update(props),
-			view: _user$project$Components_Uploader$view(props),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_Uploader$get(props)
-		});
-};
-
 var _user$project$Components_FieldMatcher$renderHeader = function (header) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -16773,65 +16520,26 @@ var _user$project$Components_FieldMatcher$Props = F5(
 	function (a, b, c, d, e) {
 		return {projectId: a, csvHeaders: b, csvRecords: c, customFields: d, apiContext: e};
 	});
-var _user$project$Components_FieldMatcher$Model = F2(
-	function (a, b) {
-		return {fieldOptions: a, uploader: b};
-	});
-var _user$project$Components_FieldMatcher$StartUpload = {ctor: 'StartUpload'};
-var _user$project$Components_FieldMatcher$UploaderMsg = function (a) {
-	return {ctor: 'UploaderMsg', _0: a};
-};
-var _user$project$Components_FieldMatcher$renderUploader = function (mUploader) {
-	var _p0 = mUploader;
-	if (_p0.ctor === 'Just') {
-		return A2(_user$project$Base$viewWith, _user$project$Components_FieldMatcher$UploaderMsg, _p0._0);
-	} else {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-button'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$button,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FieldMatcher$StartUpload),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('button primary'),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Import'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			});
-	}
+var _user$project$Components_FieldMatcher$Model = function (a) {
+	return {fieldOptions: a};
 };
 var _user$project$Components_FieldMatcher$FieldOptionsMsg = function (a) {
 	return {ctor: 'FieldOptionsMsg', _0: a};
 };
-var _user$project$Components_FieldMatcher$init = function (_p1) {
-	var _p2 = _p1;
-	var _p4 = _p2.csvHeaders;
-	var _p3 = _user$project$Components_FieldOptions$create(
+var _user$project$Components_FieldMatcher$init = function (_p3) {
+	var _p4 = _p3;
+	var _p6 = _p4.csvHeaders;
+	var _p5 = _user$project$Components_FieldOptions$create(
 		{
-			customFields: _p2.customFields,
-			numFields: _elm_lang$core$List$length(_p4),
-			records: _p2.csvRecords,
-			headers: _p4,
-			apiContext: _p2.apiContext
+			customFields: _p4.customFields,
+			numFields: _elm_lang$core$List$length(_p6),
+			records: _p4.csvRecords,
+			headers: _p6,
+			apiContext: _p4.apiContext
 		});
-	var fieldOptions = _p3._0;
-	var fieldOptionsCmd = _p3._1;
-	var model = {fieldOptions: fieldOptions, uploader: _elm_lang$core$Maybe$Nothing};
+	var fieldOptions = _p5._0;
+	var fieldOptionsCmd = _p5._1;
+	var model = {fieldOptions: fieldOptions};
 	return {
 		ctor: '_Tuple2',
 		_0: model,
@@ -16840,62 +16548,22 @@ var _user$project$Components_FieldMatcher$init = function (_p1) {
 };
 var _user$project$Components_FieldMatcher$update = F3(
 	function (props, msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
-			case 'FieldOptionsMsg':
-				var _p6 = A2(_user$project$Base$update, _p5._0, model.fieldOptions);
-				var fieldOptions_ = _p6._0;
-				var fieldOptionsCmd = _p6._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{fieldOptions: fieldOptions_}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
-				};
-			case 'UploaderMsg':
-				var _p7 = model.uploader;
-				if (_p7.ctor === 'Just') {
-					var _p8 = A2(_user$project$Base$update, _p5._0, _p7._0);
-					var uploader_ = _p8._0;
-					var uploaderCmd = _p8._1;
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								uploader: _elm_lang$core$Maybe$Just(uploader_)
-							}),
-						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$UploaderMsg, uploaderCmd)
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			default:
-				var _p9 = _user$project$Components_Uploader$create(
-					{
-						token: props.apiContext.token,
-						projectId: props.projectId,
-						records: props.csvRecords,
-						fieldTargets: _user$project$Base$get(model.fieldOptions)
-					});
-				var uploader = _p9._0;
-				var uploaderCmd = _p9._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							uploader: _elm_lang$core$Maybe$Just(uploader)
-						}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$UploaderMsg, uploaderCmd)
-				};
-		}
+		var _p7 = msg;
+		var _p8 = A2(_user$project$Base$update, _p7._0, model.fieldOptions);
+		var fieldOptions_ = _p8._0;
+		var fieldOptionsCmd = _p8._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Native_Utils.update(
+				model,
+				{fieldOptions: fieldOptions_}),
+			_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
+		};
 	});
 var _user$project$Components_FieldMatcher$view = F2(
-	function (_p11, _p10) {
-		var _p12 = _p11;
-		var _p13 = _p10;
+	function (_p10, _p9) {
+		var _p11 = _p10;
+		var _p12 = _p9;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -16923,27 +16591,12 @@ var _user$project$Components_FieldMatcher$view = F2(
 							},
 							{
 								ctor: '::',
-								_0: A2(_user$project$Base$viewWith, _user$project$Components_FieldMatcher$FieldOptionsMsg, _p13.fieldOptions),
+								_0: A2(_user$project$Base$viewWith, _user$project$Components_FieldMatcher$FieldOptionsMsg, _p12.fieldOptions),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-upload'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _user$project$Components_FieldMatcher$renderUploader(_p13.uploader),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			});
 	});
 var _user$project$Components_FieldMatcher$create = function (props) {
@@ -16953,10 +16606,639 @@ var _user$project$Components_FieldMatcher$create = function (props) {
 			update: _user$project$Components_FieldMatcher$update(props),
 			view: _user$project$Components_FieldMatcher$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _elm_lang$core$Basics$always(
-				{ctor: '_Tuple0'})
+			get: _user$project$Components_FieldMatcher$get(props)
 		});
 };
+
+var _user$project$Components_Fields_Summary$targetString = F2(
+	function (_p0, target) {
+		var _p1 = _p0;
+		var _p9 = _p1.customFields;
+		var _p2 = target;
+		if (_p2.ctor === 'Nothing') {
+			return '';
+		} else {
+			switch (_p2._0.ctor) {
+				case 'Name':
+					return 'Name';
+				case 'Description':
+					return 'Description';
+				case 'Assignee':
+					return 'Assignee';
+				case 'Completion':
+					return 'Completion';
+				case 'DueDate':
+					return 'Due Date';
+				case 'DueTime':
+					return 'Due Date With Time';
+				case 'CustomText':
+					var _p4 = A2(
+						_user$project$Util$find,
+						function (_p3) {
+							return A2(
+								F2(
+									function (x, y) {
+										return _elm_lang$core$Native_Utils.eq(x, y);
+									}),
+								_p2._0._0,
+								function (_) {
+									return _.id;
+								}(_p3));
+						},
+						_p9);
+					if (_p4.ctor === 'Just') {
+						return A2(_elm_lang$core$Basics_ops['++'], 'Custom Text: ', _p4._0.name);
+					} else {
+						return 'Unknown custom field';
+					}
+				case 'CustomNumber':
+					var _p6 = A2(
+						_user$project$Util$find,
+						function (_p5) {
+							return A2(
+								F2(
+									function (x, y) {
+										return _elm_lang$core$Native_Utils.eq(x, y);
+									}),
+								_p2._0._0,
+								function (_) {
+									return _.id;
+								}(_p5));
+						},
+						_p9);
+					if (_p6.ctor === 'Just') {
+						return A2(_elm_lang$core$Basics_ops['++'], 'Custom Number: ', _p6._0.name);
+					} else {
+						return 'Unknown custom field';
+					}
+				default:
+					var _p8 = A2(
+						_user$project$Util$find,
+						function (_p7) {
+							return A2(
+								F2(
+									function (x, y) {
+										return _elm_lang$core$Native_Utils.eq(x, y);
+									}),
+								_p2._0._0,
+								function (_) {
+									return _.id;
+								}(_p7));
+						},
+						_p9);
+					if (_p8.ctor === 'Just') {
+						return A2(_elm_lang$core$Basics_ops['++'], 'Custom Value: ', _p8._0.name);
+					} else {
+						return 'Unknown custom field';
+					}
+			}
+		}
+	});
+var _user$project$Components_Fields_Summary$viewRow = F2(
+	function (props, _p10) {
+		var _p11 = _p10;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('FieldSummary-row'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('FieldSummary-header'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p11._0),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('FieldSummary-target'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(_user$project$Components_Fields_Summary$targetString, props, _p11._1)),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Components_Fields_Summary$view = function (props) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('FieldSummary'),
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$List$map,
+			_user$project$Components_Fields_Summary$viewRow(props),
+			A3(
+				_elm_lang$core$List$map2,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				props.headers,
+				props.targets)));
+};
+var _user$project$Components_Fields_Summary$create = function (props) {
+	return _user$project$Base$staticComponent(
+		_user$project$Components_Fields_Summary$view(props));
+};
+var _user$project$Components_Fields_Summary$Props = F3(
+	function (a, b, c) {
+		return {headers: a, customFields: b, targets: c};
+	});
+
+var _user$project$Components_FormSection$get = function (model) {
+	var _p0 = model;
+	switch (_p0.ctor) {
+		case 'Incomplete':
+			return _elm_lang$core$Maybe$Nothing;
+		case 'Reconfiguring':
+			return _elm_lang$core$Maybe$Just(_p0._0);
+		default:
+			return _elm_lang$core$Maybe$Just(_p0._0);
+	}
+};
+var _user$project$Components_FormSection$Props = F3(
+	function (a, b, c) {
+		return {incompleteChild: a, completeChild: b, value: c};
+	});
+var _user$project$Components_FormSection$Submit = {ctor: 'Submit'};
+var _user$project$Components_FormSection$Cancel = {ctor: 'Cancel'};
+var _user$project$Components_FormSection$Reconfigure = {ctor: 'Reconfigure'};
+var _user$project$Components_FormSection$CompleteMsg = function (a) {
+	return {ctor: 'CompleteMsg', _0: a};
+};
+var _user$project$Components_FormSection$viewComplete = function (inst) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('FormSection FormSection--complete'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('FormSection-content'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$CompleteMsg, inst),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$value('Change'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Reconfigure),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Change'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_FormSection$ReconfigureMsg = function (a) {
+	return {ctor: 'ReconfigureMsg', _0: a};
+};
+var _user$project$Components_FormSection$viewReconfigure = function (inst) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('FormSection FormSection--incomplete'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('FormSection-content'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$ReconfigureMsg, inst),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$value('Submit'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Submit),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'disabled',
+											_1: _user$project$Util$isNothing(
+												_user$project$Base$get(inst))
+										},
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$disabled(
+										_user$project$Util$isNothing(
+											_user$project$Base$get(inst))),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Submit'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value('Cancel'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Cancel),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Cancel'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _user$project$Components_FormSection$IncompleteMsg = function (a) {
+	return {ctor: 'IncompleteMsg', _0: a};
+};
+var _user$project$Components_FormSection$viewIncomplete = function (inst) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('FormSection FormSection--incomplete'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('FormSection-content'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$IncompleteMsg, inst),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$value('Submit'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Submit),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$classList(
+									{
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'disabled',
+											_1: _user$project$Util$isNothing(
+												_user$project$Base$get(inst))
+										},
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$disabled(
+										_user$project$Util$isNothing(
+											_user$project$Base$get(inst))),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Submit'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_FormSection$view = F2(
+	function (_p1, model) {
+		var _p2 = model;
+		switch (_p2.ctor) {
+			case 'Incomplete':
+				return _user$project$Components_FormSection$viewIncomplete(_p2._0);
+			case 'Reconfiguring':
+				return _user$project$Components_FormSection$viewReconfigure(_p2._1);
+			default:
+				return _user$project$Components_FormSection$viewComplete(_p2._1);
+		}
+	});
+var _user$project$Components_FormSection$subscriptions = F2(
+	function (_p3, model) {
+		var _p4 = model;
+		switch (_p4.ctor) {
+			case 'Incomplete':
+				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$IncompleteMsg, _p4._0);
+			case 'Reconfiguring':
+				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$ReconfigureMsg, _p4._1);
+			default:
+				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$CompleteMsg, _p4._1);
+		}
+	});
+var _user$project$Components_FormSection$Complete = F2(
+	function (a, b) {
+		return {ctor: 'Complete', _0: a, _1: b};
+	});
+var _user$project$Components_FormSection$Reconfiguring = F2(
+	function (a, b) {
+		return {ctor: 'Reconfiguring', _0: a, _1: b};
+	});
+var _user$project$Components_FormSection$Incomplete = function (a) {
+	return {ctor: 'Incomplete', _0: a};
+};
+var _user$project$Components_FormSection$init = function (_p5) {
+	var _p6 = _p5;
+	var _p7 = _p6.value;
+	if (_p7.ctor === 'Just') {
+		var _p8 = _p7._0;
+		return A2(
+			_user$project$Util$mapCmd,
+			_user$project$Components_FormSection$CompleteMsg,
+			A2(
+				_user$project$Util$mapComponent,
+				_user$project$Components_FormSection$Complete(_p8),
+				_p6.completeChild(_p8)));
+	} else {
+		return A2(
+			_user$project$Util$mapCmd,
+			_user$project$Components_FormSection$IncompleteMsg,
+			A2(
+				_user$project$Util$mapComponent,
+				_user$project$Components_FormSection$Incomplete,
+				_p6.incompleteChild(_elm_lang$core$Maybe$Nothing)));
+	}
+};
+var _user$project$Components_FormSection$update = F3(
+	function (_p9, msg, model) {
+		var _p10 = _p9;
+		var _p18 = _p10.completeChild;
+		var _p11 = {ctor: '_Tuple2', _0: msg, _1: model};
+		_v6_7:
+		do {
+			if (_p11.ctor === '_Tuple2') {
+				switch (_p11._1.ctor) {
+					case 'Incomplete':
+						switch (_p11._0.ctor) {
+							case 'IncompleteMsg':
+								return A2(
+									_user$project$Util$mapCmd,
+									_user$project$Components_FormSection$IncompleteMsg,
+									A2(
+										_user$project$Util$mapComponent,
+										_user$project$Components_FormSection$Incomplete,
+										A2(_user$project$Base$update, _p11._0._0, _p11._1._0)));
+							case 'Submit':
+								var _p12 = _user$project$Base$get(_p11._1._0);
+								if (_p12.ctor === 'Just') {
+									var _p13 = _p12._0;
+									return A2(
+										_user$project$Util$mapCmd,
+										_user$project$Components_FormSection$CompleteMsg,
+										A2(
+											_user$project$Util$mapComponent,
+											_user$project$Components_FormSection$Complete(_p13),
+											_p18(_p13)));
+								} else {
+									return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+								}
+							default:
+								break _v6_7;
+						}
+					case 'Reconfiguring':
+						switch (_p11._0.ctor) {
+							case 'ReconfigureMsg':
+								return A2(
+									_user$project$Util$mapCmd,
+									_user$project$Components_FormSection$ReconfigureMsg,
+									A2(
+										_user$project$Util$mapComponent,
+										_user$project$Components_FormSection$Reconfiguring(_p11._1._0),
+										A2(_user$project$Base$update, _p11._0._0, _p11._1._1)));
+							case 'Submit':
+								var _p14 = _user$project$Base$get(_p11._1._1);
+								if (_p14.ctor === 'Just') {
+									var _p15 = _p14._0;
+									return A2(
+										_user$project$Util$mapCmd,
+										_user$project$Components_FormSection$CompleteMsg,
+										A2(
+											_user$project$Util$mapComponent,
+											_user$project$Components_FormSection$Complete(_p15),
+											_p18(_p15)));
+								} else {
+									return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+								}
+							case 'Cancel':
+								var _p16 = _p11._1._0;
+								return A2(
+									_user$project$Util$mapCmd,
+									_user$project$Components_FormSection$CompleteMsg,
+									A2(
+										_user$project$Util$mapComponent,
+										_user$project$Components_FormSection$Complete(_p16),
+										_p18(_p16)));
+							default:
+								break _v6_7;
+						}
+					default:
+						switch (_p11._0.ctor) {
+							case 'CompleteMsg':
+								return A2(
+									_user$project$Util$mapCmd,
+									_user$project$Components_FormSection$CompleteMsg,
+									A2(
+										_user$project$Util$mapComponent,
+										_user$project$Components_FormSection$Complete(_p11._1._0),
+										A2(_user$project$Base$update, _p11._0._0, _p11._1._1)));
+							case 'Reconfigure':
+								var _p17 = _p11._1._0;
+								return A2(
+									_user$project$Util$mapCmd,
+									_user$project$Components_FormSection$ReconfigureMsg,
+									A2(
+										_user$project$Util$mapComponent,
+										_user$project$Components_FormSection$Reconfiguring(_p17),
+										_p10.incompleteChild(
+											_elm_lang$core$Maybe$Just(_p17))));
+							default:
+								break _v6_7;
+						}
+				}
+			} else {
+				break _v6_7;
+			}
+		} while(false);
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	});
+var _user$project$Components_FormSection$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_FormSection$init(props),
+			update: _user$project$Components_FormSection$update(props),
+			view: _user$project$Components_FormSection$view(props),
+			subscriptions: _user$project$Components_FormSection$subscriptions(props),
+			get: _user$project$Components_FormSection$get
+		});
+};
+
+var _user$project$Components_MatcherSection$init = function (props) {
+	return _user$project$Components_FormSection$create(
+		{
+			value: _elm_lang$core$Maybe$Nothing,
+			incompleteChild: function (targets) {
+				return A2(
+					_user$project$Util$mapComponent,
+					_user$project$Base$mapOutput(
+						_elm_lang$core$Maybe$andThen(_elm_lang$core$Basics$identity)),
+					_user$project$Components_ApiResource$create(
+						{
+							child: function (project) {
+								var numFields = _elm_lang$core$List$length(props.headers);
+								var customFieldIds = A2(
+									_elm_lang$core$List$map,
+									function (_p0) {
+										return function (_) {
+											return _.id;
+										}(
+											function (_) {
+												return _.customField;
+											}(_p0));
+									},
+									project.customFieldSettings);
+								return _user$project$Components_ApiParallelResource$create(
+									{
+										child: function (customFieldInfos) {
+											return _user$project$Components_FieldMatcher$create(
+												{projectId: project.id, csvHeaders: props.headers, csvRecords: props.records, customFields: customFieldInfos, apiContext: props.apiContext});
+										},
+										fetches: A2(
+											_elm_lang$core$List$map,
+											A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, props.apiContext.token),
+											customFieldIds),
+										loadingView: _user$project$CommonViews$loadingIndicator,
+										errorView: _user$project$CommonViews$errorView
+									});
+							},
+							fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
+							loadingView: _user$project$CommonViews$loadingIndicator,
+							errorView: _user$project$CommonViews$errorView
+						}));
+			},
+			completeChild: function (targets) {
+				return A2(
+					_user$project$Util$mapComponent,
+					_user$project$Base$mapOutput(
+						_elm_lang$core$Basics$always(
+							{ctor: '_Tuple0'})),
+					_user$project$Components_ApiResource$create(
+						{
+							child: function (project) {
+								return _user$project$Components_Fields_Summary$create(
+									{
+										headers: props.headers,
+										targets: targets,
+										customFields: A2(
+											_elm_lang$core$List$map,
+											function (setting) {
+												return {id: setting.customField.id, name: setting.customField.name};
+											},
+											project.customFieldSettings)
+									});
+							},
+							fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
+							loadingView: _user$project$CommonViews$loadingIndicator,
+							errorView: _user$project$CommonViews$errorView
+						}));
+			}
+		});
+};
+var _user$project$Components_MatcherSection$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_MatcherSection$init(props),
+			update: _user$project$Base$update,
+			subscriptions: _user$project$Base$subscriptions,
+			get: _user$project$Base$get,
+			view: _user$project$Base$view
+		});
+};
+var _user$project$Components_MatcherSection$Props = F4(
+	function (a, b, c, d) {
+		return {projectId: a, headers: b, records: c, apiContext: d};
+	});
 
 var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) {
 	var _p1 = _p0;
@@ -17049,7 +17331,7 @@ var _user$project$Components_WorkspaceSelector$create = function (props) {
 		});
 };
 
-var _user$project$Components_Form$get = function (_p0) {
+var _user$project$Components_Project_Form$get = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1.workspaceSelector;
 	var workspace = _user$project$Base$get(_p2);
@@ -17066,23 +17348,23 @@ var _user$project$Components_Form$get = function (_p0) {
 		},
 		_user$project$Base$get(_p2));
 };
-var _user$project$Components_Form$Props = F2(
+var _user$project$Components_Project_Form$Props = F2(
 	function (a, b) {
 		return {token: a, user: b};
 	});
-var _user$project$Components_Form$Model = F2(
+var _user$project$Components_Project_Form$Model = F2(
 	function (a, b) {
 		return {workspaceSelector: a, projectTypeahead: b};
 	});
-var _user$project$Components_Form$ProjectTypeaheadMsg = function (a) {
+var _user$project$Components_Project_Form$ProjectTypeaheadMsg = function (a) {
 	return {ctor: 'ProjectTypeaheadMsg', _0: a};
 };
-var _user$project$Components_Form$updateProject = F3(
+var _user$project$Components_Project_Form$updateProject = F3(
 	function (_p3, msg, model) {
 		var _p4 = _p3;
 		var _p5 = model.projectTypeahead;
 		if (_p5.ctor === 'Just') {
-			var _p6 = A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectTypeaheadMsg, msg, _p5._0);
+			var _p6 = A3(_user$project$Base$updateWith, _user$project$Components_Project_Form$ProjectTypeaheadMsg, msg, _p5._0);
 			var typeahead_ = _p6._0;
 			var cmd = _p6._1;
 			return {
@@ -17098,10 +17380,10 @@ var _user$project$Components_Form$updateProject = F3(
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Components_Form$WorkspaceSelectorMsg = function (a) {
+var _user$project$Components_Project_Form$WorkspaceSelectorMsg = function (a) {
 	return {ctor: 'WorkspaceSelectorMsg', _0: a};
 };
-var _user$project$Components_Form$init = function (_p7) {
+var _user$project$Components_Project_Form$init = function (_p7) {
 	var _p8 = _p7;
 	var _p9 = _user$project$Components_WorkspaceSelector$create(
 		{
@@ -17116,26 +17398,26 @@ var _user$project$Components_Form$init = function (_p7) {
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Form$WorkspaceSelectorMsg, wsscmd),
+			_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Project_Form$WorkspaceSelectorMsg, wsscmd),
 			_1: {ctor: '[]'}
 		});
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
-var _user$project$Components_Form$updateWorkspace = F3(
+var _user$project$Components_Project_Form$updateWorkspace = F3(
 	function (_p10, msg, model) {
 		var _p11 = _p10;
-		var _p12 = A3(_user$project$Base$updateWith, _user$project$Components_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
+		var _p12 = A3(_user$project$Base$updateWith, _user$project$Components_Project_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
 		var wss_ = _p12._0;
 		var wsscmd = _p12._1;
 		var _p13 = function () {
 			var _p14 = _user$project$Base$get(wss_);
 			if (_p14.ctor === 'Just') {
 				return A2(
-					_user$project$Base$mapFirst,
-					_elm_lang$core$Maybe$Just,
+					_user$project$Util$mapCmd,
+					_user$project$Components_Project_Form$ProjectTypeaheadMsg,
 					A2(
-						_user$project$Base$mapCmd,
-						_user$project$Components_Form$ProjectTypeaheadMsg,
+						_user$project$Util$mapComponent,
+						_elm_lang$core$Maybe$Just,
 						_user$project$Components_Typeahead$create(
 							{
 								fetcher: function (fragment) {
@@ -17166,21 +17448,21 @@ var _user$project$Components_Form$updateWorkspace = F3(
 			_1: cmd
 		};
 	});
-var _user$project$Components_Form$update = F3(
+var _user$project$Components_Project_Form$update = F3(
 	function (props, msg, model) {
 		var _p15 = msg;
 		if (_p15.ctor === 'WorkspaceSelectorMsg') {
-			return A3(_user$project$Components_Form$updateWorkspace, props, _p15._0, model);
+			return A3(_user$project$Components_Project_Form$updateWorkspace, props, _p15._0, model);
 		} else {
-			return A3(_user$project$Components_Form$updateProject, props, _p15._0, model);
+			return A3(_user$project$Components_Project_Form$updateProject, props, _p15._0, model);
 		}
 	});
-var _user$project$Components_Form$view = F2(
+var _user$project$Components_Project_Form$view = F2(
 	function (_p16, model) {
 		var projects = function () {
 			var _p17 = model.projectTypeahead;
 			if (_p17.ctor === 'Just') {
-				return A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectTypeaheadMsg, _p17._0);
+				return A2(_user$project$Base$viewWith, _user$project$Components_Project_Form$ProjectTypeaheadMsg, _p17._0);
 			} else {
 				return A2(
 					_elm_lang$html$Html$div,
@@ -17207,7 +17489,7 @@ var _user$project$Components_Form$view = F2(
 					});
 			}
 		}();
-		var workspaces = A2(_user$project$Base$viewWith, _user$project$Components_Form$WorkspaceSelectorMsg, model.workspaceSelector);
+		var workspaces = A2(_user$project$Base$viewWith, _user$project$Components_Project_Form$WorkspaceSelectorMsg, model.workspaceSelector);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -17277,169 +17559,759 @@ var _user$project$Components_Form$view = F2(
 				}
 			});
 	});
-var _user$project$Components_Form$create = function (props) {
+var _user$project$Components_Project_Form$create = function (props) {
 	return _user$project$Base$create(
 		{
-			init: _user$project$Components_Form$init(props),
-			update: _user$project$Components_Form$update(props),
-			view: _user$project$Components_Form$view(props),
+			init: _user$project$Components_Project_Form$init(props),
+			update: _user$project$Components_Project_Form$update(props),
+			view: _user$project$Components_Project_Form$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_Form$get
+			get: _user$project$Components_Project_Form$get
 		});
 };
 
-var _user$project$Components_Asana$Props = function (a) {
-	return {token: a};
+var _user$project$Components_Project_Summary$view = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('CsvSummary'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(_p1._1.name),
+			_1: {ctor: '[]'}
+		});
 };
-var _user$project$Components_Asana$Model = F3(
-	function (a, b, c) {
-		return {form: a, csv: b, fieldMatcher: c};
-	});
-var _user$project$Components_Asana$FieldMatcherMsg = function (a) {
-	return {ctor: 'FieldMatcherMsg', _0: a};
+var _user$project$Components_Project_Summary$create = function (_p2) {
+	var _p3 = _p2;
+	return _user$project$Base$staticComponent(
+		_user$project$Components_Project_Summary$view(_p3.project));
 };
-var _user$project$Components_Asana$updateMatcher = F2(
+var _user$project$Components_Project_Summary$Props = function (a) {
+	return {project: a};
+};
+
+var _user$project$Components_Uploader_Uploader$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
-		var _p9 = _p2.token;
 		var _p3 = _p0;
-		var _p8 = _p3._0;
-		var _p4 = {
-			ctor: '_Tuple2',
-			_0: A2(
-				_elm_lang$core$Maybe$andThen,
-				_elm_lang$core$Basics$identity,
-				_user$project$Base$get(_p8.form)),
-			_1: _user$project$Base$get(_p8.csv)
+		return {
+			totalRecords: _elm_lang$core$List$length(_p2.records),
+			recordsProcessed: _p3.recordsProcessed,
+			errors: _p3.errors
 		};
-		if (((((_p4.ctor === '_Tuple2') && (_p4._0.ctor === 'Just')) && (_p4._0._0.ctor === '_Tuple2')) && (_p4._1.ctor === 'Just')) && (_p4._1._0.ctor === '_Tuple2')) {
-			var _p7 = _p4._1._0._0;
-			var _p5 = A2(
-				_user$project$Base$mapCmd,
-				_user$project$Components_Asana$FieldMatcherMsg,
-				_user$project$Components_ApiResource$create(
-					{
-						child: function (project) {
-							var numFields = _elm_lang$core$List$length(_p7);
-							var customFieldIds = A2(
-								_elm_lang$core$List$map,
-								function (_p6) {
-									return function (_) {
-										return _.id;
-									}(
-										function (_) {
-											return _.customField;
-										}(_p6));
-								},
-								project.customFieldSettings);
-							return _user$project$Components_ApiParallelResource$create(
-								{
-									child: function (customFieldInfos) {
-										return _user$project$Components_FieldMatcher$create(
-											{
-												projectId: project.id,
-												csvHeaders: _p7,
-												csvRecords: _p4._1._0._1,
-												customFields: customFieldInfos,
-												apiContext: {token: _p9, workspaceId: _p4._0._0._0}
-											});
-									},
-									fetches: A2(
-										_elm_lang$core$List$map,
-										A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, _p9),
-										customFieldIds),
-									loadingView: _user$project$CommonViews$loadingIndicator,
-									errorView: _user$project$CommonViews$errorView
-								});
+	});
+var _user$project$Components_Uploader_Uploader$viewError = function (error) {
+	var _p4 = error;
+	if (_p4.ctor === 'ParseError') {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Uploader-error'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Row ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(_p4._0.row),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								', Col ',
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									_elm_lang$core$Basics$toString(_p4._0.col),
+									A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg)))))),
+				_1: {ctor: '[]'}
+			});
+	} else {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Uploader-error'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Row ',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							_elm_lang$core$Basics$toString(_p4._0.row),
+							A2(_elm_lang$core$Basics_ops['++'], ': ', _p4._0.msg)))),
+				_1: {ctor: '[]'}
+			});
+	}
+};
+var _user$project$Components_Uploader_Uploader$viewProgress = F2(
+	function (_p6, _p5) {
+		var _p7 = _p6;
+		var _p8 = _p5;
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--working'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					_elm_lang$core$String$concat(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p8.recordsProcessed),
+							_1: {
+								ctor: '::',
+								_0: ' / ',
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(
+										_elm_lang$core$List$length(_p7.records)),
+									_1: {ctor: '[]'}
+								}
+							}
+						})),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$Components_Uploader_Uploader$viewComplete = function (_p9) {
+	var _p10 = _p9;
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('Uploader-progress Uploader-progress--complete'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('Complete.'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('You can view your '),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$a,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$href(
+								_user$project$Asana_Urls$project(_p10.projectId)),
+							_1: {ctor: '[]'}
 						},
-						fetch: A2(_user$project$Asana_Api$project, _p4._0._0._1.id, _p9),
-						loadingView: _user$project$CommonViews$loadingIndicator,
-						errorView: _user$project$CommonViews$errorView
-					}));
-			var matcher = _p5._0;
-			var matcherCmd = _p5._1;
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('project in Asana'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('.'),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Components_Uploader_Uploader$view = F2(
+	function (props, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Uploader'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$core$Native_Utils.eq(
+					model.recordsProcessed,
+					_elm_lang$core$List$length(props.records)) ? _user$project$Components_Uploader_Uploader$viewComplete(props) : A2(_user$project$Components_Uploader_Uploader$viewProgress, props, model),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Uploader-errors'),
+							_1: {ctor: '[]'}
+						},
+						A2(_elm_lang$core$List$map, _user$project$Components_Uploader_Uploader$viewError, model.errors)),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _user$project$Components_Uploader_Uploader$Props = F4(
+	function (a, b, c, d) {
+		return {token: a, projectId: b, records: c, fieldTargets: d};
+	});
+var _user$project$Components_Uploader_Uploader$Data = F3(
+	function (a, b, c) {
+		return {totalRecords: a, recordsProcessed: b, errors: c};
+	});
+var _user$project$Components_Uploader_Uploader$Model = F2(
+	function (a, b) {
+		return {recordsProcessed: a, errors: b};
+	});
+var _user$project$Components_Uploader_Uploader$RecordProcessed = F2(
+	function (a, b) {
+		return {ctor: 'RecordProcessed', _0: a, _1: b};
+	});
+var _user$project$Components_Uploader_Uploader$UploadError = function (a) {
+	return {ctor: 'UploadError', _0: a};
+};
+var _user$project$Components_Uploader_Uploader$update = F3(
+	function (props, msg, model) {
+		var _p11 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		if (_p11._1.ctor === 'Ok') {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
-					{
-						fieldMatcher: _elm_lang$core$Maybe$Just(matcher)
-					}),
-				_1: matcherCmd
+					model,
+					{recordsProcessed: model.recordsProcessed + 1}),
+				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		} else {
 			return {
 				ctor: '_Tuple2',
 				_0: _elm_lang$core$Native_Utils.update(
-					_p8,
-					{fieldMatcher: _elm_lang$core$Maybe$Nothing}),
+					model,
+					{
+						errors: {
+							ctor: '::',
+							_0: _user$project$Components_Uploader_Uploader$UploadError(
+								{
+									msg: _elm_lang$core$Basics$toString(_p11._1._0),
+									row: _p11._0
+								}),
+							_1: model.errors
+						}
+					}),
 				_1: _elm_lang$core$Platform_Cmd$none
 			};
 		}
 	});
-var _user$project$Components_Asana$viewMatcher = F2(
-	function (props, _p10) {
-		var _p11 = _p10;
-		var _p12 = _p11.fieldMatcher;
-		if (_p12.ctor === 'Just') {
+var _user$project$Components_Uploader_Uploader$ParseError = function (a) {
+	return {ctor: 'ParseError', _0: a};
+};
+var _user$project$Components_Uploader_Uploader$updateTask = F3(
+	function (row, _p13, _p12) {
+		var _p14 = _p13;
+		var _p15 = _p12;
+		var _p19 = _p15._0;
+		var _p18 = _p15._1;
+		var _p16 = _p14._1;
+		if (_p16.ctor === 'Just') {
+			var _p17 = A3(_user$project$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
+			if (_p17.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p17._0, _1: _p18};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: _p19,
+					_1: {
+						ctor: '::',
+						_0: _user$project$Components_Uploader_Uploader$ParseError(
+							{msg: _p17._0, row: row, col: _p14._0}),
+						_1: _p18
+					}
+				};
+			}
+		} else {
+			return {ctor: '_Tuple2', _0: _p19, _1: _p18};
+		}
+	});
+var _user$project$Components_Uploader_Uploader$uploadRecord = F4(
+	function (props, row, record, model) {
+		var fieldDefs = A2(
+			_elm_lang$core$List$indexedMap,
+			F2(
+				function (i, _p20) {
+					var _p21 = _p20;
+					return {ctor: '_Tuple3', _0: i, _1: _p21._0, _2: _p21._1};
+				}),
+			A3(
+				_elm_lang$core$List$map2,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				props.fieldTargets,
+				record));
+		var _p22 = A3(
+			_elm_lang$core$List$foldr,
+			_user$project$Components_Uploader_Uploader$updateTask(row),
+			{
+				ctor: '_Tuple2',
+				_0: _user$project$Asana_Target$emptyTask(props.projectId),
+				_1: {ctor: '[]'}
+			},
+			fieldDefs);
+		var newTask = _p22._0;
+		var errs = _p22._1;
+		var model_ = _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				errors: A2(_elm_lang$core$Basics_ops['++'], errs, model.errors)
+			});
+		var cmd = A2(
+			_elm_lang$core$Platform_Cmd$map,
+			_user$project$Components_Uploader_Uploader$RecordProcessed(row),
+			A2(_user$project$Asana_Api$createTask, newTask, props.token));
+		return {ctor: '_Tuple2', _0: model_, _1: cmd};
+	});
+var _user$project$Components_Uploader_Uploader$init = function (props) {
+	var model = {
+		recordsProcessed: 0,
+		errors: {ctor: '[]'}
+	};
+	var _p23 = A3(
+		_elm_lang$core$List$foldr,
+		F2(
+			function (_p25, _p24) {
+				var _p26 = _p25;
+				var _p27 = _p24;
+				var _p28 = A4(_user$project$Components_Uploader_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
+				var model_ = _p28._0;
+				var cmd = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: model_,
+					_1: {ctor: '::', _0: cmd, _1: _p27._1}
+				};
+			}),
+		{
+			ctor: '_Tuple2',
+			_0: model,
+			_1: {ctor: '[]'}
+		},
+		A2(
+			_elm_lang$core$List$indexedMap,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			props.records));
+	var model_ = _p23._0;
+	var cmds = _p23._1;
+	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
+	return {ctor: '_Tuple2', _0: model_, _1: cmd};
+};
+var _user$project$Components_Uploader_Uploader$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Uploader_Uploader$init(props),
+			update: _user$project$Components_Uploader_Uploader$update(props),
+			view: _user$project$Components_Uploader_Uploader$view(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _user$project$Components_Uploader_Uploader$get(props)
+		});
+};
+
+var _user$project$Components_Uploader_Form$init = function (_p0) {
+	return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _user$project$Components_Uploader_Form$Props = F4(
+	function (a, b, c, d) {
+		return {projectId: a, records: b, fieldTargets: c, apiContext: d};
+	});
+var _user$project$Components_Uploader_Form$StartUpload = {ctor: 'StartUpload'};
+var _user$project$Components_Uploader_Form$UploaderMsg = function (a) {
+	return {ctor: 'UploaderMsg', _0: a};
+};
+var _user$project$Components_Uploader_Form$update = F3(
+	function (props, msg, model) {
+		var _p1 = msg;
+		if (_p1.ctor === 'UploaderMsg') {
+			var _p2 = model;
+			if (_p2.ctor === 'Just') {
+				return A2(
+					_user$project$Util$mapComponent,
+					_elm_lang$core$Maybe$Just,
+					A3(_user$project$Base$updateWith, _user$project$Components_Uploader_Form$UploaderMsg, _p1._0, _p2._0));
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		} else {
 			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('Asana-matcher'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(_user$project$Base$viewWith, _user$project$Components_Asana$FieldMatcherMsg, _p12._0),
-					_1: {ctor: '[]'}
-				});
+				_user$project$Util$mapCmd,
+				_user$project$Components_Uploader_Form$UploaderMsg,
+				A2(
+					_user$project$Util$mapComponent,
+					_elm_lang$core$Maybe$Just,
+					_user$project$Components_Uploader_Uploader$create(
+						{token: props.apiContext.token, projectId: props.projectId, records: props.records, fieldTargets: props.fieldTargets})));
+		}
+	});
+var _user$project$Components_Uploader_Form$view = F2(
+	function (_p3, model) {
+		var _p4 = model;
+		if (_p4.ctor === 'Just') {
+			return A2(_user$project$Base$viewWith, _user$project$Components_Uploader_Form$UploaderMsg, _p4._0);
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('Asana-matcher--disabled'),
+					_0: _elm_lang$html$Html_Attributes$class('UploaderForm-button'),
 					_1: {ctor: '[]'}
 				},
-				{ctor: '[]'});
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$button,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_Uploader_Form$StartUpload),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('button primary'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Start Import'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
 		}
 	});
-var _user$project$Components_Asana$CsvMsg = function (a) {
-	return {ctor: 'CsvMsg', _0: a};
+var _user$project$Components_Uploader_Form$subscriptions = F2(
+	function (_p5, model) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Platform_Sub$none,
+			A2(
+				_elm_lang$core$Maybe$map,
+				_user$project$Base$subscriptionsWith(_user$project$Components_Uploader_Form$UploaderMsg),
+				model));
+	});
+var _user$project$Components_Uploader_Form$create = function (props) {
+	return _user$project$Base$create(
+		{
+			init: _user$project$Components_Uploader_Form$init(props),
+			update: _user$project$Components_Uploader_Form$update(props),
+			view: _user$project$Components_Uploader_Form$view(props),
+			subscriptions: _user$project$Components_Uploader_Form$subscriptions(props),
+			get: _elm_lang$core$Basics$always(
+				{ctor: '_Tuple0'})
+		});
 };
-var _user$project$Components_Asana$FormMsg = function (a) {
-	return {ctor: 'FormMsg', _0: a};
+
+var _user$project$Components_Form$projectAndCsvSelected = function (_p0) {
+	var _p1 = _p0;
+	return _user$project$Util$isJust(
+		_user$project$Base$get(_p1.csv)) && _user$project$Util$isJust(
+		_user$project$Base$get(_p1.project));
 };
-var _user$project$Components_Asana$init = function (_p13) {
-	var _p14 = _p13;
-	var _p17 = _p14.token;
-	var _p15 = A2(
+var _user$project$Components_Form$csvSelected = function (_p2) {
+	var _p3 = _p2;
+	return _user$project$Util$isJust(
+		_user$project$Base$get(_p3.csv));
+};
+var _user$project$Components_Form$Props = function (a) {
+	return {token: a};
+};
+var _user$project$Components_Form$Model = F4(
+	function (a, b, c, d) {
+		return {csv: a, project: b, matcher: c, uploader: d};
+	});
+var _user$project$Components_Form$UploaderMsg = function (a) {
+	return {ctor: 'UploaderMsg', _0: a};
+};
+var _user$project$Components_Form$createUploader = function (_p4) {
+	return A2(
 		_user$project$Util$mapCmd,
-		_user$project$Components_Asana$CsvMsg,
-		_user$project$Components_Csv$create(
-			{}));
-	var csv = _p15._0;
-	var csvCmd = _p15._1;
-	var _p16 = A2(
+		_user$project$Components_Form$UploaderMsg,
+		_user$project$Components_Uploader_Form$create(_p4));
+};
+var _user$project$Components_Form$viewUploader = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'Form-section Form-uplaodSection', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'Form-section--disabled',
+							_1: !_user$project$Components_Form$projectAndCsvSelected(model)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h2,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('4. Import Records as Tasks'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: function () {
+					var _p5 = model.uploader;
+					if (_p5.ctor === 'Just') {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('Form-uploader'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(_user$project$Base$viewWith, _user$project$Components_Form$UploaderMsg, _p5._0),
+								_1: {ctor: '[]'}
+							});
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('Form-uploader--disabled'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Form$FieldMatcherMsg = function (a) {
+	return {ctor: 'FieldMatcherMsg', _0: a};
+};
+var _user$project$Components_Form$createMatcher = function (_p6) {
+	return A2(
 		_user$project$Util$mapCmd,
-		_user$project$Components_Asana$FormMsg,
+		_user$project$Components_Form$FieldMatcherMsg,
+		_user$project$Components_MatcherSection$create(_p6));
+};
+var _user$project$Components_Form$updateState = F2(
+	function (props, model) {
+		var targets = A2(_elm_lang$core$Maybe$andThen, _user$project$Base$get, model.matcher);
+		var project = A2(
+			_elm_lang$core$Maybe$andThen,
+			_elm_lang$core$Basics$identity,
+			_user$project$Base$get(model.project));
+		var csv = _user$project$Base$get(model.csv);
+		var _p7 = {ctor: '_Tuple5', _0: csv, _1: project, _2: model.matcher, _3: targets, _4: model.uploader};
+		_v3_2:
+		do {
+			if (((((_p7.ctor === '_Tuple5') && (_p7._0.ctor === 'Just')) && (_p7._0._0.ctor === '_Tuple2')) && (_p7._1.ctor === 'Just')) && (_p7._1._0.ctor === '_Tuple2')) {
+				if (_p7._2.ctor === 'Nothing') {
+					return A2(
+						_user$project$Util$mapComponent,
+						function (matcher) {
+							return _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									matcher: _elm_lang$core$Maybe$Just(matcher)
+								});
+						},
+						_user$project$Components_Form$createMatcher(
+							{
+								apiContext: {token: props.token, workspaceId: _p7._1._0._0},
+								projectId: _p7._1._0._1.id,
+								headers: _p7._0._0._0,
+								records: _p7._0._0._1
+							}));
+				} else {
+					if ((_p7._3.ctor === 'Just') && (_p7._4.ctor === 'Nothing')) {
+						return A2(
+							_user$project$Util$mapComponent,
+							function (uploader) {
+								return _elm_lang$core$Native_Utils.update(
+									model,
+									{
+										uploader: _elm_lang$core$Maybe$Just(uploader)
+									});
+							},
+							_user$project$Components_Form$createUploader(
+								{
+									apiContext: {workspaceId: _p7._1._0._0, token: props.token},
+									projectId: _p7._1._0._1.id,
+									records: _p7._0._0._1,
+									fieldTargets: _p7._3._0
+								}));
+					} else {
+						break _v3_2;
+					}
+				}
+			} else {
+				break _v3_2;
+			}
+		} while(false);
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	});
+var _user$project$Components_Form$viewMatcher = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'Form-section Form-fieldsSection', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'Form-section--disabled',
+							_1: !_user$project$Components_Form$projectAndCsvSelected(model)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h2,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('3. Map columns to fields'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: function () {
+					var _p8 = model.matcher;
+					if (_p8.ctor === 'Just') {
+						return A2(_user$project$Base$viewWith, _user$project$Components_Form$FieldMatcherMsg, _p8._0);
+					} else {
+						return _elm_lang$html$Html$text('');
+					}
+				}(),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Form$ProjectMsg = function (a) {
+	return {ctor: 'ProjectMsg', _0: a};
+};
+var _user$project$Components_Form$createProjectForm = function (_p9) {
+	var _p10 = _p9;
+	var _p11 = _p10.token;
+	return A2(
+		_user$project$Util$mapCmd,
+		_user$project$Components_Form$ProjectMsg,
 		_user$project$Components_ApiResource$create(
 			{
 				child: function (user) {
-					return _user$project$Components_Form$create(
-						{token: _p17, user: user});
+					return _user$project$Components_FormSection$create(
+						{
+							incompleteChild: function (maybeProject) {
+								return _user$project$Components_Project_Form$create(
+									{token: _p11, user: user});
+							},
+							completeChild: function (project) {
+								return _user$project$Components_Project_Summary$create(
+									{project: project});
+							},
+							value: _elm_lang$core$Maybe$Nothing
+						});
 				},
-				fetch: _user$project$Asana_Api$me(_p17),
+				fetch: _user$project$Asana_Api$me(_p11),
 				loadingView: _user$project$CommonViews$loadingIndicator,
 				errorView: _user$project$CommonViews$errorView
 			}));
-	var form = _p16._0;
-	var formCmd = _p16._1;
+};
+var _user$project$Components_Form$viewProject = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'Form-section Form-projectSection', _1: true},
+					_1: {
+						ctor: '::',
+						_0: {
+							ctor: '_Tuple2',
+							_0: 'Form-section--disabled',
+							_1: !_user$project$Components_Form$csvSelected(model)
+						},
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h2,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('2. Choose a Project in Asana'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _user$project$Components_Form$csvSelected(model) ? A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectMsg, model.project) : _elm_lang$html$Html$text(''),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Form$CsvMsg = function (a) {
+	return {ctor: 'CsvMsg', _0: a};
+};
+var _user$project$Components_Form$createCsvForm = function (_p12) {
+	return A2(
+		_user$project$Util$mapCmd,
+		_user$project$Components_Form$CsvMsg,
+		_user$project$Components_FormSection$create(
+			{
+				incompleteChild: function (maybeCsv) {
+					return _user$project$Components_Csv_Form$create(
+						{});
+				},
+				completeChild: function (csvData) {
+					return _user$project$Components_Csv_Summary$create(
+						{csvData: csvData});
+				},
+				value: _elm_lang$core$Maybe$Nothing
+			}));
+};
+var _user$project$Components_Form$init = function (props) {
+	var _p13 = _user$project$Components_Form$createCsvForm(props);
+	var csv = _p13._0;
+	var csvCmd = _p13._1;
+	var _p14 = _user$project$Components_Form$createProjectForm(props);
+	var project = _p14._0;
+	var projectCmd = _p14._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: formCmd,
+			_0: projectCmd,
 			_1: {
 				ctor: '::',
 				_0: csvCmd,
@@ -17448,235 +18320,175 @@ var _user$project$Components_Asana$init = function (_p13) {
 		});
 	return {
 		ctor: '_Tuple2',
-		_0: {form: form, csv: csv, fieldMatcher: _elm_lang$core$Maybe$Nothing},
+		_0: {csv: csv, project: project, matcher: _elm_lang$core$Maybe$Nothing, uploader: _elm_lang$core$Maybe$Nothing},
 		_1: cmd
 	};
 };
-var _user$project$Components_Asana$subscriptions = F2(
-	function (_p19, _p18) {
-		var _p20 = _p18;
-		var csvSubs = A2(
-			_elm_lang$core$Platform_Sub$map,
-			_user$project$Components_Asana$CsvMsg,
-			_user$project$Base$subscriptions(_p20.csv));
-		var formSubs = A2(
-			_elm_lang$core$Platform_Sub$map,
-			_user$project$Components_Asana$FormMsg,
-			_user$project$Base$subscriptions(_p20.form));
+var _user$project$Components_Form$subscriptions = F2(
+	function (_p16, _p15) {
+		var _p17 = _p15;
+		var matcherSubs = A2(
+			_elm_lang$core$Maybe$withDefault,
+			_elm_lang$core$Platform_Sub$none,
+			A2(
+				_elm_lang$core$Maybe$map,
+				_user$project$Base$subscriptionsWith(_user$project$Components_Form$FieldMatcherMsg),
+				_p17.matcher));
+		var projectSubs = A2(_user$project$Base$subscriptionsWith, _user$project$Components_Form$ProjectMsg, _p17.project);
+		var csvSubs = A2(_user$project$Base$subscriptionsWith, _user$project$Components_Form$CsvMsg, _p17.csv);
 		return _elm_lang$core$Platform_Sub$batch(
 			{
 				ctor: '::',
-				_0: formSubs,
+				_0: csvSubs,
 				_1: {
 					ctor: '::',
-					_0: csvSubs,
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$Components_Asana$processMessage = F3(
-	function (props, msg, model) {
-		var _p21 = msg;
-		switch (_p21.ctor) {
-			case 'FormMsg':
-				var project = _user$project$Base$get(model.form);
-				var _p22 = A2(_user$project$Base$update, _p21._0, model.form);
-				var form_ = _p22._0;
-				var formCmd = _p22._1;
-				var model_ = _elm_lang$core$Native_Utils.update(
-					model,
-					{form: form_});
-				var project_ = _user$project$Base$get(model_.form);
-				var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FormMsg, formCmd);
-				return (!_elm_lang$core$Native_Utils.eq(project, project_)) ? A2(
-					_user$project$Components_Asana$updateMatcher,
-					props,
-					{ctor: '_Tuple2', _0: model_, _1: cmd}) : {ctor: '_Tuple2', _0: model_, _1: cmd};
-			case 'CsvMsg':
-				var _p23 = A2(
-					_elm_lang$core$Maybe$withDefault,
-					{
-						ctor: '_Tuple2',
-						_0: {ctor: '[]'},
-						_1: {ctor: '[]'}
-					},
-					_user$project$Base$get(model.csv));
-				var headers = _p23._0;
-				var _p24 = A3(_user$project$Base$updateWith, _user$project$Components_Asana$CsvMsg, _p21._0, model.csv);
-				var csv_ = _p24._0;
-				var csvCmd = _p24._1;
-				var model_ = _elm_lang$core$Native_Utils.update(
-					model,
-					{csv: csv_});
-				var _p25 = A2(
-					_elm_lang$core$Maybe$withDefault,
-					{
-						ctor: '_Tuple2',
-						_0: {ctor: '[]'},
-						_1: {ctor: '[]'}
-					},
-					_user$project$Base$get(csv_));
-				var headers_ = _p25._0;
-				return (!_elm_lang$core$Native_Utils.eq(headers, headers_)) ? A2(
-					_user$project$Components_Asana$updateMatcher,
-					props,
-					{ctor: '_Tuple2', _0: model_, _1: csvCmd}) : {ctor: '_Tuple2', _0: model_, _1: csvCmd};
-			default:
-				var _p26 = model.fieldMatcher;
-				if (_p26.ctor === 'Just') {
-					var _p27 = A2(_user$project$Base$update, _p21._0, _p26._0);
-					var matcher_ = _p27._0;
-					var matcherCmd = _p27._1;
-					var cmd = A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Asana$FieldMatcherMsg, matcherCmd);
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								fieldMatcher: _elm_lang$core$Maybe$Just(matcher_)
-							}),
-						_1: cmd
-					};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-		}
-	});
-var _user$project$Components_Asana$update = _user$project$Components_Asana$processMessage;
-var _user$project$Components_Asana$viewInputs = F2(
-	function (props, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Asana-inputs Grid'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('Asana-csv Cell -5of12'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$h3,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('CSV'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$p,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('Asana-infoText'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('Upload a CSV file:'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(_user$project$Base$viewWith, _user$project$Components_Asana$CsvMsg, model.csv),
-								_1: {ctor: '[]'}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('Asana-arrow Cell -2of12'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('→'),
-							_1: {ctor: '[]'}
-						}),
+					_0: projectSubs,
 					_1: {
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('Asana-form Cell -5of12'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$h3,
-									{ctor: '[]'},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text('Asana'),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$p,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('Asana-infoText'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html$text('Select an Asana project:'),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(_user$project$Base$viewWith, _user$project$Components_Asana$FormMsg, model.form),
-										_1: {ctor: '[]'}
-									}
-								}
-							}),
+						_0: matcherSubs,
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
-var _user$project$Components_Asana$view = F2(
+var _user$project$Components_Form$processMsg = F3(
+	function (props, msg, model) {
+		var _p18 = msg;
+		switch (_p18.ctor) {
+			case 'CsvMsg':
+				return A2(
+					_user$project$Util$mapComponent,
+					function (csv) {
+						return _elm_lang$core$Native_Utils.update(
+							model,
+							{csv: csv});
+					},
+					A3(_user$project$Base$updateWith, _user$project$Components_Form$CsvMsg, _p18._0, model.csv));
+			case 'ProjectMsg':
+				return A2(
+					_user$project$Util$mapComponent,
+					function (project) {
+						return _elm_lang$core$Native_Utils.update(
+							model,
+							{project: project});
+					},
+					A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectMsg, _p18._0, model.project));
+			case 'FieldMatcherMsg':
+				var _p19 = model.matcher;
+				if (_p19.ctor === 'Just') {
+					return A2(
+						_user$project$Util$mapComponent,
+						function (matcher) {
+							return _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									matcher: _elm_lang$core$Maybe$Just(matcher)
+								});
+						},
+						A3(_user$project$Base$updateWith, _user$project$Components_Form$FieldMatcherMsg, _p18._0, _p19._0));
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			default:
+				var _p20 = model.uploader;
+				if (_p20.ctor === 'Just') {
+					return A2(
+						_user$project$Util$mapComponent,
+						function (uploader) {
+							return _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									uploader: _elm_lang$core$Maybe$Just(uploader)
+								});
+						},
+						A3(_user$project$Base$updateWith, _user$project$Components_Form$UploaderMsg, _p18._0, _p20._0));
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+		}
+	});
+var _user$project$Components_Form$update = F3(
+	function (props, msg, model0) {
+		var _p21 = A3(_user$project$Components_Form$processMsg, props, msg, model0);
+		var model1 = _p21._0;
+		var cmd1 = _p21._1;
+		var _p22 = A2(_user$project$Components_Form$updateState, props, model1);
+		var model2 = _p22._0;
+		var cmd2 = _p22._1;
+		return {
+			ctor: '_Tuple2',
+			_0: model2,
+			_1: _elm_lang$core$Platform_Cmd$batch(
+				{
+					ctor: '::',
+					_0: cmd1,
+					_1: {
+						ctor: '::',
+						_0: cmd2,
+						_1: {ctor: '[]'}
+					}
+				})
+		};
+	});
+var _user$project$Components_Form$viewCsv = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('Form-section Form-csvSection'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h2,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('1. Choose a CSV file'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(_user$project$Base$viewWith, _user$project$Components_Form$CsvMsg, model.csv),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Components_Form$view = F2(
 	function (props, model) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Asana'),
+				_0: _elm_lang$html$Html_Attributes$class('Form'),
 				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
-				_0: A2(_user$project$Components_Asana$viewInputs, props, model),
+				_0: _user$project$Components_Form$viewCsv(model),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Components_Asana$viewMatcher, props, model),
-					_1: {ctor: '[]'}
+					_0: _user$project$Components_Form$viewProject(model),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Components_Form$viewMatcher(model),
+						_1: {
+							ctor: '::',
+							_0: _user$project$Components_Form$viewUploader(model),
+							_1: {ctor: '[]'}
+						}
+					}
 				}
 			});
 	});
-var _user$project$Components_Asana$create = function (props) {
+var _user$project$Components_Form$create = function (props) {
 	return _user$project$Base$create(
 		{
-			init: _user$project$Components_Asana$init(props),
-			update: _user$project$Components_Asana$update(props),
-			view: _user$project$Components_Asana$view(props),
-			subscriptions: _user$project$Components_Asana$subscriptions(props),
+			init: _user$project$Components_Form$init(props),
+			update: _user$project$Components_Form$update(props),
+			view: _user$project$Components_Form$view(props),
+			subscriptions: _user$project$Components_Form$subscriptions(props),
 			get: _elm_lang$core$Basics$always(
 				{ctor: '_Tuple0'})
 		});
@@ -18140,12 +18952,12 @@ var _user$project$Main$init = function (location) {
 		clientId: clientId,
 		baseRedirectUrl: baseRedirectUrl,
 		child: function (token) {
-			return _user$project$Components_Asana$create(
+			return _user$project$Components_Form$create(
 				{token: token});
 		}
 	};
 	return A2(
-		_user$project$Base$mapCmd,
+		_user$project$Util$mapCmd,
 		_user$project$Main$OAuthMsg,
 		_user$project$Components_OAuthBoundary$create(oauthProps));
 };

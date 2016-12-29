@@ -6,14 +6,15 @@ import Navigation
 import String
 
 import Base
-import Components.Asana as Asana
+import Components.Form as Form
 import Components.OAuthBoundary as OAuthBoundary
+import Util
 
 type Msg
-    = OAuthMsg (OAuthBoundary.Msg Asana.Msg)
+    = OAuthMsg (OAuthBoundary.Msg Form.Msg)
     | LocationChange Navigation.Location
 type alias Model =
-    OAuthBoundary.Instance Asana.Data Asana.Msg
+    OAuthBoundary.Instance Form.Data Form.Msg
 
 init : Navigation.Location -> (Model, Cmd Msg)
 init location =
@@ -31,10 +32,11 @@ init location =
                 , clientId = clientId
                 , baseRedirectUrl = baseRedirectUrl
                 , child = \token ->
-                    Asana.create { token = token }
+                    Form.create { token = token }
                 }
     in
-        OAuthBoundary.create oauthProps |> Base.mapCmd OAuthMsg
+        OAuthBoundary.create oauthProps
+            |> Util.mapCmd OAuthMsg
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model=

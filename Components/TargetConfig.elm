@@ -9,6 +9,7 @@ import Set exposing (Set)
 
 import Base
 import CommonViews
+import Util
 
 type MapResult data
     = Value (Maybe data)
@@ -57,7 +58,7 @@ init { defaultMap, dataView, records } =
                 <| (\index result ->
                     case result of
                         Value data ->
-                            dataView data |> Base.mapPair Just (Cmd.map <| ChildMsg index)
+                            dataView data |> Util.mapPair Just (Cmd.map <| ChildMsg index)
                         NeedsWork cmd ->
                             (Nothing, Cmd.map (WorkComplete index) cmd))
         cmd = Cmd.batch cmds
