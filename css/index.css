@@ -216,11 +216,13 @@ h3 {
     color: #676d76;
 }
 
-.Csv-headers {
+.Csv-headers,
+.Csv-errors {
     margin: 10px 0;
 }
 
-.Csv-firstRow {
+.Csv-firstRow,
+.Csv-error {
     font-weight: bold;
 }
 

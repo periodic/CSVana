@@ -104,6 +104,7 @@ viewStatus upload =
         Error errors ->
             List.map text errors
                 |> List.map (\e -> p [] [e])
+                |> (::) (span [ class "Csv-error" ] [ text "Error processing file: " ])
                 |> div [ class "Csv-errors" ]
         _ ->
             text ""

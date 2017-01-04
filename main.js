@@ -15206,18 +15206,35 @@ var _user$project$Components_Csv_Form$viewStatus = function (upload) {
 					_1: {ctor: '[]'}
 				},
 				A2(
-					_elm_lang$core$List$map,
-					function (e) {
-						return A2(
-							_elm_lang$html$Html$p,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: e,
-								_1: {ctor: '[]'}
-							});
-					},
-					A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0)));
+					F2(
+						function (x, y) {
+							return {ctor: '::', _0: x, _1: y};
+						}),
+					A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Csv-error'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Error processing file: '),
+							_1: {ctor: '[]'}
+						}),
+					A2(
+						_elm_lang$core$List$map,
+						function (e) {
+							return A2(
+								_elm_lang$html$Html$p,
+								{ctor: '[]'},
+								{
+									ctor: '::',
+									_0: e,
+									_1: {ctor: '[]'}
+								});
+						},
+						A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0))));
 		default:
 			return _elm_lang$html$Html$text('');
 	}
