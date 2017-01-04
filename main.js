@@ -15165,18 +15165,38 @@ var _user$project$Components_Csv_Form$viewStatus = function (upload) {
 					_1: {ctor: '[]'}
 				},
 				A2(
-					_elm_lang$core$List$map,
-					function (e) {
-						return A2(
-							_elm_lang$html$Html$span,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: e,
-								_1: {ctor: '[]'}
-							});
-					},
-					A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0.headers)));
+					F2(
+						function (x, y) {
+							return {ctor: '::', _0: x, _1: y};
+						}),
+					A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Csv-firstRow'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('First row: '),
+							_1: {ctor: '[]'}
+						}),
+					A2(
+						_elm_lang$core$List$intersperse,
+						_elm_lang$html$Html$text(', '),
+						A2(
+							_elm_lang$core$List$map,
+							function (e) {
+								return A2(
+									_elm_lang$html$Html$span,
+									{ctor: '[]'},
+									{
+										ctor: '::',
+										_0: e,
+										_1: {ctor: '[]'}
+									});
+							},
+							A2(_elm_lang$core$List$map, _elm_lang$html$Html$text, _p8._0.headers)))));
 		case 'Error':
 			return A2(
 				_elm_lang$html$Html$div,
@@ -15371,7 +15391,7 @@ var _user$project$Components_Csv_Summary$view = function (csvData) {
 		},
 		A2(
 			_elm_lang$core$List$intersperse,
-			_elm_lang$html$Html$text(','),
+			_elm_lang$html$Html$text(', '),
 			A2(
 				_elm_lang$core$List$map,
 				function (header) {
@@ -15933,7 +15953,7 @@ var _user$project$Components_TargetSelector$viewSelect = function (customFields)
 		_elm_lang$html$Html$select,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('FieldOptions-select'),
+			_0: _elm_lang$html$Html_Attributes$class('TargetSelector-select'),
 			_1: {
 				ctor: '::',
 				_0: A2(
@@ -16701,7 +16721,7 @@ var _user$project$Components_Fields_Summary$viewRow = F2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('FieldSummary-row'),
+				_0: _elm_lang$html$Html_Attributes$class('FieldSummary-row Grid'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -16710,7 +16730,7 @@ var _user$project$Components_Fields_Summary$viewRow = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('FieldSummary-header'),
+						_0: _elm_lang$html$Html_Attributes$class('FieldSummary-header Cell -5of12'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -16724,7 +16744,7 @@ var _user$project$Components_Fields_Summary$viewRow = F2(
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('FieldSummary-target'),
+							_0: _elm_lang$html$Html_Attributes$class('FieldSummary-target Cell -5of12'),
 							_1: {ctor: '[]'}
 						},
 						{
@@ -16818,8 +16838,12 @@ var _user$project$Components_FormSection$viewComplete = function (inst) {
 						_0: _elm_lang$html$Html_Attributes$value('Change'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Reconfigure),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('button secondary'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Reconfigure),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{
@@ -16871,13 +16895,21 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 								_0: _elm_lang$html$Html_Attributes$classList(
 									{
 										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'disabled',
-											_1: _user$project$Util$isNothing(
-												_user$project$Base$get(inst))
-										},
-										_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'button', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'primary', _1: true},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'disabled',
+													_1: _user$project$Util$isNothing(
+														_user$project$Base$get(inst))
+												},
+												_1: {ctor: '[]'}
+											}
+										}
 									}),
 								_1: {
 									ctor: '::',
@@ -16903,8 +16935,12 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 							_0: _elm_lang$html$Html_Attributes$value('Cancel'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Cancel),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Attributes$class('button secondary'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Cancel),
+									_1: {ctor: '[]'}
+								}
 							}
 						},
 						{
@@ -16948,7 +16984,7 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 					_elm_lang$html$Html$button,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$value('Submit'),
+						_0: _elm_lang$html$Html_Attributes$value('Next'),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Submit),
@@ -16957,13 +16993,21 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 								_0: _elm_lang$html$Html_Attributes$classList(
 									{
 										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'disabled',
-											_1: _user$project$Util$isNothing(
-												_user$project$Base$get(inst))
-										},
-										_1: {ctor: '[]'}
+										_0: {ctor: '_Tuple2', _0: 'button', _1: true},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'primary', _1: true},
+											_1: {
+												ctor: '::',
+												_0: {
+													ctor: '_Tuple2',
+													_0: 'disabled',
+													_1: _user$project$Util$isNothing(
+														_user$project$Base$get(inst))
+												},
+												_1: {ctor: '[]'}
+											}
+										}
 									}),
 								_1: {
 									ctor: '::',
@@ -16977,7 +17021,7 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('Submit'),
+						_0: _elm_lang$html$Html$text('Next'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
@@ -17155,17 +17199,17 @@ var _user$project$Components_FormSection$create = function (props) {
 };
 
 var _user$project$Components_MatcherSection$init = function (props) {
-	return _user$project$Components_FormSection$create(
-		{
-			value: _elm_lang$core$Maybe$Nothing,
-			incompleteChild: function (targets) {
-				return A2(
-					_user$project$Util$mapComponent,
-					_user$project$Base$mapOutput(
-						_elm_lang$core$Maybe$andThen(_elm_lang$core$Basics$identity)),
-					_user$project$Components_ApiResource$create(
+	return A2(
+		_user$project$Util$mapComponent,
+		_user$project$Base$mapOutput(
+			_elm_lang$core$Maybe$andThen(_elm_lang$core$Basics$identity)),
+		_user$project$Components_ApiResource$create(
+			{
+				child: function (project) {
+					return _user$project$Components_FormSection$create(
 						{
-							child: function (project) {
+							value: _elm_lang$core$Maybe$Nothing,
+							incompleteChild: function (targets) {
 								var numFields = _elm_lang$core$List$length(props.headers);
 								var customFieldIds = A2(
 									_elm_lang$core$List$map,
@@ -17192,20 +17236,7 @@ var _user$project$Components_MatcherSection$init = function (props) {
 										errorView: _user$project$CommonViews$errorView
 									});
 							},
-							fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
-							loadingView: _user$project$CommonViews$loadingIndicator,
-							errorView: _user$project$CommonViews$errorView
-						}));
-			},
-			completeChild: function (targets) {
-				return A2(
-					_user$project$Util$mapComponent,
-					_user$project$Base$mapOutput(
-						_elm_lang$core$Basics$always(
-							{ctor: '_Tuple0'})),
-					_user$project$Components_ApiResource$create(
-						{
-							child: function (project) {
+							completeChild: function (targets) {
 								return _user$project$Components_Fields_Summary$create(
 									{
 										headers: props.headers,
@@ -17217,13 +17248,13 @@ var _user$project$Components_MatcherSection$init = function (props) {
 											},
 											project.customFieldSettings)
 									});
-							},
-							fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
-							loadingView: _user$project$CommonViews$loadingIndicator,
-							errorView: _user$project$CommonViews$errorView
-						}));
-			}
-		});
+							}
+						});
+				},
+				fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
+				loadingView: _user$project$CommonViews$loadingIndicator,
+				errorView: _user$project$CommonViews$errorView
+			}));
 };
 var _user$project$Components_MatcherSection$create = function (props) {
 	return _user$project$Base$create(
@@ -17697,30 +17728,26 @@ var _user$project$Components_Uploader_Uploader$viewComplete = function (_p9) {
 		},
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html$text('Complete.'),
+			_0: _elm_lang$html$Html$text('Complete. You can view your '),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('You can view your '),
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href(
+							_user$project$Asana_Urls$project(_p10.projectId)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('new tasks in Asana'),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$a,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$href(
-								_user$project$Asana_Urls$project(_p10.projectId)),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('project in Asana'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('.'),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html$text('.'),
+					_1: {ctor: '[]'}
 				}
 			}
 		});
@@ -17977,7 +18004,7 @@ var _user$project$Components_Uploader_Form$view = F2(
 							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_Uploader_Form$StartUpload),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('button primary'),
+								_0: _elm_lang$html$Html_Attributes$class('button large primary'),
 								_1: {ctor: '[]'}
 							}
 						},
@@ -18755,7 +18782,7 @@ var _user$project$Components_OAuthBoundary$unauthenticatedView = A2(
 				_0: _elm_lang$html$Html_Attributes$type_('button'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('OAuthBoundary-authenticateButton button primary'),
+					_0: _elm_lang$html$Html_Attributes$class('OAuthBoundary-authenticateButton button primary large'),
 					_1: {
 						ctor: '::',
 						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_OAuthBoundary$StartAuth),

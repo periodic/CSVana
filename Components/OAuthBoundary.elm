@@ -108,7 +108,7 @@ unauthenticatedView : Html (Msg msg)
 unauthenticatedView =
     div [ class "OAuthBoundary OAuthBoundary--authorizing" ]
         [ input [ type_ "button"
-                , class "OAuthBoundary-authenticateButton button primary"
+                , class "OAuthBoundary-authenticateButton button primary large"
                 , Events.onClick StartAuth 
                 , value "Connect to Asana"
                 ]

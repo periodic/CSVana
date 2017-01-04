@@ -124,9 +124,8 @@ view props model =
 viewComplete : Props -> Html Msg
 viewComplete { projectId } = 
     div [ class "Uploader-progress Uploader-progress--complete" ]
-        [ text "Complete."
-        , text "You can view your "
-        , a [ href (Urls.project projectId) ] [ text "project in Asana" ]
+        [ text "Complete. You can view your "
+        , a [ href (Urls.project projectId) ] [ text "new tasks in Asana" ]
         , text "."
         ]
 

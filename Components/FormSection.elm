@@ -115,12 +115,16 @@ viewIncomplete inst =
     div [ class "FormSection FormSection--incomplete" ]
         [ div [ class "FormSection-content" ] [ Base.viewWith IncompleteMsg inst ]
         , button
-            [ value "Submit"
+            [ value "Next"
             , onClick Submit
-            , classList [ ("disabled", Util.isNothing (Base.get inst)) ]
+            , classList
+                [ ("button", True)
+                , ("primary", True)
+                , ("disabled", Util.isNothing (Base.get inst))
+                ]
             , disabled (Util.isNothing (Base.get inst))
             ]
-            [ text "Submit" ]
+            [ text "Next" ]
         ]
 
 viewReconfigure : Base.Instance (Maybe a) msg1 -> Html (Msg msg1 msg2)
@@ -130,12 +134,17 @@ viewReconfigure inst =
         , button
             [ value "Submit"
             , onClick Submit
-            , classList [ ("disabled", Util.isNothing (Base.get inst)) ]
+            , classList
+                [ ("button", True)
+                , ("primary", True)
+                , ("disabled", Util.isNothing (Base.get inst))
+                ]
             , disabled (Util.isNothing (Base.get inst))
             ]
             [ text "Submit" ]
         , button
             [ value "Cancel"
+            , class "button secondary"
             , onClick Cancel
             ]
             [ text "Cancel" ]
@@ -145,7 +154,12 @@ viewComplete : Base.Instance a msg2 -> Html (Msg msg1 msg2)
 viewComplete inst =
     div [ class "FormSection FormSection--complete" ]
         [ div [ class "FormSection-content" ] [ Base.viewWith CompleteMsg inst ]
-        , button [ value "Change" , onClick Reconfigure ] [ text "Change" ]
+        , button
+            [ value "Change"
+            , class "button secondary"
+            , onClick Reconfigure
+            ]
+            [ text "Change" ]
         ]
 
 subscriptions : Props a msg1 msg2 -> Model a msg1 msg2 -> Sub (Msg msg1 msg2)

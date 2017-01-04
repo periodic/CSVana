@@ -135,7 +135,7 @@ viewSelect customFields =
     let
         options = List.map viewOption (targetStrings customFields)
     in
-        select [ class "FieldOptions-select", Events.on "change" (onChange customFields) ] options
+        select [ class "TargetSelector-select", Events.on "change" (onChange customFields) ] options
 
 onChange : List Asana.CustomFieldInfo -> Json.Decoder Msg
 onChange customFields =

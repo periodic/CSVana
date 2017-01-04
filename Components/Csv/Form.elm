@@ -98,6 +98,8 @@ viewStatus upload =
         Success csvData ->
             List.map text csvData.headers
                 |> List.map (\e -> span [] [e])
+                |> List.intersperse (text ", ")
+                |> (::) (span [ class "Csv-firstRow" ] [text "First row: " ])
                 |> div [ class "Csv-headers" ]
         Error errors ->
             List.map text errors

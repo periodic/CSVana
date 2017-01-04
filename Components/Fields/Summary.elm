@@ -37,10 +37,10 @@ view props =
 
 viewRow : Props -> (String, Maybe Target) -> Html Msg
 viewRow props (header, target) =
-    div [ class "FieldSummary-row" ]
-        [ div [ class "FieldSummary-header" ]
+    div [ class "FieldSummary-row Grid" ]
+        [ div [ class "FieldSummary-header Cell -5of12" ]
             [ text header ]
-        , div [ class "FieldSummary-target" ]
+        , div [ class "FieldSummary-target Cell -5of12" ]
             [ targetString props target |> text ]
         ]
 

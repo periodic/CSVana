@@ -72,7 +72,7 @@ view _ model =
             Base.viewWith UploaderMsg uploader
         Nothing ->
             div [ class "UploaderForm-button" ]
-                [ button [ onClick StartUpload, class "button primary" ] [ text "Start Import" ] ]
+                [ button [ onClick StartUpload, class "button large primary" ] [ text "Start Import" ] ]
 
 subscriptions : Props -> Model -> Sub Msg
 subscriptions _ model =

@@ -21,11 +21,11 @@ type alias Props =
     }
 
 type alias Msg =
-    FormSection.Msg
-        (ApiResource.Msg
-            Asana.Project
-            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
-        (ApiResource.Msg Asana.Project FieldSummary.Msg)
+    ApiResource.Msg
+        Asana.Project
+        (FormSection.Msg
+            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg)
+            FieldSummary.Msg)
 
 type alias Data = Maybe (List (Maybe Target.Target))
 type alias Instance =
@@ -47,22 +47,29 @@ create props =
 
 
 type alias Model =
+    ApiResource.Instance
+        Asana.Project
+        (List (Maybe (Target.Target)))
+        (FormSection.Msg
+            (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg)
+            FieldSummary.Msg)
+    {-
     FormSection.Instance
         FieldMatcher.Data
         (ApiResource.Msg
             Asana.Project
             (ApiParallelResource.Msg Asana.CustomFieldInfo FieldMatcher.Msg))
         (ApiResource.Msg Asana.Project FieldSummary.Msg)
+    -}
 
 init : Props -> (Model, Cmd Msg)
 init props =
-    -- TODO: Move project fetch to the top level.
-    FormSection.create
-        { value = Nothing
-        , incompleteChild = \targets ->
-            Util.mapComponent (Base.mapOutput (Maybe.andThen identity))
-            <| ApiResource.create
-                { child = \project ->
+    Util.mapComponent (Base.mapOutput (Maybe.andThen identity))
+    <| ApiResource.create
+        { child = \project ->
+            FormSection.create
+                { value = Nothing
+                , incompleteChild = \targets ->
                     let
                         customFieldIds = List.map (.customField >> .id) project.customFieldSettings
                         numFields = List.length props.headers
@@ -80,14 +87,7 @@ init props =
                             , loadingView = CommonViews.loadingIndicator
                             , errorView = CommonViews.errorView
                             }
-                , fetch = Api.project props.projectId props.apiContext.token
-                , loadingView = CommonViews.loadingIndicator
-                , errorView = CommonViews.errorView
-                }
-        , completeChild = \targets ->
-            Util.mapComponent (Base.mapOutput (always ()))
-            <| ApiResource.create
-                { child = \project ->
+                , completeChild = \targets ->
                     FieldSummary.create
                         { headers = props.headers
                         , targets = targets
@@ -96,9 +96,9 @@ init props =
                                 (\setting -> { id = setting.customField.id, name = setting.customField.name })
                                 project.customFieldSettings
                         }
-                , fetch = Api.project props.projectId props.apiContext.token
-                , loadingView = CommonViews.loadingIndicator
-                , errorView = CommonViews.errorView
                 }
+        , fetch = Api.project props.projectId props.apiContext.token
+        , loadingView = CommonViews.loadingIndicator
+        , errorView = CommonViews.errorView
         }
 

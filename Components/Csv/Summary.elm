@@ -30,5 +30,5 @@ view : CsvData -> Html Msg
 view csvData =
     Tuple.first csvData
         |> List.map (\header -> span [] [ text header ])
-        |> List.intersperse (text ",")
+        |> List.intersperse (text ", ")
         |> div [ class "CsvSummary" ]
