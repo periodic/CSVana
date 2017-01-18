@@ -11312,20 +11312,31 @@ var _periodic$elm_csv$Csv$textData = _Bogdanp$elm_combine$Combine_Char$noneOf(
 		}
 	});
 var _periodic$elm_csv$Csv$nonEscaped = A2(
-	_Bogdanp$elm_combine$Combine$map,
-	_elm_lang$core$String$fromList,
-	_Bogdanp$elm_combine$Combine$many(_periodic$elm_csv$Csv$textData));
+	_Bogdanp$elm_combine$Combine$mapError,
+	_elm_lang$core$Basics$always(
+		{
+			ctor: '::',
+			_0: 'Expected non-escaped value.',
+			_1: {ctor: '[]'}
+		}),
+	A2(
+		_Bogdanp$elm_combine$Combine$map,
+		_elm_lang$core$String$fromList,
+		_Bogdanp$elm_combine$Combine$many(_periodic$elm_csv$Csv$textData)));
 var _periodic$elm_csv$Csv$lf = _Bogdanp$elm_combine$Combine_Char$char(
 	_elm_lang$core$Native_Utils.chr('\n'));
 var _periodic$elm_csv$Csv$cr = _Bogdanp$elm_combine$Combine_Char$char(
 	_elm_lang$core$Native_Utils.chr('\r'));
-var _periodic$elm_csv$Csv$crlf = A2(
+var _periodic$elm_csv$Csv$lineSep = A2(
 	_Bogdanp$elm_combine$Combine_ops['<$'],
 	{ctor: '_Tuple0'},
 	A2(
-		_Bogdanp$elm_combine$Combine_ops['<|>'],
-		A2(_Bogdanp$elm_combine$Combine_ops['*>'], _periodic$elm_csv$Csv$cr, _periodic$elm_csv$Csv$lf),
-		_periodic$elm_csv$Csv$lf));
+		_Bogdanp$elm_combine$Combine_ops['<?>'],
+		A2(
+			_Bogdanp$elm_combine$Combine_ops['<|>'],
+			A2(_Bogdanp$elm_combine$Combine_ops['*>'], _periodic$elm_csv$Csv$cr, _periodic$elm_csv$Csv$lf),
+			A2(_Bogdanp$elm_combine$Combine_ops['<|>'], _periodic$elm_csv$Csv$cr, _periodic$elm_csv$Csv$lf)),
+		'Expected new line.'));
 var _periodic$elm_csv$Csv$doubleQuote = _Bogdanp$elm_combine$Combine_Char$char(
 	_elm_lang$core$Native_Utils.chr('\"'));
 var _periodic$elm_csv$Csv$doubleDoubleQuote = A2(_Bogdanp$elm_combine$Combine_ops['*>'], _periodic$elm_csv$Csv$doubleQuote, _periodic$elm_csv$Csv$doubleQuote);
@@ -11359,9 +11370,17 @@ var _periodic$elm_csv$Csv$escaped = function () {
 		_elm_lang$core$String$fromList,
 		_Bogdanp$elm_combine$Combine$many(innerChar));
 	return A2(
-		_Bogdanp$elm_combine$Combine_ops['<*'],
-		A2(_Bogdanp$elm_combine$Combine_ops['*>'], _periodic$elm_csv$Csv$doubleQuote, innerString),
-		_periodic$elm_csv$Csv$doubleQuote);
+		_Bogdanp$elm_combine$Combine$mapError,
+		_elm_lang$core$Basics$always(
+			{
+				ctor: '::',
+				_0: 'Expected escaped value.',
+				_1: {ctor: '[]'}
+			}),
+		A2(
+			_Bogdanp$elm_combine$Combine_ops['<*'],
+			A2(_Bogdanp$elm_combine$Combine_ops['*>'], _periodic$elm_csv$Csv$doubleQuote, innerString),
+			_periodic$elm_csv$Csv$doubleQuote));
 }();
 var _periodic$elm_csv$Csv$field = _Bogdanp$elm_combine$Combine$choice(
 	{
@@ -11376,8 +11395,8 @@ var _periodic$elm_csv$Csv$field = _Bogdanp$elm_combine$Combine$choice(
 var _periodic$elm_csv$Csv$name = _periodic$elm_csv$Csv$field;
 var _periodic$elm_csv$Csv$header = A2(_Bogdanp$elm_combine$Combine$sepBy, _periodic$elm_csv$Csv$comma, _periodic$elm_csv$Csv$name);
 var _periodic$elm_csv$Csv$record = A2(_Bogdanp$elm_combine$Combine$sepBy, _periodic$elm_csv$Csv$comma, _periodic$elm_csv$Csv$field);
-var _periodic$elm_csv$Csv$addTrailingCrlf = function (str) {
-	return (!(A2(_elm_lang$core$String$endsWith, '\r\n', str) || A2(_elm_lang$core$String$endsWith, '\n', str))) ? A2(_elm_lang$core$Basics_ops['++'], str, '\r\n') : str;
+var _periodic$elm_csv$Csv$addTrailingLineSep = function (str) {
+	return (!(A2(_elm_lang$core$String$endsWith, '\n', str) || A2(_elm_lang$core$String$endsWith, '\r', str))) ? A2(_elm_lang$core$Basics_ops['++'], str, '\r\n') : str;
 };
 var _periodic$elm_csv$Csv$thrd = function (_p0) {
 	var _p1 = _p0;
@@ -11394,9 +11413,12 @@ var _periodic$elm_csv$Csv$file = A2(
 		A2(
 			_Bogdanp$elm_combine$Combine_ops['<*'],
 			A2(_Bogdanp$elm_combine$Combine_ops['<$>'], _periodic$elm_csv$Csv$Csv, _periodic$elm_csv$Csv$header),
-			_periodic$elm_csv$Csv$crlf),
+			A2(_Bogdanp$elm_combine$Combine_ops['<?>'], _periodic$elm_csv$Csv$lineSep, 'Unterminated header')),
 		_Bogdanp$elm_combine$Combine$many(
-			A2(_Bogdanp$elm_combine$Combine_ops['<*'], _periodic$elm_csv$Csv$record, _periodic$elm_csv$Csv$crlf))),
+			A2(
+				_Bogdanp$elm_combine$Combine_ops['<*'],
+				_periodic$elm_csv$Csv$record,
+				A2(_Bogdanp$elm_combine$Combine_ops['<?>'], _periodic$elm_csv$Csv$lineSep, 'Unterminated record')))),
 	_Bogdanp$elm_combine$Combine$end);
 var _periodic$elm_csv$Csv$parse = function (_p2) {
 	return A2(
@@ -11408,7 +11430,7 @@ var _periodic$elm_csv$Csv$parse = function (_p2) {
 			A2(
 				_Bogdanp$elm_combine$Combine$parse,
 				_periodic$elm_csv$Csv$file,
-				_periodic$elm_csv$Csv$addTrailingCrlf(_p2))));
+				_periodic$elm_csv$Csv$addTrailingLineSep(_p2))));
 };
 
 var _rluiten$elm_date_extra$Date_Extra_Core$prevMonth = function (month) {
