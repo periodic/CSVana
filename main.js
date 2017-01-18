@@ -4389,6 +4389,1601 @@ var _Bogdanp$elm_combine$Combine_Char$hexDigit = A2(
 	_Bogdanp$elm_combine$Combine_Char$satisfy(_elm_lang$core$Char$isHexDigit),
 	'expected a hexadecimal digit');
 
+var _elm_lang$core$Dict$foldr = F3(
+	function (f, acc, t) {
+		foldr:
+		while (true) {
+			var _p0 = t;
+			if (_p0.ctor === 'RBEmpty_elm_builtin') {
+				return acc;
+			} else {
+				var _v1 = f,
+					_v2 = A3(
+					f,
+					_p0._1,
+					_p0._2,
+					A3(_elm_lang$core$Dict$foldr, f, acc, _p0._4)),
+					_v3 = _p0._3;
+				f = _v1;
+				acc = _v2;
+				t = _v3;
+				continue foldr;
+			}
+		}
+	});
+var _elm_lang$core$Dict$keys = function (dict) {
+	return A3(
+		_elm_lang$core$Dict$foldr,
+		F3(
+			function (key, value, keyList) {
+				return {ctor: '::', _0: key, _1: keyList};
+			}),
+		{ctor: '[]'},
+		dict);
+};
+var _elm_lang$core$Dict$values = function (dict) {
+	return A3(
+		_elm_lang$core$Dict$foldr,
+		F3(
+			function (key, value, valueList) {
+				return {ctor: '::', _0: value, _1: valueList};
+			}),
+		{ctor: '[]'},
+		dict);
+};
+var _elm_lang$core$Dict$toList = function (dict) {
+	return A3(
+		_elm_lang$core$Dict$foldr,
+		F3(
+			function (key, value, list) {
+				return {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: key, _1: value},
+					_1: list
+				};
+			}),
+		{ctor: '[]'},
+		dict);
+};
+var _elm_lang$core$Dict$foldl = F3(
+	function (f, acc, dict) {
+		foldl:
+		while (true) {
+			var _p1 = dict;
+			if (_p1.ctor === 'RBEmpty_elm_builtin') {
+				return acc;
+			} else {
+				var _v5 = f,
+					_v6 = A3(
+					f,
+					_p1._1,
+					_p1._2,
+					A3(_elm_lang$core$Dict$foldl, f, acc, _p1._3)),
+					_v7 = _p1._4;
+				f = _v5;
+				acc = _v6;
+				dict = _v7;
+				continue foldl;
+			}
+		}
+	});
+var _elm_lang$core$Dict$merge = F6(
+	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
+		var stepState = F3(
+			function (rKey, rValue, _p2) {
+				stepState:
+				while (true) {
+					var _p3 = _p2;
+					var _p9 = _p3._1;
+					var _p8 = _p3._0;
+					var _p4 = _p8;
+					if (_p4.ctor === '[]') {
+						return {
+							ctor: '_Tuple2',
+							_0: _p8,
+							_1: A3(rightStep, rKey, rValue, _p9)
+						};
+					} else {
+						var _p7 = _p4._1;
+						var _p6 = _p4._0._1;
+						var _p5 = _p4._0._0;
+						if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) < 0) {
+							var _v10 = rKey,
+								_v11 = rValue,
+								_v12 = {
+								ctor: '_Tuple2',
+								_0: _p7,
+								_1: A3(leftStep, _p5, _p6, _p9)
+							};
+							rKey = _v10;
+							rValue = _v11;
+							_p2 = _v12;
+							continue stepState;
+						} else {
+							if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) > 0) {
+								return {
+									ctor: '_Tuple2',
+									_0: _p8,
+									_1: A3(rightStep, rKey, rValue, _p9)
+								};
+							} else {
+								return {
+									ctor: '_Tuple2',
+									_0: _p7,
+									_1: A4(bothStep, _p5, _p6, rValue, _p9)
+								};
+							}
+						}
+					}
+				}
+			});
+		var _p10 = A3(
+			_elm_lang$core$Dict$foldl,
+			stepState,
+			{
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Dict$toList(leftDict),
+				_1: initialResult
+			},
+			rightDict);
+		var leftovers = _p10._0;
+		var intermediateResult = _p10._1;
+		return A3(
+			_elm_lang$core$List$foldl,
+			F2(
+				function (_p11, result) {
+					var _p12 = _p11;
+					return A3(leftStep, _p12._0, _p12._1, result);
+				}),
+			intermediateResult,
+			leftovers);
+	});
+var _elm_lang$core$Dict$reportRemBug = F4(
+	function (msg, c, lgot, rgot) {
+		return _elm_lang$core$Native_Debug.crash(
+			_elm_lang$core$String$concat(
+				{
+					ctor: '::',
+					_0: 'Internal red-black tree invariant violated, expected ',
+					_1: {
+						ctor: '::',
+						_0: msg,
+						_1: {
+							ctor: '::',
+							_0: ' and got ',
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Basics$toString(c),
+								_1: {
+									ctor: '::',
+									_0: '/',
+									_1: {
+										ctor: '::',
+										_0: lgot,
+										_1: {
+											ctor: '::',
+											_0: '/',
+											_1: {
+												ctor: '::',
+												_0: rgot,
+												_1: {
+													ctor: '::',
+													_0: '\nPlease report this bug to <https://github.com/elm-lang/core/issues>',
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}));
+	});
+var _elm_lang$core$Dict$isBBlack = function (dict) {
+	var _p13 = dict;
+	_v14_2:
+	do {
+		if (_p13.ctor === 'RBNode_elm_builtin') {
+			if (_p13._0.ctor === 'BBlack') {
+				return true;
+			} else {
+				break _v14_2;
+			}
+		} else {
+			if (_p13._0.ctor === 'LBBlack') {
+				return true;
+			} else {
+				break _v14_2;
+			}
+		}
+	} while(false);
+	return false;
+};
+var _elm_lang$core$Dict$sizeHelp = F2(
+	function (n, dict) {
+		sizeHelp:
+		while (true) {
+			var _p14 = dict;
+			if (_p14.ctor === 'RBEmpty_elm_builtin') {
+				return n;
+			} else {
+				var _v16 = A2(_elm_lang$core$Dict$sizeHelp, n + 1, _p14._4),
+					_v17 = _p14._3;
+				n = _v16;
+				dict = _v17;
+				continue sizeHelp;
+			}
+		}
+	});
+var _elm_lang$core$Dict$size = function (dict) {
+	return A2(_elm_lang$core$Dict$sizeHelp, 0, dict);
+};
+var _elm_lang$core$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			var _p15 = dict;
+			if (_p15.ctor === 'RBEmpty_elm_builtin') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				var _p16 = A2(_elm_lang$core$Basics$compare, targetKey, _p15._1);
+				switch (_p16.ctor) {
+					case 'LT':
+						var _v20 = targetKey,
+							_v21 = _p15._3;
+						targetKey = _v20;
+						dict = _v21;
+						continue get;
+					case 'EQ':
+						return _elm_lang$core$Maybe$Just(_p15._2);
+					default:
+						var _v22 = targetKey,
+							_v23 = _p15._4;
+						targetKey = _v22;
+						dict = _v23;
+						continue get;
+				}
+			}
+		}
+	});
+var _elm_lang$core$Dict$member = F2(
+	function (key, dict) {
+		var _p17 = A2(_elm_lang$core$Dict$get, key, dict);
+		if (_p17.ctor === 'Just') {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var _elm_lang$core$Dict$maxWithDefault = F3(
+	function (k, v, r) {
+		maxWithDefault:
+		while (true) {
+			var _p18 = r;
+			if (_p18.ctor === 'RBEmpty_elm_builtin') {
+				return {ctor: '_Tuple2', _0: k, _1: v};
+			} else {
+				var _v26 = _p18._1,
+					_v27 = _p18._2,
+					_v28 = _p18._4;
+				k = _v26;
+				v = _v27;
+				r = _v28;
+				continue maxWithDefault;
+			}
+		}
+	});
+var _elm_lang$core$Dict$NBlack = {ctor: 'NBlack'};
+var _elm_lang$core$Dict$BBlack = {ctor: 'BBlack'};
+var _elm_lang$core$Dict$Black = {ctor: 'Black'};
+var _elm_lang$core$Dict$blackish = function (t) {
+	var _p19 = t;
+	if (_p19.ctor === 'RBNode_elm_builtin') {
+		var _p20 = _p19._0;
+		return _elm_lang$core$Native_Utils.eq(_p20, _elm_lang$core$Dict$Black) || _elm_lang$core$Native_Utils.eq(_p20, _elm_lang$core$Dict$BBlack);
+	} else {
+		return true;
+	}
+};
+var _elm_lang$core$Dict$Red = {ctor: 'Red'};
+var _elm_lang$core$Dict$moreBlack = function (color) {
+	var _p21 = color;
+	switch (_p21.ctor) {
+		case 'Black':
+			return _elm_lang$core$Dict$BBlack;
+		case 'Red':
+			return _elm_lang$core$Dict$Black;
+		case 'NBlack':
+			return _elm_lang$core$Dict$Red;
+		default:
+			return _elm_lang$core$Native_Debug.crash('Can\'t make a double black node more black!');
+	}
+};
+var _elm_lang$core$Dict$lessBlack = function (color) {
+	var _p22 = color;
+	switch (_p22.ctor) {
+		case 'BBlack':
+			return _elm_lang$core$Dict$Black;
+		case 'Black':
+			return _elm_lang$core$Dict$Red;
+		case 'Red':
+			return _elm_lang$core$Dict$NBlack;
+		default:
+			return _elm_lang$core$Native_Debug.crash('Can\'t make a negative black node less black!');
+	}
+};
+var _elm_lang$core$Dict$LBBlack = {ctor: 'LBBlack'};
+var _elm_lang$core$Dict$LBlack = {ctor: 'LBlack'};
+var _elm_lang$core$Dict$RBEmpty_elm_builtin = function (a) {
+	return {ctor: 'RBEmpty_elm_builtin', _0: a};
+};
+var _elm_lang$core$Dict$empty = _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
+var _elm_lang$core$Dict$isEmpty = function (dict) {
+	return _elm_lang$core$Native_Utils.eq(dict, _elm_lang$core$Dict$empty);
+};
+var _elm_lang$core$Dict$RBNode_elm_builtin = F5(
+	function (a, b, c, d, e) {
+		return {ctor: 'RBNode_elm_builtin', _0: a, _1: b, _2: c, _3: d, _4: e};
+	});
+var _elm_lang$core$Dict$ensureBlackRoot = function (dict) {
+	var _p23 = dict;
+	if ((_p23.ctor === 'RBNode_elm_builtin') && (_p23._0.ctor === 'Red')) {
+		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p23._1, _p23._2, _p23._3, _p23._4);
+	} else {
+		return dict;
+	}
+};
+var _elm_lang$core$Dict$lessBlackTree = function (dict) {
+	var _p24 = dict;
+	if (_p24.ctor === 'RBNode_elm_builtin') {
+		return A5(
+			_elm_lang$core$Dict$RBNode_elm_builtin,
+			_elm_lang$core$Dict$lessBlack(_p24._0),
+			_p24._1,
+			_p24._2,
+			_p24._3,
+			_p24._4);
+	} else {
+		return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
+	}
+};
+var _elm_lang$core$Dict$balancedTree = function (col) {
+	return function (xk) {
+		return function (xv) {
+			return function (yk) {
+				return function (yv) {
+					return function (zk) {
+						return function (zv) {
+							return function (a) {
+								return function (b) {
+									return function (c) {
+										return function (d) {
+											return A5(
+												_elm_lang$core$Dict$RBNode_elm_builtin,
+												_elm_lang$core$Dict$lessBlack(col),
+												yk,
+												yv,
+												A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, xk, xv, a, b),
+												A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, zk, zv, c, d));
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$core$Dict$blacken = function (t) {
+	var _p25 = t;
+	if (_p25.ctor === 'RBEmpty_elm_builtin') {
+		return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
+	} else {
+		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p25._1, _p25._2, _p25._3, _p25._4);
+	}
+};
+var _elm_lang$core$Dict$redden = function (t) {
+	var _p26 = t;
+	if (_p26.ctor === 'RBEmpty_elm_builtin') {
+		return _elm_lang$core$Native_Debug.crash('can\'t make a Leaf red');
+	} else {
+		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Red, _p26._1, _p26._2, _p26._3, _p26._4);
+	}
+};
+var _elm_lang$core$Dict$balanceHelp = function (tree) {
+	var _p27 = tree;
+	_v36_6:
+	do {
+		_v36_5:
+		do {
+			_v36_4:
+			do {
+				_v36_3:
+				do {
+					_v36_2:
+					do {
+						_v36_1:
+						do {
+							_v36_0:
+							do {
+								if (_p27.ctor === 'RBNode_elm_builtin') {
+									if (_p27._3.ctor === 'RBNode_elm_builtin') {
+										if (_p27._4.ctor === 'RBNode_elm_builtin') {
+											switch (_p27._3._0.ctor) {
+												case 'Red':
+													switch (_p27._4._0.ctor) {
+														case 'Red':
+															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
+																break _v36_0;
+															} else {
+																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
+																	break _v36_1;
+																} else {
+																	if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
+																		break _v36_2;
+																	} else {
+																		if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
+																			break _v36_3;
+																		} else {
+																			break _v36_6;
+																		}
+																	}
+																}
+															}
+														case 'NBlack':
+															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
+																break _v36_0;
+															} else {
+																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
+																	break _v36_1;
+																} else {
+																	if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
+																		break _v36_4;
+																	} else {
+																		break _v36_6;
+																	}
+																}
+															}
+														default:
+															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
+																break _v36_0;
+															} else {
+																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
+																	break _v36_1;
+																} else {
+																	break _v36_6;
+																}
+															}
+													}
+												case 'NBlack':
+													switch (_p27._4._0.ctor) {
+														case 'Red':
+															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
+																break _v36_2;
+															} else {
+																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
+																	break _v36_3;
+																} else {
+																	if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
+																		break _v36_5;
+																	} else {
+																		break _v36_6;
+																	}
+																}
+															}
+														case 'NBlack':
+															if (_p27._0.ctor === 'BBlack') {
+																if ((((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
+																	break _v36_4;
+																} else {
+																	if ((((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
+																		break _v36_5;
+																	} else {
+																		break _v36_6;
+																	}
+																}
+															} else {
+																break _v36_6;
+															}
+														default:
+															if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
+																break _v36_5;
+															} else {
+																break _v36_6;
+															}
+													}
+												default:
+													switch (_p27._4._0.ctor) {
+														case 'Red':
+															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
+																break _v36_2;
+															} else {
+																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
+																	break _v36_3;
+																} else {
+																	break _v36_6;
+																}
+															}
+														case 'NBlack':
+															if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
+																break _v36_4;
+															} else {
+																break _v36_6;
+															}
+														default:
+															break _v36_6;
+													}
+											}
+										} else {
+											switch (_p27._3._0.ctor) {
+												case 'Red':
+													if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
+														break _v36_0;
+													} else {
+														if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
+															break _v36_1;
+														} else {
+															break _v36_6;
+														}
+													}
+												case 'NBlack':
+													if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
+														break _v36_5;
+													} else {
+														break _v36_6;
+													}
+												default:
+													break _v36_6;
+											}
+										}
+									} else {
+										if (_p27._4.ctor === 'RBNode_elm_builtin') {
+											switch (_p27._4._0.ctor) {
+												case 'Red':
+													if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
+														break _v36_2;
+													} else {
+														if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
+															break _v36_3;
+														} else {
+															break _v36_6;
+														}
+													}
+												case 'NBlack':
+													if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
+														break _v36_4;
+													} else {
+														break _v36_6;
+													}
+												default:
+													break _v36_6;
+											}
+										} else {
+											break _v36_6;
+										}
+									}
+								} else {
+									break _v36_6;
+								}
+							} while(false);
+							return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._3._3._1)(_p27._3._3._2)(_p27._3._1)(_p27._3._2)(_p27._1)(_p27._2)(_p27._3._3._3)(_p27._3._3._4)(_p27._3._4)(_p27._4);
+						} while(false);
+						return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._3._1)(_p27._3._2)(_p27._3._4._1)(_p27._3._4._2)(_p27._1)(_p27._2)(_p27._3._3)(_p27._3._4._3)(_p27._3._4._4)(_p27._4);
+					} while(false);
+					return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._1)(_p27._2)(_p27._4._3._1)(_p27._4._3._2)(_p27._4._1)(_p27._4._2)(_p27._3)(_p27._4._3._3)(_p27._4._3._4)(_p27._4._4);
+				} while(false);
+				return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._1)(_p27._2)(_p27._4._1)(_p27._4._2)(_p27._4._4._1)(_p27._4._4._2)(_p27._3)(_p27._4._3)(_p27._4._4._3)(_p27._4._4._4);
+			} while(false);
+			return A5(
+				_elm_lang$core$Dict$RBNode_elm_builtin,
+				_elm_lang$core$Dict$Black,
+				_p27._4._3._1,
+				_p27._4._3._2,
+				A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p27._1, _p27._2, _p27._3, _p27._4._3._3),
+				A5(
+					_elm_lang$core$Dict$balance,
+					_elm_lang$core$Dict$Black,
+					_p27._4._1,
+					_p27._4._2,
+					_p27._4._3._4,
+					_elm_lang$core$Dict$redden(_p27._4._4)));
+		} while(false);
+		return A5(
+			_elm_lang$core$Dict$RBNode_elm_builtin,
+			_elm_lang$core$Dict$Black,
+			_p27._3._4._1,
+			_p27._3._4._2,
+			A5(
+				_elm_lang$core$Dict$balance,
+				_elm_lang$core$Dict$Black,
+				_p27._3._1,
+				_p27._3._2,
+				_elm_lang$core$Dict$redden(_p27._3._3),
+				_p27._3._4._3),
+			A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p27._1, _p27._2, _p27._3._4._4, _p27._4));
+	} while(false);
+	return tree;
+};
+var _elm_lang$core$Dict$balance = F5(
+	function (c, k, v, l, r) {
+		var tree = A5(_elm_lang$core$Dict$RBNode_elm_builtin, c, k, v, l, r);
+		return _elm_lang$core$Dict$blackish(tree) ? _elm_lang$core$Dict$balanceHelp(tree) : tree;
+	});
+var _elm_lang$core$Dict$bubble = F5(
+	function (c, k, v, l, r) {
+		return (_elm_lang$core$Dict$isBBlack(l) || _elm_lang$core$Dict$isBBlack(r)) ? A5(
+			_elm_lang$core$Dict$balance,
+			_elm_lang$core$Dict$moreBlack(c),
+			k,
+			v,
+			_elm_lang$core$Dict$lessBlackTree(l),
+			_elm_lang$core$Dict$lessBlackTree(r)) : A5(_elm_lang$core$Dict$RBNode_elm_builtin, c, k, v, l, r);
+	});
+var _elm_lang$core$Dict$removeMax = F5(
+	function (c, k, v, l, r) {
+		var _p28 = r;
+		if (_p28.ctor === 'RBEmpty_elm_builtin') {
+			return A3(_elm_lang$core$Dict$rem, c, l, r);
+		} else {
+			return A5(
+				_elm_lang$core$Dict$bubble,
+				c,
+				k,
+				v,
+				l,
+				A5(_elm_lang$core$Dict$removeMax, _p28._0, _p28._1, _p28._2, _p28._3, _p28._4));
+		}
+	});
+var _elm_lang$core$Dict$rem = F3(
+	function (color, left, right) {
+		var _p29 = {ctor: '_Tuple2', _0: left, _1: right};
+		if (_p29._0.ctor === 'RBEmpty_elm_builtin') {
+			if (_p29._1.ctor === 'RBEmpty_elm_builtin') {
+				var _p30 = color;
+				switch (_p30.ctor) {
+					case 'Red':
+						return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
+					case 'Black':
+						return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBBlack);
+					default:
+						return _elm_lang$core$Native_Debug.crash('cannot have bblack or nblack nodes at this point');
+				}
+			} else {
+				var _p33 = _p29._1._0;
+				var _p32 = _p29._0._0;
+				var _p31 = {ctor: '_Tuple3', _0: color, _1: _p32, _2: _p33};
+				if ((((_p31.ctor === '_Tuple3') && (_p31._0.ctor === 'Black')) && (_p31._1.ctor === 'LBlack')) && (_p31._2.ctor === 'Red')) {
+					return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p29._1._1, _p29._1._2, _p29._1._3, _p29._1._4);
+				} else {
+					return A4(
+						_elm_lang$core$Dict$reportRemBug,
+						'Black/LBlack/Red',
+						color,
+						_elm_lang$core$Basics$toString(_p32),
+						_elm_lang$core$Basics$toString(_p33));
+				}
+			}
+		} else {
+			if (_p29._1.ctor === 'RBEmpty_elm_builtin') {
+				var _p36 = _p29._1._0;
+				var _p35 = _p29._0._0;
+				var _p34 = {ctor: '_Tuple3', _0: color, _1: _p35, _2: _p36};
+				if ((((_p34.ctor === '_Tuple3') && (_p34._0.ctor === 'Black')) && (_p34._1.ctor === 'Red')) && (_p34._2.ctor === 'LBlack')) {
+					return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p29._0._1, _p29._0._2, _p29._0._3, _p29._0._4);
+				} else {
+					return A4(
+						_elm_lang$core$Dict$reportRemBug,
+						'Black/Red/LBlack',
+						color,
+						_elm_lang$core$Basics$toString(_p35),
+						_elm_lang$core$Basics$toString(_p36));
+				}
+			} else {
+				var _p40 = _p29._0._2;
+				var _p39 = _p29._0._4;
+				var _p38 = _p29._0._1;
+				var newLeft = A5(_elm_lang$core$Dict$removeMax, _p29._0._0, _p38, _p40, _p29._0._3, _p39);
+				var _p37 = A3(_elm_lang$core$Dict$maxWithDefault, _p38, _p40, _p39);
+				var k = _p37._0;
+				var v = _p37._1;
+				return A5(_elm_lang$core$Dict$bubble, color, k, v, newLeft, right);
+			}
+		}
+	});
+var _elm_lang$core$Dict$map = F2(
+	function (f, dict) {
+		var _p41 = dict;
+		if (_p41.ctor === 'RBEmpty_elm_builtin') {
+			return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
+		} else {
+			var _p42 = _p41._1;
+			return A5(
+				_elm_lang$core$Dict$RBNode_elm_builtin,
+				_p41._0,
+				_p42,
+				A2(f, _p42, _p41._2),
+				A2(_elm_lang$core$Dict$map, f, _p41._3),
+				A2(_elm_lang$core$Dict$map, f, _p41._4));
+		}
+	});
+var _elm_lang$core$Dict$Same = {ctor: 'Same'};
+var _elm_lang$core$Dict$Remove = {ctor: 'Remove'};
+var _elm_lang$core$Dict$Insert = {ctor: 'Insert'};
+var _elm_lang$core$Dict$update = F3(
+	function (k, alter, dict) {
+		var up = function (dict) {
+			var _p43 = dict;
+			if (_p43.ctor === 'RBEmpty_elm_builtin') {
+				var _p44 = alter(_elm_lang$core$Maybe$Nothing);
+				if (_p44.ctor === 'Nothing') {
+					return {ctor: '_Tuple2', _0: _elm_lang$core$Dict$Same, _1: _elm_lang$core$Dict$empty};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Dict$Insert,
+						_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Red, k, _p44._0, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty)
+					};
+				}
+			} else {
+				var _p55 = _p43._2;
+				var _p54 = _p43._4;
+				var _p53 = _p43._3;
+				var _p52 = _p43._1;
+				var _p51 = _p43._0;
+				var _p45 = A2(_elm_lang$core$Basics$compare, k, _p52);
+				switch (_p45.ctor) {
+					case 'EQ':
+						var _p46 = alter(
+							_elm_lang$core$Maybe$Just(_p55));
+						if (_p46.ctor === 'Nothing') {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Dict$Remove,
+								_1: A3(_elm_lang$core$Dict$rem, _p51, _p53, _p54)
+							};
+						} else {
+							return {
+								ctor: '_Tuple2',
+								_0: _elm_lang$core$Dict$Same,
+								_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p46._0, _p53, _p54)
+							};
+						}
+					case 'LT':
+						var _p47 = up(_p53);
+						var flag = _p47._0;
+						var newLeft = _p47._1;
+						var _p48 = flag;
+						switch (_p48.ctor) {
+							case 'Same':
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Same,
+									_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p55, newLeft, _p54)
+								};
+							case 'Insert':
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Insert,
+									_1: A5(_elm_lang$core$Dict$balance, _p51, _p52, _p55, newLeft, _p54)
+								};
+							default:
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Remove,
+									_1: A5(_elm_lang$core$Dict$bubble, _p51, _p52, _p55, newLeft, _p54)
+								};
+						}
+					default:
+						var _p49 = up(_p54);
+						var flag = _p49._0;
+						var newRight = _p49._1;
+						var _p50 = flag;
+						switch (_p50.ctor) {
+							case 'Same':
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Same,
+									_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p55, _p53, newRight)
+								};
+							case 'Insert':
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Insert,
+									_1: A5(_elm_lang$core$Dict$balance, _p51, _p52, _p55, _p53, newRight)
+								};
+							default:
+								return {
+									ctor: '_Tuple2',
+									_0: _elm_lang$core$Dict$Remove,
+									_1: A5(_elm_lang$core$Dict$bubble, _p51, _p52, _p55, _p53, newRight)
+								};
+						}
+				}
+			}
+		};
+		var _p56 = up(dict);
+		var flag = _p56._0;
+		var updatedDict = _p56._1;
+		var _p57 = flag;
+		switch (_p57.ctor) {
+			case 'Same':
+				return updatedDict;
+			case 'Insert':
+				return _elm_lang$core$Dict$ensureBlackRoot(updatedDict);
+			default:
+				return _elm_lang$core$Dict$blacken(updatedDict);
+		}
+	});
+var _elm_lang$core$Dict$insert = F3(
+	function (key, value, dict) {
+		return A3(
+			_elm_lang$core$Dict$update,
+			key,
+			_elm_lang$core$Basics$always(
+				_elm_lang$core$Maybe$Just(value)),
+			dict);
+	});
+var _elm_lang$core$Dict$singleton = F2(
+	function (key, value) {
+		return A3(_elm_lang$core$Dict$insert, key, value, _elm_lang$core$Dict$empty);
+	});
+var _elm_lang$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3(_elm_lang$core$Dict$foldl, _elm_lang$core$Dict$insert, t2, t1);
+	});
+var _elm_lang$core$Dict$filter = F2(
+	function (predicate, dictionary) {
+		var add = F3(
+			function (key, value, dict) {
+				return A2(predicate, key, value) ? A3(_elm_lang$core$Dict$insert, key, value, dict) : dict;
+			});
+		return A3(_elm_lang$core$Dict$foldl, add, _elm_lang$core$Dict$empty, dictionary);
+	});
+var _elm_lang$core$Dict$intersect = F2(
+	function (t1, t2) {
+		return A2(
+			_elm_lang$core$Dict$filter,
+			F2(
+				function (k, _p58) {
+					return A2(_elm_lang$core$Dict$member, k, t2);
+				}),
+			t1);
+	});
+var _elm_lang$core$Dict$partition = F2(
+	function (predicate, dict) {
+		var add = F3(
+			function (key, value, _p59) {
+				var _p60 = _p59;
+				var _p62 = _p60._1;
+				var _p61 = _p60._0;
+				return A2(predicate, key, value) ? {
+					ctor: '_Tuple2',
+					_0: A3(_elm_lang$core$Dict$insert, key, value, _p61),
+					_1: _p62
+				} : {
+					ctor: '_Tuple2',
+					_0: _p61,
+					_1: A3(_elm_lang$core$Dict$insert, key, value, _p62)
+				};
+			});
+		return A3(
+			_elm_lang$core$Dict$foldl,
+			add,
+			{ctor: '_Tuple2', _0: _elm_lang$core$Dict$empty, _1: _elm_lang$core$Dict$empty},
+			dict);
+	});
+var _elm_lang$core$Dict$fromList = function (assocs) {
+	return A3(
+		_elm_lang$core$List$foldl,
+		F2(
+			function (_p63, dict) {
+				var _p64 = _p63;
+				return A3(_elm_lang$core$Dict$insert, _p64._0, _p64._1, dict);
+			}),
+		_elm_lang$core$Dict$empty,
+		assocs);
+};
+var _elm_lang$core$Dict$remove = F2(
+	function (key, dict) {
+		return A3(
+			_elm_lang$core$Dict$update,
+			key,
+			_elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing),
+			dict);
+	});
+var _elm_lang$core$Dict$diff = F2(
+	function (t1, t2) {
+		return A3(
+			_elm_lang$core$Dict$foldl,
+			F3(
+				function (k, v, t) {
+					return A2(_elm_lang$core$Dict$remove, k, t);
+				}),
+			t1,
+			t2);
+	});
+
+var _elm_lang$http$Native_Http = function() {
+
+
+// ENCODING AND DECODING
+
+function encodeUri(string)
+{
+	return encodeURIComponent(string);
+}
+
+function decodeUri(string)
+{
+	try
+	{
+		return _elm_lang$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch(e)
+	{
+		return _elm_lang$core$Maybe$Nothing;
+	}
+}
+
+
+// SEND REQUEST
+
+function toTask(request, maybeProgress)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var xhr = new XMLHttpRequest();
+
+		configureProgress(xhr, maybeProgress);
+
+		xhr.addEventListener('error', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NetworkError' }));
+		});
+		xhr.addEventListener('timeout', function() {
+			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'Timeout' }));
+		});
+		xhr.addEventListener('load', function() {
+			callback(handleResponse(xhr, request.expect.responseToResult));
+		});
+
+		try
+		{
+			xhr.open(request.method, request.url, true);
+		}
+		catch (e)
+		{
+			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'BadUrl', _0: request.url }));
+		}
+
+		configureRequest(xhr, request);
+		send(xhr, request.body);
+
+		return function() { xhr.abort(); };
+	});
+}
+
+function configureProgress(xhr, maybeProgress)
+{
+	if (maybeProgress.ctor === 'Nothing')
+	{
+		return;
+	}
+
+	xhr.addEventListener('progress', function(event) {
+		if (!event.lengthComputable)
+		{
+			return;
+		}
+		_elm_lang$core$Native_Scheduler.rawSpawn(maybeProgress._0({
+			bytes: event.loaded,
+			bytesExpected: event.total
+		}));
+	});
+}
+
+function configureRequest(xhr, request)
+{
+	function setHeader(pair)
+	{
+		xhr.setRequestHeader(pair._0, pair._1);
+	}
+
+	A2(_elm_lang$core$List$map, setHeader, request.headers);
+	xhr.responseType = request.expect.responseType;
+	xhr.withCredentials = request.withCredentials;
+
+	if (request.timeout.ctor === 'Just')
+	{
+		xhr.timeout = request.timeout._0;
+	}
+}
+
+function send(xhr, body)
+{
+	switch (body.ctor)
+	{
+		case 'EmptyBody':
+			xhr.send();
+			return;
+
+		case 'StringBody':
+			xhr.setRequestHeader('Content-Type', body._0);
+			xhr.send(body._1);
+			return;
+
+		case 'FormDataBody':
+			xhr.send(body._0);
+			return;
+	}
+}
+
+
+// RESPONSES
+
+function handleResponse(xhr, responseToResult)
+{
+	var response = toResponse(xhr);
+
+	if (xhr.status < 200 || 300 <= xhr.status)
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadStatus',
+			_0: response
+		});
+	}
+
+	var result = responseToResult(response);
+
+	if (result.ctor === 'Ok')
+	{
+		return _elm_lang$core$Native_Scheduler.succeed(result._0);
+	}
+	else
+	{
+		response.body = xhr.responseText;
+		return _elm_lang$core$Native_Scheduler.fail({
+			ctor: 'BadPayload',
+			_0: result._0,
+			_1: response
+		});
+	}
+}
+
+function toResponse(xhr)
+{
+	return {
+		status: { code: xhr.status, message: xhr.statusText },
+		headers: parseHeaders(xhr.getAllResponseHeaders()),
+		url: xhr.responseURL,
+		body: xhr.response
+	};
+}
+
+function parseHeaders(rawHeaders)
+{
+	var headers = _elm_lang$core$Dict$empty;
+
+	if (!rawHeaders)
+	{
+		return headers;
+	}
+
+	var headerPairs = rawHeaders.split('\u000d\u000a');
+	for (var i = headerPairs.length; i--; )
+	{
+		var headerPair = headerPairs[i];
+		var index = headerPair.indexOf('\u003a\u0020');
+		if (index > 0)
+		{
+			var key = headerPair.substring(0, index);
+			var value = headerPair.substring(index + 2);
+
+			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
+				if (oldValue.ctor === 'Just')
+				{
+					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
+				}
+				return _elm_lang$core$Maybe$Just(value);
+			}, headers);
+		}
+	}
+
+	return headers;
+}
+
+
+// EXPECTORS
+
+function expectStringResponse(responseToResult)
+{
+	return {
+		responseType: 'text',
+		responseToResult: responseToResult
+	};
+}
+
+function mapExpect(func, expect)
+{
+	return {
+		responseType: expect.responseType,
+		responseToResult: function(response) {
+			var convertedResponse = expect.responseToResult(response);
+			return A2(_elm_lang$core$Result$map, func, convertedResponse);
+		}
+	};
+}
+
+
+// BODY
+
+function multipart(parts)
+{
+	var formData = new FormData();
+
+	while (parts.ctor !== '[]')
+	{
+		var part = parts._0;
+		formData.append(part._0, part._1);
+		parts = parts._1;
+	}
+
+	return { ctor: 'FormDataBody', _0: formData };
+}
+
+return {
+	toTask: F2(toTask),
+	expectStringResponse: expectStringResponse,
+	mapExpect: F2(mapExpect),
+	multipart: multipart,
+	encodeUri: encodeUri,
+	decodeUri: decodeUri
+};
+
+}();
+
+//import Native.Scheduler //
+
+var _elm_lang$core$Native_Time = function() {
+
+var now = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+{
+	callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
+});
+
+function setInterval_(interval, task)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		var id = setInterval(function() {
+			_elm_lang$core$Native_Scheduler.rawSpawn(task);
+		}, interval);
+
+		return function() { clearInterval(id); };
+	});
+}
+
+return {
+	now: now,
+	setInterval_: F2(setInterval_)
+};
+
+}();
+var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
+var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
+var _elm_lang$core$Task$spawnCmd = F2(
+	function (router, _p0) {
+		var _p1 = _p0;
+		return _elm_lang$core$Native_Scheduler.spawn(
+			A2(
+				_elm_lang$core$Task$andThen,
+				_elm_lang$core$Platform$sendToApp(router),
+				_p1._0));
+	});
+var _elm_lang$core$Task$fail = _elm_lang$core$Native_Scheduler.fail;
+var _elm_lang$core$Task$mapError = F2(
+	function (convert, task) {
+		return A2(
+			_elm_lang$core$Task$onError,
+			function (_p2) {
+				return _elm_lang$core$Task$fail(
+					convert(_p2));
+			},
+			task);
+	});
+var _elm_lang$core$Task$succeed = _elm_lang$core$Native_Scheduler.succeed;
+var _elm_lang$core$Task$map = F2(
+	function (func, taskA) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return _elm_lang$core$Task$succeed(
+					func(a));
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map2 = F3(
+	function (func, taskA, taskB) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return _elm_lang$core$Task$succeed(
+							A2(func, a, b));
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map3 = F4(
+	function (func, taskA, taskB, taskC) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return _elm_lang$core$Task$succeed(
+									A3(func, a, b, c));
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map4 = F5(
+	function (func, taskA, taskB, taskC, taskD) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return _elm_lang$core$Task$succeed(
+											A4(func, a, b, c, d));
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$map5 = F6(
+	function (func, taskA, taskB, taskC, taskD, taskE) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (a) {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (b) {
+						return A2(
+							_elm_lang$core$Task$andThen,
+							function (c) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									function (d) {
+										return A2(
+											_elm_lang$core$Task$andThen,
+											function (e) {
+												return _elm_lang$core$Task$succeed(
+													A5(func, a, b, c, d, e));
+											},
+											taskE);
+									},
+									taskD);
+							},
+							taskC);
+					},
+					taskB);
+			},
+			taskA);
+	});
+var _elm_lang$core$Task$sequence = function (tasks) {
+	var _p3 = tasks;
+	if (_p3.ctor === '[]') {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '[]'});
+	} else {
+		return A3(
+			_elm_lang$core$Task$map2,
+			F2(
+				function (x, y) {
+					return {ctor: '::', _0: x, _1: y};
+				}),
+			_p3._0,
+			_elm_lang$core$Task$sequence(_p3._1));
+	}
+};
+var _elm_lang$core$Task$onEffects = F3(
+	function (router, commands, state) {
+		return A2(
+			_elm_lang$core$Task$map,
+			function (_p4) {
+				return {ctor: '_Tuple0'};
+			},
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					_elm_lang$core$Task$spawnCmd(router),
+					commands)));
+	});
+var _elm_lang$core$Task$init = _elm_lang$core$Task$succeed(
+	{ctor: '_Tuple0'});
+var _elm_lang$core$Task$onSelfMsg = F3(
+	function (_p7, _p6, _p5) {
+		return _elm_lang$core$Task$succeed(
+			{ctor: '_Tuple0'});
+	});
+var _elm_lang$core$Task$command = _elm_lang$core$Native_Platform.leaf('Task');
+var _elm_lang$core$Task$Perform = function (a) {
+	return {ctor: 'Perform', _0: a};
+};
+var _elm_lang$core$Task$perform = F2(
+	function (toMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(_elm_lang$core$Task$map, toMessage, task)));
+	});
+var _elm_lang$core$Task$attempt = F2(
+	function (resultToMessage, task) {
+		return _elm_lang$core$Task$command(
+			_elm_lang$core$Task$Perform(
+				A2(
+					_elm_lang$core$Task$onError,
+					function (_p8) {
+						return _elm_lang$core$Task$succeed(
+							resultToMessage(
+								_elm_lang$core$Result$Err(_p8)));
+					},
+					A2(
+						_elm_lang$core$Task$andThen,
+						function (_p9) {
+							return _elm_lang$core$Task$succeed(
+								resultToMessage(
+									_elm_lang$core$Result$Ok(_p9)));
+						},
+						task))));
+	});
+var _elm_lang$core$Task$cmdMap = F2(
+	function (tagger, _p10) {
+		var _p11 = _p10;
+		return _elm_lang$core$Task$Perform(
+			A2(_elm_lang$core$Task$map, tagger, _p11._0));
+	});
+_elm_lang$core$Native_Platform.effectManagers['Task'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Task$init, onEffects: _elm_lang$core$Task$onEffects, onSelfMsg: _elm_lang$core$Task$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Task$cmdMap};
+
+var _elm_lang$core$Time$setInterval = _elm_lang$core$Native_Time.setInterval_;
+var _elm_lang$core$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		var _p0 = intervals;
+		if (_p0.ctor === '[]') {
+			return _elm_lang$core$Task$succeed(processes);
+		} else {
+			var _p1 = _p0._0;
+			var spawnRest = function (id) {
+				return A3(
+					_elm_lang$core$Time$spawnHelp,
+					router,
+					_p0._1,
+					A3(_elm_lang$core$Dict$insert, _p1, id, processes));
+			};
+			var spawnTimer = _elm_lang$core$Native_Scheduler.spawn(
+				A2(
+					_elm_lang$core$Time$setInterval,
+					_p1,
+					A2(_elm_lang$core$Platform$sendToSelf, router, _p1)));
+			return A2(_elm_lang$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var _elm_lang$core$Time$addMySub = F2(
+	function (_p2, state) {
+		var _p3 = _p2;
+		var _p6 = _p3._1;
+		var _p5 = _p3._0;
+		var _p4 = A2(_elm_lang$core$Dict$get, _p5, state);
+		if (_p4.ctor === 'Nothing') {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{
+					ctor: '::',
+					_0: _p6,
+					_1: {ctor: '[]'}
+				},
+				state);
+		} else {
+			return A3(
+				_elm_lang$core$Dict$insert,
+				_p5,
+				{ctor: '::', _0: _p6, _1: _p4._0},
+				state);
+		}
+	});
+var _elm_lang$core$Time$inMilliseconds = function (t) {
+	return t;
+};
+var _elm_lang$core$Time$millisecond = 1;
+var _elm_lang$core$Time$second = 1000 * _elm_lang$core$Time$millisecond;
+var _elm_lang$core$Time$minute = 60 * _elm_lang$core$Time$second;
+var _elm_lang$core$Time$hour = 60 * _elm_lang$core$Time$minute;
+var _elm_lang$core$Time$inHours = function (t) {
+	return t / _elm_lang$core$Time$hour;
+};
+var _elm_lang$core$Time$inMinutes = function (t) {
+	return t / _elm_lang$core$Time$minute;
+};
+var _elm_lang$core$Time$inSeconds = function (t) {
+	return t / _elm_lang$core$Time$second;
+};
+var _elm_lang$core$Time$now = _elm_lang$core$Native_Time.now;
+var _elm_lang$core$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _p7 = A2(_elm_lang$core$Dict$get, interval, state.taggers);
+		if (_p7.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var tellTaggers = function (time) {
+				return _elm_lang$core$Task$sequence(
+					A2(
+						_elm_lang$core$List$map,
+						function (tagger) {
+							return A2(
+								_elm_lang$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						_p7._0));
+			};
+			return A2(
+				_elm_lang$core$Task$andThen,
+				function (_p8) {
+					return _elm_lang$core$Task$succeed(state);
+				},
+				A2(_elm_lang$core$Task$andThen, tellTaggers, _elm_lang$core$Time$now));
+		}
+	});
+var _elm_lang$core$Time$subscription = _elm_lang$core$Native_Platform.leaf('Time');
+var _elm_lang$core$Time$State = F2(
+	function (a, b) {
+		return {taggers: a, processes: b};
+	});
+var _elm_lang$core$Time$init = _elm_lang$core$Task$succeed(
+	A2(_elm_lang$core$Time$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
+var _elm_lang$core$Time$onEffects = F3(
+	function (router, subs, _p9) {
+		var _p10 = _p9;
+		var rightStep = F3(
+			function (_p12, id, _p11) {
+				var _p13 = _p11;
+				return {
+					ctor: '_Tuple3',
+					_0: _p13._0,
+					_1: _p13._1,
+					_2: A2(
+						_elm_lang$core$Task$andThen,
+						function (_p14) {
+							return _p13._2;
+						},
+						_elm_lang$core$Native_Scheduler.kill(id))
+				};
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _p15) {
+				var _p16 = _p15;
+				return {
+					ctor: '_Tuple3',
+					_0: _p16._0,
+					_1: A3(_elm_lang$core$Dict$insert, interval, id, _p16._1),
+					_2: _p16._2
+				};
+			});
+		var leftStep = F3(
+			function (interval, taggers, _p17) {
+				var _p18 = _p17;
+				return {
+					ctor: '_Tuple3',
+					_0: {ctor: '::', _0: interval, _1: _p18._0},
+					_1: _p18._1,
+					_2: _p18._2
+				};
+			});
+		var newTaggers = A3(_elm_lang$core$List$foldl, _elm_lang$core$Time$addMySub, _elm_lang$core$Dict$empty, subs);
+		var _p19 = A6(
+			_elm_lang$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			_p10.processes,
+			{
+				ctor: '_Tuple3',
+				_0: {ctor: '[]'},
+				_1: _elm_lang$core$Dict$empty,
+				_2: _elm_lang$core$Task$succeed(
+					{ctor: '_Tuple0'})
+			});
+		var spawnList = _p19._0;
+		var existingDict = _p19._1;
+		var killTask = _p19._2;
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (newProcesses) {
+				return _elm_lang$core$Task$succeed(
+					A2(_elm_lang$core$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				_elm_lang$core$Task$andThen,
+				function (_p20) {
+					return A3(_elm_lang$core$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var _elm_lang$core$Time$Every = F2(
+	function (a, b) {
+		return {ctor: 'Every', _0: a, _1: b};
+	});
+var _elm_lang$core$Time$every = F2(
+	function (interval, tagger) {
+		return _elm_lang$core$Time$subscription(
+			A2(_elm_lang$core$Time$Every, interval, tagger));
+	});
+var _elm_lang$core$Time$subMap = F2(
+	function (f, _p21) {
+		var _p22 = _p21;
+		return A2(
+			_elm_lang$core$Time$Every,
+			_p22._0,
+			function (_p23) {
+				return f(
+					_p22._1(_p23));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+
+var _elm_lang$http$Http_Internal$map = F2(
+	function (func, request) {
+		return _elm_lang$core$Native_Utils.update(
+			request,
+			{
+				expect: A2(_elm_lang$http$Native_Http.mapExpect, func, request.expect)
+			});
+	});
+var _elm_lang$http$Http_Internal$RawRequest = F7(
+	function (a, b, c, d, e, f, g) {
+		return {method: a, headers: b, url: c, body: d, expect: e, timeout: f, withCredentials: g};
+	});
+var _elm_lang$http$Http_Internal$Request = function (a) {
+	return {ctor: 'Request', _0: a};
+};
+var _elm_lang$http$Http_Internal$Expect = {ctor: 'Expect'};
+var _elm_lang$http$Http_Internal$FormDataBody = {ctor: 'FormDataBody'};
+var _elm_lang$http$Http_Internal$StringBody = F2(
+	function (a, b) {
+		return {ctor: 'StringBody', _0: a, _1: b};
+	});
+var _elm_lang$http$Http_Internal$EmptyBody = {ctor: 'EmptyBody'};
+var _elm_lang$http$Http_Internal$Header = F2(
+	function (a, b) {
+		return {ctor: 'Header', _0: a, _1: b};
+	});
+
 //import Native.List //
 
 var _elm_lang$core$Native_Array = function() {
@@ -5411,1401 +7006,6 @@ var _elm_lang$core$Array$repeat = F2(
 	});
 var _elm_lang$core$Array$Array = {ctor: 'Array'};
 
-//import Result //
-
-var _elm_lang$core$Native_Date = function() {
-
-function fromString(str)
-{
-	var date = new Date(str);
-	return isNaN(date.getTime())
-		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
-		: _elm_lang$core$Result$Ok(date);
-}
-
-var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-var monthTable =
-	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-
-return {
-	fromString: fromString,
-	year: function(d) { return d.getFullYear(); },
-	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
-	day: function(d) { return d.getDate(); },
-	hour: function(d) { return d.getHours(); },
-	minute: function(d) { return d.getMinutes(); },
-	second: function(d) { return d.getSeconds(); },
-	millisecond: function(d) { return d.getMilliseconds(); },
-	toTime: function(d) { return d.getTime(); },
-	fromTime: function(t) { return new Date(t); },
-	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
-};
-
-}();
-var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
-var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
-var _elm_lang$core$Task$spawnCmd = F2(
-	function (router, _p0) {
-		var _p1 = _p0;
-		return _elm_lang$core$Native_Scheduler.spawn(
-			A2(
-				_elm_lang$core$Task$andThen,
-				_elm_lang$core$Platform$sendToApp(router),
-				_p1._0));
-	});
-var _elm_lang$core$Task$fail = _elm_lang$core$Native_Scheduler.fail;
-var _elm_lang$core$Task$mapError = F2(
-	function (convert, task) {
-		return A2(
-			_elm_lang$core$Task$onError,
-			function (_p2) {
-				return _elm_lang$core$Task$fail(
-					convert(_p2));
-			},
-			task);
-	});
-var _elm_lang$core$Task$succeed = _elm_lang$core$Native_Scheduler.succeed;
-var _elm_lang$core$Task$map = F2(
-	function (func, taskA) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (a) {
-				return _elm_lang$core$Task$succeed(
-					func(a));
-			},
-			taskA);
-	});
-var _elm_lang$core$Task$map2 = F3(
-	function (func, taskA, taskB) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (a) {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (b) {
-						return _elm_lang$core$Task$succeed(
-							A2(func, a, b));
-					},
-					taskB);
-			},
-			taskA);
-	});
-var _elm_lang$core$Task$map3 = F4(
-	function (func, taskA, taskB, taskC) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (a) {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (b) {
-						return A2(
-							_elm_lang$core$Task$andThen,
-							function (c) {
-								return _elm_lang$core$Task$succeed(
-									A3(func, a, b, c));
-							},
-							taskC);
-					},
-					taskB);
-			},
-			taskA);
-	});
-var _elm_lang$core$Task$map4 = F5(
-	function (func, taskA, taskB, taskC, taskD) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (a) {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (b) {
-						return A2(
-							_elm_lang$core$Task$andThen,
-							function (c) {
-								return A2(
-									_elm_lang$core$Task$andThen,
-									function (d) {
-										return _elm_lang$core$Task$succeed(
-											A4(func, a, b, c, d));
-									},
-									taskD);
-							},
-							taskC);
-					},
-					taskB);
-			},
-			taskA);
-	});
-var _elm_lang$core$Task$map5 = F6(
-	function (func, taskA, taskB, taskC, taskD, taskE) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (a) {
-				return A2(
-					_elm_lang$core$Task$andThen,
-					function (b) {
-						return A2(
-							_elm_lang$core$Task$andThen,
-							function (c) {
-								return A2(
-									_elm_lang$core$Task$andThen,
-									function (d) {
-										return A2(
-											_elm_lang$core$Task$andThen,
-											function (e) {
-												return _elm_lang$core$Task$succeed(
-													A5(func, a, b, c, d, e));
-											},
-											taskE);
-									},
-									taskD);
-							},
-							taskC);
-					},
-					taskB);
-			},
-			taskA);
-	});
-var _elm_lang$core$Task$sequence = function (tasks) {
-	var _p3 = tasks;
-	if (_p3.ctor === '[]') {
-		return _elm_lang$core$Task$succeed(
-			{ctor: '[]'});
-	} else {
-		return A3(
-			_elm_lang$core$Task$map2,
-			F2(
-				function (x, y) {
-					return {ctor: '::', _0: x, _1: y};
-				}),
-			_p3._0,
-			_elm_lang$core$Task$sequence(_p3._1));
-	}
-};
-var _elm_lang$core$Task$onEffects = F3(
-	function (router, commands, state) {
-		return A2(
-			_elm_lang$core$Task$map,
-			function (_p4) {
-				return {ctor: '_Tuple0'};
-			},
-			_elm_lang$core$Task$sequence(
-				A2(
-					_elm_lang$core$List$map,
-					_elm_lang$core$Task$spawnCmd(router),
-					commands)));
-	});
-var _elm_lang$core$Task$init = _elm_lang$core$Task$succeed(
-	{ctor: '_Tuple0'});
-var _elm_lang$core$Task$onSelfMsg = F3(
-	function (_p7, _p6, _p5) {
-		return _elm_lang$core$Task$succeed(
-			{ctor: '_Tuple0'});
-	});
-var _elm_lang$core$Task$command = _elm_lang$core$Native_Platform.leaf('Task');
-var _elm_lang$core$Task$Perform = function (a) {
-	return {ctor: 'Perform', _0: a};
-};
-var _elm_lang$core$Task$perform = F2(
-	function (toMessage, task) {
-		return _elm_lang$core$Task$command(
-			_elm_lang$core$Task$Perform(
-				A2(_elm_lang$core$Task$map, toMessage, task)));
-	});
-var _elm_lang$core$Task$attempt = F2(
-	function (resultToMessage, task) {
-		return _elm_lang$core$Task$command(
-			_elm_lang$core$Task$Perform(
-				A2(
-					_elm_lang$core$Task$onError,
-					function (_p8) {
-						return _elm_lang$core$Task$succeed(
-							resultToMessage(
-								_elm_lang$core$Result$Err(_p8)));
-					},
-					A2(
-						_elm_lang$core$Task$andThen,
-						function (_p9) {
-							return _elm_lang$core$Task$succeed(
-								resultToMessage(
-									_elm_lang$core$Result$Ok(_p9)));
-						},
-						task))));
-	});
-var _elm_lang$core$Task$cmdMap = F2(
-	function (tagger, _p10) {
-		var _p11 = _p10;
-		return _elm_lang$core$Task$Perform(
-			A2(_elm_lang$core$Task$map, tagger, _p11._0));
-	});
-_elm_lang$core$Native_Platform.effectManagers['Task'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Task$init, onEffects: _elm_lang$core$Task$onEffects, onSelfMsg: _elm_lang$core$Task$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Task$cmdMap};
-
-var _elm_lang$core$Dict$foldr = F3(
-	function (f, acc, t) {
-		foldr:
-		while (true) {
-			var _p0 = t;
-			if (_p0.ctor === 'RBEmpty_elm_builtin') {
-				return acc;
-			} else {
-				var _v1 = f,
-					_v2 = A3(
-					f,
-					_p0._1,
-					_p0._2,
-					A3(_elm_lang$core$Dict$foldr, f, acc, _p0._4)),
-					_v3 = _p0._3;
-				f = _v1;
-				acc = _v2;
-				t = _v3;
-				continue foldr;
-			}
-		}
-	});
-var _elm_lang$core$Dict$keys = function (dict) {
-	return A3(
-		_elm_lang$core$Dict$foldr,
-		F3(
-			function (key, value, keyList) {
-				return {ctor: '::', _0: key, _1: keyList};
-			}),
-		{ctor: '[]'},
-		dict);
-};
-var _elm_lang$core$Dict$values = function (dict) {
-	return A3(
-		_elm_lang$core$Dict$foldr,
-		F3(
-			function (key, value, valueList) {
-				return {ctor: '::', _0: value, _1: valueList};
-			}),
-		{ctor: '[]'},
-		dict);
-};
-var _elm_lang$core$Dict$toList = function (dict) {
-	return A3(
-		_elm_lang$core$Dict$foldr,
-		F3(
-			function (key, value, list) {
-				return {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: key, _1: value},
-					_1: list
-				};
-			}),
-		{ctor: '[]'},
-		dict);
-};
-var _elm_lang$core$Dict$foldl = F3(
-	function (f, acc, dict) {
-		foldl:
-		while (true) {
-			var _p1 = dict;
-			if (_p1.ctor === 'RBEmpty_elm_builtin') {
-				return acc;
-			} else {
-				var _v5 = f,
-					_v6 = A3(
-					f,
-					_p1._1,
-					_p1._2,
-					A3(_elm_lang$core$Dict$foldl, f, acc, _p1._3)),
-					_v7 = _p1._4;
-				f = _v5;
-				acc = _v6;
-				dict = _v7;
-				continue foldl;
-			}
-		}
-	});
-var _elm_lang$core$Dict$merge = F6(
-	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
-		var stepState = F3(
-			function (rKey, rValue, _p2) {
-				stepState:
-				while (true) {
-					var _p3 = _p2;
-					var _p9 = _p3._1;
-					var _p8 = _p3._0;
-					var _p4 = _p8;
-					if (_p4.ctor === '[]') {
-						return {
-							ctor: '_Tuple2',
-							_0: _p8,
-							_1: A3(rightStep, rKey, rValue, _p9)
-						};
-					} else {
-						var _p7 = _p4._1;
-						var _p6 = _p4._0._1;
-						var _p5 = _p4._0._0;
-						if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) < 0) {
-							var _v10 = rKey,
-								_v11 = rValue,
-								_v12 = {
-								ctor: '_Tuple2',
-								_0: _p7,
-								_1: A3(leftStep, _p5, _p6, _p9)
-							};
-							rKey = _v10;
-							rValue = _v11;
-							_p2 = _v12;
-							continue stepState;
-						} else {
-							if (_elm_lang$core$Native_Utils.cmp(_p5, rKey) > 0) {
-								return {
-									ctor: '_Tuple2',
-									_0: _p8,
-									_1: A3(rightStep, rKey, rValue, _p9)
-								};
-							} else {
-								return {
-									ctor: '_Tuple2',
-									_0: _p7,
-									_1: A4(bothStep, _p5, _p6, rValue, _p9)
-								};
-							}
-						}
-					}
-				}
-			});
-		var _p10 = A3(
-			_elm_lang$core$Dict$foldl,
-			stepState,
-			{
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Dict$toList(leftDict),
-				_1: initialResult
-			},
-			rightDict);
-		var leftovers = _p10._0;
-		var intermediateResult = _p10._1;
-		return A3(
-			_elm_lang$core$List$foldl,
-			F2(
-				function (_p11, result) {
-					var _p12 = _p11;
-					return A3(leftStep, _p12._0, _p12._1, result);
-				}),
-			intermediateResult,
-			leftovers);
-	});
-var _elm_lang$core$Dict$reportRemBug = F4(
-	function (msg, c, lgot, rgot) {
-		return _elm_lang$core$Native_Debug.crash(
-			_elm_lang$core$String$concat(
-				{
-					ctor: '::',
-					_0: 'Internal red-black tree invariant violated, expected ',
-					_1: {
-						ctor: '::',
-						_0: msg,
-						_1: {
-							ctor: '::',
-							_0: ' and got ',
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Basics$toString(c),
-								_1: {
-									ctor: '::',
-									_0: '/',
-									_1: {
-										ctor: '::',
-										_0: lgot,
-										_1: {
-											ctor: '::',
-											_0: '/',
-											_1: {
-												ctor: '::',
-												_0: rgot,
-												_1: {
-													ctor: '::',
-													_0: '\nPlease report this bug to <https://github.com/elm-lang/core/issues>',
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}));
-	});
-var _elm_lang$core$Dict$isBBlack = function (dict) {
-	var _p13 = dict;
-	_v14_2:
-	do {
-		if (_p13.ctor === 'RBNode_elm_builtin') {
-			if (_p13._0.ctor === 'BBlack') {
-				return true;
-			} else {
-				break _v14_2;
-			}
-		} else {
-			if (_p13._0.ctor === 'LBBlack') {
-				return true;
-			} else {
-				break _v14_2;
-			}
-		}
-	} while(false);
-	return false;
-};
-var _elm_lang$core$Dict$sizeHelp = F2(
-	function (n, dict) {
-		sizeHelp:
-		while (true) {
-			var _p14 = dict;
-			if (_p14.ctor === 'RBEmpty_elm_builtin') {
-				return n;
-			} else {
-				var _v16 = A2(_elm_lang$core$Dict$sizeHelp, n + 1, _p14._4),
-					_v17 = _p14._3;
-				n = _v16;
-				dict = _v17;
-				continue sizeHelp;
-			}
-		}
-	});
-var _elm_lang$core$Dict$size = function (dict) {
-	return A2(_elm_lang$core$Dict$sizeHelp, 0, dict);
-};
-var _elm_lang$core$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			var _p15 = dict;
-			if (_p15.ctor === 'RBEmpty_elm_builtin') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				var _p16 = A2(_elm_lang$core$Basics$compare, targetKey, _p15._1);
-				switch (_p16.ctor) {
-					case 'LT':
-						var _v20 = targetKey,
-							_v21 = _p15._3;
-						targetKey = _v20;
-						dict = _v21;
-						continue get;
-					case 'EQ':
-						return _elm_lang$core$Maybe$Just(_p15._2);
-					default:
-						var _v22 = targetKey,
-							_v23 = _p15._4;
-						targetKey = _v22;
-						dict = _v23;
-						continue get;
-				}
-			}
-		}
-	});
-var _elm_lang$core$Dict$member = F2(
-	function (key, dict) {
-		var _p17 = A2(_elm_lang$core$Dict$get, key, dict);
-		if (_p17.ctor === 'Just') {
-			return true;
-		} else {
-			return false;
-		}
-	});
-var _elm_lang$core$Dict$maxWithDefault = F3(
-	function (k, v, r) {
-		maxWithDefault:
-		while (true) {
-			var _p18 = r;
-			if (_p18.ctor === 'RBEmpty_elm_builtin') {
-				return {ctor: '_Tuple2', _0: k, _1: v};
-			} else {
-				var _v26 = _p18._1,
-					_v27 = _p18._2,
-					_v28 = _p18._4;
-				k = _v26;
-				v = _v27;
-				r = _v28;
-				continue maxWithDefault;
-			}
-		}
-	});
-var _elm_lang$core$Dict$NBlack = {ctor: 'NBlack'};
-var _elm_lang$core$Dict$BBlack = {ctor: 'BBlack'};
-var _elm_lang$core$Dict$Black = {ctor: 'Black'};
-var _elm_lang$core$Dict$blackish = function (t) {
-	var _p19 = t;
-	if (_p19.ctor === 'RBNode_elm_builtin') {
-		var _p20 = _p19._0;
-		return _elm_lang$core$Native_Utils.eq(_p20, _elm_lang$core$Dict$Black) || _elm_lang$core$Native_Utils.eq(_p20, _elm_lang$core$Dict$BBlack);
-	} else {
-		return true;
-	}
-};
-var _elm_lang$core$Dict$Red = {ctor: 'Red'};
-var _elm_lang$core$Dict$moreBlack = function (color) {
-	var _p21 = color;
-	switch (_p21.ctor) {
-		case 'Black':
-			return _elm_lang$core$Dict$BBlack;
-		case 'Red':
-			return _elm_lang$core$Dict$Black;
-		case 'NBlack':
-			return _elm_lang$core$Dict$Red;
-		default:
-			return _elm_lang$core$Native_Debug.crash('Can\'t make a double black node more black!');
-	}
-};
-var _elm_lang$core$Dict$lessBlack = function (color) {
-	var _p22 = color;
-	switch (_p22.ctor) {
-		case 'BBlack':
-			return _elm_lang$core$Dict$Black;
-		case 'Black':
-			return _elm_lang$core$Dict$Red;
-		case 'Red':
-			return _elm_lang$core$Dict$NBlack;
-		default:
-			return _elm_lang$core$Native_Debug.crash('Can\'t make a negative black node less black!');
-	}
-};
-var _elm_lang$core$Dict$LBBlack = {ctor: 'LBBlack'};
-var _elm_lang$core$Dict$LBlack = {ctor: 'LBlack'};
-var _elm_lang$core$Dict$RBEmpty_elm_builtin = function (a) {
-	return {ctor: 'RBEmpty_elm_builtin', _0: a};
-};
-var _elm_lang$core$Dict$empty = _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
-var _elm_lang$core$Dict$isEmpty = function (dict) {
-	return _elm_lang$core$Native_Utils.eq(dict, _elm_lang$core$Dict$empty);
-};
-var _elm_lang$core$Dict$RBNode_elm_builtin = F5(
-	function (a, b, c, d, e) {
-		return {ctor: 'RBNode_elm_builtin', _0: a, _1: b, _2: c, _3: d, _4: e};
-	});
-var _elm_lang$core$Dict$ensureBlackRoot = function (dict) {
-	var _p23 = dict;
-	if ((_p23.ctor === 'RBNode_elm_builtin') && (_p23._0.ctor === 'Red')) {
-		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p23._1, _p23._2, _p23._3, _p23._4);
-	} else {
-		return dict;
-	}
-};
-var _elm_lang$core$Dict$lessBlackTree = function (dict) {
-	var _p24 = dict;
-	if (_p24.ctor === 'RBNode_elm_builtin') {
-		return A5(
-			_elm_lang$core$Dict$RBNode_elm_builtin,
-			_elm_lang$core$Dict$lessBlack(_p24._0),
-			_p24._1,
-			_p24._2,
-			_p24._3,
-			_p24._4);
-	} else {
-		return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
-	}
-};
-var _elm_lang$core$Dict$balancedTree = function (col) {
-	return function (xk) {
-		return function (xv) {
-			return function (yk) {
-				return function (yv) {
-					return function (zk) {
-						return function (zv) {
-							return function (a) {
-								return function (b) {
-									return function (c) {
-										return function (d) {
-											return A5(
-												_elm_lang$core$Dict$RBNode_elm_builtin,
-												_elm_lang$core$Dict$lessBlack(col),
-												yk,
-												yv,
-												A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, xk, xv, a, b),
-												A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, zk, zv, c, d));
-										};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-var _elm_lang$core$Dict$blacken = function (t) {
-	var _p25 = t;
-	if (_p25.ctor === 'RBEmpty_elm_builtin') {
-		return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
-	} else {
-		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p25._1, _p25._2, _p25._3, _p25._4);
-	}
-};
-var _elm_lang$core$Dict$redden = function (t) {
-	var _p26 = t;
-	if (_p26.ctor === 'RBEmpty_elm_builtin') {
-		return _elm_lang$core$Native_Debug.crash('can\'t make a Leaf red');
-	} else {
-		return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Red, _p26._1, _p26._2, _p26._3, _p26._4);
-	}
-};
-var _elm_lang$core$Dict$balanceHelp = function (tree) {
-	var _p27 = tree;
-	_v36_6:
-	do {
-		_v36_5:
-		do {
-			_v36_4:
-			do {
-				_v36_3:
-				do {
-					_v36_2:
-					do {
-						_v36_1:
-						do {
-							_v36_0:
-							do {
-								if (_p27.ctor === 'RBNode_elm_builtin') {
-									if (_p27._3.ctor === 'RBNode_elm_builtin') {
-										if (_p27._4.ctor === 'RBNode_elm_builtin') {
-											switch (_p27._3._0.ctor) {
-												case 'Red':
-													switch (_p27._4._0.ctor) {
-														case 'Red':
-															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v36_0;
-															} else {
-																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v36_1;
-																} else {
-																	if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																		break _v36_2;
-																	} else {
-																		if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																			break _v36_3;
-																		} else {
-																			break _v36_6;
-																		}
-																	}
-																}
-															}
-														case 'NBlack':
-															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v36_0;
-															} else {
-																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v36_1;
-																} else {
-																	if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																		break _v36_4;
-																	} else {
-																		break _v36_6;
-																	}
-																}
-															}
-														default:
-															if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-																break _v36_0;
-															} else {
-																if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-																	break _v36_1;
-																} else {
-																	break _v36_6;
-																}
-															}
-													}
-												case 'NBlack':
-													switch (_p27._4._0.ctor) {
-														case 'Red':
-															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																break _v36_2;
-															} else {
-																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																	break _v36_3;
-																} else {
-																	if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																		break _v36_5;
-																	} else {
-																		break _v36_6;
-																	}
-																}
-															}
-														case 'NBlack':
-															if (_p27._0.ctor === 'BBlack') {
-																if ((((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																	break _v36_4;
-																} else {
-																	if ((((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																		break _v36_5;
-																	} else {
-																		break _v36_6;
-																	}
-																}
-															} else {
-																break _v36_6;
-															}
-														default:
-															if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-																break _v36_5;
-															} else {
-																break _v36_6;
-															}
-													}
-												default:
-													switch (_p27._4._0.ctor) {
-														case 'Red':
-															if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-																break _v36_2;
-															} else {
-																if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-																	break _v36_3;
-																} else {
-																	break _v36_6;
-																}
-															}
-														case 'NBlack':
-															if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-																break _v36_4;
-															} else {
-																break _v36_6;
-															}
-														default:
-															break _v36_6;
-													}
-											}
-										} else {
-											switch (_p27._3._0.ctor) {
-												case 'Red':
-													if ((_p27._3._3.ctor === 'RBNode_elm_builtin') && (_p27._3._3._0.ctor === 'Red')) {
-														break _v36_0;
-													} else {
-														if ((_p27._3._4.ctor === 'RBNode_elm_builtin') && (_p27._3._4._0.ctor === 'Red')) {
-															break _v36_1;
-														} else {
-															break _v36_6;
-														}
-													}
-												case 'NBlack':
-													if (((((_p27._0.ctor === 'BBlack') && (_p27._3._3.ctor === 'RBNode_elm_builtin')) && (_p27._3._3._0.ctor === 'Black')) && (_p27._3._4.ctor === 'RBNode_elm_builtin')) && (_p27._3._4._0.ctor === 'Black')) {
-														break _v36_5;
-													} else {
-														break _v36_6;
-													}
-												default:
-													break _v36_6;
-											}
-										}
-									} else {
-										if (_p27._4.ctor === 'RBNode_elm_builtin') {
-											switch (_p27._4._0.ctor) {
-												case 'Red':
-													if ((_p27._4._3.ctor === 'RBNode_elm_builtin') && (_p27._4._3._0.ctor === 'Red')) {
-														break _v36_2;
-													} else {
-														if ((_p27._4._4.ctor === 'RBNode_elm_builtin') && (_p27._4._4._0.ctor === 'Red')) {
-															break _v36_3;
-														} else {
-															break _v36_6;
-														}
-													}
-												case 'NBlack':
-													if (((((_p27._0.ctor === 'BBlack') && (_p27._4._3.ctor === 'RBNode_elm_builtin')) && (_p27._4._3._0.ctor === 'Black')) && (_p27._4._4.ctor === 'RBNode_elm_builtin')) && (_p27._4._4._0.ctor === 'Black')) {
-														break _v36_4;
-													} else {
-														break _v36_6;
-													}
-												default:
-													break _v36_6;
-											}
-										} else {
-											break _v36_6;
-										}
-									}
-								} else {
-									break _v36_6;
-								}
-							} while(false);
-							return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._3._3._1)(_p27._3._3._2)(_p27._3._1)(_p27._3._2)(_p27._1)(_p27._2)(_p27._3._3._3)(_p27._3._3._4)(_p27._3._4)(_p27._4);
-						} while(false);
-						return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._3._1)(_p27._3._2)(_p27._3._4._1)(_p27._3._4._2)(_p27._1)(_p27._2)(_p27._3._3)(_p27._3._4._3)(_p27._3._4._4)(_p27._4);
-					} while(false);
-					return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._1)(_p27._2)(_p27._4._3._1)(_p27._4._3._2)(_p27._4._1)(_p27._4._2)(_p27._3)(_p27._4._3._3)(_p27._4._3._4)(_p27._4._4);
-				} while(false);
-				return _elm_lang$core$Dict$balancedTree(_p27._0)(_p27._1)(_p27._2)(_p27._4._1)(_p27._4._2)(_p27._4._4._1)(_p27._4._4._2)(_p27._3)(_p27._4._3)(_p27._4._4._3)(_p27._4._4._4);
-			} while(false);
-			return A5(
-				_elm_lang$core$Dict$RBNode_elm_builtin,
-				_elm_lang$core$Dict$Black,
-				_p27._4._3._1,
-				_p27._4._3._2,
-				A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p27._1, _p27._2, _p27._3, _p27._4._3._3),
-				A5(
-					_elm_lang$core$Dict$balance,
-					_elm_lang$core$Dict$Black,
-					_p27._4._1,
-					_p27._4._2,
-					_p27._4._3._4,
-					_elm_lang$core$Dict$redden(_p27._4._4)));
-		} while(false);
-		return A5(
-			_elm_lang$core$Dict$RBNode_elm_builtin,
-			_elm_lang$core$Dict$Black,
-			_p27._3._4._1,
-			_p27._3._4._2,
-			A5(
-				_elm_lang$core$Dict$balance,
-				_elm_lang$core$Dict$Black,
-				_p27._3._1,
-				_p27._3._2,
-				_elm_lang$core$Dict$redden(_p27._3._3),
-				_p27._3._4._3),
-			A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p27._1, _p27._2, _p27._3._4._4, _p27._4));
-	} while(false);
-	return tree;
-};
-var _elm_lang$core$Dict$balance = F5(
-	function (c, k, v, l, r) {
-		var tree = A5(_elm_lang$core$Dict$RBNode_elm_builtin, c, k, v, l, r);
-		return _elm_lang$core$Dict$blackish(tree) ? _elm_lang$core$Dict$balanceHelp(tree) : tree;
-	});
-var _elm_lang$core$Dict$bubble = F5(
-	function (c, k, v, l, r) {
-		return (_elm_lang$core$Dict$isBBlack(l) || _elm_lang$core$Dict$isBBlack(r)) ? A5(
-			_elm_lang$core$Dict$balance,
-			_elm_lang$core$Dict$moreBlack(c),
-			k,
-			v,
-			_elm_lang$core$Dict$lessBlackTree(l),
-			_elm_lang$core$Dict$lessBlackTree(r)) : A5(_elm_lang$core$Dict$RBNode_elm_builtin, c, k, v, l, r);
-	});
-var _elm_lang$core$Dict$removeMax = F5(
-	function (c, k, v, l, r) {
-		var _p28 = r;
-		if (_p28.ctor === 'RBEmpty_elm_builtin') {
-			return A3(_elm_lang$core$Dict$rem, c, l, r);
-		} else {
-			return A5(
-				_elm_lang$core$Dict$bubble,
-				c,
-				k,
-				v,
-				l,
-				A5(_elm_lang$core$Dict$removeMax, _p28._0, _p28._1, _p28._2, _p28._3, _p28._4));
-		}
-	});
-var _elm_lang$core$Dict$rem = F3(
-	function (color, left, right) {
-		var _p29 = {ctor: '_Tuple2', _0: left, _1: right};
-		if (_p29._0.ctor === 'RBEmpty_elm_builtin') {
-			if (_p29._1.ctor === 'RBEmpty_elm_builtin') {
-				var _p30 = color;
-				switch (_p30.ctor) {
-					case 'Red':
-						return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
-					case 'Black':
-						return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBBlack);
-					default:
-						return _elm_lang$core$Native_Debug.crash('cannot have bblack or nblack nodes at this point');
-				}
-			} else {
-				var _p33 = _p29._1._0;
-				var _p32 = _p29._0._0;
-				var _p31 = {ctor: '_Tuple3', _0: color, _1: _p32, _2: _p33};
-				if ((((_p31.ctor === '_Tuple3') && (_p31._0.ctor === 'Black')) && (_p31._1.ctor === 'LBlack')) && (_p31._2.ctor === 'Red')) {
-					return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p29._1._1, _p29._1._2, _p29._1._3, _p29._1._4);
-				} else {
-					return A4(
-						_elm_lang$core$Dict$reportRemBug,
-						'Black/LBlack/Red',
-						color,
-						_elm_lang$core$Basics$toString(_p32),
-						_elm_lang$core$Basics$toString(_p33));
-				}
-			}
-		} else {
-			if (_p29._1.ctor === 'RBEmpty_elm_builtin') {
-				var _p36 = _p29._1._0;
-				var _p35 = _p29._0._0;
-				var _p34 = {ctor: '_Tuple3', _0: color, _1: _p35, _2: _p36};
-				if ((((_p34.ctor === '_Tuple3') && (_p34._0.ctor === 'Black')) && (_p34._1.ctor === 'Red')) && (_p34._2.ctor === 'LBlack')) {
-					return A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Black, _p29._0._1, _p29._0._2, _p29._0._3, _p29._0._4);
-				} else {
-					return A4(
-						_elm_lang$core$Dict$reportRemBug,
-						'Black/Red/LBlack',
-						color,
-						_elm_lang$core$Basics$toString(_p35),
-						_elm_lang$core$Basics$toString(_p36));
-				}
-			} else {
-				var _p40 = _p29._0._2;
-				var _p39 = _p29._0._4;
-				var _p38 = _p29._0._1;
-				var newLeft = A5(_elm_lang$core$Dict$removeMax, _p29._0._0, _p38, _p40, _p29._0._3, _p39);
-				var _p37 = A3(_elm_lang$core$Dict$maxWithDefault, _p38, _p40, _p39);
-				var k = _p37._0;
-				var v = _p37._1;
-				return A5(_elm_lang$core$Dict$bubble, color, k, v, newLeft, right);
-			}
-		}
-	});
-var _elm_lang$core$Dict$map = F2(
-	function (f, dict) {
-		var _p41 = dict;
-		if (_p41.ctor === 'RBEmpty_elm_builtin') {
-			return _elm_lang$core$Dict$RBEmpty_elm_builtin(_elm_lang$core$Dict$LBlack);
-		} else {
-			var _p42 = _p41._1;
-			return A5(
-				_elm_lang$core$Dict$RBNode_elm_builtin,
-				_p41._0,
-				_p42,
-				A2(f, _p42, _p41._2),
-				A2(_elm_lang$core$Dict$map, f, _p41._3),
-				A2(_elm_lang$core$Dict$map, f, _p41._4));
-		}
-	});
-var _elm_lang$core$Dict$Same = {ctor: 'Same'};
-var _elm_lang$core$Dict$Remove = {ctor: 'Remove'};
-var _elm_lang$core$Dict$Insert = {ctor: 'Insert'};
-var _elm_lang$core$Dict$update = F3(
-	function (k, alter, dict) {
-		var up = function (dict) {
-			var _p43 = dict;
-			if (_p43.ctor === 'RBEmpty_elm_builtin') {
-				var _p44 = alter(_elm_lang$core$Maybe$Nothing);
-				if (_p44.ctor === 'Nothing') {
-					return {ctor: '_Tuple2', _0: _elm_lang$core$Dict$Same, _1: _elm_lang$core$Dict$empty};
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Dict$Insert,
-						_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _elm_lang$core$Dict$Red, k, _p44._0, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty)
-					};
-				}
-			} else {
-				var _p55 = _p43._2;
-				var _p54 = _p43._4;
-				var _p53 = _p43._3;
-				var _p52 = _p43._1;
-				var _p51 = _p43._0;
-				var _p45 = A2(_elm_lang$core$Basics$compare, k, _p52);
-				switch (_p45.ctor) {
-					case 'EQ':
-						var _p46 = alter(
-							_elm_lang$core$Maybe$Just(_p55));
-						if (_p46.ctor === 'Nothing') {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Dict$Remove,
-								_1: A3(_elm_lang$core$Dict$rem, _p51, _p53, _p54)
-							};
-						} else {
-							return {
-								ctor: '_Tuple2',
-								_0: _elm_lang$core$Dict$Same,
-								_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p46._0, _p53, _p54)
-							};
-						}
-					case 'LT':
-						var _p47 = up(_p53);
-						var flag = _p47._0;
-						var newLeft = _p47._1;
-						var _p48 = flag;
-						switch (_p48.ctor) {
-							case 'Same':
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Same,
-									_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p55, newLeft, _p54)
-								};
-							case 'Insert':
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Insert,
-									_1: A5(_elm_lang$core$Dict$balance, _p51, _p52, _p55, newLeft, _p54)
-								};
-							default:
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Remove,
-									_1: A5(_elm_lang$core$Dict$bubble, _p51, _p52, _p55, newLeft, _p54)
-								};
-						}
-					default:
-						var _p49 = up(_p54);
-						var flag = _p49._0;
-						var newRight = _p49._1;
-						var _p50 = flag;
-						switch (_p50.ctor) {
-							case 'Same':
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Same,
-									_1: A5(_elm_lang$core$Dict$RBNode_elm_builtin, _p51, _p52, _p55, _p53, newRight)
-								};
-							case 'Insert':
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Insert,
-									_1: A5(_elm_lang$core$Dict$balance, _p51, _p52, _p55, _p53, newRight)
-								};
-							default:
-								return {
-									ctor: '_Tuple2',
-									_0: _elm_lang$core$Dict$Remove,
-									_1: A5(_elm_lang$core$Dict$bubble, _p51, _p52, _p55, _p53, newRight)
-								};
-						}
-				}
-			}
-		};
-		var _p56 = up(dict);
-		var flag = _p56._0;
-		var updatedDict = _p56._1;
-		var _p57 = flag;
-		switch (_p57.ctor) {
-			case 'Same':
-				return updatedDict;
-			case 'Insert':
-				return _elm_lang$core$Dict$ensureBlackRoot(updatedDict);
-			default:
-				return _elm_lang$core$Dict$blacken(updatedDict);
-		}
-	});
-var _elm_lang$core$Dict$insert = F3(
-	function (key, value, dict) {
-		return A3(
-			_elm_lang$core$Dict$update,
-			key,
-			_elm_lang$core$Basics$always(
-				_elm_lang$core$Maybe$Just(value)),
-			dict);
-	});
-var _elm_lang$core$Dict$singleton = F2(
-	function (key, value) {
-		return A3(_elm_lang$core$Dict$insert, key, value, _elm_lang$core$Dict$empty);
-	});
-var _elm_lang$core$Dict$union = F2(
-	function (t1, t2) {
-		return A3(_elm_lang$core$Dict$foldl, _elm_lang$core$Dict$insert, t2, t1);
-	});
-var _elm_lang$core$Dict$filter = F2(
-	function (predicate, dictionary) {
-		var add = F3(
-			function (key, value, dict) {
-				return A2(predicate, key, value) ? A3(_elm_lang$core$Dict$insert, key, value, dict) : dict;
-			});
-		return A3(_elm_lang$core$Dict$foldl, add, _elm_lang$core$Dict$empty, dictionary);
-	});
-var _elm_lang$core$Dict$intersect = F2(
-	function (t1, t2) {
-		return A2(
-			_elm_lang$core$Dict$filter,
-			F2(
-				function (k, _p58) {
-					return A2(_elm_lang$core$Dict$member, k, t2);
-				}),
-			t1);
-	});
-var _elm_lang$core$Dict$partition = F2(
-	function (predicate, dict) {
-		var add = F3(
-			function (key, value, _p59) {
-				var _p60 = _p59;
-				var _p62 = _p60._1;
-				var _p61 = _p60._0;
-				return A2(predicate, key, value) ? {
-					ctor: '_Tuple2',
-					_0: A3(_elm_lang$core$Dict$insert, key, value, _p61),
-					_1: _p62
-				} : {
-					ctor: '_Tuple2',
-					_0: _p61,
-					_1: A3(_elm_lang$core$Dict$insert, key, value, _p62)
-				};
-			});
-		return A3(
-			_elm_lang$core$Dict$foldl,
-			add,
-			{ctor: '_Tuple2', _0: _elm_lang$core$Dict$empty, _1: _elm_lang$core$Dict$empty},
-			dict);
-	});
-var _elm_lang$core$Dict$fromList = function (assocs) {
-	return A3(
-		_elm_lang$core$List$foldl,
-		F2(
-			function (_p63, dict) {
-				var _p64 = _p63;
-				return A3(_elm_lang$core$Dict$insert, _p64._0, _p64._1, dict);
-			}),
-		_elm_lang$core$Dict$empty,
-		assocs);
-};
-var _elm_lang$core$Dict$remove = F2(
-	function (key, dict) {
-		return A3(
-			_elm_lang$core$Dict$update,
-			key,
-			_elm_lang$core$Basics$always(_elm_lang$core$Maybe$Nothing),
-			dict);
-	});
-var _elm_lang$core$Dict$diff = F2(
-	function (t1, t2) {
-		return A3(
-			_elm_lang$core$Dict$foldl,
-			F3(
-				function (k, v, t) {
-					return A2(_elm_lang$core$Dict$remove, k, t);
-				}),
-			t1,
-			t2);
-	});
-
-//import Native.Scheduler //
-
-var _elm_lang$core$Native_Time = function() {
-
-var now = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-{
-	callback(_elm_lang$core$Native_Scheduler.succeed(Date.now()));
-});
-
-function setInterval_(interval, task)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		var id = setInterval(function() {
-			_elm_lang$core$Native_Scheduler.rawSpawn(task);
-		}, interval);
-
-		return function() { clearInterval(id); };
-	});
-}
-
-return {
-	now: now,
-	setInterval_: F2(setInterval_)
-};
-
-}();
-var _elm_lang$core$Time$setInterval = _elm_lang$core$Native_Time.setInterval_;
-var _elm_lang$core$Time$spawnHelp = F3(
-	function (router, intervals, processes) {
-		var _p0 = intervals;
-		if (_p0.ctor === '[]') {
-			return _elm_lang$core$Task$succeed(processes);
-		} else {
-			var _p1 = _p0._0;
-			var spawnRest = function (id) {
-				return A3(
-					_elm_lang$core$Time$spawnHelp,
-					router,
-					_p0._1,
-					A3(_elm_lang$core$Dict$insert, _p1, id, processes));
-			};
-			var spawnTimer = _elm_lang$core$Native_Scheduler.spawn(
-				A2(
-					_elm_lang$core$Time$setInterval,
-					_p1,
-					A2(_elm_lang$core$Platform$sendToSelf, router, _p1)));
-			return A2(_elm_lang$core$Task$andThen, spawnRest, spawnTimer);
-		}
-	});
-var _elm_lang$core$Time$addMySub = F2(
-	function (_p2, state) {
-		var _p3 = _p2;
-		var _p6 = _p3._1;
-		var _p5 = _p3._0;
-		var _p4 = A2(_elm_lang$core$Dict$get, _p5, state);
-		if (_p4.ctor === 'Nothing') {
-			return A3(
-				_elm_lang$core$Dict$insert,
-				_p5,
-				{
-					ctor: '::',
-					_0: _p6,
-					_1: {ctor: '[]'}
-				},
-				state);
-		} else {
-			return A3(
-				_elm_lang$core$Dict$insert,
-				_p5,
-				{ctor: '::', _0: _p6, _1: _p4._0},
-				state);
-		}
-	});
-var _elm_lang$core$Time$inMilliseconds = function (t) {
-	return t;
-};
-var _elm_lang$core$Time$millisecond = 1;
-var _elm_lang$core$Time$second = 1000 * _elm_lang$core$Time$millisecond;
-var _elm_lang$core$Time$minute = 60 * _elm_lang$core$Time$second;
-var _elm_lang$core$Time$hour = 60 * _elm_lang$core$Time$minute;
-var _elm_lang$core$Time$inHours = function (t) {
-	return t / _elm_lang$core$Time$hour;
-};
-var _elm_lang$core$Time$inMinutes = function (t) {
-	return t / _elm_lang$core$Time$minute;
-};
-var _elm_lang$core$Time$inSeconds = function (t) {
-	return t / _elm_lang$core$Time$second;
-};
-var _elm_lang$core$Time$now = _elm_lang$core$Native_Time.now;
-var _elm_lang$core$Time$onSelfMsg = F3(
-	function (router, interval, state) {
-		var _p7 = A2(_elm_lang$core$Dict$get, interval, state.taggers);
-		if (_p7.ctor === 'Nothing') {
-			return _elm_lang$core$Task$succeed(state);
-		} else {
-			var tellTaggers = function (time) {
-				return _elm_lang$core$Task$sequence(
-					A2(
-						_elm_lang$core$List$map,
-						function (tagger) {
-							return A2(
-								_elm_lang$core$Platform$sendToApp,
-								router,
-								tagger(time));
-						},
-						_p7._0));
-			};
-			return A2(
-				_elm_lang$core$Task$andThen,
-				function (_p8) {
-					return _elm_lang$core$Task$succeed(state);
-				},
-				A2(_elm_lang$core$Task$andThen, tellTaggers, _elm_lang$core$Time$now));
-		}
-	});
-var _elm_lang$core$Time$subscription = _elm_lang$core$Native_Platform.leaf('Time');
-var _elm_lang$core$Time$State = F2(
-	function (a, b) {
-		return {taggers: a, processes: b};
-	});
-var _elm_lang$core$Time$init = _elm_lang$core$Task$succeed(
-	A2(_elm_lang$core$Time$State, _elm_lang$core$Dict$empty, _elm_lang$core$Dict$empty));
-var _elm_lang$core$Time$onEffects = F3(
-	function (router, subs, _p9) {
-		var _p10 = _p9;
-		var rightStep = F3(
-			function (_p12, id, _p11) {
-				var _p13 = _p11;
-				return {
-					ctor: '_Tuple3',
-					_0: _p13._0,
-					_1: _p13._1,
-					_2: A2(
-						_elm_lang$core$Task$andThen,
-						function (_p14) {
-							return _p13._2;
-						},
-						_elm_lang$core$Native_Scheduler.kill(id))
-				};
-			});
-		var bothStep = F4(
-			function (interval, taggers, id, _p15) {
-				var _p16 = _p15;
-				return {
-					ctor: '_Tuple3',
-					_0: _p16._0,
-					_1: A3(_elm_lang$core$Dict$insert, interval, id, _p16._1),
-					_2: _p16._2
-				};
-			});
-		var leftStep = F3(
-			function (interval, taggers, _p17) {
-				var _p18 = _p17;
-				return {
-					ctor: '_Tuple3',
-					_0: {ctor: '::', _0: interval, _1: _p18._0},
-					_1: _p18._1,
-					_2: _p18._2
-				};
-			});
-		var newTaggers = A3(_elm_lang$core$List$foldl, _elm_lang$core$Time$addMySub, _elm_lang$core$Dict$empty, subs);
-		var _p19 = A6(
-			_elm_lang$core$Dict$merge,
-			leftStep,
-			bothStep,
-			rightStep,
-			newTaggers,
-			_p10.processes,
-			{
-				ctor: '_Tuple3',
-				_0: {ctor: '[]'},
-				_1: _elm_lang$core$Dict$empty,
-				_2: _elm_lang$core$Task$succeed(
-					{ctor: '_Tuple0'})
-			});
-		var spawnList = _p19._0;
-		var existingDict = _p19._1;
-		var killTask = _p19._2;
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (newProcesses) {
-				return _elm_lang$core$Task$succeed(
-					A2(_elm_lang$core$Time$State, newTaggers, newProcesses));
-			},
-			A2(
-				_elm_lang$core$Task$andThen,
-				function (_p20) {
-					return A3(_elm_lang$core$Time$spawnHelp, router, spawnList, existingDict);
-				},
-				killTask));
-	});
-var _elm_lang$core$Time$Every = F2(
-	function (a, b) {
-		return {ctor: 'Every', _0: a, _1: b};
-	});
-var _elm_lang$core$Time$every = F2(
-	function (interval, tagger) {
-		return _elm_lang$core$Time$subscription(
-			A2(_elm_lang$core$Time$Every, interval, tagger));
-	});
-var _elm_lang$core$Time$subMap = F2(
-	function (f, _p21) {
-		var _p22 = _p21;
-		return A2(
-			_elm_lang$core$Time$Every,
-			_p22._0,
-			function (_p23) {
-				return f(
-					_p22._1(_p23));
-			});
-	});
-_elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
-
-var _elm_lang$core$Date$millisecond = _elm_lang$core$Native_Date.millisecond;
-var _elm_lang$core$Date$second = _elm_lang$core$Native_Date.second;
-var _elm_lang$core$Date$minute = _elm_lang$core$Native_Date.minute;
-var _elm_lang$core$Date$hour = _elm_lang$core$Native_Date.hour;
-var _elm_lang$core$Date$dayOfWeek = _elm_lang$core$Native_Date.dayOfWeek;
-var _elm_lang$core$Date$day = _elm_lang$core$Native_Date.day;
-var _elm_lang$core$Date$month = _elm_lang$core$Native_Date.month;
-var _elm_lang$core$Date$year = _elm_lang$core$Native_Date.year;
-var _elm_lang$core$Date$fromTime = _elm_lang$core$Native_Date.fromTime;
-var _elm_lang$core$Date$toTime = _elm_lang$core$Native_Date.toTime;
-var _elm_lang$core$Date$fromString = _elm_lang$core$Native_Date.fromString;
-var _elm_lang$core$Date$now = A2(_elm_lang$core$Task$map, _elm_lang$core$Date$fromTime, _elm_lang$core$Time$now);
-var _elm_lang$core$Date$Date = {ctor: 'Date'};
-var _elm_lang$core$Date$Sun = {ctor: 'Sun'};
-var _elm_lang$core$Date$Sat = {ctor: 'Sat'};
-var _elm_lang$core$Date$Fri = {ctor: 'Fri'};
-var _elm_lang$core$Date$Thu = {ctor: 'Thu'};
-var _elm_lang$core$Date$Wed = {ctor: 'Wed'};
-var _elm_lang$core$Date$Tue = {ctor: 'Tue'};
-var _elm_lang$core$Date$Mon = {ctor: 'Mon'};
-var _elm_lang$core$Date$Dec = {ctor: 'Dec'};
-var _elm_lang$core$Date$Nov = {ctor: 'Nov'};
-var _elm_lang$core$Date$Oct = {ctor: 'Oct'};
-var _elm_lang$core$Date$Sep = {ctor: 'Sep'};
-var _elm_lang$core$Date$Aug = {ctor: 'Aug'};
-var _elm_lang$core$Date$Jul = {ctor: 'Jul'};
-var _elm_lang$core$Date$Jun = {ctor: 'Jun'};
-var _elm_lang$core$Date$May = {ctor: 'May'};
-var _elm_lang$core$Date$Apr = {ctor: 'Apr'};
-var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
-var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
-var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
-
 //import Maybe, Native.Array, Native.List, Native.Utils, Result //
 
 var _elm_lang$core$Native_Json = function() {
@@ -7461,326 +7661,2022 @@ var _elm_lang$core$Json_Decode$bool = _elm_lang$core$Native_Json.decodePrimitive
 var _elm_lang$core$Json_Decode$string = _elm_lang$core$Native_Json.decodePrimitive('string');
 var _elm_lang$core$Json_Decode$Decoder = {ctor: 'Decoder'};
 
-var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
-var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
-var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
-
-var _elm_lang$core$Set$foldr = F3(
-	function (f, b, _p0) {
-		var _p1 = _p0;
-		return A3(
-			_elm_lang$core$Dict$foldr,
-			F3(
-				function (k, _p2, b) {
-					return A2(f, k, b);
-				}),
-			b,
-			_p1._0);
-	});
-var _elm_lang$core$Set$foldl = F3(
-	function (f, b, _p3) {
-		var _p4 = _p3;
-		return A3(
-			_elm_lang$core$Dict$foldl,
-			F3(
-				function (k, _p5, b) {
-					return A2(f, k, b);
-				}),
-			b,
-			_p4._0);
-	});
-var _elm_lang$core$Set$toList = function (_p6) {
-	var _p7 = _p6;
-	return _elm_lang$core$Dict$keys(_p7._0);
-};
-var _elm_lang$core$Set$size = function (_p8) {
-	var _p9 = _p8;
-	return _elm_lang$core$Dict$size(_p9._0);
-};
-var _elm_lang$core$Set$member = F2(
-	function (k, _p10) {
-		var _p11 = _p10;
-		return A2(_elm_lang$core$Dict$member, k, _p11._0);
-	});
-var _elm_lang$core$Set$isEmpty = function (_p12) {
-	var _p13 = _p12;
-	return _elm_lang$core$Dict$isEmpty(_p13._0);
-};
-var _elm_lang$core$Set$Set_elm_builtin = function (a) {
-	return {ctor: 'Set_elm_builtin', _0: a};
-};
-var _elm_lang$core$Set$empty = _elm_lang$core$Set$Set_elm_builtin(_elm_lang$core$Dict$empty);
-var _elm_lang$core$Set$singleton = function (k) {
-	return _elm_lang$core$Set$Set_elm_builtin(
-		A2(
-			_elm_lang$core$Dict$singleton,
-			k,
-			{ctor: '_Tuple0'}));
-};
-var _elm_lang$core$Set$insert = F2(
-	function (k, _p14) {
-		var _p15 = _p14;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A3(
-				_elm_lang$core$Dict$insert,
-				k,
-				{ctor: '_Tuple0'},
-				_p15._0));
-	});
-var _elm_lang$core$Set$fromList = function (xs) {
-	return A3(_elm_lang$core$List$foldl, _elm_lang$core$Set$insert, _elm_lang$core$Set$empty, xs);
-};
-var _elm_lang$core$Set$map = F2(
-	function (f, s) {
-		return _elm_lang$core$Set$fromList(
-			A2(
-				_elm_lang$core$List$map,
-				f,
-				_elm_lang$core$Set$toList(s)));
-	});
-var _elm_lang$core$Set$remove = F2(
-	function (k, _p16) {
-		var _p17 = _p16;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A2(_elm_lang$core$Dict$remove, k, _p17._0));
-	});
-var _elm_lang$core$Set$union = F2(
-	function (_p19, _p18) {
-		var _p20 = _p19;
-		var _p21 = _p18;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A2(_elm_lang$core$Dict$union, _p20._0, _p21._0));
-	});
-var _elm_lang$core$Set$intersect = F2(
-	function (_p23, _p22) {
-		var _p24 = _p23;
-		var _p25 = _p22;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A2(_elm_lang$core$Dict$intersect, _p24._0, _p25._0));
-	});
-var _elm_lang$core$Set$diff = F2(
-	function (_p27, _p26) {
-		var _p28 = _p27;
-		var _p29 = _p26;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A2(_elm_lang$core$Dict$diff, _p28._0, _p29._0));
-	});
-var _elm_lang$core$Set$filter = F2(
-	function (p, _p30) {
-		var _p31 = _p30;
-		return _elm_lang$core$Set$Set_elm_builtin(
-			A2(
-				_elm_lang$core$Dict$filter,
-				F2(
-					function (k, _p32) {
-						return p(k);
-					}),
-				_p31._0));
-	});
-var _elm_lang$core$Set$partition = F2(
-	function (p, _p33) {
-		var _p34 = _p33;
-		var _p35 = A2(
-			_elm_lang$core$Dict$partition,
-			F2(
-				function (k, _p36) {
-					return p(k);
-				}),
-			_p34._0);
-		var p1 = _p35._0;
-		var p2 = _p35._1;
-		return {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$Set$Set_elm_builtin(p1),
-			_1: _elm_lang$core$Set$Set_elm_builtin(p2)
-		};
-	});
-
-var _elm_lang$dom$Native_Dom = function() {
-
-var fakeNode = {
-	addEventListener: function() {},
-	removeEventListener: function() {}
-};
-
-var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
-var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
-
-function on(node)
-{
-	return function(eventName, decoder, toTask)
-	{
-		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
-
-			function performTask(event)
-			{
-				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
-				if (result.ctor === 'Ok')
-				{
-					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
-				}
-			}
-
-			node.addEventListener(eventName, performTask);
-
-			return function()
-			{
-				node.removeEventListener(eventName, performTask);
-			};
+var _elm_lang$http$Http$decodeUri = _elm_lang$http$Native_Http.decodeUri;
+var _elm_lang$http$Http$encodeUri = _elm_lang$http$Native_Http.encodeUri;
+var _elm_lang$http$Http$expectStringResponse = _elm_lang$http$Native_Http.expectStringResponse;
+var _elm_lang$http$Http$expectJson = function (decoder) {
+	return _elm_lang$http$Http$expectStringResponse(
+		function (response) {
+			return A2(_elm_lang$core$Json_Decode$decodeString, decoder, response.body);
 		});
-	};
-}
-
-var rAF = typeof requestAnimationFrame !== 'undefined'
-	? requestAnimationFrame
-	: function(callback) { callback(); };
-
-function withNode(id, doStuff)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		rAF(function()
-		{
-			var node = document.getElementById(id);
-			if (node === null)
+};
+var _elm_lang$http$Http$expectString = _elm_lang$http$Http$expectStringResponse(
+	function (response) {
+		return _elm_lang$core$Result$Ok(response.body);
+	});
+var _elm_lang$http$Http$multipartBody = _elm_lang$http$Native_Http.multipart;
+var _elm_lang$http$Http$stringBody = _elm_lang$http$Http_Internal$StringBody;
+var _elm_lang$http$Http$jsonBody = function (value) {
+	return A2(
+		_elm_lang$http$Http_Internal$StringBody,
+		'application/json',
+		A2(_elm_lang$core$Json_Encode$encode, 0, value));
+};
+var _elm_lang$http$Http$emptyBody = _elm_lang$http$Http_Internal$EmptyBody;
+var _elm_lang$http$Http$header = _elm_lang$http$Http_Internal$Header;
+var _elm_lang$http$Http$request = _elm_lang$http$Http_Internal$Request;
+var _elm_lang$http$Http$post = F3(
+	function (url, body, decoder) {
+		return _elm_lang$http$Http$request(
 			{
-				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
-				return;
-			}
-			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+				method: 'POST',
+				headers: {ctor: '[]'},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$get = F2(
+	function (url, decoder) {
+		return _elm_lang$http$Http$request(
+			{
+				method: 'GET',
+				headers: {ctor: '[]'},
+				url: url,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(decoder),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+	});
+var _elm_lang$http$Http$getString = function (url) {
+	return _elm_lang$http$Http$request(
+		{
+			method: 'GET',
+			headers: {ctor: '[]'},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectString,
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
 		});
+};
+var _elm_lang$http$Http$toTask = function (_p0) {
+	var _p1 = _p0;
+	return A2(_elm_lang$http$Native_Http.toTask, _p1._0, _elm_lang$core$Maybe$Nothing);
+};
+var _elm_lang$http$Http$send = F2(
+	function (resultToMessage, request) {
+		return A2(
+			_elm_lang$core$Task$attempt,
+			resultToMessage,
+			_elm_lang$http$Http$toTask(request));
 	});
-}
+var _elm_lang$http$Http$Response = F4(
+	function (a, b, c, d) {
+		return {url: a, status: b, headers: c, body: d};
+	});
+var _elm_lang$http$Http$BadPayload = F2(
+	function (a, b) {
+		return {ctor: 'BadPayload', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$BadStatus = function (a) {
+	return {ctor: 'BadStatus', _0: a};
+};
+var _elm_lang$http$Http$NetworkError = {ctor: 'NetworkError'};
+var _elm_lang$http$Http$Timeout = {ctor: 'Timeout'};
+var _elm_lang$http$Http$BadUrl = function (a) {
+	return {ctor: 'BadUrl', _0: a};
+};
+var _elm_lang$http$Http$StringPart = F2(
+	function (a, b) {
+		return {ctor: 'StringPart', _0: a, _1: b};
+	});
+var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+//import Result //
 
-// FOCUS
+var _elm_lang$core$Native_Date = function() {
 
-function focus(id)
+function fromString(str)
 {
-	return withNode(id, function(node) {
-		node.focus();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
+	var date = new Date(str);
+	return isNaN(date.getTime())
+		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
+		: _elm_lang$core$Result$Ok(date);
 }
 
-function blur(id)
-{
-	return withNode(id, function(node) {
-		node.blur();
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
+var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthTable =
+	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-
-// SCROLLING
-
-function getScrollTop(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollTop;
-	});
-}
-
-function setScrollTop(id, desiredScrollTop)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = desiredScrollTop;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toBottom(id)
-{
-	return withNode(id, function(node) {
-		node.scrollTop = node.scrollHeight;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function getScrollLeft(id)
-{
-	return withNode(id, function(node) {
-		return node.scrollLeft;
-	});
-}
-
-function setScrollLeft(id, desiredScrollLeft)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = desiredScrollLeft;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-function toRight(id)
-{
-	return withNode(id, function(node) {
-		node.scrollLeft = node.scrollWidth;
-		return _elm_lang$core$Native_Utils.Tuple0;
-	});
-}
-
-
-// SIZE
-
-function width(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollWidth;
-			case 'VisibleContent':
-				return node.clientWidth;
-			case 'VisibleContentWithBorders':
-				return node.offsetWidth;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.right - rect.left;
-		}
-	});
-}
-
-function height(options, id)
-{
-	return withNode(id, function(node) {
-		switch (options.ctor)
-		{
-			case 'Content':
-				return node.scrollHeight;
-			case 'VisibleContent':
-				return node.clientHeight;
-			case 'VisibleContentWithBorders':
-				return node.offsetHeight;
-			case 'VisibleContentWithBordersAndMargins':
-				var rect = node.getBoundingClientRect();
-				return rect.bottom - rect.top;
-		}
-	});
-}
 
 return {
-	onDocument: F3(onDocument),
-	onWindow: F3(onWindow),
-
-	focus: focus,
-	blur: blur,
-
-	getScrollTop: getScrollTop,
-	setScrollTop: F2(setScrollTop),
-	getScrollLeft: getScrollLeft,
-	setScrollLeft: F2(setScrollLeft),
-	toBottom: toBottom,
-	toRight: toRight,
-
-	height: F2(height),
-	width: F2(width)
+	fromString: fromString,
+	year: function(d) { return d.getFullYear(); },
+	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
+	day: function(d) { return d.getDate(); },
+	hour: function(d) { return d.getHours(); },
+	minute: function(d) { return d.getMinutes(); },
+	second: function(d) { return d.getSeconds(); },
+	millisecond: function(d) { return d.getMilliseconds(); },
+	toTime: function(d) { return d.getTime(); },
+	fromTime: function(t) { return new Date(t); },
+	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
 };
 
 }();
+var _elm_lang$core$Date$millisecond = _elm_lang$core$Native_Date.millisecond;
+var _elm_lang$core$Date$second = _elm_lang$core$Native_Date.second;
+var _elm_lang$core$Date$minute = _elm_lang$core$Native_Date.minute;
+var _elm_lang$core$Date$hour = _elm_lang$core$Native_Date.hour;
+var _elm_lang$core$Date$dayOfWeek = _elm_lang$core$Native_Date.dayOfWeek;
+var _elm_lang$core$Date$day = _elm_lang$core$Native_Date.day;
+var _elm_lang$core$Date$month = _elm_lang$core$Native_Date.month;
+var _elm_lang$core$Date$year = _elm_lang$core$Native_Date.year;
+var _elm_lang$core$Date$fromTime = _elm_lang$core$Native_Date.fromTime;
+var _elm_lang$core$Date$toTime = _elm_lang$core$Native_Date.toTime;
+var _elm_lang$core$Date$fromString = _elm_lang$core$Native_Date.fromString;
+var _elm_lang$core$Date$now = A2(_elm_lang$core$Task$map, _elm_lang$core$Date$fromTime, _elm_lang$core$Time$now);
+var _elm_lang$core$Date$Date = {ctor: 'Date'};
+var _elm_lang$core$Date$Sun = {ctor: 'Sun'};
+var _elm_lang$core$Date$Sat = {ctor: 'Sat'};
+var _elm_lang$core$Date$Fri = {ctor: 'Fri'};
+var _elm_lang$core$Date$Thu = {ctor: 'Thu'};
+var _elm_lang$core$Date$Wed = {ctor: 'Wed'};
+var _elm_lang$core$Date$Tue = {ctor: 'Tue'};
+var _elm_lang$core$Date$Mon = {ctor: 'Mon'};
+var _elm_lang$core$Date$Dec = {ctor: 'Dec'};
+var _elm_lang$core$Date$Nov = {ctor: 'Nov'};
+var _elm_lang$core$Date$Oct = {ctor: 'Oct'};
+var _elm_lang$core$Date$Sep = {ctor: 'Sep'};
+var _elm_lang$core$Date$Aug = {ctor: 'Aug'};
+var _elm_lang$core$Date$Jul = {ctor: 'Jul'};
+var _elm_lang$core$Date$Jun = {ctor: 'Jun'};
+var _elm_lang$core$Date$May = {ctor: 'May'};
+var _elm_lang$core$Date$Apr = {ctor: 'Apr'};
+var _elm_lang$core$Date$Mar = {ctor: 'Mar'};
+var _elm_lang$core$Date$Feb = {ctor: 'Feb'};
+var _elm_lang$core$Date$Jan = {ctor: 'Jan'};
 
-var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
-var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+var _asana$csvana$Asana_Model$Resource = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _asana$csvana$Asana_Model$User = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, email: c, photo: d, workspaces: e};
+	});
+var _asana$csvana$Asana_Model$Photos = F5(
+	function (a, b, c, d, e) {
+		return {image_21x21: a, image_27x27: b, image_36x36: c, image_60x60: d, image_128x128: e};
+	});
+var _asana$csvana$Asana_Model$Workspace = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _asana$csvana$Asana_Model$Project = F3(
+	function (a, b, c) {
+		return {id: a, name: b, customFieldSettings: c};
+	});
+var _asana$csvana$Asana_Model$CustomFieldSetting = F2(
+	function (a, b) {
+		return {id: a, customField: b};
+	});
+var _asana$csvana$Asana_Model$EnumOption = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _asana$csvana$Asana_Model$CustomField = F3(
+	function (a, b, c) {
+		return {id: a, fieldType: b, name: c};
+	});
+var _asana$csvana$Asana_Model$Task = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, description: c, dueOn: d, dueAt: e};
+	});
+var _asana$csvana$Asana_Model$CustomFieldEnumValue = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _asana$csvana$Asana_Model$CustomFieldValue = F4(
+	function (a, b, c, d) {
+		return {id: a, name: b, fieldType: c, value: d};
+	});
+var _asana$csvana$Asana_Model$NewTask = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {name: a, assignee: b, completed: c, dueOn: d, dueAt: e, description: f, projects: g, customFields: h};
+	});
+var _asana$csvana$Asana_Model$CustomUnknown = function (a) {
+	return {ctor: 'CustomUnknown', _0: a};
+};
+var _asana$csvana$Asana_Model$CustomEnum = {ctor: 'CustomEnum'};
+var _asana$csvana$Asana_Model$CustomNumber = {ctor: 'CustomNumber'};
+var _asana$csvana$Asana_Model$CustomText = {ctor: 'CustomText'};
+var _asana$csvana$Asana_Model$customFieldInfoToCustomField = function (info) {
+	var _p0 = info;
+	switch (_p0.ctor) {
+		case 'CustomTextFieldInfo':
+			return {id: _p0._0, fieldType: _asana$csvana$Asana_Model$CustomText, name: _p0._1};
+		case 'CustomNumberFieldInfo':
+			return {id: _p0._0, fieldType: _asana$csvana$Asana_Model$CustomNumber, name: _p0._1};
+		default:
+			return {id: _p0._0, fieldType: _asana$csvana$Asana_Model$CustomEnum, name: _p0._1};
+	}
+};
+var _asana$csvana$Asana_Model$customFieldId = function (_p1) {
+	return function (_) {
+		return _.id;
+	}(
+		_asana$csvana$Asana_Model$customFieldInfoToCustomField(_p1));
+};
+var _asana$csvana$Asana_Model$customFieldName = function (_p2) {
+	return function (_) {
+		return _.name;
+	}(
+		_asana$csvana$Asana_Model$customFieldInfoToCustomField(_p2));
+};
+var _asana$csvana$Asana_Model$CustomEnumFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomEnumFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _asana$csvana$Asana_Model$CustomNumberFieldInfo = F3(
+	function (a, b, c) {
+		return {ctor: 'CustomNumberFieldInfo', _0: a, _1: b, _2: c};
+	});
+var _asana$csvana$Asana_Model$CustomTextFieldInfo = F2(
+	function (a, b) {
+		return {ctor: 'CustomTextFieldInfo', _0: a, _1: b};
+	});
+var _asana$csvana$Asana_Model$DueOn = function (a) {
+	return {ctor: 'DueOn', _0: a};
+};
+var _asana$csvana$Asana_Model$DueAt = function (a) {
+	return {ctor: 'DueAt', _0: a};
+};
+var _asana$csvana$Asana_Model$EnumValue = function (a) {
+	return {ctor: 'EnumValue', _0: a};
+};
+var _asana$csvana$Asana_Model$NumberValue = function (a) {
+	return {ctor: 'NumberValue', _0: a};
+};
+var _asana$csvana$Asana_Model$TextValue = function (a) {
+	return {ctor: 'TextValue', _0: a};
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Config$Config = F2(
+	function (a, b) {
+		return {i18n: a, format: b};
+	});
+
+var _rluiten$elm_date_extra$Date_Extra_Core$prevMonth = function (month) {
+	var _p0 = month;
+	switch (_p0.ctor) {
+		case 'Jan':
+			return _elm_lang$core$Date$Dec;
+		case 'Feb':
+			return _elm_lang$core$Date$Jan;
+		case 'Mar':
+			return _elm_lang$core$Date$Feb;
+		case 'Apr':
+			return _elm_lang$core$Date$Mar;
+		case 'May':
+			return _elm_lang$core$Date$Apr;
+		case 'Jun':
+			return _elm_lang$core$Date$May;
+		case 'Jul':
+			return _elm_lang$core$Date$Jun;
+		case 'Aug':
+			return _elm_lang$core$Date$Jul;
+		case 'Sep':
+			return _elm_lang$core$Date$Aug;
+		case 'Oct':
+			return _elm_lang$core$Date$Sep;
+		case 'Nov':
+			return _elm_lang$core$Date$Oct;
+		default:
+			return _elm_lang$core$Date$Nov;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$nextMonth = function (month) {
+	var _p1 = month;
+	switch (_p1.ctor) {
+		case 'Jan':
+			return _elm_lang$core$Date$Feb;
+		case 'Feb':
+			return _elm_lang$core$Date$Mar;
+		case 'Mar':
+			return _elm_lang$core$Date$Apr;
+		case 'Apr':
+			return _elm_lang$core$Date$May;
+		case 'May':
+			return _elm_lang$core$Date$Jun;
+		case 'Jun':
+			return _elm_lang$core$Date$Jul;
+		case 'Jul':
+			return _elm_lang$core$Date$Aug;
+		case 'Aug':
+			return _elm_lang$core$Date$Sep;
+		case 'Sep':
+			return _elm_lang$core$Date$Oct;
+		case 'Oct':
+			return _elm_lang$core$Date$Nov;
+		case 'Nov':
+			return _elm_lang$core$Date$Dec;
+		default:
+			return _elm_lang$core$Date$Jan;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$intToMonth = function (month) {
+	return (_elm_lang$core$Native_Utils.cmp(month, 1) < 1) ? _elm_lang$core$Date$Jan : (_elm_lang$core$Native_Utils.eq(month, 2) ? _elm_lang$core$Date$Feb : (_elm_lang$core$Native_Utils.eq(month, 3) ? _elm_lang$core$Date$Mar : (_elm_lang$core$Native_Utils.eq(month, 4) ? _elm_lang$core$Date$Apr : (_elm_lang$core$Native_Utils.eq(month, 5) ? _elm_lang$core$Date$May : (_elm_lang$core$Native_Utils.eq(month, 6) ? _elm_lang$core$Date$Jun : (_elm_lang$core$Native_Utils.eq(month, 7) ? _elm_lang$core$Date$Jul : (_elm_lang$core$Native_Utils.eq(month, 8) ? _elm_lang$core$Date$Aug : (_elm_lang$core$Native_Utils.eq(month, 9) ? _elm_lang$core$Date$Sep : (_elm_lang$core$Native_Utils.eq(month, 10) ? _elm_lang$core$Date$Oct : (_elm_lang$core$Native_Utils.eq(month, 11) ? _elm_lang$core$Date$Nov : _elm_lang$core$Date$Dec))))))))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$monthToInt = function (month) {
+	var _p2 = month;
+	switch (_p2.ctor) {
+		case 'Jan':
+			return 1;
+		case 'Feb':
+			return 2;
+		case 'Mar':
+			return 3;
+		case 'Apr':
+			return 4;
+		case 'May':
+			return 5;
+		case 'Jun':
+			return 6;
+		case 'Jul':
+			return 7;
+		case 'Aug':
+			return 8;
+		case 'Sep':
+			return 9;
+		case 'Oct':
+			return 10;
+		case 'Nov':
+			return 11;
+		default:
+			return 12;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear = function (year) {
+	return (_elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 4),
+		0) && (!_elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 100),
+		0))) || _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], year, 400),
+		0);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYearDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(
+		_elm_lang$core$Date$year(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$yearToDayLength = function (year) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 366 : 365;
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonth = F2(
+	function (year, month) {
+		var _p3 = month;
+		switch (_p3.ctor) {
+			case 'Jan':
+				return 31;
+			case 'Feb':
+				return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 29 : 28;
+			case 'Mar':
+				return 31;
+			case 'Apr':
+				return 30;
+			case 'May':
+				return 31;
+			case 'Jun':
+				return 30;
+			case 'Jul':
+				return 31;
+			case 'Aug':
+				return 31;
+			case 'Sep':
+				return 30;
+			case 'Oct':
+				return 31;
+			case 'Nov':
+				return 30;
+			default:
+				return 31;
+		}
+	});
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate = function (date) {
+	return A2(
+		_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth,
+		_elm_lang$core$Date$year(date),
+		_elm_lang$core$Date$month(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$monthList = {
+	ctor: '::',
+	_0: _elm_lang$core$Date$Jan,
+	_1: {
+		ctor: '::',
+		_0: _elm_lang$core$Date$Feb,
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$core$Date$Mar,
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Date$Apr,
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Date$May,
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$core$Date$Jun,
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$core$Date$Jul,
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$Date$Aug,
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Date$Sep,
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$Date$Oct,
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$core$Date$Nov,
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$core$Date$Dec,
+												_1: {ctor: '[]'}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$toTime = function (_p4) {
+	return _elm_lang$core$Basics$floor(
+		_elm_lang$core$Date$toTime(_p4));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$fromTime = function (_p5) {
+	return _elm_lang$core$Date$fromTime(
+		_elm_lang$core$Basics$toFloat(_p5));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$prevDay = function (day) {
+	var _p6 = day;
+	switch (_p6.ctor) {
+		case 'Mon':
+			return _elm_lang$core$Date$Sun;
+		case 'Tue':
+			return _elm_lang$core$Date$Mon;
+		case 'Wed':
+			return _elm_lang$core$Date$Tue;
+		case 'Thu':
+			return _elm_lang$core$Date$Wed;
+		case 'Fri':
+			return _elm_lang$core$Date$Thu;
+		case 'Sat':
+			return _elm_lang$core$Date$Fri;
+		default:
+			return _elm_lang$core$Date$Sat;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$nextDay = function (day) {
+	var _p7 = day;
+	switch (_p7.ctor) {
+		case 'Mon':
+			return _elm_lang$core$Date$Tue;
+		case 'Tue':
+			return _elm_lang$core$Date$Wed;
+		case 'Wed':
+			return _elm_lang$core$Date$Thu;
+		case 'Thu':
+			return _elm_lang$core$Date$Fri;
+		case 'Fri':
+			return _elm_lang$core$Date$Sat;
+		case 'Sat':
+			return _elm_lang$core$Date$Sun;
+		default:
+			return _elm_lang$core$Date$Mon;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek = function (day) {
+	var _p8 = day;
+	switch (_p8.ctor) {
+		case 'Mon':
+			return 1;
+		case 'Tue':
+			return 2;
+		case 'Wed':
+			return 3;
+		case 'Thu':
+			return 4;
+		case 'Fri':
+			return 5;
+		case 'Sat':
+			return 6;
+		default:
+			return 7;
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysBackToStartOfWeek = F2(
+	function (dateDay, startOfWeekDay) {
+		var startOfWeekDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(startOfWeekDay);
+		var dateDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(dateDay);
+		return (_elm_lang$core$Native_Utils.cmp(dateDayIndex, startOfWeekDayIndex) < 0) ? ((7 + dateDayIndex) - startOfWeekDayIndex) : (dateDayIndex - startOfWeekDayIndex);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond = _elm_lang$core$Basics$floor(_elm_lang$core$Time$millisecond);
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * 1000;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute = _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * 60;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * 60;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksADay = _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * 24;
+var _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek = _rluiten$elm_date_extra$Date_Extra_Core$ticksADay * 7;
+var _rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks = function (date) {
+	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
+	var day = _elm_lang$core$Date$day(date);
+	return dateTicks + ((1 - day) * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date) - _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInPrevMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$toFirstOfMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks = function (date) {
+	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
+	var day = _elm_lang$core$Date$day(date);
+	var month = _elm_lang$core$Date$month(date);
+	var year = _elm_lang$core$Date$year(date);
+	var daysInMonthVal = A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, year, month);
+	var addDays = daysInMonthVal - day;
+	return dateTicks + (addDays * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date) + _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$daysInNextMonth = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
+		_rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthDate = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Core$epochDateStr = '1970-01-01T00:00:00Z';
+
+var _rluiten$elm_date_extra$Date_Extra_Period$diff = F2(
+	function (date1, date2) {
+		var millisecondDiff = _elm_lang$core$Date$millisecond(date1) - _elm_lang$core$Date$millisecond(date2);
+		var secondDiff = _elm_lang$core$Date$second(date1) - _elm_lang$core$Date$second(date2);
+		var minuteDiff = _elm_lang$core$Date$minute(date1) - _elm_lang$core$Date$minute(date2);
+		var hourDiff = _elm_lang$core$Date$hour(date1) - _elm_lang$core$Date$hour(date2);
+		var ticksDiff = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date1) - _rluiten$elm_date_extra$Date_Extra_Core$toTime(date2);
+		var ticksDayDiff = (((ticksDiff - (hourDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) - (minuteDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute)) - (secondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond)) - (millisecondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond);
+		var onlyDaysDiff = (ticksDayDiff / _rluiten$elm_date_extra$Date_Extra_Core$ticksADay) | 0;
+		var _p0 = function () {
+			if (_elm_lang$core$Native_Utils.cmp(onlyDaysDiff, 0) < 0) {
+				var absDayDiff = _elm_lang$core$Basics$abs(onlyDaysDiff);
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Basics$negate((absDayDiff / 7) | 0),
+					_1: _elm_lang$core$Basics$negate(
+						A2(_elm_lang$core$Basics_ops['%'], absDayDiff, 7))
+				};
+			} else {
+				return {
+					ctor: '_Tuple2',
+					_0: (onlyDaysDiff / 7) | 0,
+					_1: A2(_elm_lang$core$Basics_ops['%'], onlyDaysDiff, 7)
+				};
+			}
+		}();
+		var weekDiff = _p0._0;
+		var dayDiff = _p0._1;
+		return {week: weekDiff, day: dayDiff, hour: hourDiff, minute: minuteDiff, second: secondDiff, millisecond: millisecondDiff};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit = F3(
+	function (unit, addend, date) {
+		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+			A2(
+				F2(
+					function (x, y) {
+						return x + y;
+					}),
+				addend * unit,
+				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$toTicks = function (period) {
+	var _p1 = period;
+	switch (_p1.ctor) {
+		case 'Millisecond':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond;
+		case 'Second':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond;
+		case 'Minute':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute;
+		case 'Hour':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour;
+		case 'Day':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksADay;
+		case 'Week':
+			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek;
+		default:
+			var _p2 = _p1._0;
+			return (((((_rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * _p2.millisecond) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * _p2.second)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * _p2.minute)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * _p2.hour)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksADay * _p2.day)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek * _p2.week);
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$add = function (period) {
+	return _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit(
+		_rluiten$elm_date_extra$Date_Extra_Period$toTicks(period));
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$zeroDelta = {week: 0, day: 0, hour: 0, minute: 0, second: 0, millisecond: 0};
+var _rluiten$elm_date_extra$Date_Extra_Period$DeltaRecord = F6(
+	function (a, b, c, d, e, f) {
+		return {week: a, day: b, hour: c, minute: d, second: e, millisecond: f};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Period$Delta = function (a) {
+	return {ctor: 'Delta', _0: a};
+};
+var _rluiten$elm_date_extra$Date_Extra_Period$Week = {ctor: 'Week'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Day = {ctor: 'Day'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Hour = {ctor: 'Hour'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Minute = {ctor: 'Minute'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Second = {ctor: 'Second'};
+var _rluiten$elm_date_extra$Date_Extra_Period$Millisecond = {ctor: 'Millisecond'};
+
+var _rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil = F3(
+	function (year, month, day) {
+		var doy = (((((153 * (month + ((_elm_lang$core$Native_Utils.cmp(month, 2) > 0) ? -3 : 9))) + 2) / 5) | 0) + day) - 1;
+		var y = year - ((_elm_lang$core$Native_Utils.cmp(month, 2) < 1) ? 1 : 0);
+		var era = (((_elm_lang$core$Native_Utils.cmp(y, 0) > -1) ? y : (y - 399)) / 400) | 0;
+		var yoe = y - (era * 400);
+		var doe = (((yoe * 365) + ((yoe / 4) | 0)) - ((yoe / 100) | 0)) + doy;
+		return ((era * 146097) + doe) - 719468;
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields = F7(
+	function (year, month, day, hour, minute, second, millisecond) {
+		var monthInt = _rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month);
+		var c_year = (_elm_lang$core$Native_Utils.cmp(year, 0) < 0) ? 0 : year;
+		var c_day = A3(
+			_elm_lang$core$Basics$clamp,
+			1,
+			A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, c_year, month),
+			day);
+		var dayCount = A3(_rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil, c_year, monthInt, c_day);
+		return _rluiten$elm_date_extra$Date_Extra_Period$toTicks(
+			_rluiten$elm_date_extra$Date_Extra_Period$Delta(
+				{
+					millisecond: A3(_elm_lang$core$Basics$clamp, 0, 999, millisecond),
+					second: A3(_elm_lang$core$Basics$clamp, 0, 59, second),
+					minute: A3(_elm_lang$core$Basics$clamp, 0, 59, minute),
+					hour: A3(_elm_lang$core$Basics$clamp, 0, 23, hour),
+					day: dayCount,
+					week: 0
+				}));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields = function (date) {
+	return A7(
+		_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields,
+		_elm_lang$core$Date$year(date),
+		_elm_lang$core$Date$month(date),
+		_elm_lang$core$Date$day(date),
+		_elm_lang$core$Date$hour(date),
+		_elm_lang$core$Date$minute(date),
+		_elm_lang$core$Date$second(date),
+		_elm_lang$core$Date$millisecond(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset = function (date) {
+	var v1Ticks = _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields(date);
+	var dateTicks = _elm_lang$core$Basics$floor(
+		_elm_lang$core$Date$toTime(date));
+	return ((dateTicks - v1Ticks) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
+};
+var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset = F2(
+	function (offsetMinutes, date) {
+		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
+			A2(
+				F2(
+					function (x, y) {
+						return x + y;
+					}),
+				offsetMinutes * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute,
+				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc = function (date) {
+	var offset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset(date);
+	var oHours = (offset / _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour) | 0;
+	var oMinutes = ((offset - (oHours * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
+	var _p0 = A2(
+		_elm_lang$core$Debug$log,
+		'hackDateAsUtc',
+		{ctor: '_Tuple3', _0: offset, _1: oHours, _2: oMinutes});
+	var _p1 = A2(
+		_elm_lang$core$Debug$log,
+		'(local  date) fields',
+		{
+			ctor: '_Tuple7',
+			_0: _elm_lang$core$Date$year(date),
+			_1: _elm_lang$core$Date$month(date),
+			_2: _elm_lang$core$Date$day(date),
+			_3: _elm_lang$core$Date$hour(date),
+			_4: _elm_lang$core$Date$minute(date),
+			_5: _elm_lang$core$Date$second(date),
+			_6: _elm_lang$core$Date$millisecond(date)
+		});
+	return A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, offset, date);
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Create$epochDate = _elm_lang$core$Date$fromTime(0);
+var _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset = function () {
+	var inMinutes = (_elm_lang$core$Date$hour(_rluiten$elm_date_extra$Date_Extra_Create$epochDate) * 60) + _elm_lang$core$Date$minute(_rluiten$elm_date_extra$Date_Extra_Create$epochDate);
+	return _elm_lang$core$Native_Utils.eq(
+		_elm_lang$core$Date$year(_rluiten$elm_date_extra$Date_Extra_Create$epochDate),
+		1969) ? (0 - (inMinutes - (24 * 60))) : (0 - inMinutes);
+}();
+var _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset;
+var _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate = function (ticks) {
+	var date = A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Millisecond, ticks + (_rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute), _rluiten$elm_date_extra$Date_Extra_Create$epochDate);
+	var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
+	return _elm_lang$core$Native_Utils.eq(dateOffset, _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset) ? date : A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Minute, dateOffset - _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset, date);
+};
+var _rluiten$elm_date_extra$Date_Extra_Create$dateFromFields = F7(
+	function (year, month, day, hour, minute, second, millisecond) {
+		return _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate(
+			A7(_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields, year, month, day, hour, minute, second, millisecond));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Create$timeFromFields = A3(_rluiten$elm_date_extra$Date_Extra_Create$dateFromFields, 1970, _elm_lang$core$Date$Jan, 1);
+
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix = F2(
+	function (pad, day) {
+		var value = function () {
+			var _p0 = day;
+			switch (_p0) {
+				case 1:
+					return '1st';
+				case 21:
+					return '21st';
+				case 2:
+					return '2nd';
+				case 22:
+					return '22nd';
+				case 3:
+					return '3rd';
+				case 23:
+					return '23rd';
+				case 31:
+					return '31st';
+				default:
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(day),
+						'th');
+			}
+		}();
+		return pad ? A3(
+			_elm_lang$core$String$padLeft,
+			4,
+			_elm_lang$core$Native_Utils.chr(' '),
+			value) : value;
+	});
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName = function (month) {
+	var _p1 = month;
+	switch (_p1.ctor) {
+		case 'Jan':
+			return 'January';
+		case 'Feb':
+			return 'February';
+		case 'Mar':
+			return 'March';
+		case 'Apr':
+			return 'April';
+		case 'May':
+			return 'May';
+		case 'Jun':
+			return 'June';
+		case 'Jul':
+			return 'July';
+		case 'Aug':
+			return 'August';
+		case 'Sep':
+			return 'September';
+		case 'Oct':
+			return 'October';
+		case 'Nov':
+			return 'November';
+		default:
+			return 'December';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort = function (month) {
+	var _p2 = month;
+	switch (_p2.ctor) {
+		case 'Jan':
+			return 'Jan';
+		case 'Feb':
+			return 'Feb';
+		case 'Mar':
+			return 'Mar';
+		case 'Apr':
+			return 'Apr';
+		case 'May':
+			return 'May';
+		case 'Jun':
+			return 'Jun';
+		case 'Jul':
+			return 'Jul';
+		case 'Aug':
+			return 'Aug';
+		case 'Sep':
+			return 'Sep';
+		case 'Oct':
+			return 'Oct';
+		case 'Nov':
+			return 'Nov';
+		default:
+			return 'Dec';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName = function (day) {
+	var _p3 = day;
+	switch (_p3.ctor) {
+		case 'Mon':
+			return 'Monday';
+		case 'Tue':
+			return 'Tuesday';
+		case 'Wed':
+			return 'Wednesday';
+		case 'Thu':
+			return 'Thursday';
+		case 'Fri':
+			return 'Friday';
+		case 'Sat':
+			return 'Saturday';
+		default:
+			return 'Sunday';
+	}
+};
+var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort = function (day) {
+	var _p4 = day;
+	switch (_p4.ctor) {
+		case 'Mon':
+			return 'Mon';
+		case 'Tue':
+			return 'Tue';
+		case 'Wed':
+			return 'Wed';
+		case 'Thu':
+			return 'Thu';
+		case 'Fri':
+			return 'Fri';
+		case 'Sat':
+			return 'Sat';
+		default:
+			return 'Sun';
+	}
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config = {
+	i18n: {dayShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort, dayName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName, monthShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort, monthName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName, dayOfMonthWithSuffix: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix},
+	format: {date: '%-m/%-d/%Y', longDate: '%A, %B %d, %Y', time: '%-H:%M %p', longTime: '%-H:%M:%S %p', dateTime: '%-m/%-d/%Y %-I:%M %p', firstDayOfWeek: _elm_lang$core$Date$Sun}
+};
+
+var _rluiten$elm_date_extra$Date_Extra_Format$toHourMin = function (offsetMinutes) {
+	return {
+		ctor: '_Tuple2',
+		_0: (offsetMinutes / 60) | 0,
+		_1: A2(_elm_lang$core$Basics_ops['%'], offsetMinutes, 60)
+	};
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$padWithN = F2(
+	function (n, c) {
+		return function (_p0) {
+			return A3(
+				_elm_lang$core$String$padLeft,
+				n,
+				c,
+				_elm_lang$core$Basics$toString(_p0));
+		};
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$padWith = function (c) {
+	return function (_p1) {
+		return A3(
+			_elm_lang$core$String$padLeft,
+			2,
+			c,
+			_elm_lang$core$Basics$toString(_p1));
+	};
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$hourMod12 = function (h) {
+	return _elm_lang$core$Native_Utils.eq(
+		A2(_elm_lang$core$Basics_ops['%'], h, 12),
+		0) ? 12 : A2(_elm_lang$core$Basics_ops['%'], h, 12);
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr = F2(
+	function (betweenHoursMinutes, offset) {
+		var _p2 = _rluiten$elm_date_extra$Date_Extra_Format$toHourMin(
+			_elm_lang$core$Basics$abs(offset));
+		var hour = _p2._0;
+		var minute = _p2._1;
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			(_elm_lang$core$Native_Utils.cmp(offset, 0) < 1) ? '+' : '-',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					hour),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					betweenHoursMinutes,
+					A2(
+						_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+						_elm_lang$core$Native_Utils.chr('0'),
+						minute))));
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$collapse = function (m) {
+	return A2(_elm_lang$core$Maybe$andThen, _elm_lang$core$Basics$identity, m);
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$formatToken = F4(
+	function (config, offset, d, m) {
+		var symbol = A2(
+			_elm_lang$core$Maybe$withDefault,
+			' ',
+			_rluiten$elm_date_extra$Date_Extra_Format$collapse(
+				_elm_lang$core$List$head(m.submatches)));
+		var _p3 = symbol;
+		switch (_p3) {
+			case 'Y':
+				return A3(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+					4,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$year(d));
+			case 'y':
+				return A2(
+					_elm_lang$core$String$right,
+					2,
+					A3(
+						_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+						2,
+						_elm_lang$core$Native_Utils.chr('0'),
+						_elm_lang$core$Date$year(d)));
+			case 'm':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case '_m':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case '-m':
+				return _elm_lang$core$Basics$toString(
+					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+						_elm_lang$core$Date$month(d)));
+			case 'B':
+				return config.i18n.monthName(
+					_elm_lang$core$Date$month(d));
+			case '^B':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.monthName(
+						_elm_lang$core$Date$month(d)));
+			case 'b':
+				return config.i18n.monthShort(
+					_elm_lang$core$Date$month(d));
+			case '^b':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.monthShort(
+						_elm_lang$core$Date$month(d)));
+			case 'd':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$day(d));
+			case '-d':
+				return _elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$day(d));
+			case '-@d':
+				return A2(
+					config.i18n.dayOfMonthWithSuffix,
+					false,
+					_elm_lang$core$Date$day(d));
+			case 'e':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_elm_lang$core$Date$day(d));
+			case '@e':
+				return A2(
+					config.i18n.dayOfMonthWithSuffix,
+					true,
+					_elm_lang$core$Date$day(d));
+			case 'A':
+				return config.i18n.dayName(
+					_elm_lang$core$Date$dayOfWeek(d));
+			case '^A':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.dayName(
+						_elm_lang$core$Date$dayOfWeek(d)));
+			case 'a':
+				return config.i18n.dayShort(
+					_elm_lang$core$Date$dayOfWeek(d));
+			case '^a':
+				return _elm_lang$core$String$toUpper(
+					config.i18n.dayShort(
+						_elm_lang$core$Date$dayOfWeek(d)));
+			case 'H':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$hour(d));
+			case '-H':
+				return _elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$hour(d));
+			case 'k':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_elm_lang$core$Date$hour(d));
+			case 'I':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case '-I':
+				return _elm_lang$core$Basics$toString(
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case 'l':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr(' '),
+					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
+						_elm_lang$core$Date$hour(d)));
+			case 'p':
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$Date$hour(d),
+					12) < 0) ? 'AM' : 'PM';
+			case 'P':
+				return (_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$Date$hour(d),
+					12) < 0) ? 'am' : 'pm';
+			case 'M':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$minute(d));
+			case 'S':
+				return A2(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$second(d));
+			case 'L':
+				return A3(
+					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
+					3,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Date$millisecond(d));
+			case '%':
+				return symbol;
+			case 'z':
+				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, '', offset);
+			case ':z':
+				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, ':', offset);
+			default:
+				return '';
+		}
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$formatRegex = _elm_lang$core$Regex$regex('%(y|Y|m|_m|-m|B|^B|b|^b|d|-d|-@d|e|@e|A|^A|a|^a|H|-H|k|I|-I|l|p|P|M|S|%|L|z|:z)');
+var _rluiten$elm_date_extra$Date_Extra_Format$formatOffset = F4(
+	function (config, targetOffset, formatStr, date) {
+		var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
+		var hackOffset = dateOffset - targetOffset;
+		return A4(
+			_elm_lang$core$Regex$replace,
+			_elm_lang$core$Regex$All,
+			_rluiten$elm_date_extra$Date_Extra_Format$formatRegex,
+			A3(
+				_rluiten$elm_date_extra$Date_Extra_Format$formatToken,
+				config,
+				targetOffset,
+				A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, hackOffset, date)),
+			formatStr);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$format = F3(
+	function (config, formatStr, date) {
+		return A4(
+			_rluiten$elm_date_extra$Date_Extra_Format$formatOffset,
+			config,
+			_rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date),
+			formatStr,
+			date);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$formatUtc = F3(
+	function (config, formatStr, date) {
+		return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, config, 0, formatStr, date);
+	});
+var _rluiten$elm_date_extra$Date_Extra_Format$isoDateString = function (date) {
+	var day = _elm_lang$core$Date$day(date);
+	var month = _elm_lang$core$Date$month(date);
+	var year = _elm_lang$core$Date$year(date);
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		A3(
+			_elm_lang$core$String$padLeft,
+			4,
+			_elm_lang$core$Native_Utils.chr('0'),
+			_elm_lang$core$Basics$toString(year)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'-',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A3(
+					_elm_lang$core$String$padLeft,
+					2,
+					_elm_lang$core$Native_Utils.chr('0'),
+					_elm_lang$core$Basics$toString(
+						_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month))),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'-',
+					A3(
+						_elm_lang$core$String$padLeft,
+						2,
+						_elm_lang$core$Native_Utils.chr('0'),
+						_elm_lang$core$Basics$toString(day))))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoDateString = function (date) {
+	return _rluiten$elm_date_extra$Date_Extra_Format$isoDateString(
+		_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc(date));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$yearInt = function (year) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		4,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(year));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$year = function (date) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		4,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_elm_lang$core$Date$year(date)));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$monthMonth = function (month) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		2,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month)));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$month = function (date) {
+	return A3(
+		_elm_lang$core$String$padLeft,
+		2,
+		_elm_lang$core$Native_Utils.chr('0'),
+		_elm_lang$core$Basics$toString(
+			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
+				_elm_lang$core$Date$month(date))));
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$isoTimeFormat = '%H:%M:%S';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat = '%Y-%m-%d';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat = '%Y-%m-%dT%H:%M:%S.%L%z';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoString = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat);
+var _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat = '%Y-%m-%dT%H:%M:%S%z';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat = '%Y-%m-%dT%H:%M:%S.%L';
+var _rluiten$elm_date_extra$Date_Extra_Format$isoStringNoOffset = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat);
+var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoString = function (date) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		A3(_rluiten$elm_date_extra$Date_Extra_Format$formatUtc, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat, date),
+		'Z');
+};
+var _rluiten$elm_date_extra$Date_Extra_Format$isoFormat = '%Y-%m-%dT%H:%M:%S';
+
+var _asana$csvana$Asana_Encoder$encodeCustomFieldData = function (data) {
+	var _p0 = data;
+	switch (_p0.ctor) {
+		case 'TextValue':
+			return _elm_lang$core$Json_Encode$string(_p0._0);
+		case 'NumberValue':
+			return _elm_lang$core$Json_Encode$float(_p0._0);
+		default:
+			return _elm_lang$core$Json_Encode$string(_p0._0.id);
+	}
+};
+var _asana$csvana$Asana_Encoder$encodeTask = function (task) {
+	return _elm_lang$core$Json_Encode$object(
+		A2(
+			_elm_lang$core$List$filterMap,
+			_elm_lang$core$Basics$identity,
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$Maybe$map,
+					function (_p1) {
+						return A2(
+							F2(
+								function (v0, v1) {
+									return {ctor: '_Tuple2', _0: v0, _1: v1};
+								}),
+							'name',
+							_elm_lang$core$Json_Encode$string(_p1));
+					},
+					task.name),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$core$Maybe$map,
+						function (_p2) {
+							return A2(
+								F2(
+									function (v0, v1) {
+										return {ctor: '_Tuple2', _0: v0, _1: v1};
+									}),
+								'assignee',
+								_elm_lang$core$Json_Encode$string(_p2));
+						},
+						task.assignee),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$core$Maybe$map,
+							function (_p3) {
+								return A2(
+									F2(
+										function (v0, v1) {
+											return {ctor: '_Tuple2', _0: v0, _1: v1};
+										}),
+									'notes',
+									_elm_lang$core$Json_Encode$string(_p3));
+							},
+							task.description),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$core$Maybe$map,
+								function (_p4) {
+									return A2(
+										F2(
+											function (v0, v1) {
+												return {ctor: '_Tuple2', _0: v0, _1: v1};
+											}),
+										'due_at',
+										_elm_lang$core$Json_Encode$string(_p4));
+								},
+								task.dueAt),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$core$Maybe$map,
+									function (_p5) {
+										return A2(
+											F2(
+												function (v0, v1) {
+													return {ctor: '_Tuple2', _0: v0, _1: v1};
+												}),
+											'due_on',
+											_elm_lang$core$Json_Encode$string(_p5));
+									},
+									task.dueOn),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Maybe$Just(
+										{
+											ctor: '_Tuple2',
+											_0: 'completed',
+											_1: _elm_lang$core$Json_Encode$bool(task.completed)
+										}),
+									_1: {
+										ctor: '::',
+										_0: A2(
+											_elm_lang$core$Maybe$map,
+											function (_p6) {
+												return A2(
+													F2(
+														function (v0, v1) {
+															return {ctor: '_Tuple2', _0: v0, _1: v1};
+														}),
+													'projects',
+													_elm_lang$core$Json_Encode$list(
+														A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p6)));
+											},
+											task.projects),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$core$Maybe$Just(
+												A2(
+													F2(
+														function (v0, v1) {
+															return {ctor: '_Tuple2', _0: v0, _1: v1};
+														}),
+													'custom_fields',
+													_elm_lang$core$Json_Encode$object(
+														A2(
+															_elm_lang$core$List$map,
+															_elm_lang$core$Tuple$mapSecond(_asana$csvana$Asana_Encoder$encodeCustomFieldData),
+															task.customFields)))),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}));
+};
+var _asana$csvana$Asana_Encoder$encodeDueAt = function (_p7) {
+	var _p8 = _p7;
+	return _elm_lang$core$Json_Encode$string(
+		A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, _p8._0));
+};
+var _asana$csvana$Asana_Encoder$encodeDueOn = function (_p9) {
+	var _p10 = _p9;
+	return _elm_lang$core$Json_Encode$string(
+		A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, _p10._0));
+};
+
+var _asana$csvana$Asana_Decoder$emptyString = function (a) {
+	return A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (str) {
+			return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Json_Decode$succeed(a) : _elm_lang$core$Json_Decode$fail('String is not empty.');
+		},
+		_elm_lang$core$Json_Decode$string);
+};
+var _asana$csvana$Asana_Decoder$emptyOrNull = function (decoder) {
+	return _elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: _asana$csvana$Asana_Decoder$emptyString(_elm_lang$core$Maybe$Nothing),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
+var _asana$csvana$Asana_Decoder$nullable = function (decoder) {
+	return _elm_lang$core$Json_Decode$oneOf(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _asana$csvana$Asana_Decoder$emptyAsNull = _elm_lang$core$Json_Decode$map(
+	function (str) {
+		return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(str);
+	});
+var _asana$csvana$Asana_Decoder$customFieldTypeDecoder = A2(
+	_elm_lang$core$Json_Decode$map,
+	function (str) {
+		var _p0 = str;
+		switch (_p0) {
+			case 'text':
+				return _asana$csvana$Asana_Model$CustomText;
+			case 'number':
+				return _asana$csvana$Asana_Model$CustomNumber;
+			case 'enum':
+				return _asana$csvana$Asana_Model$CustomEnum;
+			default:
+				return _asana$csvana$Asana_Model$CustomUnknown(str);
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _asana$csvana$Asana_Decoder$customFieldDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_asana$csvana$Asana_Model$CustomField,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'type', _asana$csvana$Asana_Decoder$customFieldTypeDecoder),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
+var _asana$csvana$Asana_Decoder$customFieldSettingDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_asana$csvana$Asana_Model$CustomFieldSetting,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'custom_field', _asana$csvana$Asana_Decoder$customFieldDecoder));
+var _asana$csvana$Asana_Decoder$projectDecoder = A4(
+	_elm_lang$core$Json_Decode$map3,
+	_asana$csvana$Asana_Model$Project,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'custom_field_settings',
+		_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$customFieldSettingDecoder)));
+var _asana$csvana$Asana_Decoder$workspaceDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_asana$csvana$Asana_Model$Workspace,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
+var _asana$csvana$Asana_Decoder$photosDecoder = A6(
+	_elm_lang$core$Json_Decode$map5,
+	_asana$csvana$Asana_Model$Photos,
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'image_21x21', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'image_27x27', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'image_36x36', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'image_60x60', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'image_128x128', _elm_lang$core$Json_Decode$string)));
+var _asana$csvana$Asana_Decoder$userDecoder = A6(
+	_elm_lang$core$Json_Decode$map5,
+	_asana$csvana$Asana_Model$User,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'photo', _asana$csvana$Asana_Decoder$photosDecoder)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'workspaces',
+			_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$workspaceDecoder))));
+var _asana$csvana$Asana_Decoder$resourceDecoder = A3(
+	_elm_lang$core$Json_Decode$map2,
+	_asana$csvana$Asana_Model$Resource,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
+var _asana$csvana$Asana_Decoder$enumOptionDecoder = _asana$csvana$Asana_Decoder$resourceDecoder;
+var _asana$csvana$Asana_Decoder$customFieldInfoDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (fieldType) {
+		var _p1 = fieldType;
+		switch (_p1.ctor) {
+			case 'CustomText':
+				return A3(
+					_elm_lang$core$Json_Decode$map2,
+					_asana$csvana$Asana_Model$CustomTextFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode$field,
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
+			case 'CustomNumber':
+				return A4(
+					_elm_lang$core$Json_Decode$map3,
+					_asana$csvana$Asana_Model$CustomNumberFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode$field,
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+					A2(_elm_lang$core$Json_Decode$field, 'precision', _elm_lang$core$Json_Decode$int));
+			case 'CustomEnum':
+				return A4(
+					_elm_lang$core$Json_Decode$map3,
+					_asana$csvana$Asana_Model$CustomEnumFieldInfo,
+					A2(
+						_elm_lang$core$Json_Decode$field,
+						'id',
+						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+					A2(
+						_elm_lang$core$Json_Decode$field,
+						'enum_options',
+						_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$enumOptionDecoder)));
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Got an unknown custom field type \'',
+						A2(_elm_lang$core$Basics_ops['++'], _p1._0, '\'.')));
+		}
+	},
+	A2(_elm_lang$core$Json_Decode$field, 'type', _asana$csvana$Asana_Decoder$customFieldTypeDecoder));
+var _asana$csvana$Asana_Decoder$enumValueDecoder = _asana$csvana$Asana_Decoder$resourceDecoder;
+var _asana$csvana$Asana_Decoder$customFieldDataDecoder = _elm_lang$core$Json_Decode$oneOf(
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$core$Json_Decode$map,
+			_asana$csvana$Asana_Model$TextValue,
+			A2(_elm_lang$core$Json_Decode$field, 'text_value', _elm_lang$core$Json_Decode$string)),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$core$Json_Decode$map,
+				_asana$csvana$Asana_Model$NumberValue,
+				A2(_elm_lang$core$Json_Decode$field, 'number_value', _elm_lang$core$Json_Decode$float)),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$Json_Decode$map,
+					_asana$csvana$Asana_Model$EnumValue,
+					A2(_elm_lang$core$Json_Decode$field, 'enum_value', _asana$csvana$Asana_Decoder$enumValueDecoder)),
+				_1: {ctor: '[]'}
+			}
+		}
+	});
+var _asana$csvana$Asana_Decoder$customFieldValueDecoder = A5(
+	_elm_lang$core$Json_Decode$map4,
+	_asana$csvana$Asana_Model$CustomFieldValue,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
+	A2(_elm_lang$core$Json_Decode$field, 'type', _asana$csvana$Asana_Decoder$customFieldTypeDecoder),
+	_asana$csvana$Asana_Decoder$customFieldDataDecoder);
+var _asana$csvana$Asana_Decoder$dateDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (str) {
+		var _p2 = _elm_lang$core$Date$fromString(str);
+		if (_p2.ctor === 'Ok') {
+			return _elm_lang$core$Json_Decode$succeed(_p2._0);
+		} else {
+			return _elm_lang$core$Json_Decode$fail(_p2._0);
+		}
+	},
+	_elm_lang$core$Json_Decode$string);
+var _asana$csvana$Asana_Decoder$dueOnDecoder = A2(_elm_lang$core$Json_Decode$map, _asana$csvana$Asana_Model$DueOn, _asana$csvana$Asana_Decoder$dateDecoder);
+var _asana$csvana$Asana_Decoder$dueAtDecoder = A2(_elm_lang$core$Json_Decode$map, _asana$csvana$Asana_Model$DueAt, _asana$csvana$Asana_Decoder$dateDecoder);
+var _asana$csvana$Asana_Decoder$taskDecoder = A6(
+	_elm_lang$core$Json_Decode$map5,
+	_asana$csvana$Asana_Model$Task,
+	A2(
+		_elm_lang$core$Json_Decode$field,
+		'id',
+		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'due_on', _asana$csvana$Asana_Decoder$dueOnDecoder)),
+	_elm_lang$core$Json_Decode$maybe(
+		A2(_elm_lang$core$Json_Decode$field, 'due_at', _asana$csvana$Asana_Decoder$dueAtDecoder)));
+var _asana$csvana$Asana_Decoder$WorkRequired = function (a) {
+	return {ctor: 'WorkRequired', _0: a};
+};
+var _asana$csvana$Asana_Decoder$Value = function (a) {
+	return {ctor: 'Value', _0: a};
+};
+var _asana$csvana$Asana_Decoder$NoResult = {ctor: 'NoResult'};
+
+var _asana$csvana$Asana_Api$typeaheadQueryFields = function (resourceType) {
+	var _p0 = resourceType;
+	switch (_p0.ctor) {
+		case 'TypeaheadProject':
+			return {ctor: '[]'};
+		case 'TypeaheadUser':
+			return {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'opt_fields', _1: 'name,email,photo'},
+				_1: {ctor: '[]'}
+			};
+		case 'TypeaheadTag':
+			return {ctor: '[]'};
+		default:
+			return {ctor: '[]'};
+	}
+};
+var _asana$csvana$Asana_Api$typeaheadTypeStr = function (resourceType) {
+	var _p1 = resourceType;
+	switch (_p1.ctor) {
+		case 'TypeaheadProject':
+			return 'project';
+		case 'TypeaheadUser':
+			return 'user';
+		case 'TypeaheadTag':
+			return 'tag';
+		default:
+			return 'task';
+	}
+};
+var _asana$csvana$Asana_Api$buildUrl = F3(
+	function (origin, path, query) {
+		var queryString = A2(
+			_elm_lang$core$String$join,
+			'&',
+			A2(
+				_elm_lang$core$List$map,
+				function (_p2) {
+					var _p3 = _p2;
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$http$Http$encodeUri(_p3._0),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'=',
+							_elm_lang$http$Http$encodeUri(_p3._1)));
+				},
+				query));
+		var base = A2(_elm_lang$core$Basics_ops['++'], origin, path);
+		return _elm_lang$core$String$isEmpty(queryString) ? base : A2(
+			_elm_lang$core$Basics_ops['++'],
+			base,
+			A2(_elm_lang$core$Basics_ops['++'], '?', queryString));
+	});
+var _asana$csvana$Asana_Api$apiRoot = 'https://app.asana.com/api/1.0';
+var _asana$csvana$Asana_Api$apiGetRequest = F4(
+	function (path, query, decoder, token) {
+		var headers = {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$http$Http$header,
+				'Authorization',
+				A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
+			_1: {ctor: '[]'}
+		};
+		var url = A3(_asana$csvana$Asana_Api$buildUrl, _asana$csvana$Asana_Api$apiRoot, path, query);
+		var request = _elm_lang$http$Http$request(
+			{
+				method: 'GET',
+				url: url,
+				headers: headers,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(
+					A2(_elm_lang$core$Json_Decode$field, 'data', decoder)),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+		return A2(_elm_lang$http$Http$send, _elm_lang$core$Basics$identity, request);
+	});
+var _asana$csvana$Asana_Api$user = function (user) {
+	var _p4 = user;
+	switch (_p4.ctor) {
+		case 'Me':
+			return A3(
+				_asana$csvana$Asana_Api$apiGetRequest,
+				'/users/me',
+				{ctor: '[]'},
+				_asana$csvana$Asana_Decoder$userDecoder);
+		case 'Id':
+			return A3(
+				_asana$csvana$Asana_Api$apiGetRequest,
+				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p4._0),
+				{ctor: '[]'},
+				_asana$csvana$Asana_Decoder$userDecoder);
+		default:
+			return A3(
+				_asana$csvana$Asana_Api$apiGetRequest,
+				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p4._0),
+				{ctor: '[]'},
+				_asana$csvana$Asana_Decoder$userDecoder);
+	}
+};
+var _asana$csvana$Asana_Api$users = function (workspaceId) {
+	var query = {
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'opt_fields', _1: 'email,name,photo.image_128x128'},
+		_1: {ctor: '[]'}
+	};
+	var path = A2(
+		_elm_lang$core$Basics_ops['++'],
+		'/workspaces/',
+		A2(_elm_lang$core$Basics_ops['++'], workspaceId, '/users'));
+	return A3(
+		_asana$csvana$Asana_Api$apiGetRequest,
+		path,
+		query,
+		_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$userDecoder));
+};
+var _asana$csvana$Asana_Api$getTypeaheadOptions = F4(
+	function (resourceType, decoder, workspaceId, fragment) {
+		var path = A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/workspaces/',
+			A2(_elm_lang$core$Basics_ops['++'], workspaceId, '/typeahead'));
+		var resourceTypeStr = _asana$csvana$Asana_Api$typeaheadTypeStr(resourceType);
+		var query = A2(
+			_elm_lang$core$Basics_ops['++'],
+			_asana$csvana$Asana_Api$typeaheadQueryFields(resourceType),
+			{
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'type', _1: resourceTypeStr},
+				_1: {
+					ctor: '::',
+					_0: {ctor: '_Tuple2', _0: 'query', _1: fragment},
+					_1: {ctor: '[]'}
+				}
+			});
+		return A3(
+			_asana$csvana$Asana_Api$apiGetRequest,
+			path,
+			query,
+			_elm_lang$core$Json_Decode$list(decoder));
+	});
+var _asana$csvana$Asana_Api$project = function (projectId) {
+	var path = A2(_elm_lang$core$Basics_ops['++'], '/projects/', projectId);
+	return A3(
+		_asana$csvana$Asana_Api$apiGetRequest,
+		path,
+		{ctor: '[]'},
+		_asana$csvana$Asana_Decoder$projectDecoder);
+};
+var _asana$csvana$Asana_Api$customField = function (customFieldId) {
+	var path = A2(_elm_lang$core$Basics_ops['++'], '/custom_fields/', customFieldId);
+	return A3(
+		_asana$csvana$Asana_Api$apiGetRequest,
+		path,
+		{ctor: '[]'},
+		_asana$csvana$Asana_Decoder$customFieldInfoDecoder);
+};
+var _asana$csvana$Asana_Api$apiPostRequest = F5(
+	function (path, query, body, decoder, token) {
+		var headers = {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$http$Http$header,
+				'Authorization',
+				A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
+			_1: {ctor: '[]'}
+		};
+		var url = A3(_asana$csvana$Asana_Api$buildUrl, _asana$csvana$Asana_Api$apiRoot, path, query);
+		var request = _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				url: url,
+				headers: headers,
+				body: _elm_lang$http$Http$jsonBody(
+					_elm_lang$core$Json_Encode$object(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'data', _1: body},
+							_1: {ctor: '[]'}
+						})),
+				expect: _elm_lang$http$Http$expectJson(
+					A2(_elm_lang$core$Json_Decode$field, 'data', decoder)),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+		return A2(_elm_lang$http$Http$send, _elm_lang$core$Basics$identity, request);
+	});
+var _asana$csvana$Asana_Api$createTask = function (newTask) {
+	var body = _asana$csvana$Asana_Encoder$encodeTask(newTask);
+	var query = {ctor: '[]'};
+	var path = '/tasks';
+	return A4(_asana$csvana$Asana_Api$apiPostRequest, path, query, body, _asana$csvana$Asana_Decoder$taskDecoder);
+};
+var _asana$csvana$Asana_Api$Context = F2(
+	function (a, b) {
+		return {token: a, workspaceId: b};
+	});
+var _asana$csvana$Asana_Api$Email = function (a) {
+	return {ctor: 'Email', _0: a};
+};
+var _asana$csvana$Asana_Api$Id = function (a) {
+	return {ctor: 'Id', _0: a};
+};
+var _asana$csvana$Asana_Api$Me = {ctor: 'Me'};
+var _asana$csvana$Asana_Api$me = _asana$csvana$Asana_Api$user(_asana$csvana$Asana_Api$Me);
+var _asana$csvana$Asana_Api$TypeaheadTask = {ctor: 'TypeaheadTask'};
+var _asana$csvana$Asana_Api$TypeaheadTag = {ctor: 'TypeaheadTag'};
+var _asana$csvana$Asana_Api$TypeaheadUser = {ctor: 'TypeaheadUser'};
+var _asana$csvana$Asana_Api$userTypeahead = A2(_asana$csvana$Asana_Api$getTypeaheadOptions, _asana$csvana$Asana_Api$TypeaheadUser, _asana$csvana$Asana_Decoder$userDecoder);
+var _asana$csvana$Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProject'};
+var _asana$csvana$Asana_Api$projectTypeahead = A2(_asana$csvana$Asana_Api$getTypeaheadOptions, _asana$csvana$Asana_Api$TypeaheadProject, _asana$csvana$Asana_Decoder$resourceDecoder);
+
+var _asana$csvana$Asana_Target$dateToDueAt = function (date) {
+	return A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, date);
+};
+var _asana$csvana$Asana_Target$dateToDueOn = function (date) {
+	return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, date);
+};
+var _asana$csvana$Asana_Target$updateTask = F3(
+	function (target, value, task) {
+		var _p0 = target;
+		switch (_p0.ctor) {
+			case 'Name':
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{
+							name: _elm_lang$core$Maybe$Just(value)
+						}));
+			case 'Description':
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{
+							description: _elm_lang$core$Maybe$Just(value)
+						}));
+			case 'Assignee':
+				var _p1 = A2(_elm_lang$core$Dict$get, value, _p0._0);
+				if (_p1.ctor === 'Just') {
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{
+								assignee: _elm_lang$core$Maybe$Just(_p1._0)
+							}));
+				} else {
+					return _elm_lang$core$Result$Ok(task);
+				}
+			case 'Completion':
+				var _p2 = A2(_elm_lang$core$Dict$get, value, _p0._0);
+				if (_p2.ctor === 'Just') {
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{completed: _p2._0}));
+				} else {
+					return _elm_lang$core$Result$Err(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'No config for how to convert \'',
+							A2(_elm_lang$core$Basics_ops['++'], value, '\' into a completed status.')));
+				}
+			case 'DueDate':
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
+				} else {
+					var _p3 = _elm_lang$core$Date$fromString(value);
+					if (_p3.ctor === 'Ok') {
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{
+									dueOn: _elm_lang$core$Maybe$Just(
+										_asana$csvana$Asana_Target$dateToDueOn(_p3._0))
+								}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse date from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
+				}
+			case 'DueTime':
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
+				} else {
+					var _p4 = _elm_lang$core$Date$fromString(value);
+					if (_p4.ctor === 'Ok') {
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{
+									dueAt: _elm_lang$core$Maybe$Just(
+										_asana$csvana$Asana_Target$dateToDueAt(_p4._0))
+								}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse date from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
+				}
+			case 'CustomText':
+				var newField = {
+					ctor: '_Tuple2',
+					_0: _p0._0,
+					_1: _asana$csvana$Asana_Model$TextValue(value)
+				};
+				var customFields = {ctor: '::', _0: newField, _1: task.customFields};
+				return _elm_lang$core$Result$Ok(
+					_elm_lang$core$Native_Utils.update(
+						task,
+						{customFields: customFields}));
+			case 'CustomNumber':
+				if (_elm_lang$core$String$isEmpty(value)) {
+					return _elm_lang$core$Result$Ok(task);
+				} else {
+					var _p5 = _elm_lang$core$String$toFloat(value);
+					if (_p5.ctor === 'Ok') {
+						var newField = {
+							ctor: '_Tuple2',
+							_0: _p0._0,
+							_1: _asana$csvana$Asana_Model$NumberValue(_p5._0)
+						};
+						var customFields = {ctor: '::', _0: newField, _1: task.customFields};
+						return _elm_lang$core$Result$Ok(
+							_elm_lang$core$Native_Utils.update(
+								task,
+								{customFields: customFields}));
+					} else {
+						return _elm_lang$core$Result$Err(
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'Could not parse number from \'',
+								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
+					}
+				}
+			default:
+				var _p6 = A2(_elm_lang$core$Dict$get, value, _p0._1);
+				if (_p6.ctor === 'Just') {
+					return _elm_lang$core$Result$Ok(
+						_elm_lang$core$Native_Utils.update(
+							task,
+							{
+								customFields: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: _p0._0,
+										_1: _asana$csvana$Asana_Model$EnumValue(_p6._0)
+									},
+									_1: task.customFields
+								}
+							}));
+				} else {
+					return _elm_lang$core$Result$Ok(task);
+				}
+		}
+	});
+var _asana$csvana$Asana_Target$emptyTask = function (projectId) {
+	return {
+		name: _elm_lang$core$Maybe$Nothing,
+		description: _elm_lang$core$Maybe$Nothing,
+		assignee: _elm_lang$core$Maybe$Nothing,
+		completed: false,
+		dueOn: _elm_lang$core$Maybe$Nothing,
+		dueAt: _elm_lang$core$Maybe$Nothing,
+		projects: _elm_lang$core$Maybe$Just(
+			{
+				ctor: '::',
+				_0: projectId,
+				_1: {ctor: '[]'}
+			}),
+		customFields: {ctor: '[]'}
+	};
+};
+var _asana$csvana$Asana_Target$CustomEnum = F2(
+	function (a, b) {
+		return {ctor: 'CustomEnum', _0: a, _1: b};
+	});
+var _asana$csvana$Asana_Target$CustomNumber = function (a) {
+	return {ctor: 'CustomNumber', _0: a};
+};
+var _asana$csvana$Asana_Target$CustomText = function (a) {
+	return {ctor: 'CustomText', _0: a};
+};
+var _asana$csvana$Asana_Target$DueTime = {ctor: 'DueTime'};
+var _asana$csvana$Asana_Target$DueDate = {ctor: 'DueDate'};
+var _asana$csvana$Asana_Target$Completion = function (a) {
+	return {ctor: 'Completion', _0: a};
+};
+var _asana$csvana$Asana_Target$Assignee = function (a) {
+	return {ctor: 'Assignee', _0: a};
+};
+var _asana$csvana$Asana_Target$Description = {ctor: 'Description'};
+var _asana$csvana$Asana_Target$Name = {ctor: 'Name'};
+
+var _asana$csvana$Asana_Urls$project = function (projectId) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'https://app.asana.com/0/',
+		A2(_elm_lang$core$Basics_ops['++'], projectId, '/list'));
+};
 
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
@@ -9820,6 +11716,233 @@ var _elm_lang$html$Html$summary = _elm_lang$html$Html$node('summary');
 var _elm_lang$html$Html$menuitem = _elm_lang$html$Html$node('menuitem');
 var _elm_lang$html$Html$menu = _elm_lang$html$Html$node('menu');
 
+var _asana$csvana$Util$find = F2(
+	function (pred, xs) {
+		var _p0 = _elm_lang$core$List$head(xs);
+		if (_p0.ctor === 'Just') {
+			var _p1 = _p0._0;
+			return pred(_p1) ? _elm_lang$core$Maybe$Just(_p1) : A2(
+				_elm_lang$core$Maybe$andThen,
+				_asana$csvana$Util$find(pred),
+				_elm_lang$core$List$tail(xs));
+		} else {
+			return A2(
+				_elm_lang$core$Maybe$andThen,
+				_asana$csvana$Util$find(pred),
+				_elm_lang$core$List$tail(xs));
+		}
+	});
+var _asana$csvana$Util$catMaybes = function (xs) {
+	catMaybes:
+	while (true) {
+		var _p2 = {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$List$head(xs),
+			_1: _elm_lang$core$List$tail(xs)
+		};
+		_v1_2:
+		do {
+			if (_p2._0.ctor === 'Just') {
+				if (_p2._1.ctor === 'Just') {
+					if (_p2._0._0.ctor === 'Just') {
+						return {
+							ctor: '::',
+							_0: _p2._0._0._0,
+							_1: _asana$csvana$Util$catMaybes(_p2._1._0)
+						};
+					} else {
+						var _v2 = _p2._1._0;
+						xs = _v2;
+						continue catMaybes;
+					}
+				} else {
+					break _v1_2;
+				}
+			} else {
+				if (_p2._1.ctor === 'Nothing') {
+					break _v1_2;
+				} else {
+					return {ctor: '[]'};
+				}
+			}
+		} while(false);
+		return {ctor: '[]'};
+	}
+};
+var _asana$csvana$Util$transpose = function (data) {
+	var tails = _asana$csvana$Util$catMaybes(
+		A2(_elm_lang$core$List$map, _elm_lang$core$List$tail, data));
+	var heads = _asana$csvana$Util$catMaybes(
+		A2(_elm_lang$core$List$map, _elm_lang$core$List$head, data));
+	return _elm_lang$core$List$isEmpty(heads) ? {ctor: '[]'} : {
+		ctor: '::',
+		_0: heads,
+		_1: _asana$csvana$Util$transpose(tails)
+	};
+};
+var _asana$csvana$Util$isJust = function (maybe) {
+	var _p3 = maybe;
+	if (_p3.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _asana$csvana$Util$isNothing = function (_p4) {
+	return !_asana$csvana$Util$isJust(_p4);
+};
+var _asana$csvana$Util$mapPair = F3(
+	function (f, g, _p5) {
+		var _p6 = _p5;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p6._0),
+			_1: g(_p6._1)
+		};
+	});
+var _asana$csvana$Util$mapSecond = F2(
+	function (f, _p7) {
+		var _p8 = _p7;
+		return {
+			ctor: '_Tuple2',
+			_0: _p8._0,
+			_1: f(_p8._1)
+		};
+	});
+var _asana$csvana$Util$mapCmd = function (f) {
+	return _asana$csvana$Util$mapSecond(
+		_elm_lang$core$Platform_Cmd$map(f));
+};
+var _asana$csvana$Util$mapFirst = F2(
+	function (f, _p9) {
+		var _p10 = _p9;
+		return {
+			ctor: '_Tuple2',
+			_0: f(_p10._0),
+			_1: _p10._1
+		};
+	});
+var _asana$csvana$Util$mapComponent = _asana$csvana$Util$mapFirst;
+
+var _asana$csvana$Base$get = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0.get;
+};
+var _asana$csvana$Base$view = function (_p2) {
+	var _p3 = _p2;
+	return _p3._0.view;
+};
+var _asana$csvana$Base$viewWith = function (f) {
+	return function (_p4) {
+		return A2(
+			_elm_lang$html$Html$map,
+			f,
+			_asana$csvana$Base$view(_p4));
+	};
+};
+var _asana$csvana$Base$subscriptions = function (_p5) {
+	var _p6 = _p5;
+	return _p6._0.subscriptions;
+};
+var _asana$csvana$Base$subscriptionsWith = function (f) {
+	return function (_p7) {
+		return A2(
+			_elm_lang$core$Platform_Sub$map,
+			f,
+			_asana$csvana$Base$subscriptions(_p7));
+	};
+};
+var _asana$csvana$Base$update = F2(
+	function (msg, _p8) {
+		var _p9 = _p8;
+		return _p9._0.update(msg);
+	});
+var _asana$csvana$Base$updateWith = F2(
+	function (f, msg) {
+		return function (_p10) {
+			return A2(
+				_asana$csvana$Util$mapCmd,
+				f,
+				A2(_asana$csvana$Base$update, msg, _p10));
+		};
+	});
+var _asana$csvana$Base$asRoot = function (_p11) {
+	var _p12 = _p11;
+	return {
+		init: {ctor: '_Tuple2', _0: _p12._0, _1: _p12._1},
+		update: _asana$csvana$Base$update,
+		subscriptions: _asana$csvana$Base$subscriptions,
+		view: _asana$csvana$Base$view
+	};
+};
+var _asana$csvana$Base$Program = F4(
+	function (a, b, c, d) {
+		return {init: a, update: b, view: c, subscriptions: d};
+	});
+var _asana$csvana$Base$Instance = function (a) {
+	return {ctor: 'Instance', _0: a};
+};
+var _asana$csvana$Base$createWithState = F2(
+	function (component, state) {
+		return _asana$csvana$Base$Instance(
+			{
+				update: function (_p13) {
+					return A2(
+						_elm_lang$core$Tuple$mapFirst,
+						_asana$csvana$Base$createWithState(component),
+						A3(_elm_lang$core$Basics$flip, component.update, state, _p13));
+				},
+				view: component.view(state),
+				subscriptions: component.subscriptions(state),
+				get: component.get(state)
+			});
+	});
+var _asana$csvana$Base$create = function (component) {
+	var _p14 = component.init;
+	var state = _p14._0;
+	var cmd = _p14._1;
+	var instance = A2(_asana$csvana$Base$createWithState, component, state);
+	return {ctor: '_Tuple2', _0: instance, _1: cmd};
+};
+var _asana$csvana$Base$staticComponent = function (view) {
+	return _asana$csvana$Base$create(
+		{
+			init: {
+				ctor: '_Tuple2',
+				_0: {ctor: '_Tuple0'},
+				_1: _elm_lang$core$Platform_Cmd$none
+			},
+			view: _elm_lang$core$Basics$always(view),
+			update: _elm_lang$core$Basics$always(
+				_elm_lang$core$Basics$always(
+					{
+						ctor: '_Tuple2',
+						_0: {ctor: '_Tuple0'},
+						_1: _elm_lang$core$Platform_Cmd$none
+					})),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			get: _elm_lang$core$Basics$always(
+				{ctor: '_Tuple0'})
+		});
+};
+var _asana$csvana$Base$mapOutput = F2(
+	function (f, _p15) {
+		var _p16 = _p15;
+		var _p18 = _p16._0;
+		return _asana$csvana$Base$Instance(
+			_elm_lang$core$Native_Utils.update(
+				_p18,
+				{
+					update: function (_p17) {
+						return A2(
+							_elm_lang$core$Tuple$mapFirst,
+							_asana$csvana$Base$mapOutput(f),
+							_p18.update(_p17));
+					},
+					get: f(_p18.get)
+				}));
+	});
+
 var _elm_lang$html$Html_Attributes$map = _elm_lang$virtual_dom$VirtualDom$mapProperty;
 var _elm_lang$html$Html_Attributes$attribute = _elm_lang$virtual_dom$VirtualDom$attribute;
 var _elm_lang$html$Html_Attributes$contextmenu = function (value) {
@@ -10285,673 +12408,6 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _elm_lang$http$Native_Http = function() {
-
-
-// ENCODING AND DECODING
-
-function encodeUri(string)
-{
-	return encodeURIComponent(string);
-}
-
-function decodeUri(string)
-{
-	try
-	{
-		return _elm_lang$core$Maybe$Just(decodeURIComponent(string));
-	}
-	catch(e)
-	{
-		return _elm_lang$core$Maybe$Nothing;
-	}
-}
-
-
-// SEND REQUEST
-
-function toTask(request, maybeProgress)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		var xhr = new XMLHttpRequest();
-
-		configureProgress(xhr, maybeProgress);
-
-		xhr.addEventListener('error', function() {
-			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NetworkError' }));
-		});
-		xhr.addEventListener('timeout', function() {
-			callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'Timeout' }));
-		});
-		xhr.addEventListener('load', function() {
-			callback(handleResponse(xhr, request.expect.responseToResult));
-		});
-
-		try
-		{
-			xhr.open(request.method, request.url, true);
-		}
-		catch (e)
-		{
-			return callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'BadUrl', _0: request.url }));
-		}
-
-		configureRequest(xhr, request);
-		send(xhr, request.body);
-
-		return function() { xhr.abort(); };
-	});
-}
-
-function configureProgress(xhr, maybeProgress)
-{
-	if (maybeProgress.ctor === 'Nothing')
-	{
-		return;
-	}
-
-	xhr.addEventListener('progress', function(event) {
-		if (!event.lengthComputable)
-		{
-			return;
-		}
-		_elm_lang$core$Native_Scheduler.rawSpawn(maybeProgress._0({
-			bytes: event.loaded,
-			bytesExpected: event.total
-		}));
-	});
-}
-
-function configureRequest(xhr, request)
-{
-	function setHeader(pair)
-	{
-		xhr.setRequestHeader(pair._0, pair._1);
-	}
-
-	A2(_elm_lang$core$List$map, setHeader, request.headers);
-	xhr.responseType = request.expect.responseType;
-	xhr.withCredentials = request.withCredentials;
-
-	if (request.timeout.ctor === 'Just')
-	{
-		xhr.timeout = request.timeout._0;
-	}
-}
-
-function send(xhr, body)
-{
-	switch (body.ctor)
-	{
-		case 'EmptyBody':
-			xhr.send();
-			return;
-
-		case 'StringBody':
-			xhr.setRequestHeader('Content-Type', body._0);
-			xhr.send(body._1);
-			return;
-
-		case 'FormDataBody':
-			xhr.send(body._0);
-			return;
-	}
-}
-
-
-// RESPONSES
-
-function handleResponse(xhr, responseToResult)
-{
-	var response = toResponse(xhr);
-
-	if (xhr.status < 200 || 300 <= xhr.status)
-	{
-		response.body = xhr.responseText;
-		return _elm_lang$core$Native_Scheduler.fail({
-			ctor: 'BadStatus',
-			_0: response
-		});
-	}
-
-	var result = responseToResult(response);
-
-	if (result.ctor === 'Ok')
-	{
-		return _elm_lang$core$Native_Scheduler.succeed(result._0);
-	}
-	else
-	{
-		response.body = xhr.responseText;
-		return _elm_lang$core$Native_Scheduler.fail({
-			ctor: 'BadPayload',
-			_0: result._0,
-			_1: response
-		});
-	}
-}
-
-function toResponse(xhr)
-{
-	return {
-		status: { code: xhr.status, message: xhr.statusText },
-		headers: parseHeaders(xhr.getAllResponseHeaders()),
-		url: xhr.responseURL,
-		body: xhr.response
-	};
-}
-
-function parseHeaders(rawHeaders)
-{
-	var headers = _elm_lang$core$Dict$empty;
-
-	if (!rawHeaders)
-	{
-		return headers;
-	}
-
-	var headerPairs = rawHeaders.split('\u000d\u000a');
-	for (var i = headerPairs.length; i--; )
-	{
-		var headerPair = headerPairs[i];
-		var index = headerPair.indexOf('\u003a\u0020');
-		if (index > 0)
-		{
-			var key = headerPair.substring(0, index);
-			var value = headerPair.substring(index + 2);
-
-			headers = A3(_elm_lang$core$Dict$update, key, function(oldValue) {
-				if (oldValue.ctor === 'Just')
-				{
-					return _elm_lang$core$Maybe$Just(value + ', ' + oldValue._0);
-				}
-				return _elm_lang$core$Maybe$Just(value);
-			}, headers);
-		}
-	}
-
-	return headers;
-}
-
-
-// EXPECTORS
-
-function expectStringResponse(responseToResult)
-{
-	return {
-		responseType: 'text',
-		responseToResult: responseToResult
-	};
-}
-
-function mapExpect(func, expect)
-{
-	return {
-		responseType: expect.responseType,
-		responseToResult: function(response) {
-			var convertedResponse = expect.responseToResult(response);
-			return A2(_elm_lang$core$Result$map, func, convertedResponse);
-		}
-	};
-}
-
-
-// BODY
-
-function multipart(parts)
-{
-	var formData = new FormData();
-
-	while (parts.ctor !== '[]')
-	{
-		var part = parts._0;
-		formData.append(part._0, part._1);
-		parts = parts._1;
-	}
-
-	return { ctor: 'FormDataBody', _0: formData };
-}
-
-return {
-	toTask: F2(toTask),
-	expectStringResponse: expectStringResponse,
-	mapExpect: F2(mapExpect),
-	multipart: multipart,
-	encodeUri: encodeUri,
-	decodeUri: decodeUri
-};
-
-}();
-
-var _elm_lang$http$Http_Internal$map = F2(
-	function (func, request) {
-		return _elm_lang$core$Native_Utils.update(
-			request,
-			{
-				expect: A2(_elm_lang$http$Native_Http.mapExpect, func, request.expect)
-			});
-	});
-var _elm_lang$http$Http_Internal$RawRequest = F7(
-	function (a, b, c, d, e, f, g) {
-		return {method: a, headers: b, url: c, body: d, expect: e, timeout: f, withCredentials: g};
-	});
-var _elm_lang$http$Http_Internal$Request = function (a) {
-	return {ctor: 'Request', _0: a};
-};
-var _elm_lang$http$Http_Internal$Expect = {ctor: 'Expect'};
-var _elm_lang$http$Http_Internal$FormDataBody = {ctor: 'FormDataBody'};
-var _elm_lang$http$Http_Internal$StringBody = F2(
-	function (a, b) {
-		return {ctor: 'StringBody', _0: a, _1: b};
-	});
-var _elm_lang$http$Http_Internal$EmptyBody = {ctor: 'EmptyBody'};
-var _elm_lang$http$Http_Internal$Header = F2(
-	function (a, b) {
-		return {ctor: 'Header', _0: a, _1: b};
-	});
-
-var _elm_lang$http$Http$decodeUri = _elm_lang$http$Native_Http.decodeUri;
-var _elm_lang$http$Http$encodeUri = _elm_lang$http$Native_Http.encodeUri;
-var _elm_lang$http$Http$expectStringResponse = _elm_lang$http$Native_Http.expectStringResponse;
-var _elm_lang$http$Http$expectJson = function (decoder) {
-	return _elm_lang$http$Http$expectStringResponse(
-		function (response) {
-			return A2(_elm_lang$core$Json_Decode$decodeString, decoder, response.body);
-		});
-};
-var _elm_lang$http$Http$expectString = _elm_lang$http$Http$expectStringResponse(
-	function (response) {
-		return _elm_lang$core$Result$Ok(response.body);
-	});
-var _elm_lang$http$Http$multipartBody = _elm_lang$http$Native_Http.multipart;
-var _elm_lang$http$Http$stringBody = _elm_lang$http$Http_Internal$StringBody;
-var _elm_lang$http$Http$jsonBody = function (value) {
-	return A2(
-		_elm_lang$http$Http_Internal$StringBody,
-		'application/json',
-		A2(_elm_lang$core$Json_Encode$encode, 0, value));
-};
-var _elm_lang$http$Http$emptyBody = _elm_lang$http$Http_Internal$EmptyBody;
-var _elm_lang$http$Http$header = _elm_lang$http$Http_Internal$Header;
-var _elm_lang$http$Http$request = _elm_lang$http$Http_Internal$Request;
-var _elm_lang$http$Http$post = F3(
-	function (url, body, decoder) {
-		return _elm_lang$http$Http$request(
-			{
-				method: 'POST',
-				headers: {ctor: '[]'},
-				url: url,
-				body: body,
-				expect: _elm_lang$http$Http$expectJson(decoder),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-	});
-var _elm_lang$http$Http$get = F2(
-	function (url, decoder) {
-		return _elm_lang$http$Http$request(
-			{
-				method: 'GET',
-				headers: {ctor: '[]'},
-				url: url,
-				body: _elm_lang$http$Http$emptyBody,
-				expect: _elm_lang$http$Http$expectJson(decoder),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-	});
-var _elm_lang$http$Http$getString = function (url) {
-	return _elm_lang$http$Http$request(
-		{
-			method: 'GET',
-			headers: {ctor: '[]'},
-			url: url,
-			body: _elm_lang$http$Http$emptyBody,
-			expect: _elm_lang$http$Http$expectString,
-			timeout: _elm_lang$core$Maybe$Nothing,
-			withCredentials: false
-		});
-};
-var _elm_lang$http$Http$toTask = function (_p0) {
-	var _p1 = _p0;
-	return A2(_elm_lang$http$Native_Http.toTask, _p1._0, _elm_lang$core$Maybe$Nothing);
-};
-var _elm_lang$http$Http$send = F2(
-	function (resultToMessage, request) {
-		return A2(
-			_elm_lang$core$Task$attempt,
-			resultToMessage,
-			_elm_lang$http$Http$toTask(request));
-	});
-var _elm_lang$http$Http$Response = F4(
-	function (a, b, c, d) {
-		return {url: a, status: b, headers: c, body: d};
-	});
-var _elm_lang$http$Http$BadPayload = F2(
-	function (a, b) {
-		return {ctor: 'BadPayload', _0: a, _1: b};
-	});
-var _elm_lang$http$Http$BadStatus = function (a) {
-	return {ctor: 'BadStatus', _0: a};
-};
-var _elm_lang$http$Http$NetworkError = {ctor: 'NetworkError'};
-var _elm_lang$http$Http$Timeout = {ctor: 'Timeout'};
-var _elm_lang$http$Http$BadUrl = function (a) {
-	return {ctor: 'BadUrl', _0: a};
-};
-var _elm_lang$http$Http$StringPart = F2(
-	function (a, b) {
-		return {ctor: 'StringPart', _0: a, _1: b};
-	});
-var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
-
-var _elm_lang$navigation$Native_Navigation = function() {
-
-function go(n)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		if (n !== 0)
-		{
-			history.go(n);
-		}
-		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
-	});
-}
-
-function pushState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.pushState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-function replaceState(url)
-{
-	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
-	{
-		history.replaceState({}, '', url);
-		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
-	});
-}
-
-function getLocation()
-{
-	var location = document.location;
-
-	return {
-		href: location.href,
-		host: location.host,
-		hostname: location.hostname,
-		protocol: location.protocol,
-		origin: location.origin,
-		port_: location.port,
-		pathname: location.pathname,
-		search: location.search,
-		hash: location.hash,
-		username: location.username,
-		password: location.password
-	};
-}
-
-
-return {
-	go: go,
-	pushState: pushState,
-	replaceState: replaceState,
-	getLocation: getLocation
-};
-
-}();
-
-var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
-var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
-var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
-var _elm_lang$navigation$Navigation$spawnPopState = function (router) {
-	return _elm_lang$core$Process$spawn(
-		A3(
-			_elm_lang$dom$Dom_LowLevel$onWindow,
-			'popstate',
-			_elm_lang$core$Json_Decode$value,
-			function (_p0) {
-				return A2(
-					_elm_lang$core$Platform$sendToSelf,
-					router,
-					_elm_lang$navigation$Native_Navigation.getLocation(
-						{ctor: '_Tuple0'}));
-			}));
-};
-var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
-_elm_lang$navigation$Navigation_ops['&>'] = F2(
-	function (task1, task2) {
-		return A2(
-			_elm_lang$core$Task$andThen,
-			function (_p1) {
-				return task2;
-			},
-			task1);
-	});
-var _elm_lang$navigation$Navigation$notify = F3(
-	function (router, subs, location) {
-		var send = function (_p2) {
-			var _p3 = _p2;
-			return A2(
-				_elm_lang$core$Platform$sendToApp,
-				router,
-				_p3._0(location));
-		};
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(_elm_lang$core$List$map, send, subs)),
-			_elm_lang$core$Task$succeed(
-				{ctor: '_Tuple0'}));
-	});
-var _elm_lang$navigation$Navigation$onSelfMsg = F3(
-	function (router, location, state) {
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
-			_elm_lang$core$Task$succeed(state));
-	});
-var _elm_lang$navigation$Navigation$cmdHelp = F3(
-	function (router, subs, cmd) {
-		var _p4 = cmd;
-		switch (_p4.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$go(_p4._0);
-			case 'New':
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$pushState(_p4._0));
-			default:
-				return A2(
-					_elm_lang$core$Task$andThen,
-					A2(_elm_lang$navigation$Navigation$notify, router, subs),
-					_elm_lang$navigation$Navigation$replaceState(_p4._0));
-		}
-	});
-var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
-var _elm_lang$navigation$Navigation$Location = function (a) {
-	return function (b) {
-		return function (c) {
-			return function (d) {
-				return function (e) {
-					return function (f) {
-						return function (g) {
-							return function (h) {
-								return function (i) {
-									return function (j) {
-										return function (k) {
-											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
-										};
-									};
-								};
-							};
-						};
-					};
-				};
-			};
-		};
-	};
-};
-var _elm_lang$navigation$Navigation$State = F2(
-	function (a, b) {
-		return {subs: a, process: b};
-	});
-var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
-	A2(
-		_elm_lang$navigation$Navigation$State,
-		{ctor: '[]'},
-		_elm_lang$core$Maybe$Nothing));
-var _elm_lang$navigation$Navigation$onEffects = F4(
-	function (router, cmds, subs, _p5) {
-		var _p6 = _p5;
-		var _p9 = _p6.process;
-		var stepState = function () {
-			var _p7 = {ctor: '_Tuple2', _0: subs, _1: _p9};
-			_v3_2:
-			do {
-				if (_p7._0.ctor === '[]') {
-					if (_p7._1.ctor === 'Just') {
-						return A2(
-							_elm_lang$navigation$Navigation_ops['&>'],
-							_elm_lang$core$Process$kill(_p7._1._0),
-							_elm_lang$core$Task$succeed(
-								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
-					} else {
-						break _v3_2;
-					}
-				} else {
-					if (_p7._1.ctor === 'Nothing') {
-						return A2(
-							_elm_lang$core$Task$map,
-							function (_p8) {
-								return A2(
-									_elm_lang$navigation$Navigation$State,
-									subs,
-									_elm_lang$core$Maybe$Just(_p8));
-							},
-							_elm_lang$navigation$Navigation$spawnPopState(router));
-					} else {
-						break _v3_2;
-					}
-				}
-			} while(false);
-			return _elm_lang$core$Task$succeed(
-				A2(_elm_lang$navigation$Navigation$State, subs, _p9));
-		}();
-		return A2(
-			_elm_lang$navigation$Navigation_ops['&>'],
-			_elm_lang$core$Task$sequence(
-				A2(
-					_elm_lang$core$List$map,
-					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
-					cmds)),
-			stepState);
-	});
-var _elm_lang$navigation$Navigation$Modify = function (a) {
-	return {ctor: 'Modify', _0: a};
-};
-var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Modify(url));
-};
-var _elm_lang$navigation$Navigation$New = function (a) {
-	return {ctor: 'New', _0: a};
-};
-var _elm_lang$navigation$Navigation$newUrl = function (url) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$New(url));
-};
-var _elm_lang$navigation$Navigation$Jump = function (a) {
-	return {ctor: 'Jump', _0: a};
-};
-var _elm_lang$navigation$Navigation$back = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(0 - n));
-};
-var _elm_lang$navigation$Navigation$forward = function (n) {
-	return _elm_lang$navigation$Navigation$command(
-		_elm_lang$navigation$Navigation$Jump(n));
-};
-var _elm_lang$navigation$Navigation$cmdMap = F2(
-	function (_p10, myCmd) {
-		var _p11 = myCmd;
-		switch (_p11.ctor) {
-			case 'Jump':
-				return _elm_lang$navigation$Navigation$Jump(_p11._0);
-			case 'New':
-				return _elm_lang$navigation$Navigation$New(_p11._0);
-			default:
-				return _elm_lang$navigation$Navigation$Modify(_p11._0);
-		}
-	});
-var _elm_lang$navigation$Navigation$Monitor = function (a) {
-	return {ctor: 'Monitor', _0: a};
-};
-var _elm_lang$navigation$Navigation$program = F2(
-	function (locationToMessage, stuff) {
-		var init = stuff.init(
-			_elm_lang$navigation$Native_Navigation.getLocation(
-				{ctor: '_Tuple0'}));
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$program(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$programWithFlags = F2(
-	function (locationToMessage, stuff) {
-		var init = function (flags) {
-			return A2(
-				stuff.init,
-				flags,
-				_elm_lang$navigation$Native_Navigation.getLocation(
-					{ctor: '_Tuple0'}));
-		};
-		var subs = function (model) {
-			return _elm_lang$core$Platform_Sub$batch(
-				{
-					ctor: '::',
-					_0: _elm_lang$navigation$Navigation$subscription(
-						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
-					_1: {
-						ctor: '::',
-						_0: stuff.subscriptions(model),
-						_1: {ctor: '[]'}
-					}
-				});
-		};
-		return _elm_lang$html$Html$programWithFlags(
-			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
-	});
-var _elm_lang$navigation$Navigation$subMap = F2(
-	function (func, _p12) {
-		var _p13 = _p12;
-		return _elm_lang$navigation$Navigation$Monitor(
-			function (_p14) {
-				return func(
-					_p13._0(_p14));
-			});
-	});
-_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
-
 var _elm_lang$svg$Svg$map = _elm_lang$virtual_dom$VirtualDom$map;
 var _elm_lang$svg$Svg$text = _elm_lang$virtual_dom$VirtualDom$text;
 var _elm_lang$svg$Svg$svgNamespace = A2(
@@ -11293,6 +12749,1595 @@ var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$a
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
 
+var _asana$csvana$CommonViews$spinner = A2(
+	_elm_lang$svg$Svg$svg,
+	{
+		ctor: '::',
+		_0: _elm_lang$svg$Svg_Attributes$class('spinner'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32'),
+			_1: {ctor: '[]'}
+		}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$svg$Svg$linearGradient,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$id('Spinner-linearGradient'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$gradientUnits('userSpaceOnUse'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x1('1.7804'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y1('16.0379'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$x2('30.1439'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2('16.0379'),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$svg$Svg$stop,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$offset('0.4169'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$stopColor('#F9747F'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$svg$Svg$stop,
+						{
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$offset('0.764'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$stopColor('#FA7996'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$svg$Svg$stop,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$offset('0.9376'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$stopColor('#F7D59C'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$circle,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$cx('16'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$cy('16'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$r('12.7'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$style('fill: none; stroke: url(\"#Spinner-linearGradient\"); stroke-width: 2;'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		}
+	});
+var _asana$csvana$CommonViews$iconStyle = _elm_lang$html$Html_Attributes$style(
+	{
+		ctor: '::',
+		_0: {ctor: '_Tuple2', _0: 'width', _1: '16px'},
+		_1: {
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'height', _1: '16px'},
+			_1: {ctor: '[]'}
+		}
+	});
+var _asana$csvana$CommonViews$closeIcon = A2(
+	_elm_lang$svg$Svg$svg,
+	{
+		ctor: '::',
+		_0: _elm_lang$svg$Svg_Attributes$class('icon closeIcon'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32'),
+			_1: {
+				ctor: '::',
+				_0: _asana$csvana$CommonViews$iconStyle,
+				_1: {ctor: '[]'}
+			}
+		}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$svg$Svg$polygon,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$points('24.485,27.314 27.314,24.485 18.828,16 27.314,7.515 24.485,4.686 16,13.172 7.515,4.686 4.686,7.515 13.172,16 4.686,24.485 7.515,27.314 16,18.828 '),
+				_1: {ctor: '[]'}
+			},
+			{ctor: '[]'}),
+		_1: {ctor: '[]'}
+	});
+var _asana$csvana$CommonViews$gearIcon = A2(
+	_elm_lang$svg$Svg$svg,
+	{
+		ctor: '::',
+		_0: _elm_lang$svg$Svg_Attributes$class('icon gearIcon'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 512 512'),
+			_1: {
+				ctor: '::',
+				_0: _asana$csvana$CommonViews$iconStyle,
+				_1: {ctor: '[]'}
+			}
+		}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$svg$Svg$path,
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg_Attributes$d('M512,288v-64l-69.156-11.531c-4.813-20.781-13-40.188-23.969-57.781l40.781-57.063l-45.25-45.25l-57.094,40.75  c-17.594-10.938-37-19.156-57.781-24L288,0h-64l-11.531,69.125c-20.75,4.844-40.188,13.063-57.781,24l-57.094-40.75l-45.25,45.25  l40.781,57.063c-10.969,17.563-19.156,37-23.969,57.781L0,224v64l69.156,11.531c4.813,20.781,13,40.188,23.969,57.781  l-40.781,57.094l45.25,45.25l57.125-40.781c17.563,10.969,37,19.156,57.75,23.969L224,512h64l11.531-69.156  c20.75-4.813,40.188-13,57.781-23.969l57.094,40.781l45.25-45.25l-40.781-57.094c10.969-17.594,19.156-37.031,23.969-57.781L512,288  z M256,384c-70.688,0-128-57.313-128-128s57.313-128,128-128s128,57.313,128,128S326.688,384,256,384z'),
+				_1: {ctor: '[]'}
+			},
+			{ctor: '[]'}),
+		_1: {ctor: '[]'}
+	});
+var _asana$csvana$CommonViews$closeButton = function (msg) {
+	return A2(
+		_elm_lang$html$Html$a,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('closeButton'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(msg),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _asana$csvana$CommonViews$closeIcon,
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$CommonViews$configButton = function (msg) {
+	return A2(
+		_elm_lang$html$Html$a,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('openButton'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(msg),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _asana$csvana$CommonViews$gearIcon,
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$CommonViews$popup = F3(
+	function (title, closeMsg, inner) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Popup'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('Popup-positioner'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('Popup-background'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Popup-positioner'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('Popup-container'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$div,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('Popup-dialog'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _asana$csvana$CommonViews$closeButton(closeMsg),
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$html$Html$div,
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('Popup-title'),
+														_1: {ctor: '[]'}
+													},
+													{
+														ctor: '::',
+														_0: _elm_lang$html$Html$text(title),
+														_1: {ctor: '[]'}
+													}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$html$Html$div,
+														{
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$class('Popup-contents'),
+															_1: {ctor: '[]'}
+														},
+														{
+															ctor: '::',
+															_0: inner,
+															_1: {ctor: '[]'}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _asana$csvana$CommonViews$debugView = F2(
+	function (childView, instance) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: childView(instance),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('Debug'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								_elm_lang$core$Basics$toString(
+									_asana$csvana$Base$get(instance))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _asana$csvana$CommonViews$withDebug = function (program) {
+	return _elm_lang$core$Native_Utils.update(
+		program,
+		{
+			view: _asana$csvana$CommonViews$debugView(program.view)
+		});
+};
+var _asana$csvana$CommonViews$errorView = function (error) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('ApiError'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(error)),
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$CommonViews$loadingIndicator = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('LoadingIndicator'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: _asana$csvana$CommonViews$spinner,
+		_1: {ctor: '[]'}
+	});
+var _asana$csvana$CommonViews$unloadedView = A2(
+	_elm_lang$html$Html$div,
+	{ctor: '[]'},
+	{ctor: '[]'});
+
+var _asana$csvana$Components_ApiParallelResource$get = function (resource) {
+	var _p0 = resource;
+	if (_p0.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(
+			_asana$csvana$Base$get(_p0._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _asana$csvana$Components_ApiParallelResource$getLoaded = function (fetches) {
+	getLoaded:
+	while (true) {
+		var _p1 = _elm_lang$core$List$head(fetches);
+		if (_p1.ctor === 'Just') {
+			if (_p1._0.ctor === 'Done') {
+				return {
+					ctor: '::',
+					_0: _p1._0._0,
+					_1: _asana$csvana$Components_ApiParallelResource$getLoaded(
+						A2(_elm_lang$core$List$drop, 1, fetches))
+				};
+			} else {
+				var _v2 = A2(_elm_lang$core$List$drop, 1, fetches);
+				fetches = _v2;
+				continue getLoaded;
+			}
+		} else {
+			return {ctor: '[]'};
+		}
+	}
+};
+var _asana$csvana$Components_ApiParallelResource$isLoaded = function (fetch) {
+	var _p2 = fetch;
+	if (_p2.ctor === 'InProgress') {
+		return false;
+	} else {
+		return true;
+	}
+};
+var _asana$csvana$Components_ApiParallelResource$max_retries = 3;
+var _asana$csvana$Components_ApiParallelResource$Props = F4(
+	function (a, b, c, d) {
+		return {child: a, fetches: b, loadingView: c, errorView: d};
+	});
+var _asana$csvana$Components_ApiParallelResource$ChildMsg = function (a) {
+	return {ctor: 'ChildMsg', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$subscriptions = F2(
+	function (_p3, model) {
+		var _p4 = model;
+		if (_p4.ctor === 'Loaded') {
+			return A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_ApiParallelResource$ChildMsg, _p4._0);
+		} else {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	});
+var _asana$csvana$Components_ApiParallelResource$view = F2(
+	function (props, resource) {
+		var _p5 = resource;
+		switch (_p5.ctor) {
+			case 'Loading':
+				return props.loadingView;
+			case 'Error':
+				return props.errorView(_p5._0);
+			default:
+				return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_ApiParallelResource$ChildMsg, _p5._0);
+		}
+	});
+var _asana$csvana$Components_ApiParallelResource$ApiMsg = F2(
+	function (a, b) {
+		return {ctor: 'ApiMsg', _0: a, _1: b};
+	});
+var _asana$csvana$Components_ApiParallelResource$Done = function (a) {
+	return {ctor: 'Done', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$InProgress = function (a) {
+	return {ctor: 'InProgress', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$Loading = function (a) {
+	return {ctor: 'Loading', _0: a};
+};
+var _asana$csvana$Components_ApiParallelResource$init = function (_p6) {
+	var _p7 = _p6;
+	var _p9 = _p7.fetches;
+	if (_elm_lang$core$List$isEmpty(_p9)) {
+		return A2(
+			_asana$csvana$Util$mapComponent,
+			_asana$csvana$Components_ApiParallelResource$Loaded,
+			A2(
+				_asana$csvana$Util$mapCmd,
+				_asana$csvana$Components_ApiParallelResource$ChildMsg,
+				_p7.child(
+					{ctor: '[]'})));
+	} else {
+		var cmd = _elm_lang$core$Platform_Cmd$batch(
+			A2(
+				_elm_lang$core$List$indexedMap,
+				function (_p8) {
+					return _elm_lang$core$Platform_Cmd$map(
+						_asana$csvana$Components_ApiParallelResource$ApiMsg(_p8));
+				},
+				_p9));
+		var model = _asana$csvana$Components_ApiParallelResource$Loading(
+			A2(
+				_elm_lang$core$Array$repeat,
+				_elm_lang$core$List$length(_p9),
+				_asana$csvana$Components_ApiParallelResource$InProgress(1)));
+		return {ctor: '_Tuple2', _0: model, _1: cmd};
+	}
+};
+var _asana$csvana$Components_ApiParallelResource$update = F3(
+	function (props, msg, model) {
+		var _p10 = msg;
+		if (_p10.ctor === 'ApiMsg') {
+			var _p17 = _p10._0;
+			var _p11 = {ctor: '_Tuple2', _0: model, _1: _p10._1};
+			if (_p11._0.ctor === 'Loading') {
+				if (_p11._1.ctor === 'Ok') {
+					var loadingData = A3(
+						_elm_lang$core$Array$set,
+						_p17,
+						_asana$csvana$Components_ApiParallelResource$Done(_p11._1._0),
+						_p11._0._0);
+					if (A2(
+						_elm_lang$core$List$all,
+						_asana$csvana$Components_ApiParallelResource$isLoaded,
+						_elm_lang$core$Array$toList(loadingData))) {
+						var loadedData = _asana$csvana$Components_ApiParallelResource$getLoaded(
+							_elm_lang$core$Array$toList(loadingData));
+						var _p12 = props.child(loadedData);
+						var child = _p12._0;
+						var childCmd = _p12._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _asana$csvana$Components_ApiParallelResource$Loaded(child),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiParallelResource$ChildMsg, childCmd)
+						};
+					} else {
+						return {
+							ctor: '_Tuple2',
+							_0: _asana$csvana$Components_ApiParallelResource$Loading(loadingData),
+							_1: _elm_lang$core$Platform_Cmd$none
+						};
+					}
+				} else {
+					var _p16 = _p11._1._0;
+					var _p15 = _p11._0._0;
+					var fetch = A2(
+						_elm_lang$core$Platform_Cmd$map,
+						_asana$csvana$Components_ApiParallelResource$ApiMsg(_p17),
+						A2(
+							_elm_lang$core$Maybe$withDefault,
+							_elm_lang$core$Platform_Cmd$none,
+							_elm_lang$core$List$head(
+								A2(_elm_lang$core$List$drop, _p17, props.fetches))));
+					var _p13 = {
+						ctor: '_Tuple2',
+						_0: A2(_elm_lang$core$Array$get, _p17, _p15),
+						_1: _p16
+					};
+					_v9_3:
+					do {
+						if (((_p13.ctor === '_Tuple2') && (_p13._0.ctor === 'Just')) && (_p13._0._0.ctor === 'InProgress')) {
+							switch (_p13._1.ctor) {
+								case 'BadStatus':
+									var _p14 = _p13._0._0._0;
+									return ((_elm_lang$core$Native_Utils.cmp(_p14, _asana$csvana$Components_ApiParallelResource$max_retries) < 0) && (!_elm_lang$core$Native_Utils.eq(_p13._1._0.status.code, 404))) ? {
+										ctor: '_Tuple2',
+										_0: _asana$csvana$Components_ApiParallelResource$Loading(
+											A3(
+												_elm_lang$core$Array$set,
+												_p17,
+												_asana$csvana$Components_ApiParallelResource$InProgress(_p14 + 1),
+												_p15)),
+										_1: fetch
+									} : {
+										ctor: '_Tuple2',
+										_0: _asana$csvana$Components_ApiParallelResource$Error(
+											A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
+										_1: _elm_lang$core$Platform_Cmd$none
+									};
+								case 'Timeout':
+									return {
+										ctor: '_Tuple2',
+										_0: _asana$csvana$Components_ApiParallelResource$Loading(
+											A3(
+												_elm_lang$core$Array$set,
+												_p17,
+												_asana$csvana$Components_ApiParallelResource$InProgress(_p13._0._0._0 + 1),
+												_p15)),
+										_1: fetch
+									};
+								case 'NetworkError':
+									return {
+										ctor: '_Tuple2',
+										_0: _asana$csvana$Components_ApiParallelResource$Loading(
+											A3(
+												_elm_lang$core$Array$set,
+												_p17,
+												_asana$csvana$Components_ApiParallelResource$InProgress(_p13._0._0._0 + 1),
+												_p15)),
+										_1: fetch
+									};
+								default:
+									break _v9_3;
+							}
+						} else {
+							break _v9_3;
+						}
+					} while(false);
+					return {
+						ctor: '_Tuple2',
+						_0: _asana$csvana$Components_ApiParallelResource$Error(
+							A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				}
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		} else {
+			var _p18 = model;
+			if (_p18.ctor === 'Loaded') {
+				return A2(
+					_asana$csvana$Util$mapComponent,
+					_asana$csvana$Components_ApiParallelResource$Loaded,
+					A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_ApiParallelResource$ChildMsg, _p10._0, _p18._0));
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
+	});
+var _asana$csvana$Components_ApiParallelResource$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_ApiParallelResource$init(props),
+			update: _asana$csvana$Components_ApiParallelResource$update(props),
+			subscriptions: _asana$csvana$Components_ApiParallelResource$subscriptions(props),
+			view: _asana$csvana$Components_ApiParallelResource$view(props),
+			get: _asana$csvana$Components_ApiParallelResource$get
+		});
+};
+
+var _asana$csvana$Components_ApiResource$get = function (model) {
+	var _p0 = model;
+	if (_p0.ctor === 'Loaded') {
+		return _elm_lang$core$Maybe$Just(
+			_asana$csvana$Base$get(_p0._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _asana$csvana$Components_ApiResource$max_retries = 3;
+var _asana$csvana$Components_ApiResource$isLoaded = function (model) {
+	var _p1 = model;
+	if (_p1.ctor === 'Loaded') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _asana$csvana$Components_ApiResource$Props = F4(
+	function (a, b, c, d) {
+		return {child: a, fetch: b, loadingView: c, errorView: d};
+	});
+var _asana$csvana$Components_ApiResource$ChildMsg = function (a) {
+	return {ctor: 'ChildMsg', _0: a};
+};
+var _asana$csvana$Components_ApiResource$subscriptions = F2(
+	function (_p2, model) {
+		var _p3 = model;
+		if (_p3.ctor === 'Loaded') {
+			return A2(
+				_elm_lang$core$Platform_Sub$map,
+				_asana$csvana$Components_ApiResource$ChildMsg,
+				_asana$csvana$Base$subscriptions(_p3._0));
+		} else {
+			return _elm_lang$core$Platform_Sub$none;
+		}
+	});
+var _asana$csvana$Components_ApiResource$view = F2(
+	function (props, resource) {
+		var _p4 = resource;
+		switch (_p4.ctor) {
+			case 'Loading':
+				return props.loadingView;
+			case 'Error':
+				return props.errorView(_p4._0);
+			default:
+				return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_ApiResource$ChildMsg, _p4._0);
+		}
+	});
+var _asana$csvana$Components_ApiResource$ApiMsg = function (a) {
+	return {ctor: 'ApiMsg', _0: a};
+};
+var _asana$csvana$Components_ApiResource$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _asana$csvana$Components_ApiResource$Error = function (a) {
+	return {ctor: 'Error', _0: a};
+};
+var _asana$csvana$Components_ApiResource$Loading = function (a) {
+	return {ctor: 'Loading', _0: a};
+};
+var _asana$csvana$Components_ApiResource$init = function (_p5) {
+	var _p6 = _p5;
+	return {
+		ctor: '_Tuple2',
+		_0: _asana$csvana$Components_ApiResource$Loading(1),
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ApiMsg, _p6.fetch)
+	};
+};
+var _asana$csvana$Components_ApiResource$update = F3(
+	function (props, msg, model) {
+		var _p7 = {ctor: '_Tuple2', _0: msg, _1: model};
+		_v5_2:
+		do {
+			if (_p7.ctor === '_Tuple2') {
+				if (_p7._0.ctor === 'ApiMsg') {
+					if (_p7._1.ctor === 'Loading') {
+						var _p12 = _p7._1._0;
+						var _p8 = _p7._0._0;
+						if (_p8.ctor === 'Ok') {
+							var _p9 = props.child(_p8._0);
+							var child = _p9._0;
+							var childCmd = _p9._1;
+							return {
+								ctor: '_Tuple2',
+								_0: _asana$csvana$Components_ApiResource$Loaded(child),
+								_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ChildMsg, childCmd)
+							};
+						} else {
+							var _p11 = _p8._0;
+							if (_elm_lang$core$Native_Utils.cmp(_p12, _asana$csvana$Components_ApiResource$max_retries) > -1) {
+								return {
+									ctor: '_Tuple2',
+									_0: _asana$csvana$Components_ApiResource$Error(
+										A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
+									_1: _elm_lang$core$Platform_Cmd$none
+								};
+							} else {
+								var _p10 = _p11;
+								switch (_p10.ctor) {
+									case 'BadStatus':
+										return _elm_lang$core$Native_Utils.eq(_p10._0.status.code, 404) ? {
+											ctor: '_Tuple2',
+											_0: _asana$csvana$Components_ApiResource$Error(
+												A2(_elm_lang$core$Debug$log, 'Could not find the expected resource', _p11)),
+											_1: _elm_lang$core$Platform_Cmd$none
+										} : {
+											ctor: '_Tuple2',
+											_0: _asana$csvana$Components_ApiResource$Loading(_p12 + 1),
+											_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ApiMsg, props.fetch)
+										};
+									case 'Timeout':
+										return {
+											ctor: '_Tuple2',
+											_0: _asana$csvana$Components_ApiResource$Loading(_p12 + 1),
+											_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ApiMsg, props.fetch)
+										};
+									case 'NetworkError':
+										return {
+											ctor: '_Tuple2',
+											_0: _asana$csvana$Components_ApiResource$Loading(_p12 + 1),
+											_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ApiMsg, props.fetch)
+										};
+									default:
+										return {
+											ctor: '_Tuple2',
+											_0: _asana$csvana$Components_ApiResource$Error(
+												A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
+											_1: _elm_lang$core$Platform_Cmd$none
+										};
+								}
+							}
+						}
+					} else {
+						break _v5_2;
+					}
+				} else {
+					if (_p7._1.ctor === 'Loaded') {
+						var _p13 = A2(_asana$csvana$Base$update, _p7._0._0, _p7._1._0);
+						var child_ = _p13._0;
+						var childCmd = _p13._1;
+						return {
+							ctor: '_Tuple2',
+							_0: _asana$csvana$Components_ApiResource$Loaded(child_),
+							_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_ApiResource$ChildMsg, childCmd)
+						};
+					} else {
+						break _v5_2;
+					}
+				}
+			} else {
+				break _v5_2;
+			}
+		} while(false);
+		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+	});
+var _asana$csvana$Components_ApiResource$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_ApiResource$init(props),
+			update: _asana$csvana$Components_ApiResource$update(props),
+			subscriptions: _asana$csvana$Components_ApiResource$subscriptions(props),
+			view: _asana$csvana$Components_ApiResource$view(props),
+			get: _asana$csvana$Components_ApiResource$get
+		});
+};
+
+var _asana$csvana$Components_Configs_CompletedConfig$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		return {ctor: '_Tuple2', _0: _p0._0, _1: _elm_lang$core$Platform_Cmd$none};
+	});
+var _asana$csvana$Components_Configs_CompletedConfig$init = function (_p1) {
+	var _p2 = _p1;
+	return {ctor: '_Tuple2', _0: _p2.value, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _asana$csvana$Components_Configs_CompletedConfig$Props = function (a) {
+	return {value: a};
+};
+var _asana$csvana$Components_Configs_CompletedConfig$NewValue = function (a) {
+	return {ctor: 'NewValue', _0: a};
+};
+var _asana$csvana$Components_Configs_CompletedConfig$onChange = A2(
+	_elm_lang$core$Json_Decode$map,
+	function (_p3) {
+		return _asana$csvana$Components_Configs_CompletedConfig$NewValue(
+			A2(
+				F2(
+					function (x, y) {
+						return _elm_lang$core$Native_Utils.eq(x, y);
+					}),
+				'true',
+				_p3));
+	},
+	A2(
+		_elm_lang$core$Json_Decode$at,
+		{
+			ctor: '::',
+			_0: 'target',
+			_1: {
+				ctor: '::',
+				_0: 'value',
+				_1: {ctor: '[]'}
+			}
+		},
+		_elm_lang$core$Json_Decode$string));
+var _asana$csvana$Components_Configs_CompletedConfig$view = function (val) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('CompletedConfig'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$select,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('CompletedConfig-select'),
+					_1: {
+						ctor: '::',
+						_0: A2(_elm_lang$html$Html_Events$on, 'change', _asana$csvana$Components_Configs_CompletedConfig$onChange),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$option,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value('true'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$selected(val),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Complete'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$option,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value('false'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$selected(!val),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('Incomplete'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$Components_Configs_CompletedConfig$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_Configs_CompletedConfig$init(props),
+			update: _asana$csvana$Components_Configs_CompletedConfig$update,
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			view: _asana$csvana$Components_Configs_CompletedConfig$view,
+			get: _elm_lang$core$Basics$identity
+		});
+};
+
+var _asana$csvana$Components_Configs_EnumConfig$enumOption = F2(
+	function (selectedValue, enumValue) {
+		return A2(
+			_elm_lang$html$Html$option,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$value(enumValue.id),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$selected(
+						_elm_lang$core$Native_Utils.eq(
+							_elm_lang$core$Maybe$Just(enumValue),
+							selectedValue)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(enumValue.name),
+				_1: {ctor: '[]'}
+			});
+	});
+var _asana$csvana$Components_Configs_EnumConfig$emptyOption = function (selectedValue) {
+	return A2(
+		_elm_lang$html$Html$option,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$value(''),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$selected(
+					_elm_lang$core$Native_Utils.eq(selectedValue, _elm_lang$core$Maybe$Nothing)),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(''),
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$Components_Configs_EnumConfig$update = F3(
+	function (_p0, msg, model) {
+		var _p1 = _p0;
+		var _p2 = msg;
+		return {
+			ctor: '_Tuple2',
+			_0: A2(
+				_elm_lang$core$Maybe$andThen,
+				function (id) {
+					return A2(
+						_asana$csvana$Util$find,
+						function (_p3) {
+							return A2(
+								F2(
+									function (x, y) {
+										return _elm_lang$core$Native_Utils.eq(x, y);
+									}),
+								id,
+								function (_) {
+									return _.id;
+								}(_p3));
+						},
+						_p1.enumOptions);
+				},
+				_p2._0),
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	});
+var _asana$csvana$Components_Configs_EnumConfig$init = function (_p4) {
+	var _p5 = _p4;
+	return {ctor: '_Tuple2', _0: _p5.selectedId, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _asana$csvana$Components_Configs_EnumConfig$Props = F2(
+	function (a, b) {
+		return {selectedId: a, enumOptions: b};
+	});
+var _asana$csvana$Components_Configs_EnumConfig$NewValue = function (a) {
+	return {ctor: 'NewValue', _0: a};
+};
+var _asana$csvana$Components_Configs_EnumConfig$onChange = A2(
+	_elm_lang$core$Json_Decode$map,
+	_asana$csvana$Components_Configs_EnumConfig$NewValue,
+	A2(
+		_elm_lang$core$Json_Decode$map,
+		function (id) {
+			return _elm_lang$core$Native_Utils.eq(id, '') ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(id);
+		},
+		A2(
+			_elm_lang$core$Json_Decode$at,
+			{
+				ctor: '::',
+				_0: 'target',
+				_1: {
+					ctor: '::',
+					_0: 'value',
+					_1: {ctor: '[]'}
+				}
+			},
+			_elm_lang$core$Json_Decode$string)));
+var _asana$csvana$Components_Configs_EnumConfig$view = F2(
+	function (props, val) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('EnumConfig'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$select,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('EnumConfig-select'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Events$on, 'change', _asana$csvana$Components_Configs_EnumConfig$onChange),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _asana$csvana$Components_Configs_EnumConfig$emptyOption(val),
+						_1: A2(
+							_elm_lang$core$List$map,
+							_asana$csvana$Components_Configs_EnumConfig$enumOption(val),
+							props.enumOptions)
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _asana$csvana$Components_Configs_EnumConfig$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_Configs_EnumConfig$init(props),
+			update: _asana$csvana$Components_Configs_EnumConfig$update(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			view: _asana$csvana$Components_Configs_EnumConfig$view(props),
+			get: _elm_lang$core$Basics$identity
+		});
+};
+
+var _asana$csvana$Components_Configs_UserInfo$view = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('UserInfo'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: function () {
+				var _p2 = A2(
+					_elm_lang$core$Maybe$andThen,
+					function (_) {
+						return _.image_21x21;
+					},
+					_p1.photo);
+				if (_p2.ctor === 'Just') {
+					return A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('UserInfo-photo avatar'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$src(_p2._0),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'});
+				} else {
+					return _elm_lang$html$Html$text('');
+				}
+			}(),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('UserInfo-name'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p1.name),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _asana$csvana$Components_Configs_UserInfo$create = function (_p3) {
+	var _p4 = _p3;
+	return _asana$csvana$Base$staticComponent(
+		_asana$csvana$Components_Configs_UserInfo$view(_p4.user));
+};
+var _asana$csvana$Components_Configs_UserInfo$Props = function (a) {
+	return {user: a};
+};
+
+var _asana$csvana$Components_Typeahead$renderNoResultsOption = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--noResults'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html$text('No Results'),
+		_1: {ctor: '[]'}
+	});
+var _asana$csvana$Components_Typeahead$renderLoadingOption = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--loading'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: _asana$csvana$CommonViews$loadingIndicator,
+		_1: {ctor: '[]'}
+	});
+var _asana$csvana$Components_Typeahead$isActive = function (model) {
+	var _p0 = model.options;
+	if (_p0.ctor === 'Unloaded') {
+		return false;
+	} else {
+		return model.inputFocused || model.optionsHovered;
+	}
+};
+var _asana$csvana$Components_Typeahead$get = function (_) {
+	return _.selected;
+};
+var _asana$csvana$Components_Typeahead$Props = function (a) {
+	return {fetcher: a};
+};
+var _asana$csvana$Components_Typeahead$Model = F5(
+	function (a, b, c, d, e) {
+		return {options: a, fragment: b, selected: c, inputFocused: d, optionsHovered: e};
+	});
+var _asana$csvana$Components_Typeahead$OptionsHovered = function (a) {
+	return {ctor: 'OptionsHovered', _0: a};
+};
+var _asana$csvana$Components_Typeahead$InputFocus = function (a) {
+	return {ctor: 'InputFocus', _0: a};
+};
+var _asana$csvana$Components_Typeahead$Selection = function (a) {
+	return {ctor: 'Selection', _0: a};
+};
+var _asana$csvana$Components_Typeahead$renderUnselected = function (resource) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('Typeahead-option'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_asana$csvana$Components_Typeahead$Selection(resource)),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(resource.name),
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$Components_Typeahead$renderSelected = function (resource) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--selected'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(
+					_asana$csvana$Components_Typeahead$Selection(resource)),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(resource.name),
+			_1: {ctor: '[]'}
+		});
+};
+var _asana$csvana$Components_Typeahead$renderOption = F2(
+	function (selected, resource) {
+		var _p1 = selected;
+		if (_p1.ctor === 'Just') {
+			return _elm_lang$core$Native_Utils.eq(_p1._0, resource) ? _asana$csvana$Components_Typeahead$renderSelected(resource) : _asana$csvana$Components_Typeahead$renderUnselected(resource);
+		} else {
+			return _asana$csvana$Components_Typeahead$renderUnselected(resource);
+		}
+	});
+var _asana$csvana$Components_Typeahead$renderOptions = function (_p2) {
+	var _p3 = _p2;
+	var _p4 = _p3.options;
+	switch (_p4.ctor) {
+		case 'Loaded':
+			var _p5 = _p4._0;
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onMouseOver(
+							_asana$csvana$Components_Typeahead$OptionsHovered(true)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onMouseOut(
+								_asana$csvana$Components_Typeahead$OptionsHovered(false)),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				(_elm_lang$core$Native_Utils.cmp(
+					_elm_lang$core$List$length(_p5),
+					0) > 0) ? A2(
+					_elm_lang$core$List$map,
+					_asana$csvana$Components_Typeahead$renderOption(_p3.selected),
+					_p5) : {
+					ctor: '::',
+					_0: _asana$csvana$Components_Typeahead$renderNoResultsOption,
+					_1: {ctor: '[]'}
+				});
+		case 'Loading':
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _asana$csvana$Components_Typeahead$renderLoadingOption,
+					_1: {ctor: '[]'}
+				});
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options--empty'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'});
+	}
+};
+var _asana$csvana$Components_Typeahead$Input = function (a) {
+	return {ctor: 'Input', _0: a};
+};
+var _asana$csvana$Components_Typeahead$view = F2(
+	function (_p6, model) {
+		var inputElem = A2(
+			_elm_lang$html$Html$input,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Typeahead-input'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$type_('text'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_asana$csvana$Components_Typeahead$Input),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onFocus(
+								_asana$csvana$Components_Typeahead$InputFocus(true)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onBlur(
+									_asana$csvana$Components_Typeahead$InputFocus(false)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(model.fragment),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			},
+			{ctor: '[]'});
+		var elems = _asana$csvana$Components_Typeahead$isActive(model) ? {
+			ctor: '::',
+			_0: inputElem,
+			_1: {
+				ctor: '::',
+				_0: _asana$csvana$Components_Typeahead$renderOptions(model),
+				_1: {ctor: '[]'}
+			}
+		} : {
+			ctor: '::',
+			_0: inputElem,
+			_1: {ctor: '[]'}
+		};
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('Typeahead'),
+				_1: {ctor: '[]'}
+			},
+			elems);
+	});
+var _asana$csvana$Components_Typeahead$NewOptions = F2(
+	function (a, b) {
+		return {ctor: 'NewOptions', _0: a, _1: b};
+	});
+var _asana$csvana$Components_Typeahead$Loaded = function (a) {
+	return {ctor: 'Loaded', _0: a};
+};
+var _asana$csvana$Components_Typeahead$Loading = {ctor: 'Loading'};
+var _asana$csvana$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
+var _asana$csvana$Components_Typeahead$init = function (_p7) {
+	var model = {options: _asana$csvana$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
+	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _asana$csvana$Components_Typeahead$update = F3(
+	function (_p8, msg, model) {
+		var _p9 = _p8;
+		var _p10 = msg;
+		switch (_p10.ctor) {
+			case 'NewOptions':
+				if (_p10._1.ctor === 'Ok') {
+					return (_elm_lang$core$Native_Utils.eq(_p10._0, model.fragment) && _asana$csvana$Components_Typeahead$isActive(model)) ? {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								options: _asana$csvana$Components_Typeahead$Loaded(_p10._1._0)
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
+			case 'Input':
+				var _p11 = _p10._0;
+				return _elm_lang$core$Native_Utils.eq(_p11, '') ? {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{options: _asana$csvana$Components_Typeahead$Unloaded, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				} : {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{options: _asana$csvana$Components_Typeahead$Loading, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing}),
+					_1: A2(
+						_elm_lang$core$Platform_Cmd$map,
+						_asana$csvana$Components_Typeahead$NewOptions(_p11),
+						_p9.fetcher(_p11))
+				};
+			case 'Selection':
+				var _p12 = _p10._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							selected: _elm_lang$core$Maybe$Just(_p12),
+							fragment: _p12.name,
+							options: _asana$csvana$Components_Typeahead$Unloaded
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'InputFocus':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{inputFocused: _p10._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{optionsHovered: _p10._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _asana$csvana$Components_Typeahead$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_Typeahead$init(props),
+			update: _asana$csvana$Components_Typeahead$update(props),
+			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
+			view: _asana$csvana$Components_Typeahead$view(props),
+			get: _asana$csvana$Components_Typeahead$get
+		});
+};
+
+var _asana$csvana$Components_Configs_UserConfig$get = function (model) {
+	var _p0 = model;
+	if (_p0.ctor === 'Unselected') {
+		return _elm_lang$core$Maybe$Nothing;
+	} else {
+		return _elm_lang$core$Maybe$Just(_p0._0);
+	}
+};
+var _asana$csvana$Components_Configs_UserConfig$Props = F2(
+	function (a, b) {
+		return {selectedUser: a, apiContext: b};
+	});
+var _asana$csvana$Components_Configs_UserConfig$TypeaheadMsg = function (a) {
+	return {ctor: 'TypeaheadMsg', _0: a};
+};
+var _asana$csvana$Components_Configs_UserConfig$subscriptions = function (model) {
+	var _p1 = model;
+	if (_p1.ctor === 'Unselected') {
+		return A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_Configs_UserConfig$TypeaheadMsg, _p1._0);
+	} else {
+		return _asana$csvana$Base$subscriptions(_p1._1);
+	}
+};
+var _asana$csvana$Components_Configs_UserConfig$Selection = function (a) {
+	return {ctor: 'Selection', _0: a};
+};
+var _asana$csvana$Components_Configs_UserConfig$view = F2(
+	function (props, model) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('UserConfig'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: function () {
+					var _p2 = model;
+					if (_p2.ctor === 'Unselected') {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('UserConfig--unselected'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Configs_UserConfig$TypeaheadMsg, _p2._0),
+								_1: {ctor: '[]'}
+							});
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('UserConfig--selected'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _asana$csvana$Base$view(_p2._1),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$a,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(
+												_asana$csvana$Components_Configs_UserConfig$Selection(_elm_lang$core$Maybe$Nothing)),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('UserConfig-clearButton'),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _asana$csvana$CommonViews$closeIcon,
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							});
+					}
+				}(),
+				_1: {ctor: '[]'}
+			});
+	});
+var _asana$csvana$Components_Configs_UserConfig$Selected = F2(
+	function (a, b) {
+		return {ctor: 'Selected', _0: a, _1: b};
+	});
+var _asana$csvana$Components_Configs_UserConfig$Unselected = function (a) {
+	return {ctor: 'Unselected', _0: a};
+};
+var _asana$csvana$Components_Configs_UserConfig$makeModel = function (_p3) {
+	var _p4 = _p3;
+	var _p7 = _p4.apiContext;
+	var _p5 = _p4.selectedUser;
+	if (_p5.ctor === 'Just') {
+		var _p6 = _p5._0;
+		return A2(
+			_asana$csvana$Util$mapComponent,
+			_asana$csvana$Components_Configs_UserConfig$Selected(_p6),
+			_asana$csvana$Components_Configs_UserInfo$create(
+				{user: _p6}));
+	} else {
+		return A2(
+			_asana$csvana$Util$mapCmd,
+			_asana$csvana$Components_Configs_UserConfig$TypeaheadMsg,
+			A2(
+				_asana$csvana$Util$mapComponent,
+				_asana$csvana$Components_Configs_UserConfig$Unselected,
+				_asana$csvana$Components_Typeahead$create(
+					{
+						fetcher: A2(
+							_elm_lang$core$Basics$flip,
+							_asana$csvana$Asana_Api$userTypeahead(_p7.workspaceId),
+							_p7.token)
+					})));
+	}
+};
+var _asana$csvana$Components_Configs_UserConfig$init = function (props) {
+	return _asana$csvana$Components_Configs_UserConfig$makeModel(props);
+};
+var _asana$csvana$Components_Configs_UserConfig$update = F3(
+	function (props, msg, model) {
+		var _p8 = msg;
+		if (_p8.ctor === 'Selection') {
+			return _asana$csvana$Components_Configs_UserConfig$makeModel(
+				_elm_lang$core$Native_Utils.update(
+					props,
+					{selectedUser: _p8._0}));
+		} else {
+			var _p9 = model;
+			if (_p9.ctor === 'Unselected') {
+				var _p10 = A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Configs_UserConfig$TypeaheadMsg, _p8._0, _p9._0);
+				var ta_ = _p10._0;
+				var taCmd = _p10._1;
+				var _p11 = _asana$csvana$Base$get(ta_);
+				if (_p11.ctor === 'Just') {
+					return _asana$csvana$Components_Configs_UserConfig$makeModel(
+						_elm_lang$core$Native_Utils.update(
+							props,
+							{
+								selectedUser: _elm_lang$core$Maybe$Just(_p11._0)
+							}));
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _asana$csvana$Components_Configs_UserConfig$Unselected(ta_),
+						_1: taCmd
+					};
+				}
+			} else {
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			}
+		}
+	});
+var _asana$csvana$Components_Configs_UserConfig$create = function (props) {
+	return _asana$csvana$Base$create(
+		{
+			init: _asana$csvana$Components_Configs_UserConfig$init(props),
+			update: _asana$csvana$Components_Configs_UserConfig$update(props),
+			subscriptions: _asana$csvana$Components_Configs_UserConfig$subscriptions,
+			view: _asana$csvana$Components_Configs_UserConfig$view(props),
+			get: _asana$csvana$Components_Configs_UserConfig$get
+		});
+};
+
 var _periodic$elm_csv$Csv$textData = _Bogdanp$elm_combine$Combine_Char$noneOf(
 	{
 		ctor: '::',
@@ -11433,3695 +14478,23 @@ var _periodic$elm_csv$Csv$parse = function (_p2) {
 				_periodic$elm_csv$Csv$addTrailingLineSep(_p2))));
 };
 
-var _rluiten$elm_date_extra$Date_Extra_Core$prevMonth = function (month) {
-	var _p0 = month;
-	switch (_p0.ctor) {
-		case 'Jan':
-			return _elm_lang$core$Date$Dec;
-		case 'Feb':
-			return _elm_lang$core$Date$Jan;
-		case 'Mar':
-			return _elm_lang$core$Date$Feb;
-		case 'Apr':
-			return _elm_lang$core$Date$Mar;
-		case 'May':
-			return _elm_lang$core$Date$Apr;
-		case 'Jun':
-			return _elm_lang$core$Date$May;
-		case 'Jul':
-			return _elm_lang$core$Date$Jun;
-		case 'Aug':
-			return _elm_lang$core$Date$Jul;
-		case 'Sep':
-			return _elm_lang$core$Date$Aug;
-		case 'Oct':
-			return _elm_lang$core$Date$Sep;
-		case 'Nov':
-			return _elm_lang$core$Date$Oct;
-		default:
-			return _elm_lang$core$Date$Nov;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$nextMonth = function (month) {
-	var _p1 = month;
-	switch (_p1.ctor) {
-		case 'Jan':
-			return _elm_lang$core$Date$Feb;
-		case 'Feb':
-			return _elm_lang$core$Date$Mar;
-		case 'Mar':
-			return _elm_lang$core$Date$Apr;
-		case 'Apr':
-			return _elm_lang$core$Date$May;
-		case 'May':
-			return _elm_lang$core$Date$Jun;
-		case 'Jun':
-			return _elm_lang$core$Date$Jul;
-		case 'Jul':
-			return _elm_lang$core$Date$Aug;
-		case 'Aug':
-			return _elm_lang$core$Date$Sep;
-		case 'Sep':
-			return _elm_lang$core$Date$Oct;
-		case 'Oct':
-			return _elm_lang$core$Date$Nov;
-		case 'Nov':
-			return _elm_lang$core$Date$Dec;
-		default:
-			return _elm_lang$core$Date$Jan;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$intToMonth = function (month) {
-	return (_elm_lang$core$Native_Utils.cmp(month, 1) < 1) ? _elm_lang$core$Date$Jan : (_elm_lang$core$Native_Utils.eq(month, 2) ? _elm_lang$core$Date$Feb : (_elm_lang$core$Native_Utils.eq(month, 3) ? _elm_lang$core$Date$Mar : (_elm_lang$core$Native_Utils.eq(month, 4) ? _elm_lang$core$Date$Apr : (_elm_lang$core$Native_Utils.eq(month, 5) ? _elm_lang$core$Date$May : (_elm_lang$core$Native_Utils.eq(month, 6) ? _elm_lang$core$Date$Jun : (_elm_lang$core$Native_Utils.eq(month, 7) ? _elm_lang$core$Date$Jul : (_elm_lang$core$Native_Utils.eq(month, 8) ? _elm_lang$core$Date$Aug : (_elm_lang$core$Native_Utils.eq(month, 9) ? _elm_lang$core$Date$Sep : (_elm_lang$core$Native_Utils.eq(month, 10) ? _elm_lang$core$Date$Oct : (_elm_lang$core$Native_Utils.eq(month, 11) ? _elm_lang$core$Date$Nov : _elm_lang$core$Date$Dec))))))))));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$monthToInt = function (month) {
-	var _p2 = month;
-	switch (_p2.ctor) {
-		case 'Jan':
-			return 1;
-		case 'Feb':
-			return 2;
-		case 'Mar':
-			return 3;
-		case 'Apr':
-			return 4;
-		case 'May':
-			return 5;
-		case 'Jun':
-			return 6;
-		case 'Jul':
-			return 7;
-		case 'Aug':
-			return 8;
-		case 'Sep':
-			return 9;
-		case 'Oct':
-			return 10;
-		case 'Nov':
-			return 11;
-		default:
-			return 12;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear = function (year) {
-	return (_elm_lang$core$Native_Utils.eq(
-		A2(_elm_lang$core$Basics_ops['%'], year, 4),
-		0) && (!_elm_lang$core$Native_Utils.eq(
-		A2(_elm_lang$core$Basics_ops['%'], year, 100),
-		0))) || _elm_lang$core$Native_Utils.eq(
-		A2(_elm_lang$core$Basics_ops['%'], year, 400),
-		0);
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$isLeapYearDate = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(
-		_elm_lang$core$Date$year(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$yearToDayLength = function (year) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 366 : 365;
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonth = F2(
-	function (year, month) {
-		var _p3 = month;
-		switch (_p3.ctor) {
-			case 'Jan':
-				return 31;
-			case 'Feb':
-				return _rluiten$elm_date_extra$Date_Extra_Core$isLeapYear(year) ? 29 : 28;
-			case 'Mar':
-				return 31;
-			case 'Apr':
-				return 30;
-			case 'May':
-				return 31;
-			case 'Jun':
-				return 30;
-			case 'Jul':
-				return 31;
-			case 'Aug':
-				return 31;
-			case 'Sep':
-				return 30;
-			case 'Oct':
-				return 31;
-			case 'Nov':
-				return 30;
-			default:
-				return 31;
-		}
-	});
-var _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate = function (date) {
-	return A2(
-		_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth,
-		_elm_lang$core$Date$year(date),
-		_elm_lang$core$Date$month(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$monthList = {
-	ctor: '::',
-	_0: _elm_lang$core$Date$Jan,
-	_1: {
-		ctor: '::',
-		_0: _elm_lang$core$Date$Feb,
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$core$Date$Mar,
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$core$Date$Apr,
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$core$Date$May,
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$core$Date$Jun,
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$core$Date$Jul,
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$core$Date$Aug,
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Date$Sep,
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$core$Date$Oct,
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$core$Date$Nov,
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$core$Date$Dec,
-												_1: {ctor: '[]'}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$toTime = function (_p4) {
-	return _elm_lang$core$Basics$floor(
-		_elm_lang$core$Date$toTime(_p4));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$fromTime = function (_p5) {
-	return _elm_lang$core$Date$fromTime(
-		_elm_lang$core$Basics$toFloat(_p5));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$prevDay = function (day) {
-	var _p6 = day;
-	switch (_p6.ctor) {
-		case 'Mon':
-			return _elm_lang$core$Date$Sun;
-		case 'Tue':
-			return _elm_lang$core$Date$Mon;
-		case 'Wed':
-			return _elm_lang$core$Date$Tue;
-		case 'Thu':
-			return _elm_lang$core$Date$Wed;
-		case 'Fri':
-			return _elm_lang$core$Date$Thu;
-		case 'Sat':
-			return _elm_lang$core$Date$Fri;
-		default:
-			return _elm_lang$core$Date$Sat;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$nextDay = function (day) {
-	var _p7 = day;
-	switch (_p7.ctor) {
-		case 'Mon':
-			return _elm_lang$core$Date$Tue;
-		case 'Tue':
-			return _elm_lang$core$Date$Wed;
-		case 'Wed':
-			return _elm_lang$core$Date$Thu;
-		case 'Thu':
-			return _elm_lang$core$Date$Fri;
-		case 'Fri':
-			return _elm_lang$core$Date$Sat;
-		case 'Sat':
-			return _elm_lang$core$Date$Sun;
-		default:
-			return _elm_lang$core$Date$Mon;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek = function (day) {
-	var _p8 = day;
-	switch (_p8.ctor) {
-		case 'Mon':
-			return 1;
-		case 'Tue':
-			return 2;
-		case 'Wed':
-			return 3;
-		case 'Thu':
-			return 4;
-		case 'Fri':
-			return 5;
-		case 'Sat':
-			return 6;
-		default:
-			return 7;
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$daysBackToStartOfWeek = F2(
-	function (dateDay, startOfWeekDay) {
-		var startOfWeekDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(startOfWeekDay);
-		var dateDayIndex = _rluiten$elm_date_extra$Date_Extra_Core$isoDayOfWeek(dateDay);
-		return (_elm_lang$core$Native_Utils.cmp(dateDayIndex, startOfWeekDayIndex) < 0) ? ((7 + dateDayIndex) - startOfWeekDayIndex) : (dateDayIndex - startOfWeekDayIndex);
-	});
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond = _elm_lang$core$Basics$floor(_elm_lang$core$Time$millisecond);
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * 1000;
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute = _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * 60;
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour = _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * 60;
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksADay = _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * 24;
-var _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek = _rluiten$elm_date_extra$Date_Extra_Core$ticksADay * 7;
-var _rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks = function (date) {
-	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
-	var day = _elm_lang$core$Date$day(date);
-	return dateTicks + ((1 - day) * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date) - _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$daysInPrevMonth = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
-		_rluiten$elm_date_extra$Date_Extra_Core$lastOfPrevMonthDate(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$toFirstOfMonth = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-		_rluiten$elm_date_extra$Date_Extra_Core$firstOfMonthTicks(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks = function (date) {
-	var dateTicks = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date);
-	var day = _elm_lang$core$Date$day(date);
-	var month = _elm_lang$core$Date$month(date);
-	var year = _elm_lang$core$Date$year(date);
-	var daysInMonthVal = A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, year, month);
-	var addDays = daysInMonthVal - day;
-	return dateTicks + (addDays * _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date) + _rluiten$elm_date_extra$Date_Extra_Core$ticksADay);
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$daysInNextMonth = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$daysInMonthDate(
-		_rluiten$elm_date_extra$Date_Extra_Core$firstOfNextMonthDate(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthDate = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-		_rluiten$elm_date_extra$Date_Extra_Core$lastOfMonthTicks(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Core$epochDateStr = '1970-01-01T00:00:00Z';
-
-var _rluiten$elm_date_extra$Date_Extra_Config$Config = F2(
-	function (a, b) {
-		return {i18n: a, format: b};
-	});
-
-var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix = F2(
-	function (pad, day) {
-		var value = function () {
-			var _p0 = day;
-			switch (_p0) {
-				case 1:
-					return '1st';
-				case 21:
-					return '21st';
-				case 2:
-					return '2nd';
-				case 22:
-					return '22nd';
-				case 3:
-					return '3rd';
-				case 23:
-					return '23rd';
-				case 31:
-					return '31st';
-				default:
-					return A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(day),
-						'th');
-			}
-		}();
-		return pad ? A3(
-			_elm_lang$core$String$padLeft,
-			4,
-			_elm_lang$core$Native_Utils.chr(' '),
-			value) : value;
-	});
-var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName = function (month) {
-	var _p1 = month;
-	switch (_p1.ctor) {
-		case 'Jan':
-			return 'January';
-		case 'Feb':
-			return 'February';
-		case 'Mar':
-			return 'March';
-		case 'Apr':
-			return 'April';
-		case 'May':
-			return 'May';
-		case 'Jun':
-			return 'June';
-		case 'Jul':
-			return 'July';
-		case 'Aug':
-			return 'August';
-		case 'Sep':
-			return 'September';
-		case 'Oct':
-			return 'October';
-		case 'Nov':
-			return 'November';
-		default:
-			return 'December';
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort = function (month) {
-	var _p2 = month;
-	switch (_p2.ctor) {
-		case 'Jan':
-			return 'Jan';
-		case 'Feb':
-			return 'Feb';
-		case 'Mar':
-			return 'Mar';
-		case 'Apr':
-			return 'Apr';
-		case 'May':
-			return 'May';
-		case 'Jun':
-			return 'Jun';
-		case 'Jul':
-			return 'Jul';
-		case 'Aug':
-			return 'Aug';
-		case 'Sep':
-			return 'Sep';
-		case 'Oct':
-			return 'Oct';
-		case 'Nov':
-			return 'Nov';
-		default:
-			return 'Dec';
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName = function (day) {
-	var _p3 = day;
-	switch (_p3.ctor) {
-		case 'Mon':
-			return 'Monday';
-		case 'Tue':
-			return 'Tuesday';
-		case 'Wed':
-			return 'Wednesday';
-		case 'Thu':
-			return 'Thursday';
-		case 'Fri':
-			return 'Friday';
-		case 'Sat':
-			return 'Saturday';
-		default:
-			return 'Sunday';
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort = function (day) {
-	var _p4 = day;
-	switch (_p4.ctor) {
-		case 'Mon':
-			return 'Mon';
-		case 'Tue':
-			return 'Tue';
-		case 'Wed':
-			return 'Wed';
-		case 'Thu':
-			return 'Thu';
-		case 'Fri':
-			return 'Fri';
-		case 'Sat':
-			return 'Sat';
-		default:
-			return 'Sun';
-	}
-};
-
-var _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config = {
-	i18n: {dayShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayShort, dayName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayName, monthShort: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthShort, monthName: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$monthName, dayOfMonthWithSuffix: _rluiten$elm_date_extra$Date_Extra_I18n_I_en_us$dayOfMonthWithSuffix},
-	format: {date: '%-m/%-d/%Y', longDate: '%A, %B %d, %Y', time: '%-H:%M %p', longTime: '%-H:%M:%S %p', dateTime: '%-m/%-d/%Y %-I:%M %p', firstDayOfWeek: _elm_lang$core$Date$Sun}
-};
-
-var _rluiten$elm_date_extra$Date_Extra_Period$diff = F2(
-	function (date1, date2) {
-		var millisecondDiff = _elm_lang$core$Date$millisecond(date1) - _elm_lang$core$Date$millisecond(date2);
-		var secondDiff = _elm_lang$core$Date$second(date1) - _elm_lang$core$Date$second(date2);
-		var minuteDiff = _elm_lang$core$Date$minute(date1) - _elm_lang$core$Date$minute(date2);
-		var hourDiff = _elm_lang$core$Date$hour(date1) - _elm_lang$core$Date$hour(date2);
-		var ticksDiff = _rluiten$elm_date_extra$Date_Extra_Core$toTime(date1) - _rluiten$elm_date_extra$Date_Extra_Core$toTime(date2);
-		var ticksDayDiff = (((ticksDiff - (hourDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) - (minuteDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute)) - (secondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond)) - (millisecondDiff * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond);
-		var onlyDaysDiff = (ticksDayDiff / _rluiten$elm_date_extra$Date_Extra_Core$ticksADay) | 0;
-		var _p0 = function () {
-			if (_elm_lang$core$Native_Utils.cmp(onlyDaysDiff, 0) < 0) {
-				var absDayDiff = _elm_lang$core$Basics$abs(onlyDaysDiff);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Basics$negate((absDayDiff / 7) | 0),
-					_1: _elm_lang$core$Basics$negate(
-						A2(_elm_lang$core$Basics_ops['%'], absDayDiff, 7))
-				};
-			} else {
-				return {
-					ctor: '_Tuple2',
-					_0: (onlyDaysDiff / 7) | 0,
-					_1: A2(_elm_lang$core$Basics_ops['%'], onlyDaysDiff, 7)
-				};
-			}
-		}();
-		var weekDiff = _p0._0;
-		var dayDiff = _p0._1;
-		return {week: weekDiff, day: dayDiff, hour: hourDiff, minute: minuteDiff, second: secondDiff, millisecond: millisecondDiff};
-	});
-var _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit = F3(
-	function (unit, addend, date) {
-		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-			A2(
-				F2(
-					function (x, y) {
-						return x + y;
-					}),
-				addend * unit,
-				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
-	});
-var _rluiten$elm_date_extra$Date_Extra_Period$toTicks = function (period) {
-	var _p1 = period;
-	switch (_p1.ctor) {
-		case 'Millisecond':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond;
-		case 'Second':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksASecond;
-		case 'Minute':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute;
-		case 'Hour':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour;
-		case 'Day':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksADay;
-		case 'Week':
-			return _rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek;
-		default:
-			var _p2 = _p1._0;
-			return (((((_rluiten$elm_date_extra$Date_Extra_Core$ticksAMillisecond * _p2.millisecond) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksASecond * _p2.second)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute * _p2.minute)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour * _p2.hour)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksADay * _p2.day)) + (_rluiten$elm_date_extra$Date_Extra_Core$ticksAWeek * _p2.week);
-	}
-};
-var _rluiten$elm_date_extra$Date_Extra_Period$add = function (period) {
-	return _rluiten$elm_date_extra$Date_Extra_Period$addTimeUnit(
-		_rluiten$elm_date_extra$Date_Extra_Period$toTicks(period));
-};
-var _rluiten$elm_date_extra$Date_Extra_Period$zeroDelta = {week: 0, day: 0, hour: 0, minute: 0, second: 0, millisecond: 0};
-var _rluiten$elm_date_extra$Date_Extra_Period$DeltaRecord = F6(
-	function (a, b, c, d, e, f) {
-		return {week: a, day: b, hour: c, minute: d, second: e, millisecond: f};
-	});
-var _rluiten$elm_date_extra$Date_Extra_Period$Delta = function (a) {
-	return {ctor: 'Delta', _0: a};
-};
-var _rluiten$elm_date_extra$Date_Extra_Period$Week = {ctor: 'Week'};
-var _rluiten$elm_date_extra$Date_Extra_Period$Day = {ctor: 'Day'};
-var _rluiten$elm_date_extra$Date_Extra_Period$Hour = {ctor: 'Hour'};
-var _rluiten$elm_date_extra$Date_Extra_Period$Minute = {ctor: 'Minute'};
-var _rluiten$elm_date_extra$Date_Extra_Period$Second = {ctor: 'Second'};
-var _rluiten$elm_date_extra$Date_Extra_Period$Millisecond = {ctor: 'Millisecond'};
-
-var _rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil = F3(
-	function (year, month, day) {
-		var doy = (((((153 * (month + ((_elm_lang$core$Native_Utils.cmp(month, 2) > 0) ? -3 : 9))) + 2) / 5) | 0) + day) - 1;
-		var y = year - ((_elm_lang$core$Native_Utils.cmp(month, 2) < 1) ? 1 : 0);
-		var era = (((_elm_lang$core$Native_Utils.cmp(y, 0) > -1) ? y : (y - 399)) / 400) | 0;
-		var yoe = y - (era * 400);
-		var doe = (((yoe * 365) + ((yoe / 4) | 0)) - ((yoe / 100) | 0)) + doy;
-		return ((era * 146097) + doe) - 719468;
-	});
-var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields = F7(
-	function (year, month, day, hour, minute, second, millisecond) {
-		var monthInt = _rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month);
-		var c_year = (_elm_lang$core$Native_Utils.cmp(year, 0) < 0) ? 0 : year;
-		var c_day = A3(
-			_elm_lang$core$Basics$clamp,
-			1,
-			A2(_rluiten$elm_date_extra$Date_Extra_Core$daysInMonth, c_year, month),
-			day);
-		var dayCount = A3(_rluiten$elm_date_extra$Date_Extra_Internal$daysFromCivil, c_year, monthInt, c_day);
-		return _rluiten$elm_date_extra$Date_Extra_Period$toTicks(
-			_rluiten$elm_date_extra$Date_Extra_Period$Delta(
-				{
-					millisecond: A3(_elm_lang$core$Basics$clamp, 0, 999, millisecond),
-					second: A3(_elm_lang$core$Basics$clamp, 0, 59, second),
-					minute: A3(_elm_lang$core$Basics$clamp, 0, 59, minute),
-					hour: A3(_elm_lang$core$Basics$clamp, 0, 23, hour),
-					day: dayCount,
-					week: 0
-				}));
-	});
-var _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields = function (date) {
-	return A7(
-		_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields,
-		_elm_lang$core$Date$year(date),
-		_elm_lang$core$Date$month(date),
-		_elm_lang$core$Date$day(date),
-		_elm_lang$core$Date$hour(date),
-		_elm_lang$core$Date$minute(date),
-		_elm_lang$core$Date$second(date),
-		_elm_lang$core$Date$millisecond(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset = function (date) {
-	var v1Ticks = _rluiten$elm_date_extra$Date_Extra_Internal$ticksFromDateFields(date);
-	var dateTicks = _elm_lang$core$Basics$floor(
-		_elm_lang$core$Date$toTime(date));
-	return ((dateTicks - v1Ticks) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
-};
-var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset = F2(
-	function (offsetMinutes, date) {
-		return _rluiten$elm_date_extra$Date_Extra_Core$fromTime(
-			A2(
-				F2(
-					function (x, y) {
-						return x + y;
-					}),
-				offsetMinutes * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute,
-				_rluiten$elm_date_extra$Date_Extra_Core$toTime(date)));
-	});
-var _rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc = function (date) {
-	var offset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset(date);
-	var oHours = (offset / _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour) | 0;
-	var oMinutes = ((offset - (oHours * _rluiten$elm_date_extra$Date_Extra_Core$ticksAnHour)) / _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute) | 0;
-	var _p0 = A2(
-		_elm_lang$core$Debug$log,
-		'hackDateAsUtc',
-		{ctor: '_Tuple3', _0: offset, _1: oHours, _2: oMinutes});
-	var _p1 = A2(
-		_elm_lang$core$Debug$log,
-		'(local  date) fields',
-		{
-			ctor: '_Tuple7',
-			_0: _elm_lang$core$Date$year(date),
-			_1: _elm_lang$core$Date$month(date),
-			_2: _elm_lang$core$Date$day(date),
-			_3: _elm_lang$core$Date$hour(date),
-			_4: _elm_lang$core$Date$minute(date),
-			_5: _elm_lang$core$Date$second(date),
-			_6: _elm_lang$core$Date$millisecond(date)
-		});
-	return A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, offset, date);
-};
-
-var _rluiten$elm_date_extra$Date_Extra_Create$epochDate = _elm_lang$core$Date$fromTime(0);
-var _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset = function () {
-	var inMinutes = (_elm_lang$core$Date$hour(_rluiten$elm_date_extra$Date_Extra_Create$epochDate) * 60) + _elm_lang$core$Date$minute(_rluiten$elm_date_extra$Date_Extra_Create$epochDate);
-	return _elm_lang$core$Native_Utils.eq(
-		_elm_lang$core$Date$year(_rluiten$elm_date_extra$Date_Extra_Create$epochDate),
-		1969) ? (0 - (inMinutes - (24 * 60))) : (0 - inMinutes);
-}();
-var _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset = _rluiten$elm_date_extra$Date_Extra_Internal$getTimezoneOffset;
-var _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate = function (ticks) {
-	var date = A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Millisecond, ticks + (_rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset * _rluiten$elm_date_extra$Date_Extra_Core$ticksAMinute), _rluiten$elm_date_extra$Date_Extra_Create$epochDate);
-	var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
-	return _elm_lang$core$Native_Utils.eq(dateOffset, _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset) ? date : A3(_rluiten$elm_date_extra$Date_Extra_Period$add, _rluiten$elm_date_extra$Date_Extra_Period$Minute, dateOffset - _rluiten$elm_date_extra$Date_Extra_Create$epochTimezoneOffset, date);
-};
-var _rluiten$elm_date_extra$Date_Extra_Create$dateFromFields = F7(
-	function (year, month, day, hour, minute, second, millisecond) {
-		return _rluiten$elm_date_extra$Date_Extra_Create$adjustedTicksToDate(
-			A7(_rluiten$elm_date_extra$Date_Extra_Internal$ticksFromFields, year, month, day, hour, minute, second, millisecond));
-	});
-var _rluiten$elm_date_extra$Date_Extra_Create$timeFromFields = A3(_rluiten$elm_date_extra$Date_Extra_Create$dateFromFields, 1970, _elm_lang$core$Date$Jan, 1);
-
-var _rluiten$elm_date_extra$Date_Extra_Format$toHourMin = function (offsetMinutes) {
-	return {
-		ctor: '_Tuple2',
-		_0: (offsetMinutes / 60) | 0,
-		_1: A2(_elm_lang$core$Basics_ops['%'], offsetMinutes, 60)
-	};
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$padWithN = F2(
-	function (n, c) {
-		return function (_p0) {
-			return A3(
-				_elm_lang$core$String$padLeft,
-				n,
-				c,
-				_elm_lang$core$Basics$toString(_p0));
-		};
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$padWith = function (c) {
-	return function (_p1) {
-		return A3(
-			_elm_lang$core$String$padLeft,
-			2,
-			c,
-			_elm_lang$core$Basics$toString(_p1));
-	};
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$hourMod12 = function (h) {
-	return _elm_lang$core$Native_Utils.eq(
-		A2(_elm_lang$core$Basics_ops['%'], h, 12),
-		0) ? 12 : A2(_elm_lang$core$Basics_ops['%'], h, 12);
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr = F2(
-	function (betweenHoursMinutes, offset) {
-		var _p2 = _rluiten$elm_date_extra$Date_Extra_Format$toHourMin(
-			_elm_lang$core$Basics$abs(offset));
-		var hour = _p2._0;
-		var minute = _p2._1;
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			(_elm_lang$core$Native_Utils.cmp(offset, 0) < 1) ? '+' : '-',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					hour),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					betweenHoursMinutes,
-					A2(
-						_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-						_elm_lang$core$Native_Utils.chr('0'),
-						minute))));
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$collapse = function (m) {
-	return A2(_elm_lang$core$Maybe$andThen, _elm_lang$core$Basics$identity, m);
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$formatToken = F4(
-	function (config, offset, d, m) {
-		var symbol = A2(
-			_elm_lang$core$Maybe$withDefault,
-			' ',
-			_rluiten$elm_date_extra$Date_Extra_Format$collapse(
-				_elm_lang$core$List$head(m.submatches)));
-		var _p3 = symbol;
-		switch (_p3) {
-			case 'Y':
-				return A3(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
-					4,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$year(d));
-			case 'y':
-				return A2(
-					_elm_lang$core$String$right,
-					2,
-					A3(
-						_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
-						2,
-						_elm_lang$core$Native_Utils.chr('0'),
-						_elm_lang$core$Date$year(d)));
-			case 'm':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
-						_elm_lang$core$Date$month(d)));
-			case '_m':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr(' '),
-					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
-						_elm_lang$core$Date$month(d)));
-			case '-m':
-				return _elm_lang$core$Basics$toString(
-					_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
-						_elm_lang$core$Date$month(d)));
-			case 'B':
-				return config.i18n.monthName(
-					_elm_lang$core$Date$month(d));
-			case '^B':
-				return _elm_lang$core$String$toUpper(
-					config.i18n.monthName(
-						_elm_lang$core$Date$month(d)));
-			case 'b':
-				return config.i18n.monthShort(
-					_elm_lang$core$Date$month(d));
-			case '^b':
-				return _elm_lang$core$String$toUpper(
-					config.i18n.monthShort(
-						_elm_lang$core$Date$month(d)));
-			case 'd':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$day(d));
-			case '-d':
-				return _elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$day(d));
-			case '-@d':
-				return A2(
-					config.i18n.dayOfMonthWithSuffix,
-					false,
-					_elm_lang$core$Date$day(d));
-			case 'e':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr(' '),
-					_elm_lang$core$Date$day(d));
-			case '@e':
-				return A2(
-					config.i18n.dayOfMonthWithSuffix,
-					true,
-					_elm_lang$core$Date$day(d));
-			case 'A':
-				return config.i18n.dayName(
-					_elm_lang$core$Date$dayOfWeek(d));
-			case '^A':
-				return _elm_lang$core$String$toUpper(
-					config.i18n.dayName(
-						_elm_lang$core$Date$dayOfWeek(d)));
-			case 'a':
-				return config.i18n.dayShort(
-					_elm_lang$core$Date$dayOfWeek(d));
-			case '^a':
-				return _elm_lang$core$String$toUpper(
-					config.i18n.dayShort(
-						_elm_lang$core$Date$dayOfWeek(d)));
-			case 'H':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$hour(d));
-			case '-H':
-				return _elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$hour(d));
-			case 'k':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr(' '),
-					_elm_lang$core$Date$hour(d));
-			case 'I':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
-						_elm_lang$core$Date$hour(d)));
-			case '-I':
-				return _elm_lang$core$Basics$toString(
-					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
-						_elm_lang$core$Date$hour(d)));
-			case 'l':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr(' '),
-					_rluiten$elm_date_extra$Date_Extra_Format$hourMod12(
-						_elm_lang$core$Date$hour(d)));
-			case 'p':
-				return (_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$Date$hour(d),
-					12) < 0) ? 'AM' : 'PM';
-			case 'P':
-				return (_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$Date$hour(d),
-					12) < 0) ? 'am' : 'pm';
-			case 'M':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$minute(d));
-			case 'S':
-				return A2(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWith,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$second(d));
-			case 'L':
-				return A3(
-					_rluiten$elm_date_extra$Date_Extra_Format$padWithN,
-					3,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Date$millisecond(d));
-			case '%':
-				return symbol;
-			case 'z':
-				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, '', offset);
-			case ':z':
-				return A2(_rluiten$elm_date_extra$Date_Extra_Format$formatOffsetStr, ':', offset);
-			default:
-				return '';
-		}
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$formatRegex = _elm_lang$core$Regex$regex('%(y|Y|m|_m|-m|B|^B|b|^b|d|-d|-@d|e|@e|A|^A|a|^a|H|-H|k|I|-I|l|p|P|M|S|%|L|z|:z)');
-var _rluiten$elm_date_extra$Date_Extra_Format$formatOffset = F4(
-	function (config, targetOffset, formatStr, date) {
-		var dateOffset = _rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date);
-		var hackOffset = dateOffset - targetOffset;
-		return A4(
-			_elm_lang$core$Regex$replace,
-			_elm_lang$core$Regex$All,
-			_rluiten$elm_date_extra$Date_Extra_Format$formatRegex,
-			A3(
-				_rluiten$elm_date_extra$Date_Extra_Format$formatToken,
-				config,
-				targetOffset,
-				A2(_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsOffset, hackOffset, date)),
-			formatStr);
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$format = F3(
-	function (config, formatStr, date) {
-		return A4(
-			_rluiten$elm_date_extra$Date_Extra_Format$formatOffset,
-			config,
-			_rluiten$elm_date_extra$Date_Extra_Create$getTimezoneOffset(date),
-			formatStr,
-			date);
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$formatUtc = F3(
-	function (config, formatStr, date) {
-		return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, config, 0, formatStr, date);
-	});
-var _rluiten$elm_date_extra$Date_Extra_Format$isoDateString = function (date) {
-	var day = _elm_lang$core$Date$day(date);
-	var month = _elm_lang$core$Date$month(date);
-	var year = _elm_lang$core$Date$year(date);
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		A3(
-			_elm_lang$core$String$padLeft,
-			4,
-			_elm_lang$core$Native_Utils.chr('0'),
-			_elm_lang$core$Basics$toString(year)),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'-',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				A3(
-					_elm_lang$core$String$padLeft,
-					2,
-					_elm_lang$core$Native_Utils.chr('0'),
-					_elm_lang$core$Basics$toString(
-						_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month))),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'-',
-					A3(
-						_elm_lang$core$String$padLeft,
-						2,
-						_elm_lang$core$Native_Utils.chr('0'),
-						_elm_lang$core$Basics$toString(day))))));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoDateString = function (date) {
-	return _rluiten$elm_date_extra$Date_Extra_Format$isoDateString(
-		_rluiten$elm_date_extra$Date_Extra_Internal$hackDateAsUtc(date));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$yearInt = function (year) {
-	return A3(
-		_elm_lang$core$String$padLeft,
-		4,
-		_elm_lang$core$Native_Utils.chr('0'),
-		_elm_lang$core$Basics$toString(year));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$year = function (date) {
-	return A3(
-		_elm_lang$core$String$padLeft,
-		4,
-		_elm_lang$core$Native_Utils.chr('0'),
-		_elm_lang$core$Basics$toString(
-			_elm_lang$core$Date$year(date)));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$monthMonth = function (month) {
-	return A3(
-		_elm_lang$core$String$padLeft,
-		2,
-		_elm_lang$core$Native_Utils.chr('0'),
-		_elm_lang$core$Basics$toString(
-			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(month)));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$month = function (date) {
-	return A3(
-		_elm_lang$core$String$padLeft,
-		2,
-		_elm_lang$core$Native_Utils.chr('0'),
-		_elm_lang$core$Basics$toString(
-			_rluiten$elm_date_extra$Date_Extra_Core$monthToInt(
-				_elm_lang$core$Date$month(date))));
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$isoTimeFormat = '%H:%M:%S';
-var _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat = '%Y-%m-%d';
-var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat = '%Y-%m-%dT%H:%M:%S.%L%z';
-var _rluiten$elm_date_extra$Date_Extra_Format$isoString = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecOffsetFormat);
-var _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat = '%Y-%m-%dT%H:%M:%S%z';
-var _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat = '%Y-%m-%dT%H:%M:%S.%L';
-var _rluiten$elm_date_extra$Date_Extra_Format$isoStringNoOffset = A2(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat);
-var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoString = function (date) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		A3(_rluiten$elm_date_extra$Date_Extra_Format$formatUtc, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoMsecFormat, date),
-		'Z');
-};
-var _rluiten$elm_date_extra$Date_Extra_Format$isoFormat = '%Y-%m-%dT%H:%M:%S';
-
-var _user$project$Asana_Model$Resource = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$User = F5(
-	function (a, b, c, d, e) {
-		return {id: a, name: b, email: c, photo: d, workspaces: e};
-	});
-var _user$project$Asana_Model$Photos = F5(
-	function (a, b, c, d, e) {
-		return {image_21x21: a, image_27x27: b, image_36x36: c, image_60x60: d, image_128x128: e};
-	});
-var _user$project$Asana_Model$Workspace = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$Project = F3(
-	function (a, b, c) {
-		return {id: a, name: b, customFieldSettings: c};
-	});
-var _user$project$Asana_Model$CustomFieldSetting = F2(
-	function (a, b) {
-		return {id: a, customField: b};
-	});
-var _user$project$Asana_Model$EnumOption = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$CustomField = F3(
-	function (a, b, c) {
-		return {id: a, fieldType: b, name: c};
-	});
-var _user$project$Asana_Model$Task = F5(
-	function (a, b, c, d, e) {
-		return {id: a, name: b, description: c, dueOn: d, dueAt: e};
-	});
-var _user$project$Asana_Model$CustomFieldEnumValue = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _user$project$Asana_Model$CustomFieldValue = F4(
-	function (a, b, c, d) {
-		return {id: a, name: b, fieldType: c, value: d};
-	});
-var _user$project$Asana_Model$NewTask = F8(
-	function (a, b, c, d, e, f, g, h) {
-		return {name: a, assignee: b, completed: c, dueOn: d, dueAt: e, description: f, projects: g, customFields: h};
-	});
-var _user$project$Asana_Model$CustomUnknown = function (a) {
-	return {ctor: 'CustomUnknown', _0: a};
-};
-var _user$project$Asana_Model$CustomEnum = {ctor: 'CustomEnum'};
-var _user$project$Asana_Model$CustomNumber = {ctor: 'CustomNumber'};
-var _user$project$Asana_Model$CustomText = {ctor: 'CustomText'};
-var _user$project$Asana_Model$customFieldInfoToCustomField = function (info) {
-	var _p0 = info;
-	switch (_p0.ctor) {
-		case 'CustomTextFieldInfo':
-			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomText, name: _p0._1};
-		case 'CustomNumberFieldInfo':
-			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomNumber, name: _p0._1};
-		default:
-			return {id: _p0._0, fieldType: _user$project$Asana_Model$CustomEnum, name: _p0._1};
-	}
-};
-var _user$project$Asana_Model$customFieldId = function (_p1) {
-	return function (_) {
-		return _.id;
-	}(
-		_user$project$Asana_Model$customFieldInfoToCustomField(_p1));
-};
-var _user$project$Asana_Model$customFieldName = function (_p2) {
-	return function (_) {
-		return _.name;
-	}(
-		_user$project$Asana_Model$customFieldInfoToCustomField(_p2));
-};
-var _user$project$Asana_Model$CustomEnumFieldInfo = F3(
-	function (a, b, c) {
-		return {ctor: 'CustomEnumFieldInfo', _0: a, _1: b, _2: c};
-	});
-var _user$project$Asana_Model$CustomNumberFieldInfo = F3(
-	function (a, b, c) {
-		return {ctor: 'CustomNumberFieldInfo', _0: a, _1: b, _2: c};
-	});
-var _user$project$Asana_Model$CustomTextFieldInfo = F2(
-	function (a, b) {
-		return {ctor: 'CustomTextFieldInfo', _0: a, _1: b};
-	});
-var _user$project$Asana_Model$DueOn = function (a) {
-	return {ctor: 'DueOn', _0: a};
-};
-var _user$project$Asana_Model$DueAt = function (a) {
-	return {ctor: 'DueAt', _0: a};
-};
-var _user$project$Asana_Model$EnumValue = function (a) {
-	return {ctor: 'EnumValue', _0: a};
-};
-var _user$project$Asana_Model$NumberValue = function (a) {
-	return {ctor: 'NumberValue', _0: a};
-};
-var _user$project$Asana_Model$TextValue = function (a) {
-	return {ctor: 'TextValue', _0: a};
-};
-
-var _user$project$Asana_Encoder$encodeCustomFieldData = function (data) {
-	var _p0 = data;
-	switch (_p0.ctor) {
-		case 'TextValue':
-			return _elm_lang$core$Json_Encode$string(_p0._0);
-		case 'NumberValue':
-			return _elm_lang$core$Json_Encode$float(_p0._0);
-		default:
-			return _elm_lang$core$Json_Encode$string(_p0._0.id);
-	}
-};
-var _user$project$Asana_Encoder$encodeTask = function (task) {
-	return _elm_lang$core$Json_Encode$object(
-		A2(
-			_elm_lang$core$List$filterMap,
-			_elm_lang$core$Basics$identity,
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$core$Maybe$map,
-					function (_p1) {
-						return A2(
-							F2(
-								function (v0, v1) {
-									return {ctor: '_Tuple2', _0: v0, _1: v1};
-								}),
-							'name',
-							_elm_lang$core$Json_Encode$string(_p1));
-					},
-					task.name),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$core$Maybe$map,
-						function (_p2) {
-							return A2(
-								F2(
-									function (v0, v1) {
-										return {ctor: '_Tuple2', _0: v0, _1: v1};
-									}),
-								'assignee',
-								_elm_lang$core$Json_Encode$string(_p2));
-						},
-						task.assignee),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$core$Maybe$map,
-							function (_p3) {
-								return A2(
-									F2(
-										function (v0, v1) {
-											return {ctor: '_Tuple2', _0: v0, _1: v1};
-										}),
-									'notes',
-									_elm_lang$core$Json_Encode$string(_p3));
-							},
-							task.description),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$core$Maybe$map,
-								function (_p4) {
-									return A2(
-										F2(
-											function (v0, v1) {
-												return {ctor: '_Tuple2', _0: v0, _1: v1};
-											}),
-										'due_at',
-										_elm_lang$core$Json_Encode$string(_p4));
-								},
-								task.dueAt),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$core$Maybe$map,
-									function (_p5) {
-										return A2(
-											F2(
-												function (v0, v1) {
-													return {ctor: '_Tuple2', _0: v0, _1: v1};
-												}),
-											'due_on',
-											_elm_lang$core$Json_Encode$string(_p5));
-									},
-									task.dueOn),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Maybe$Just(
-										{
-											ctor: '_Tuple2',
-											_0: 'completed',
-											_1: _elm_lang$core$Json_Encode$bool(task.completed)
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$core$Maybe$map,
-											function (_p6) {
-												return A2(
-													F2(
-														function (v0, v1) {
-															return {ctor: '_Tuple2', _0: v0, _1: v1};
-														}),
-													'projects',
-													_elm_lang$core$Json_Encode$list(
-														A2(_elm_lang$core$List$map, _elm_lang$core$Json_Encode$string, _p6)));
-											},
-											task.projects),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$core$Maybe$Just(
-												A2(
-													F2(
-														function (v0, v1) {
-															return {ctor: '_Tuple2', _0: v0, _1: v1};
-														}),
-													'custom_fields',
-													_elm_lang$core$Json_Encode$object(
-														A2(
-															_elm_lang$core$List$map,
-															_elm_lang$core$Tuple$mapSecond(_user$project$Asana_Encoder$encodeCustomFieldData),
-															task.customFields)))),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}));
-};
-var _user$project$Asana_Encoder$encodeDueAt = function (_p7) {
-	var _p8 = _p7;
-	return _elm_lang$core$Json_Encode$string(
-		A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, _p8._0));
-};
-var _user$project$Asana_Encoder$encodeDueOn = function (_p9) {
-	var _p10 = _p9;
-	return _elm_lang$core$Json_Encode$string(
-		A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, _p10._0));
-};
-
-var _user$project$Asana_Decoder$emptyString = function (a) {
-	return A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (str) {
-			return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Json_Decode$succeed(a) : _elm_lang$core$Json_Decode$fail('String is not empty.');
-		},
-		_elm_lang$core$Json_Decode$string);
-};
-var _user$project$Asana_Decoder$emptyOrNull = function (decoder) {
-	return _elm_lang$core$Json_Decode$oneOf(
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-			_1: {
-				ctor: '::',
-				_0: _user$project$Asana_Decoder$emptyString(_elm_lang$core$Maybe$Nothing),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$Asana_Decoder$nullable = function (decoder) {
-	return _elm_lang$core$Json_Decode$oneOf(
-		{
-			ctor: '::',
-			_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-			_1: {
-				ctor: '::',
-				_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, decoder),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Asana_Decoder$emptyAsNull = _elm_lang$core$Json_Decode$map(
-	function (str) {
-		return _elm_lang$core$String$isEmpty(str) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(str);
-	});
-var _user$project$Asana_Decoder$customFieldTypeDecoder = A2(
-	_elm_lang$core$Json_Decode$map,
-	function (str) {
-		var _p0 = str;
-		switch (_p0) {
-			case 'text':
-				return _user$project$Asana_Model$CustomText;
-			case 'number':
-				return _user$project$Asana_Model$CustomNumber;
-			case 'enum':
-				return _user$project$Asana_Model$CustomEnum;
-			default:
-				return _user$project$Asana_Model$CustomUnknown(str);
-		}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _user$project$Asana_Decoder$customFieldDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$Asana_Model$CustomField,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'type', _user$project$Asana_Decoder$customFieldTypeDecoder),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Decoder$customFieldSettingDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_user$project$Asana_Model$CustomFieldSetting,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'custom_field', _user$project$Asana_Decoder$customFieldDecoder));
-var _user$project$Asana_Decoder$projectDecoder = A4(
-	_elm_lang$core$Json_Decode$map3,
-	_user$project$Asana_Model$Project,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'custom_field_settings',
-		_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$customFieldSettingDecoder)));
-var _user$project$Asana_Decoder$workspaceDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_user$project$Asana_Model$Workspace,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Decoder$photosDecoder = A6(
-	_elm_lang$core$Json_Decode$map5,
-	_user$project$Asana_Model$Photos,
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'image_21x21', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'image_27x27', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'image_36x36', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'image_60x60', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'image_128x128', _elm_lang$core$Json_Decode$string)));
-var _user$project$Asana_Decoder$userDecoder = A6(
-	_elm_lang$core$Json_Decode$map5,
-	_user$project$Asana_Model$User,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'email', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'photo', _user$project$Asana_Decoder$photosDecoder)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(
-			_elm_lang$core$Json_Decode$field,
-			'workspaces',
-			_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$workspaceDecoder))));
-var _user$project$Asana_Decoder$resourceDecoder = A3(
-	_elm_lang$core$Json_Decode$map2,
-	_user$project$Asana_Model$Resource,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
-var _user$project$Asana_Decoder$enumOptionDecoder = _user$project$Asana_Decoder$resourceDecoder;
-var _user$project$Asana_Decoder$customFieldInfoDecoder = A2(
-	_elm_lang$core$Json_Decode$andThen,
-	function (fieldType) {
-		var _p1 = fieldType;
-		switch (_p1.ctor) {
-			case 'CustomText':
-				return A3(
-					_elm_lang$core$Json_Decode$map2,
-					_user$project$Asana_Model$CustomTextFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode$field,
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string));
-			case 'CustomNumber':
-				return A4(
-					_elm_lang$core$Json_Decode$map3,
-					_user$project$Asana_Model$CustomNumberFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode$field,
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-					A2(_elm_lang$core$Json_Decode$field, 'precision', _elm_lang$core$Json_Decode$int));
-			case 'CustomEnum':
-				return A4(
-					_elm_lang$core$Json_Decode$map3,
-					_user$project$Asana_Model$CustomEnumFieldInfo,
-					A2(
-						_elm_lang$core$Json_Decode$field,
-						'id',
-						A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-					A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-					A2(
-						_elm_lang$core$Json_Decode$field,
-						'enum_options',
-						_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$enumOptionDecoder)));
-			default:
-				return _elm_lang$core$Json_Decode$fail(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'Got an unknown custom field type \'',
-						A2(_elm_lang$core$Basics_ops['++'], _p1._0, '\'.')));
-		}
-	},
-	A2(_elm_lang$core$Json_Decode$field, 'type', _user$project$Asana_Decoder$customFieldTypeDecoder));
-var _user$project$Asana_Decoder$enumValueDecoder = _user$project$Asana_Decoder$resourceDecoder;
-var _user$project$Asana_Decoder$customFieldDataDecoder = _elm_lang$core$Json_Decode$oneOf(
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$core$Json_Decode$map,
-			_user$project$Asana_Model$TextValue,
-			A2(_elm_lang$core$Json_Decode$field, 'text_value', _elm_lang$core$Json_Decode$string)),
-		_1: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$core$Json_Decode$map,
-				_user$project$Asana_Model$NumberValue,
-				A2(_elm_lang$core$Json_Decode$field, 'number_value', _elm_lang$core$Json_Decode$float)),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$core$Json_Decode$map,
-					_user$project$Asana_Model$EnumValue,
-					A2(_elm_lang$core$Json_Decode$field, 'enum_value', _user$project$Asana_Decoder$enumValueDecoder)),
-				_1: {ctor: '[]'}
-			}
-		}
-	});
-var _user$project$Asana_Decoder$customFieldValueDecoder = A5(
-	_elm_lang$core$Json_Decode$map4,
-	_user$project$Asana_Model$CustomFieldValue,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(_elm_lang$core$Json_Decode$field, 'type', _user$project$Asana_Decoder$customFieldTypeDecoder),
-	_user$project$Asana_Decoder$customFieldDataDecoder);
-var _user$project$Asana_Decoder$dateDecoder = A2(
-	_elm_lang$core$Json_Decode$andThen,
-	function (str) {
-		var _p2 = _elm_lang$core$Date$fromString(str);
-		if (_p2.ctor === 'Ok') {
-			return _elm_lang$core$Json_Decode$succeed(_p2._0);
-		} else {
-			return _elm_lang$core$Json_Decode$fail(_p2._0);
-		}
-	},
-	_elm_lang$core$Json_Decode$string);
-var _user$project$Asana_Decoder$dueOnDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Asana_Model$DueOn, _user$project$Asana_Decoder$dateDecoder);
-var _user$project$Asana_Decoder$dueAtDecoder = A2(_elm_lang$core$Json_Decode$map, _user$project$Asana_Model$DueAt, _user$project$Asana_Decoder$dateDecoder);
-var _user$project$Asana_Decoder$taskDecoder = A6(
-	_elm_lang$core$Json_Decode$map5,
-	_user$project$Asana_Model$Task,
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'id',
-		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'description', _elm_lang$core$Json_Decode$string)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'due_on', _user$project$Asana_Decoder$dueOnDecoder)),
-	_elm_lang$core$Json_Decode$maybe(
-		A2(_elm_lang$core$Json_Decode$field, 'due_at', _user$project$Asana_Decoder$dueAtDecoder)));
-var _user$project$Asana_Decoder$WorkRequired = function (a) {
-	return {ctor: 'WorkRequired', _0: a};
-};
-var _user$project$Asana_Decoder$Value = function (a) {
-	return {ctor: 'Value', _0: a};
-};
-var _user$project$Asana_Decoder$NoResult = {ctor: 'NoResult'};
-
-var _user$project$Asana_Api$typeaheadQueryFields = function (resourceType) {
-	var _p0 = resourceType;
-	switch (_p0.ctor) {
-		case 'TypeaheadProject':
-			return {ctor: '[]'};
-		case 'TypeaheadUser':
-			return {
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'opt_fields', _1: 'name,email,photo'},
-				_1: {ctor: '[]'}
-			};
-		case 'TypeaheadTag':
-			return {ctor: '[]'};
-		default:
-			return {ctor: '[]'};
-	}
-};
-var _user$project$Asana_Api$typeaheadTypeStr = function (resourceType) {
-	var _p1 = resourceType;
-	switch (_p1.ctor) {
-		case 'TypeaheadProject':
-			return 'project';
-		case 'TypeaheadUser':
-			return 'user';
-		case 'TypeaheadTag':
-			return 'tag';
-		default:
-			return 'task';
-	}
-};
-var _user$project$Asana_Api$buildUrl = F3(
-	function (origin, path, query) {
-		var queryString = A2(
-			_elm_lang$core$String$join,
-			'&',
-			A2(
-				_elm_lang$core$List$map,
-				function (_p2) {
-					var _p3 = _p2;
-					return A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$http$Http$encodeUri(_p3._0),
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'=',
-							_elm_lang$http$Http$encodeUri(_p3._1)));
-				},
-				query));
-		var base = A2(_elm_lang$core$Basics_ops['++'], origin, path);
-		return _elm_lang$core$String$isEmpty(queryString) ? base : A2(
-			_elm_lang$core$Basics_ops['++'],
-			base,
-			A2(_elm_lang$core$Basics_ops['++'], '?', queryString));
-	});
-var _user$project$Asana_Api$apiRoot = 'https://app.asana.com/api/1.0';
-var _user$project$Asana_Api$apiGetRequest = F4(
-	function (path, query, decoder, token) {
-		var headers = {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$http$Http$header,
-				'Authorization',
-				A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
-			_1: {ctor: '[]'}
-		};
-		var url = A3(_user$project$Asana_Api$buildUrl, _user$project$Asana_Api$apiRoot, path, query);
-		var request = _elm_lang$http$Http$request(
-			{
-				method: 'GET',
-				url: url,
-				headers: headers,
-				body: _elm_lang$http$Http$emptyBody,
-				expect: _elm_lang$http$Http$expectJson(
-					A2(_elm_lang$core$Json_Decode$field, 'data', decoder)),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-		return A2(_elm_lang$http$Http$send, _elm_lang$core$Basics$identity, request);
-	});
-var _user$project$Asana_Api$user = function (user) {
-	var _p4 = user;
-	switch (_p4.ctor) {
-		case 'Me':
-			return A3(
-				_user$project$Asana_Api$apiGetRequest,
-				'/users/me',
-				{ctor: '[]'},
-				_user$project$Asana_Decoder$userDecoder);
-		case 'Id':
-			return A3(
-				_user$project$Asana_Api$apiGetRequest,
-				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p4._0),
-				{ctor: '[]'},
-				_user$project$Asana_Decoder$userDecoder);
-		default:
-			return A3(
-				_user$project$Asana_Api$apiGetRequest,
-				A2(_elm_lang$core$Basics_ops['++'], '/users/', _p4._0),
-				{ctor: '[]'},
-				_user$project$Asana_Decoder$userDecoder);
-	}
-};
-var _user$project$Asana_Api$users = function (workspaceId) {
-	var query = {
-		ctor: '::',
-		_0: {ctor: '_Tuple2', _0: 'opt_fields', _1: 'email,name,photo.image_128x128'},
-		_1: {ctor: '[]'}
-	};
-	var path = A2(
-		_elm_lang$core$Basics_ops['++'],
-		'/workspaces/',
-		A2(_elm_lang$core$Basics_ops['++'], workspaceId, '/users'));
-	return A3(
-		_user$project$Asana_Api$apiGetRequest,
-		path,
-		query,
-		_elm_lang$core$Json_Decode$list(_user$project$Asana_Decoder$userDecoder));
-};
-var _user$project$Asana_Api$getTypeaheadOptions = F4(
-	function (resourceType, decoder, workspaceId, fragment) {
-		var path = A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/workspaces/',
-			A2(_elm_lang$core$Basics_ops['++'], workspaceId, '/typeahead'));
-		var resourceTypeStr = _user$project$Asana_Api$typeaheadTypeStr(resourceType);
-		var query = A2(
-			_elm_lang$core$Basics_ops['++'],
-			_user$project$Asana_Api$typeaheadQueryFields(resourceType),
-			{
-				ctor: '::',
-				_0: {ctor: '_Tuple2', _0: 'type', _1: resourceTypeStr},
-				_1: {
-					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'query', _1: fragment},
-					_1: {ctor: '[]'}
-				}
-			});
-		return A3(
-			_user$project$Asana_Api$apiGetRequest,
-			path,
-			query,
-			_elm_lang$core$Json_Decode$list(decoder));
-	});
-var _user$project$Asana_Api$project = function (projectId) {
-	var path = A2(_elm_lang$core$Basics_ops['++'], '/projects/', projectId);
-	return A3(
-		_user$project$Asana_Api$apiGetRequest,
-		path,
-		{ctor: '[]'},
-		_user$project$Asana_Decoder$projectDecoder);
-};
-var _user$project$Asana_Api$customField = function (customFieldId) {
-	var path = A2(_elm_lang$core$Basics_ops['++'], '/custom_fields/', customFieldId);
-	return A3(
-		_user$project$Asana_Api$apiGetRequest,
-		path,
-		{ctor: '[]'},
-		_user$project$Asana_Decoder$customFieldInfoDecoder);
-};
-var _user$project$Asana_Api$apiPostRequest = F5(
-	function (path, query, body, decoder, token) {
-		var headers = {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$http$Http$header,
-				'Authorization',
-				A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
-			_1: {ctor: '[]'}
-		};
-		var url = A3(_user$project$Asana_Api$buildUrl, _user$project$Asana_Api$apiRoot, path, query);
-		var request = _elm_lang$http$Http$request(
-			{
-				method: 'POST',
-				url: url,
-				headers: headers,
-				body: _elm_lang$http$Http$jsonBody(
-					_elm_lang$core$Json_Encode$object(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'data', _1: body},
-							_1: {ctor: '[]'}
-						})),
-				expect: _elm_lang$http$Http$expectJson(
-					A2(_elm_lang$core$Json_Decode$field, 'data', decoder)),
-				timeout: _elm_lang$core$Maybe$Nothing,
-				withCredentials: false
-			});
-		return A2(_elm_lang$http$Http$send, _elm_lang$core$Basics$identity, request);
-	});
-var _user$project$Asana_Api$createTask = function (newTask) {
-	var body = _user$project$Asana_Encoder$encodeTask(newTask);
-	var query = {ctor: '[]'};
-	var path = '/tasks';
-	return A4(_user$project$Asana_Api$apiPostRequest, path, query, body, _user$project$Asana_Decoder$taskDecoder);
-};
-var _user$project$Asana_Api$Context = F2(
-	function (a, b) {
-		return {token: a, workspaceId: b};
-	});
-var _user$project$Asana_Api$Email = function (a) {
-	return {ctor: 'Email', _0: a};
-};
-var _user$project$Asana_Api$Id = function (a) {
-	return {ctor: 'Id', _0: a};
-};
-var _user$project$Asana_Api$Me = {ctor: 'Me'};
-var _user$project$Asana_Api$me = _user$project$Asana_Api$user(_user$project$Asana_Api$Me);
-var _user$project$Asana_Api$TypeaheadTask = {ctor: 'TypeaheadTask'};
-var _user$project$Asana_Api$TypeaheadTag = {ctor: 'TypeaheadTag'};
-var _user$project$Asana_Api$TypeaheadUser = {ctor: 'TypeaheadUser'};
-var _user$project$Asana_Api$userTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadUser, _user$project$Asana_Decoder$userDecoder);
-var _user$project$Asana_Api$TypeaheadProject = {ctor: 'TypeaheadProject'};
-var _user$project$Asana_Api$projectTypeahead = A2(_user$project$Asana_Api$getTypeaheadOptions, _user$project$Asana_Api$TypeaheadProject, _user$project$Asana_Decoder$resourceDecoder);
-
-var _user$project$Asana_Target$dateToDueAt = function (date) {
-	return A3(_rluiten$elm_date_extra$Date_Extra_Format$format, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, _rluiten$elm_date_extra$Date_Extra_Format$isoOffsetFormat, date);
-};
-var _user$project$Asana_Target$dateToDueOn = function (date) {
-	return A4(_rluiten$elm_date_extra$Date_Extra_Format$formatOffset, _rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config, 0, _rluiten$elm_date_extra$Date_Extra_Format$isoDateFormat, date);
-};
-var _user$project$Asana_Target$updateTask = F3(
-	function (target, value, task) {
-		var _p0 = target;
-		switch (_p0.ctor) {
-			case 'Name':
-				return _elm_lang$core$Result$Ok(
-					_elm_lang$core$Native_Utils.update(
-						task,
-						{
-							name: _elm_lang$core$Maybe$Just(value)
-						}));
-			case 'Description':
-				return _elm_lang$core$Result$Ok(
-					_elm_lang$core$Native_Utils.update(
-						task,
-						{
-							description: _elm_lang$core$Maybe$Just(value)
-						}));
-			case 'Assignee':
-				var _p1 = A2(_elm_lang$core$Dict$get, value, _p0._0);
-				if (_p1.ctor === 'Just') {
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{
-								assignee: _elm_lang$core$Maybe$Just(_p1._0)
-							}));
-				} else {
-					return _elm_lang$core$Result$Ok(task);
-				}
-			case 'Completion':
-				var _p2 = A2(_elm_lang$core$Dict$get, value, _p0._0);
-				if (_p2.ctor === 'Just') {
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{completed: _p2._0}));
-				} else {
-					return _elm_lang$core$Result$Err(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							'No config for how to convert \'',
-							A2(_elm_lang$core$Basics_ops['++'], value, '\' into a completed status.')));
-				}
-			case 'DueDate':
-				if (_elm_lang$core$String$isEmpty(value)) {
-					return _elm_lang$core$Result$Ok(task);
-				} else {
-					var _p3 = _elm_lang$core$Date$fromString(value);
-					if (_p3.ctor === 'Ok') {
-						return _elm_lang$core$Result$Ok(
-							_elm_lang$core$Native_Utils.update(
-								task,
-								{
-									dueOn: _elm_lang$core$Maybe$Just(
-										_user$project$Asana_Target$dateToDueOn(_p3._0))
-								}));
-					} else {
-						return _elm_lang$core$Result$Err(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Could not parse date from \'',
-								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
-					}
-				}
-			case 'DueTime':
-				if (_elm_lang$core$String$isEmpty(value)) {
-					return _elm_lang$core$Result$Ok(task);
-				} else {
-					var _p4 = _elm_lang$core$Date$fromString(value);
-					if (_p4.ctor === 'Ok') {
-						return _elm_lang$core$Result$Ok(
-							_elm_lang$core$Native_Utils.update(
-								task,
-								{
-									dueAt: _elm_lang$core$Maybe$Just(
-										_user$project$Asana_Target$dateToDueAt(_p4._0))
-								}));
-					} else {
-						return _elm_lang$core$Result$Err(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Could not parse date from \'',
-								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
-					}
-				}
-			case 'CustomText':
-				var newField = {
-					ctor: '_Tuple2',
-					_0: _p0._0,
-					_1: _user$project$Asana_Model$TextValue(value)
-				};
-				var customFields = {ctor: '::', _0: newField, _1: task.customFields};
-				return _elm_lang$core$Result$Ok(
-					_elm_lang$core$Native_Utils.update(
-						task,
-						{customFields: customFields}));
-			case 'CustomNumber':
-				if (_elm_lang$core$String$isEmpty(value)) {
-					return _elm_lang$core$Result$Ok(task);
-				} else {
-					var _p5 = _elm_lang$core$String$toFloat(value);
-					if (_p5.ctor === 'Ok') {
-						var newField = {
-							ctor: '_Tuple2',
-							_0: _p0._0,
-							_1: _user$project$Asana_Model$NumberValue(_p5._0)
-						};
-						var customFields = {ctor: '::', _0: newField, _1: task.customFields};
-						return _elm_lang$core$Result$Ok(
-							_elm_lang$core$Native_Utils.update(
-								task,
-								{customFields: customFields}));
-					} else {
-						return _elm_lang$core$Result$Err(
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'Could not parse number from \'',
-								A2(_elm_lang$core$Basics_ops['++'], value, '\'')));
-					}
-				}
-			default:
-				var _p6 = A2(_elm_lang$core$Dict$get, value, _p0._1);
-				if (_p6.ctor === 'Just') {
-					return _elm_lang$core$Result$Ok(
-						_elm_lang$core$Native_Utils.update(
-							task,
-							{
-								customFields: {
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: _p0._0,
-										_1: _user$project$Asana_Model$EnumValue(_p6._0)
-									},
-									_1: task.customFields
-								}
-							}));
-				} else {
-					return _elm_lang$core$Result$Ok(task);
-				}
-		}
-	});
-var _user$project$Asana_Target$emptyTask = function (projectId) {
-	return {
-		name: _elm_lang$core$Maybe$Nothing,
-		description: _elm_lang$core$Maybe$Nothing,
-		assignee: _elm_lang$core$Maybe$Nothing,
-		completed: false,
-		dueOn: _elm_lang$core$Maybe$Nothing,
-		dueAt: _elm_lang$core$Maybe$Nothing,
-		projects: _elm_lang$core$Maybe$Just(
-			{
-				ctor: '::',
-				_0: projectId,
-				_1: {ctor: '[]'}
-			}),
-		customFields: {ctor: '[]'}
-	};
-};
-var _user$project$Asana_Target$CustomEnum = F2(
-	function (a, b) {
-		return {ctor: 'CustomEnum', _0: a, _1: b};
-	});
-var _user$project$Asana_Target$CustomNumber = function (a) {
-	return {ctor: 'CustomNumber', _0: a};
-};
-var _user$project$Asana_Target$CustomText = function (a) {
-	return {ctor: 'CustomText', _0: a};
-};
-var _user$project$Asana_Target$DueTime = {ctor: 'DueTime'};
-var _user$project$Asana_Target$DueDate = {ctor: 'DueDate'};
-var _user$project$Asana_Target$Completion = function (a) {
-	return {ctor: 'Completion', _0: a};
-};
-var _user$project$Asana_Target$Assignee = function (a) {
-	return {ctor: 'Assignee', _0: a};
-};
-var _user$project$Asana_Target$Description = {ctor: 'Description'};
-var _user$project$Asana_Target$Name = {ctor: 'Name'};
-
-var _user$project$Asana_Urls$project = function (projectId) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'https://app.asana.com/0/',
-		A2(_elm_lang$core$Basics_ops['++'], projectId, '/list'));
-};
-
-var _user$project$Util$find = F2(
-	function (pred, xs) {
-		var _p0 = _elm_lang$core$List$head(xs);
-		if (_p0.ctor === 'Just') {
-			var _p1 = _p0._0;
-			return pred(_p1) ? _elm_lang$core$Maybe$Just(_p1) : A2(
-				_elm_lang$core$Maybe$andThen,
-				_user$project$Util$find(pred),
-				_elm_lang$core$List$tail(xs));
-		} else {
-			return A2(
-				_elm_lang$core$Maybe$andThen,
-				_user$project$Util$find(pred),
-				_elm_lang$core$List$tail(xs));
-		}
-	});
-var _user$project$Util$catMaybes = function (xs) {
-	catMaybes:
-	while (true) {
-		var _p2 = {
-			ctor: '_Tuple2',
-			_0: _elm_lang$core$List$head(xs),
-			_1: _elm_lang$core$List$tail(xs)
-		};
-		_v1_2:
-		do {
-			if (_p2._0.ctor === 'Just') {
-				if (_p2._1.ctor === 'Just') {
-					if (_p2._0._0.ctor === 'Just') {
-						return {
-							ctor: '::',
-							_0: _p2._0._0._0,
-							_1: _user$project$Util$catMaybes(_p2._1._0)
-						};
-					} else {
-						var _v2 = _p2._1._0;
-						xs = _v2;
-						continue catMaybes;
-					}
-				} else {
-					break _v1_2;
-				}
-			} else {
-				if (_p2._1.ctor === 'Nothing') {
-					break _v1_2;
-				} else {
-					return {ctor: '[]'};
-				}
-			}
-		} while(false);
-		return {ctor: '[]'};
-	}
-};
-var _user$project$Util$transpose = function (data) {
-	var tails = _user$project$Util$catMaybes(
-		A2(_elm_lang$core$List$map, _elm_lang$core$List$tail, data));
-	var heads = _user$project$Util$catMaybes(
-		A2(_elm_lang$core$List$map, _elm_lang$core$List$head, data));
-	return _elm_lang$core$List$isEmpty(heads) ? {ctor: '[]'} : {
-		ctor: '::',
-		_0: heads,
-		_1: _user$project$Util$transpose(tails)
-	};
-};
-var _user$project$Util$isJust = function (maybe) {
-	var _p3 = maybe;
-	if (_p3.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Util$isNothing = function (_p4) {
-	return !_user$project$Util$isJust(_p4);
-};
-var _user$project$Util$mapPair = F3(
-	function (f, g, _p5) {
-		var _p6 = _p5;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p6._0),
-			_1: g(_p6._1)
-		};
-	});
-var _user$project$Util$mapSecond = F2(
-	function (f, _p7) {
-		var _p8 = _p7;
-		return {
-			ctor: '_Tuple2',
-			_0: _p8._0,
-			_1: f(_p8._1)
-		};
-	});
-var _user$project$Util$mapCmd = function (f) {
-	return _user$project$Util$mapSecond(
-		_elm_lang$core$Platform_Cmd$map(f));
-};
-var _user$project$Util$mapFirst = F2(
-	function (f, _p9) {
-		var _p10 = _p9;
-		return {
-			ctor: '_Tuple2',
-			_0: f(_p10._0),
-			_1: _p10._1
-		};
-	});
-var _user$project$Util$mapComponent = _user$project$Util$mapFirst;
-
-var _user$project$Base$get = function (_p0) {
-	var _p1 = _p0;
-	return _p1._0.get;
-};
-var _user$project$Base$view = function (_p2) {
-	var _p3 = _p2;
-	return _p3._0.view;
-};
-var _user$project$Base$viewWith = function (f) {
-	return function (_p4) {
-		return A2(
-			_elm_lang$html$Html$map,
-			f,
-			_user$project$Base$view(_p4));
-	};
-};
-var _user$project$Base$subscriptions = function (_p5) {
-	var _p6 = _p5;
-	return _p6._0.subscriptions;
-};
-var _user$project$Base$subscriptionsWith = function (f) {
-	return function (_p7) {
-		return A2(
-			_elm_lang$core$Platform_Sub$map,
-			f,
-			_user$project$Base$subscriptions(_p7));
-	};
-};
-var _user$project$Base$update = F2(
-	function (msg, _p8) {
-		var _p9 = _p8;
-		return _p9._0.update(msg);
-	});
-var _user$project$Base$updateWith = F2(
-	function (f, msg) {
-		return function (_p10) {
-			return A2(
-				_user$project$Util$mapCmd,
-				f,
-				A2(_user$project$Base$update, msg, _p10));
-		};
-	});
-var _user$project$Base$asRoot = function (_p11) {
-	var _p12 = _p11;
-	return {
-		init: {ctor: '_Tuple2', _0: _p12._0, _1: _p12._1},
-		update: _user$project$Base$update,
-		subscriptions: _user$project$Base$subscriptions,
-		view: _user$project$Base$view
-	};
-};
-var _user$project$Base$Program = F4(
-	function (a, b, c, d) {
-		return {init: a, update: b, view: c, subscriptions: d};
-	});
-var _user$project$Base$Instance = function (a) {
-	return {ctor: 'Instance', _0: a};
-};
-var _user$project$Base$createWithState = F2(
-	function (component, state) {
-		return _user$project$Base$Instance(
-			{
-				update: function (_p13) {
-					return A2(
-						_elm_lang$core$Tuple$mapFirst,
-						_user$project$Base$createWithState(component),
-						A3(_elm_lang$core$Basics$flip, component.update, state, _p13));
-				},
-				view: component.view(state),
-				subscriptions: component.subscriptions(state),
-				get: component.get(state)
-			});
-	});
-var _user$project$Base$create = function (component) {
-	var _p14 = component.init;
-	var state = _p14._0;
-	var cmd = _p14._1;
-	var instance = A2(_user$project$Base$createWithState, component, state);
-	return {ctor: '_Tuple2', _0: instance, _1: cmd};
-};
-var _user$project$Base$staticComponent = function (view) {
-	return _user$project$Base$create(
-		{
-			init: {
-				ctor: '_Tuple2',
-				_0: {ctor: '_Tuple0'},
-				_1: _elm_lang$core$Platform_Cmd$none
-			},
-			view: _elm_lang$core$Basics$always(view),
-			update: _elm_lang$core$Basics$always(
-				_elm_lang$core$Basics$always(
-					{
-						ctor: '_Tuple2',
-						_0: {ctor: '_Tuple0'},
-						_1: _elm_lang$core$Platform_Cmd$none
-					})),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _elm_lang$core$Basics$always(
-				{ctor: '_Tuple0'})
-		});
-};
-var _user$project$Base$mapOutput = F2(
-	function (f, _p15) {
-		var _p16 = _p15;
-		var _p18 = _p16._0;
-		return _user$project$Base$Instance(
-			_elm_lang$core$Native_Utils.update(
-				_p18,
-				{
-					update: function (_p17) {
-						return A2(
-							_elm_lang$core$Tuple$mapFirst,
-							_user$project$Base$mapOutput(f),
-							_p18.update(_p17));
-					},
-					get: f(_p18.get)
-				}));
-	});
-
-var _user$project$CommonViews$spinner = A2(
-	_elm_lang$svg$Svg$svg,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$class('spinner'),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32'),
-			_1: {ctor: '[]'}
-		}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$svg$Svg$linearGradient,
-			{
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$id('Spinner-linearGradient'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$gradientUnits('userSpaceOnUse'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$x1('1.7804'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$y1('16.0379'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$x2('30.1439'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$y2('16.0379'),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$svg$Svg$stop,
-					{
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$offset('0.4169'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$stopColor('#F9747F'),
-							_1: {ctor: '[]'}
-						}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$svg$Svg$stop,
-						{
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$offset('0.764'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$stopColor('#FA7996'),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$svg$Svg$stop,
-							{
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$offset('0.9376'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$stopColor('#F7D59C'),
-									_1: {ctor: '[]'}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
-					}
-				}
-			}),
-		_1: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$svg$Svg$circle,
-				{
-					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$cx('16'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$cy('16'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$r('12.7'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$style('fill: none; stroke: url(\"#Spinner-linearGradient\"); stroke-width: 2;'),
-								_1: {ctor: '[]'}
-							}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {ctor: '[]'}
-		}
-	});
-var _user$project$CommonViews$iconStyle = _elm_lang$html$Html_Attributes$style(
-	{
-		ctor: '::',
-		_0: {ctor: '_Tuple2', _0: 'width', _1: '16px'},
-		_1: {
-			ctor: '::',
-			_0: {ctor: '_Tuple2', _0: 'height', _1: '16px'},
-			_1: {ctor: '[]'}
-		}
-	});
-var _user$project$CommonViews$closeIcon = A2(
-	_elm_lang$svg$Svg$svg,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$class('icon closeIcon'),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 32 32'),
-			_1: {
-				ctor: '::',
-				_0: _user$project$CommonViews$iconStyle,
-				_1: {ctor: '[]'}
-			}
-		}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$svg$Svg$polygon,
-			{
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$points('24.485,27.314 27.314,24.485 18.828,16 27.314,7.515 24.485,4.686 16,13.172 7.515,4.686 4.686,7.515 13.172,16 4.686,24.485 7.515,27.314 16,18.828 '),
-				_1: {ctor: '[]'}
-			},
-			{ctor: '[]'}),
-		_1: {ctor: '[]'}
-	});
-var _user$project$CommonViews$gearIcon = A2(
-	_elm_lang$svg$Svg$svg,
-	{
-		ctor: '::',
-		_0: _elm_lang$svg$Svg_Attributes$class('icon gearIcon'),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 512 512'),
-			_1: {
-				ctor: '::',
-				_0: _user$project$CommonViews$iconStyle,
-				_1: {ctor: '[]'}
-			}
-		}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$svg$Svg$path,
-			{
-				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$d('M512,288v-64l-69.156-11.531c-4.813-20.781-13-40.188-23.969-57.781l40.781-57.063l-45.25-45.25l-57.094,40.75  c-17.594-10.938-37-19.156-57.781-24L288,0h-64l-11.531,69.125c-20.75,4.844-40.188,13.063-57.781,24l-57.094-40.75l-45.25,45.25  l40.781,57.063c-10.969,17.563-19.156,37-23.969,57.781L0,224v64l69.156,11.531c4.813,20.781,13,40.188,23.969,57.781  l-40.781,57.094l45.25,45.25l57.125-40.781c17.563,10.969,37,19.156,57.75,23.969L224,512h64l11.531-69.156  c20.75-4.813,40.188-13,57.781-23.969l57.094,40.781l45.25-45.25l-40.781-57.094c10.969-17.594,19.156-37.031,23.969-57.781L512,288  z M256,384c-70.688,0-128-57.313-128-128s57.313-128,128-128s128,57.313,128,128S326.688,384,256,384z'),
-				_1: {ctor: '[]'}
-			},
-			{ctor: '[]'}),
-		_1: {ctor: '[]'}
-	});
-var _user$project$CommonViews$closeButton = function (msg) {
-	return A2(
-		_elm_lang$html$Html$a,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('closeButton'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(msg),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _user$project$CommonViews$closeIcon,
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$CommonViews$configButton = function (msg) {
-	return A2(
-		_elm_lang$html$Html$a,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('openButton'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(msg),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _user$project$CommonViews$gearIcon,
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$CommonViews$popup = F3(
-	function (title, closeMsg, inner) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Popup'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('Popup-positioner'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('Popup-background'),
-								_1: {ctor: '[]'}
-							},
-							{ctor: '[]'}),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('Popup-positioner'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('Popup-container'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('Popup-dialog'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: _user$project$CommonViews$closeButton(closeMsg),
-											_1: {
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$div,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('Popup-title'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text(title),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$div,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('Popup-contents'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: inner,
-															_1: {ctor: '[]'}
-														}),
-													_1: {ctor: '[]'}
-												}
-											}
-										}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$CommonViews$debugView = F2(
-	function (childView, instance) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: childView(instance),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('Debug'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								_elm_lang$core$Basics$toString(
-									_user$project$Base$get(instance))),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _user$project$CommonViews$withDebug = function (program) {
-	return _elm_lang$core$Native_Utils.update(
-		program,
-		{
-			view: _user$project$CommonViews$debugView(program.view)
-		});
-};
-var _user$project$CommonViews$errorView = function (error) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('ApiError'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(error)),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$CommonViews$loadingIndicator = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('LoadingIndicator'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _user$project$CommonViews$spinner,
-		_1: {ctor: '[]'}
-	});
-var _user$project$CommonViews$unloadedView = A2(
-	_elm_lang$html$Html$div,
-	{ctor: '[]'},
-	{ctor: '[]'});
-
-var _user$project$Components_ApiParallelResource$get = function (resource) {
-	var _p0 = resource;
-	if (_p0.ctor === 'Loaded') {
-		return _elm_lang$core$Maybe$Just(
-			_user$project$Base$get(_p0._0));
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Components_ApiParallelResource$getLoaded = function (fetches) {
-	getLoaded:
-	while (true) {
-		var _p1 = _elm_lang$core$List$head(fetches);
-		if (_p1.ctor === 'Just') {
-			if (_p1._0.ctor === 'Done') {
-				return {
-					ctor: '::',
-					_0: _p1._0._0,
-					_1: _user$project$Components_ApiParallelResource$getLoaded(
-						A2(_elm_lang$core$List$drop, 1, fetches))
-				};
-			} else {
-				var _v2 = A2(_elm_lang$core$List$drop, 1, fetches);
-				fetches = _v2;
-				continue getLoaded;
-			}
-		} else {
-			return {ctor: '[]'};
-		}
-	}
-};
-var _user$project$Components_ApiParallelResource$isLoaded = function (fetch) {
-	var _p2 = fetch;
-	if (_p2.ctor === 'InProgress') {
-		return false;
-	} else {
-		return true;
-	}
-};
-var _user$project$Components_ApiParallelResource$max_retries = 3;
-var _user$project$Components_ApiParallelResource$Props = F4(
-	function (a, b, c, d) {
-		return {child: a, fetches: b, loadingView: c, errorView: d};
-	});
-var _user$project$Components_ApiParallelResource$ChildMsg = function (a) {
-	return {ctor: 'ChildMsg', _0: a};
-};
-var _user$project$Components_ApiParallelResource$subscriptions = F2(
-	function (_p3, model) {
-		var _p4 = model;
-		if (_p4.ctor === 'Loaded') {
-			return A2(_user$project$Base$subscriptionsWith, _user$project$Components_ApiParallelResource$ChildMsg, _p4._0);
-		} else {
-			return _elm_lang$core$Platform_Sub$none;
-		}
-	});
-var _user$project$Components_ApiParallelResource$view = F2(
-	function (props, resource) {
-		var _p5 = resource;
-		switch (_p5.ctor) {
-			case 'Loading':
-				return props.loadingView;
-			case 'Error':
-				return props.errorView(_p5._0);
-			default:
-				return A2(_user$project$Base$viewWith, _user$project$Components_ApiParallelResource$ChildMsg, _p5._0);
-		}
-	});
-var _user$project$Components_ApiParallelResource$ApiMsg = F2(
-	function (a, b) {
-		return {ctor: 'ApiMsg', _0: a, _1: b};
-	});
-var _user$project$Components_ApiParallelResource$Done = function (a) {
-	return {ctor: 'Done', _0: a};
-};
-var _user$project$Components_ApiParallelResource$InProgress = function (a) {
-	return {ctor: 'InProgress', _0: a};
-};
-var _user$project$Components_ApiParallelResource$Loaded = function (a) {
-	return {ctor: 'Loaded', _0: a};
-};
-var _user$project$Components_ApiParallelResource$Error = function (a) {
-	return {ctor: 'Error', _0: a};
-};
-var _user$project$Components_ApiParallelResource$Loading = function (a) {
-	return {ctor: 'Loading', _0: a};
-};
-var _user$project$Components_ApiParallelResource$init = function (_p6) {
-	var _p7 = _p6;
-	var _p9 = _p7.fetches;
-	if (_elm_lang$core$List$isEmpty(_p9)) {
-		return A2(
-			_user$project$Util$mapComponent,
-			_user$project$Components_ApiParallelResource$Loaded,
-			A2(
-				_user$project$Util$mapCmd,
-				_user$project$Components_ApiParallelResource$ChildMsg,
-				_p7.child(
-					{ctor: '[]'})));
-	} else {
-		var cmd = _elm_lang$core$Platform_Cmd$batch(
-			A2(
-				_elm_lang$core$List$indexedMap,
-				function (_p8) {
-					return _elm_lang$core$Platform_Cmd$map(
-						_user$project$Components_ApiParallelResource$ApiMsg(_p8));
-				},
-				_p9));
-		var model = _user$project$Components_ApiParallelResource$Loading(
-			A2(
-				_elm_lang$core$Array$repeat,
-				_elm_lang$core$List$length(_p9),
-				_user$project$Components_ApiParallelResource$InProgress(1)));
-		return {ctor: '_Tuple2', _0: model, _1: cmd};
-	}
-};
-var _user$project$Components_ApiParallelResource$update = F3(
-	function (props, msg, model) {
-		var _p10 = msg;
-		if (_p10.ctor === 'ApiMsg') {
-			var _p17 = _p10._0;
-			var _p11 = {ctor: '_Tuple2', _0: model, _1: _p10._1};
-			if (_p11._0.ctor === 'Loading') {
-				if (_p11._1.ctor === 'Ok') {
-					var loadingData = A3(
-						_elm_lang$core$Array$set,
-						_p17,
-						_user$project$Components_ApiParallelResource$Done(_p11._1._0),
-						_p11._0._0);
-					if (A2(
-						_elm_lang$core$List$all,
-						_user$project$Components_ApiParallelResource$isLoaded,
-						_elm_lang$core$Array$toList(loadingData))) {
-						var loadedData = _user$project$Components_ApiParallelResource$getLoaded(
-							_elm_lang$core$Array$toList(loadingData));
-						var _p12 = props.child(loadedData);
-						var child = _p12._0;
-						var childCmd = _p12._1;
-						return {
-							ctor: '_Tuple2',
-							_0: _user$project$Components_ApiParallelResource$Loaded(child),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiParallelResource$ChildMsg, childCmd)
-						};
-					} else {
-						return {
-							ctor: '_Tuple2',
-							_0: _user$project$Components_ApiParallelResource$Loading(loadingData),
-							_1: _elm_lang$core$Platform_Cmd$none
-						};
-					}
-				} else {
-					var _p16 = _p11._1._0;
-					var _p15 = _p11._0._0;
-					var fetch = A2(
-						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_ApiParallelResource$ApiMsg(_p17),
-						A2(
-							_elm_lang$core$Maybe$withDefault,
-							_elm_lang$core$Platform_Cmd$none,
-							_elm_lang$core$List$head(
-								A2(_elm_lang$core$List$drop, _p17, props.fetches))));
-					var _p13 = {
-						ctor: '_Tuple2',
-						_0: A2(_elm_lang$core$Array$get, _p17, _p15),
-						_1: _p16
-					};
-					_v9_3:
-					do {
-						if (((_p13.ctor === '_Tuple2') && (_p13._0.ctor === 'Just')) && (_p13._0._0.ctor === 'InProgress')) {
-							switch (_p13._1.ctor) {
-								case 'BadStatus':
-									var _p14 = _p13._0._0._0;
-									return ((_elm_lang$core$Native_Utils.cmp(_p14, _user$project$Components_ApiParallelResource$max_retries) < 0) && (!_elm_lang$core$Native_Utils.eq(_p13._1._0.status.code, 404))) ? {
-										ctor: '_Tuple2',
-										_0: _user$project$Components_ApiParallelResource$Loading(
-											A3(
-												_elm_lang$core$Array$set,
-												_p17,
-												_user$project$Components_ApiParallelResource$InProgress(_p14 + 1),
-												_p15)),
-										_1: fetch
-									} : {
-										ctor: '_Tuple2',
-										_0: _user$project$Components_ApiParallelResource$Error(
-											A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
-										_1: _elm_lang$core$Platform_Cmd$none
-									};
-								case 'Timeout':
-									return {
-										ctor: '_Tuple2',
-										_0: _user$project$Components_ApiParallelResource$Loading(
-											A3(
-												_elm_lang$core$Array$set,
-												_p17,
-												_user$project$Components_ApiParallelResource$InProgress(_p13._0._0._0 + 1),
-												_p15)),
-										_1: fetch
-									};
-								case 'NetworkError':
-									return {
-										ctor: '_Tuple2',
-										_0: _user$project$Components_ApiParallelResource$Loading(
-											A3(
-												_elm_lang$core$Array$set,
-												_p17,
-												_user$project$Components_ApiParallelResource$InProgress(_p13._0._0._0 + 1),
-												_p15)),
-										_1: fetch
-									};
-								default:
-									break _v9_3;
-							}
-						} else {
-							break _v9_3;
-						}
-					} while(false);
-					return {
-						ctor: '_Tuple2',
-						_0: _user$project$Components_ApiParallelResource$Error(
-							A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p16)),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
-				}
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
-		} else {
-			var _p18 = model;
-			if (_p18.ctor === 'Loaded') {
-				return A2(
-					_user$project$Util$mapComponent,
-					_user$project$Components_ApiParallelResource$Loaded,
-					A3(_user$project$Base$updateWith, _user$project$Components_ApiParallelResource$ChildMsg, _p10._0, _p18._0));
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
-		}
-	});
-var _user$project$Components_ApiParallelResource$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_ApiParallelResource$init(props),
-			update: _user$project$Components_ApiParallelResource$update(props),
-			subscriptions: _user$project$Components_ApiParallelResource$subscriptions(props),
-			view: _user$project$Components_ApiParallelResource$view(props),
-			get: _user$project$Components_ApiParallelResource$get
-		});
-};
-
-var _user$project$Components_ApiResource$get = function (model) {
-	var _p0 = model;
-	if (_p0.ctor === 'Loaded') {
-		return _elm_lang$core$Maybe$Just(
-			_user$project$Base$get(_p0._0));
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$Components_ApiResource$max_retries = 3;
-var _user$project$Components_ApiResource$isLoaded = function (model) {
-	var _p1 = model;
-	if (_p1.ctor === 'Loaded') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _user$project$Components_ApiResource$Props = F4(
-	function (a, b, c, d) {
-		return {child: a, fetch: b, loadingView: c, errorView: d};
-	});
-var _user$project$Components_ApiResource$ChildMsg = function (a) {
-	return {ctor: 'ChildMsg', _0: a};
-};
-var _user$project$Components_ApiResource$subscriptions = F2(
-	function (_p2, model) {
-		var _p3 = model;
-		if (_p3.ctor === 'Loaded') {
-			return A2(
-				_elm_lang$core$Platform_Sub$map,
-				_user$project$Components_ApiResource$ChildMsg,
-				_user$project$Base$subscriptions(_p3._0));
-		} else {
-			return _elm_lang$core$Platform_Sub$none;
-		}
-	});
-var _user$project$Components_ApiResource$view = F2(
-	function (props, resource) {
-		var _p4 = resource;
-		switch (_p4.ctor) {
-			case 'Loading':
-				return props.loadingView;
-			case 'Error':
-				return props.errorView(_p4._0);
-			default:
-				return A2(_user$project$Base$viewWith, _user$project$Components_ApiResource$ChildMsg, _p4._0);
-		}
-	});
-var _user$project$Components_ApiResource$ApiMsg = function (a) {
-	return {ctor: 'ApiMsg', _0: a};
-};
-var _user$project$Components_ApiResource$Loaded = function (a) {
-	return {ctor: 'Loaded', _0: a};
-};
-var _user$project$Components_ApiResource$Error = function (a) {
-	return {ctor: 'Error', _0: a};
-};
-var _user$project$Components_ApiResource$Loading = function (a) {
-	return {ctor: 'Loading', _0: a};
-};
-var _user$project$Components_ApiResource$init = function (_p5) {
-	var _p6 = _p5;
-	return {
-		ctor: '_Tuple2',
-		_0: _user$project$Components_ApiResource$Loading(1),
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, _p6.fetch)
-	};
-};
-var _user$project$Components_ApiResource$update = F3(
-	function (props, msg, model) {
-		var _p7 = {ctor: '_Tuple2', _0: msg, _1: model};
-		_v5_2:
-		do {
-			if (_p7.ctor === '_Tuple2') {
-				if (_p7._0.ctor === 'ApiMsg') {
-					if (_p7._1.ctor === 'Loading') {
-						var _p12 = _p7._1._0;
-						var _p8 = _p7._0._0;
-						if (_p8.ctor === 'Ok') {
-							var _p9 = props.child(_p8._0);
-							var child = _p9._0;
-							var childCmd = _p9._1;
-							return {
-								ctor: '_Tuple2',
-								_0: _user$project$Components_ApiResource$Loaded(child),
-								_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
-							};
-						} else {
-							var _p11 = _p8._0;
-							if (_elm_lang$core$Native_Utils.cmp(_p12, _user$project$Components_ApiResource$max_retries) > -1) {
-								return {
-									ctor: '_Tuple2',
-									_0: _user$project$Components_ApiResource$Error(
-										A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
-									_1: _elm_lang$core$Platform_Cmd$none
-								};
-							} else {
-								var _p10 = _p11;
-								switch (_p10.ctor) {
-									case 'BadStatus':
-										return _elm_lang$core$Native_Utils.eq(_p10._0.status.code, 404) ? {
-											ctor: '_Tuple2',
-											_0: _user$project$Components_ApiResource$Error(
-												A2(_elm_lang$core$Debug$log, 'Could not find the expected resource', _p11)),
-											_1: _elm_lang$core$Platform_Cmd$none
-										} : {
-											ctor: '_Tuple2',
-											_0: _user$project$Components_ApiResource$Loading(_p12 + 1),
-											_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, props.fetch)
-										};
-									case 'Timeout':
-										return {
-											ctor: '_Tuple2',
-											_0: _user$project$Components_ApiResource$Loading(_p12 + 1),
-											_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, props.fetch)
-										};
-									case 'NetworkError':
-										return {
-											ctor: '_Tuple2',
-											_0: _user$project$Components_ApiResource$Loading(_p12 + 1),
-											_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ApiMsg, props.fetch)
-										};
-									default:
-										return {
-											ctor: '_Tuple2',
-											_0: _user$project$Components_ApiResource$Error(
-												A2(_elm_lang$core$Debug$log, 'ApiResource received an HTTP error', _p11)),
-											_1: _elm_lang$core$Platform_Cmd$none
-										};
-								}
-							}
-						}
-					} else {
-						break _v5_2;
-					}
-				} else {
-					if (_p7._1.ctor === 'Loaded') {
-						var _p13 = A2(_user$project$Base$update, _p7._0._0, _p7._1._0);
-						var child_ = _p13._0;
-						var childCmd = _p13._1;
-						return {
-							ctor: '_Tuple2',
-							_0: _user$project$Components_ApiResource$Loaded(child_),
-							_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_ApiResource$ChildMsg, childCmd)
-						};
-					} else {
-						break _v5_2;
-					}
-				}
-			} else {
-				break _v5_2;
-			}
-		} while(false);
-		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$Components_ApiResource$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_ApiResource$init(props),
-			update: _user$project$Components_ApiResource$update(props),
-			subscriptions: _user$project$Components_ApiResource$subscriptions(props),
-			view: _user$project$Components_ApiResource$view(props),
-			get: _user$project$Components_ApiResource$get
-		});
-};
-
-var _user$project$Components_Configs_CompletedConfig$update = F2(
-	function (msg, model) {
-		var _p0 = msg;
-		return {ctor: '_Tuple2', _0: _p0._0, _1: _elm_lang$core$Platform_Cmd$none};
-	});
-var _user$project$Components_Configs_CompletedConfig$init = function (_p1) {
-	var _p2 = _p1;
-	return {ctor: '_Tuple2', _0: _p2.value, _1: _elm_lang$core$Platform_Cmd$none};
-};
-var _user$project$Components_Configs_CompletedConfig$Props = function (a) {
-	return {value: a};
-};
-var _user$project$Components_Configs_CompletedConfig$NewValue = function (a) {
-	return {ctor: 'NewValue', _0: a};
-};
-var _user$project$Components_Configs_CompletedConfig$onChange = A2(
-	_elm_lang$core$Json_Decode$map,
-	function (_p3) {
-		return _user$project$Components_Configs_CompletedConfig$NewValue(
-			A2(
-				F2(
-					function (x, y) {
-						return _elm_lang$core$Native_Utils.eq(x, y);
-					}),
-				'true',
-				_p3));
-	},
-	A2(
-		_elm_lang$core$Json_Decode$at,
-		{
-			ctor: '::',
-			_0: 'target',
-			_1: {
-				ctor: '::',
-				_0: 'value',
-				_1: {ctor: '[]'}
-			}
-		},
-		_elm_lang$core$Json_Decode$string));
-var _user$project$Components_Configs_CompletedConfig$view = function (val) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('CompletedConfig'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$select,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('CompletedConfig-select'),
-					_1: {
-						ctor: '::',
-						_0: A2(_elm_lang$html$Html_Events$on, 'change', _user$project$Components_Configs_CompletedConfig$onChange),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$option,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$value('true'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$selected(val),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('Complete'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$option,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$value('false'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$selected(!val),
-									_1: {ctor: '[]'}
-								}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('Incomplete'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_Configs_CompletedConfig$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Configs_CompletedConfig$init(props),
-			update: _user$project$Components_Configs_CompletedConfig$update,
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			view: _user$project$Components_Configs_CompletedConfig$view,
-			get: _elm_lang$core$Basics$identity
-		});
-};
-
-var _user$project$Components_Configs_EnumConfig$enumOption = F2(
-	function (selectedValue, enumValue) {
-		return A2(
-			_elm_lang$html$Html$option,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$value(enumValue.id),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$selected(
-						_elm_lang$core$Native_Utils.eq(
-							_elm_lang$core$Maybe$Just(enumValue),
-							selectedValue)),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(enumValue.name),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Components_Configs_EnumConfig$emptyOption = function (selectedValue) {
-	return A2(
-		_elm_lang$html$Html$option,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$value(''),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$selected(
-					_elm_lang$core$Native_Utils.eq(selectedValue, _elm_lang$core$Maybe$Nothing)),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(''),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_Configs_EnumConfig$update = F3(
-	function (_p0, msg, model) {
-		var _p1 = _p0;
-		var _p2 = msg;
-		return {
-			ctor: '_Tuple2',
-			_0: A2(
-				_elm_lang$core$Maybe$andThen,
-				function (id) {
-					return A2(
-						_user$project$Util$find,
-						function (_p3) {
-							return A2(
-								F2(
-									function (x, y) {
-										return _elm_lang$core$Native_Utils.eq(x, y);
-									}),
-								id,
-								function (_) {
-									return _.id;
-								}(_p3));
-						},
-						_p1.enumOptions);
-				},
-				_p2._0),
-			_1: _elm_lang$core$Platform_Cmd$none
-		};
-	});
-var _user$project$Components_Configs_EnumConfig$init = function (_p4) {
-	var _p5 = _p4;
-	return {ctor: '_Tuple2', _0: _p5.selectedId, _1: _elm_lang$core$Platform_Cmd$none};
-};
-var _user$project$Components_Configs_EnumConfig$Props = F2(
-	function (a, b) {
-		return {selectedId: a, enumOptions: b};
-	});
-var _user$project$Components_Configs_EnumConfig$NewValue = function (a) {
-	return {ctor: 'NewValue', _0: a};
-};
-var _user$project$Components_Configs_EnumConfig$onChange = A2(
-	_elm_lang$core$Json_Decode$map,
-	_user$project$Components_Configs_EnumConfig$NewValue,
-	A2(
-		_elm_lang$core$Json_Decode$map,
-		function (id) {
-			return _elm_lang$core$Native_Utils.eq(id, '') ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(id);
-		},
-		A2(
-			_elm_lang$core$Json_Decode$at,
-			{
-				ctor: '::',
-				_0: 'target',
-				_1: {
-					ctor: '::',
-					_0: 'value',
-					_1: {ctor: '[]'}
-				}
-			},
-			_elm_lang$core$Json_Decode$string)));
-var _user$project$Components_Configs_EnumConfig$view = F2(
-	function (props, val) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('EnumConfig'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$select,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('EnumConfig-select'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Events$on, 'change', _user$project$Components_Configs_EnumConfig$onChange),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _user$project$Components_Configs_EnumConfig$emptyOption(val),
-						_1: A2(
-							_elm_lang$core$List$map,
-							_user$project$Components_Configs_EnumConfig$enumOption(val),
-							props.enumOptions)
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Components_Configs_EnumConfig$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Configs_EnumConfig$init(props),
-			update: _user$project$Components_Configs_EnumConfig$update(props),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			view: _user$project$Components_Configs_EnumConfig$view(props),
-			get: _elm_lang$core$Basics$identity
-		});
-};
-
-var _user$project$Components_Configs_UserInfo$view = function (_p0) {
-	var _p1 = _p0;
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('UserInfo'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: function () {
-				var _p2 = A2(
-					_elm_lang$core$Maybe$andThen,
-					function (_) {
-						return _.image_21x21;
-					},
-					_p1.photo);
-				if (_p2.ctor === 'Just') {
-					return A2(
-						_elm_lang$html$Html$img,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('UserInfo-photo avatar'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$src(_p2._0),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'});
-				} else {
-					return _elm_lang$html$Html$text('');
-				}
-			}(),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$span,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('UserInfo-name'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(_p1.name),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _user$project$Components_Configs_UserInfo$create = function (_p3) {
-	var _p4 = _p3;
-	return _user$project$Base$staticComponent(
-		_user$project$Components_Configs_UserInfo$view(_p4.user));
-};
-var _user$project$Components_Configs_UserInfo$Props = function (a) {
-	return {user: a};
-};
-
-var _user$project$Components_Typeahead$renderNoResultsOption = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--noResults'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('No Results'),
-		_1: {ctor: '[]'}
-	});
-var _user$project$Components_Typeahead$renderLoadingOption = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--loading'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _user$project$CommonViews$loadingIndicator,
-		_1: {ctor: '[]'}
-	});
-var _user$project$Components_Typeahead$isActive = function (model) {
-	var _p0 = model.options;
-	if (_p0.ctor === 'Unloaded') {
-		return false;
-	} else {
-		return model.inputFocused || model.optionsHovered;
-	}
-};
-var _user$project$Components_Typeahead$get = function (_) {
-	return _.selected;
-};
-var _user$project$Components_Typeahead$Props = function (a) {
-	return {fetcher: a};
-};
-var _user$project$Components_Typeahead$Model = F5(
-	function (a, b, c, d, e) {
-		return {options: a, fragment: b, selected: c, inputFocused: d, optionsHovered: e};
-	});
-var _user$project$Components_Typeahead$OptionsHovered = function (a) {
-	return {ctor: 'OptionsHovered', _0: a};
-};
-var _user$project$Components_Typeahead$InputFocus = function (a) {
-	return {ctor: 'InputFocus', _0: a};
-};
-var _user$project$Components_Typeahead$Selection = function (a) {
-	return {ctor: 'Selection', _0: a};
-};
-var _user$project$Components_Typeahead$renderUnselected = function (resource) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('Typeahead-option'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Components_Typeahead$Selection(resource)),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(resource.name),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_Typeahead$renderSelected = function (resource) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('Typeahead-option Typeahead-option--selected'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(
-					_user$project$Components_Typeahead$Selection(resource)),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(resource.name),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_Typeahead$renderOption = F2(
-	function (selected, resource) {
-		var _p1 = selected;
-		if (_p1.ctor === 'Just') {
-			return _elm_lang$core$Native_Utils.eq(_p1._0, resource) ? _user$project$Components_Typeahead$renderSelected(resource) : _user$project$Components_Typeahead$renderUnselected(resource);
-		} else {
-			return _user$project$Components_Typeahead$renderUnselected(resource);
-		}
-	});
-var _user$project$Components_Typeahead$renderOptions = function (_p2) {
-	var _p3 = _p2;
-	var _p4 = _p3.options;
-	switch (_p4.ctor) {
-		case 'Loaded':
-			var _p5 = _p4._0;
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onMouseOver(
-							_user$project$Components_Typeahead$OptionsHovered(true)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onMouseOut(
-								_user$project$Components_Typeahead$OptionsHovered(false)),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				(_elm_lang$core$Native_Utils.cmp(
-					_elm_lang$core$List$length(_p5),
-					0) > 0) ? A2(
-					_elm_lang$core$List$map,
-					_user$project$Components_Typeahead$renderOption(_p3.selected),
-					_p5) : {
-					ctor: '::',
-					_0: _user$project$Components_Typeahead$renderNoResultsOption,
-					_1: {ctor: '[]'}
-				});
-		case 'Loading':
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _user$project$Components_Typeahead$renderLoadingOption,
-					_1: {ctor: '[]'}
-				});
-		default:
-			return A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('Typeahead-options--empty'),
-					_1: {ctor: '[]'}
-				},
-				{ctor: '[]'});
-	}
-};
-var _user$project$Components_Typeahead$Input = function (a) {
-	return {ctor: 'Input', _0: a};
-};
-var _user$project$Components_Typeahead$view = F2(
-	function (_p6, model) {
-		var inputElem = A2(
-			_elm_lang$html$Html$input,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Typeahead-input'),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$type_('text'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_Typeahead$Input),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onFocus(
-								_user$project$Components_Typeahead$InputFocus(true)),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onBlur(
-									_user$project$Components_Typeahead$InputFocus(false)),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$value(model.fragment),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				}
-			},
-			{ctor: '[]'});
-		var elems = _user$project$Components_Typeahead$isActive(model) ? {
-			ctor: '::',
-			_0: inputElem,
-			_1: {
-				ctor: '::',
-				_0: _user$project$Components_Typeahead$renderOptions(model),
-				_1: {ctor: '[]'}
-			}
-		} : {
-			ctor: '::',
-			_0: inputElem,
-			_1: {ctor: '[]'}
-		};
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('Typeahead'),
-				_1: {ctor: '[]'}
-			},
-			elems);
-	});
-var _user$project$Components_Typeahead$NewOptions = F2(
-	function (a, b) {
-		return {ctor: 'NewOptions', _0: a, _1: b};
-	});
-var _user$project$Components_Typeahead$Loaded = function (a) {
-	return {ctor: 'Loaded', _0: a};
-};
-var _user$project$Components_Typeahead$Loading = {ctor: 'Loading'};
-var _user$project$Components_Typeahead$Unloaded = {ctor: 'Unloaded'};
-var _user$project$Components_Typeahead$init = function (_p7) {
-	var model = {options: _user$project$Components_Typeahead$Unloaded, fragment: '', selected: _elm_lang$core$Maybe$Nothing, inputFocused: false, optionsHovered: false};
-	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-};
-var _user$project$Components_Typeahead$update = F3(
-	function (_p8, msg, model) {
-		var _p9 = _p8;
-		var _p10 = msg;
-		switch (_p10.ctor) {
-			case 'NewOptions':
-				if (_p10._1.ctor === 'Ok') {
-					return (_elm_lang$core$Native_Utils.eq(_p10._0, model.fragment) && _user$project$Components_Typeahead$isActive(model)) ? {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								options: _user$project$Components_Typeahead$Loaded(_p10._1._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				} else {
-					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-				}
-			case 'Input':
-				var _p11 = _p10._0;
-				return _elm_lang$core$Native_Utils.eq(_p11, '') ? {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{options: _user$project$Components_Typeahead$Unloaded, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing, optionsHovered: false}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				} : {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{options: _user$project$Components_Typeahead$Loading, fragment: _p11, selected: _elm_lang$core$Maybe$Nothing}),
-					_1: A2(
-						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_Typeahead$NewOptions(_p11),
-						_p9.fetcher(_p11))
-				};
-			case 'Selection':
-				var _p12 = _p10._0;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							selected: _elm_lang$core$Maybe$Just(_p12),
-							fragment: _p12.name,
-							options: _user$project$Components_Typeahead$Unloaded
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'InputFocus':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{inputFocused: _p10._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{optionsHovered: _p10._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _user$project$Components_Typeahead$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Typeahead$init(props),
-			update: _user$project$Components_Typeahead$update(props),
-			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			view: _user$project$Components_Typeahead$view(props),
-			get: _user$project$Components_Typeahead$get
-		});
-};
-
-var _user$project$Components_Configs_UserConfig$get = function (model) {
-	var _p0 = model;
-	if (_p0.ctor === 'Unselected') {
-		return _elm_lang$core$Maybe$Nothing;
-	} else {
-		return _elm_lang$core$Maybe$Just(_p0._0);
-	}
-};
-var _user$project$Components_Configs_UserConfig$Props = F2(
-	function (a, b) {
-		return {selectedUser: a, apiContext: b};
-	});
-var _user$project$Components_Configs_UserConfig$TypeaheadMsg = function (a) {
-	return {ctor: 'TypeaheadMsg', _0: a};
-};
-var _user$project$Components_Configs_UserConfig$subscriptions = function (model) {
-	var _p1 = model;
-	if (_p1.ctor === 'Unselected') {
-		return A2(_user$project$Base$subscriptionsWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p1._0);
-	} else {
-		return _user$project$Base$subscriptions(_p1._1);
-	}
-};
-var _user$project$Components_Configs_UserConfig$Selection = function (a) {
-	return {ctor: 'Selection', _0: a};
-};
-var _user$project$Components_Configs_UserConfig$view = F2(
-	function (props, model) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('UserConfig'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: function () {
-					var _p2 = model;
-					if (_p2.ctor === 'Unselected') {
-						return A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('UserConfig--unselected'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(_user$project$Base$viewWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p2._0),
-								_1: {ctor: '[]'}
-							});
-					} else {
-						return A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('UserConfig--selected'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _user$project$Base$view(_p2._1),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$a,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Components_Configs_UserConfig$Selection(_elm_lang$core$Maybe$Nothing)),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class('UserConfig-clearButton'),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: _user$project$CommonViews$closeIcon,
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							});
-					}
-				}(),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$Components_Configs_UserConfig$Selected = F2(
-	function (a, b) {
-		return {ctor: 'Selected', _0: a, _1: b};
-	});
-var _user$project$Components_Configs_UserConfig$Unselected = function (a) {
-	return {ctor: 'Unselected', _0: a};
-};
-var _user$project$Components_Configs_UserConfig$makeModel = function (_p3) {
-	var _p4 = _p3;
-	var _p7 = _p4.apiContext;
-	var _p5 = _p4.selectedUser;
-	if (_p5.ctor === 'Just') {
-		var _p6 = _p5._0;
-		return A2(
-			_user$project$Util$mapComponent,
-			_user$project$Components_Configs_UserConfig$Selected(_p6),
-			_user$project$Components_Configs_UserInfo$create(
-				{user: _p6}));
-	} else {
-		return A2(
-			_user$project$Util$mapCmd,
-			_user$project$Components_Configs_UserConfig$TypeaheadMsg,
-			A2(
-				_user$project$Util$mapComponent,
-				_user$project$Components_Configs_UserConfig$Unselected,
-				_user$project$Components_Typeahead$create(
-					{
-						fetcher: A2(
-							_elm_lang$core$Basics$flip,
-							_user$project$Asana_Api$userTypeahead(_p7.workspaceId),
-							_p7.token)
-					})));
-	}
-};
-var _user$project$Components_Configs_UserConfig$init = function (props) {
-	return _user$project$Components_Configs_UserConfig$makeModel(props);
-};
-var _user$project$Components_Configs_UserConfig$update = F3(
-	function (props, msg, model) {
-		var _p8 = msg;
-		if (_p8.ctor === 'Selection') {
-			return _user$project$Components_Configs_UserConfig$makeModel(
-				_elm_lang$core$Native_Utils.update(
-					props,
-					{selectedUser: _p8._0}));
-		} else {
-			var _p9 = model;
-			if (_p9.ctor === 'Unselected') {
-				var _p10 = A3(_user$project$Base$updateWith, _user$project$Components_Configs_UserConfig$TypeaheadMsg, _p8._0, _p9._0);
-				var ta_ = _p10._0;
-				var taCmd = _p10._1;
-				var _p11 = _user$project$Base$get(ta_);
-				if (_p11.ctor === 'Just') {
-					return _user$project$Components_Configs_UserConfig$makeModel(
-						_elm_lang$core$Native_Utils.update(
-							props,
-							{
-								selectedUser: _elm_lang$core$Maybe$Just(_p11._0)
-							}));
-				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _user$project$Components_Configs_UserConfig$Unselected(ta_),
-						_1: taCmd
-					};
-				}
-			} else {
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			}
-		}
-	});
-var _user$project$Components_Configs_UserConfig$create = function (props) {
-	return _user$project$Base$create(
-		{
-			init: _user$project$Components_Configs_UserConfig$init(props),
-			update: _user$project$Components_Configs_UserConfig$update(props),
-			subscriptions: _user$project$Components_Configs_UserConfig$subscriptions,
-			view: _user$project$Components_Configs_UserConfig$view(props),
-			get: _user$project$Components_Configs_UserConfig$get
-		});
-};
-
-var _user$project$FileReader_FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
+var _asana$csvana$FileReader_FileReader$readFile = _elm_lang$core$Native_Platform.outgoingPort(
 	'readFile',
 	function (v) {
 		return {name: v.name, size: v.size, blob: v.blob};
 	});
-var _user$project$FileReader_FileReader$fileChunk = _elm_lang$core$Native_Platform.incomingPort('fileChunk', _elm_lang$core$Json_Decode$string);
-var _user$project$FileReader_FileReader$FileInfo = F3(
+var _asana$csvana$FileReader_FileReader$fileChunk = _elm_lang$core$Native_Platform.incomingPort('fileChunk', _elm_lang$core$Json_Decode$string);
+var _asana$csvana$FileReader_FileReader$FileInfo = F3(
 	function (a, b, c) {
 		return {name: a, size: b, blob: c};
 	});
-var _user$project$FileReader_FileReader$fileInfoParser = A4(
+var _asana$csvana$FileReader_FileReader$fileInfoParser = A4(
 	_elm_lang$core$Json_Decode$map3,
-	_user$project$FileReader_FileReader$FileInfo,
+	_asana$csvana$FileReader_FileReader$FileInfo,
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'size', _elm_lang$core$Json_Decode$int),
 	_elm_lang$core$Json_Decode$value);
-var _user$project$FileReader_FileReader$parseFiles = A2(
+var _asana$csvana$FileReader_FileReader$parseFiles = A2(
 	_elm_lang$core$Json_Decode$at,
 	{
 		ctor: '::',
@@ -15136,15 +14509,15 @@ var _user$project$FileReader_FileReader$parseFiles = A2(
 		_elm_lang$core$Json_Decode$map,
 		_elm_lang$core$List$filterMap(_elm_lang$core$Tuple$second),
 		_elm_lang$core$Json_Decode$keyValuePairs(
-			_elm_lang$core$Json_Decode$maybe(_user$project$FileReader_FileReader$fileInfoParser))));
-var _user$project$FileReader_FileReader$onFileInput = function (wrapper) {
+			_elm_lang$core$Json_Decode$maybe(_asana$csvana$FileReader_FileReader$fileInfoParser))));
+var _asana$csvana$FileReader_FileReader$onFileInput = function (wrapper) {
 	return A2(
 		_elm_lang$html$Html_Events$on,
 		'change',
-		A2(_elm_lang$core$Json_Decode$map, wrapper, _user$project$FileReader_FileReader$parseFiles));
+		A2(_elm_lang$core$Json_Decode$map, wrapper, _asana$csvana$FileReader_FileReader$parseFiles));
 };
 
-var _user$project$Components_Csv_Form$headers = function (_p0) {
+var _asana$csvana$Components_Csv_Form$headers = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1.csvData;
 	if (_p2.ctor === 'Success') {
@@ -15153,7 +14526,7 @@ var _user$project$Components_Csv_Form$headers = function (_p0) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Components_Csv_Form$records = function (_p3) {
+var _asana$csvana$Components_Csv_Form$records = function (_p3) {
 	var _p4 = _p3;
 	var _p5 = _p4.csvData;
 	if (_p5.ctor === 'Success') {
@@ -15164,7 +14537,7 @@ var _user$project$Components_Csv_Form$records = function (_p3) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$Components_Csv_Form$get = F2(
+var _asana$csvana$Components_Csv_Form$get = F2(
 	function (_p7, model) {
 		return A3(
 			_elm_lang$core$Maybe$map2,
@@ -15172,10 +14545,10 @@ var _user$project$Components_Csv_Form$get = F2(
 				function (v0, v1) {
 					return {ctor: '_Tuple2', _0: v0, _1: v1};
 				}),
-			_user$project$Components_Csv_Form$headers(model),
-			_user$project$Components_Csv_Form$records(model));
+			_asana$csvana$Components_Csv_Form$headers(model),
+			_asana$csvana$Components_Csv_Form$records(model));
 	});
-var _user$project$Components_Csv_Form$viewStatus = function (upload) {
+var _asana$csvana$Components_Csv_Form$viewStatus = function (upload) {
 	var _p8 = upload;
 	switch (_p8.ctor) {
 		case 'Success':
@@ -15261,25 +14634,25 @@ var _user$project$Components_Csv_Form$viewStatus = function (upload) {
 			return _elm_lang$html$Html$text('');
 	}
 };
-var _user$project$Components_Csv_Form$Props = {};
-var _user$project$Components_Csv_Form$Model = F2(
+var _asana$csvana$Components_Csv_Form$Props = {};
+var _asana$csvana$Components_Csv_Form$Model = F2(
 	function (a, b) {
 		return {csvData: a, hasHeaderRow: b};
 	});
-var _user$project$Components_Csv_Form$HasHeaderRow = function (a) {
+var _asana$csvana$Components_Csv_Form$HasHeaderRow = function (a) {
 	return {ctor: 'HasHeaderRow', _0: a};
 };
-var _user$project$Components_Csv_Form$MoreData = function (a) {
+var _asana$csvana$Components_Csv_Form$MoreData = function (a) {
 	return {ctor: 'MoreData', _0: a};
 };
-var _user$project$Components_Csv_Form$subscriptions = F2(
+var _asana$csvana$Components_Csv_Form$subscriptions = F2(
 	function (_p10, _p9) {
-		return _user$project$FileReader_FileReader$fileChunk(_user$project$Components_Csv_Form$MoreData);
+		return _asana$csvana$FileReader_FileReader$fileChunk(_asana$csvana$Components_Csv_Form$MoreData);
 	});
-var _user$project$Components_Csv_Form$NewFiles = function (a) {
+var _asana$csvana$Components_Csv_Form$NewFiles = function (a) {
 	return {ctor: 'NewFiles', _0: a};
 };
-var _user$project$Components_Csv_Form$view = F2(
+var _asana$csvana$Components_Csv_Form$view = F2(
 	function (_p11, model) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -15306,7 +14679,7 @@ var _user$project$Components_Csv_Form$view = F2(
 								_0: _elm_lang$html$Html_Attributes$type_('file'),
 								_1: {
 									ctor: '::',
-									_0: _user$project$FileReader_FileReader$onFileInput(_user$project$Components_Csv_Form$NewFiles),
+									_0: _asana$csvana$FileReader_FileReader$onFileInput(_asana$csvana$Components_Csv_Form$NewFiles),
 									_1: {ctor: '[]'}
 								}
 							},
@@ -15332,7 +14705,7 @@ var _user$project$Components_Csv_Form$view = F2(
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Events$onClick(
-											_user$project$Components_Csv_Form$HasHeaderRow(!model.hasHeaderRow)),
+											_asana$csvana$Components_Csv_Form$HasHeaderRow(!model.hasHeaderRow)),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$checked(model.hasHeaderRow),
@@ -15349,27 +14722,27 @@ var _user$project$Components_Csv_Form$view = F2(
 						}),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Components_Csv_Form$viewStatus(model.csvData),
+						_0: _asana$csvana$Components_Csv_Form$viewStatus(model.csvData),
 						_1: {ctor: '[]'}
 					}
 				}
 			});
 	});
-var _user$project$Components_Csv_Form$Success = function (a) {
+var _asana$csvana$Components_Csv_Form$Success = function (a) {
 	return {ctor: 'Success', _0: a};
 };
-var _user$project$Components_Csv_Form$Error = function (a) {
+var _asana$csvana$Components_Csv_Form$Error = function (a) {
 	return {ctor: 'Error', _0: a};
 };
-var _user$project$Components_Csv_Form$parseData = function (chunk) {
+var _asana$csvana$Components_Csv_Form$parseData = function (chunk) {
 	var _p12 = _periodic$elm_csv$Csv$parse(chunk);
 	if (_p12.ctor === 'Ok') {
-		return _user$project$Components_Csv_Form$Success(_p12._0);
+		return _asana$csvana$Components_Csv_Form$Success(_p12._0);
 	} else {
-		return _user$project$Components_Csv_Form$Error(_p12._0);
+		return _asana$csvana$Components_Csv_Form$Error(_p12._0);
 	}
 };
-var _user$project$Components_Csv_Form$update = F3(
+var _asana$csvana$Components_Csv_Form$update = F3(
 	function (_p13, msg, model) {
 		var _p14 = msg;
 		switch (_p14.ctor) {
@@ -15379,7 +14752,7 @@ var _user$project$Components_Csv_Form$update = F3(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							csvData: _user$project$Components_Csv_Form$parseData(_p14._0)
+							csvData: _asana$csvana$Components_Csv_Form$parseData(_p14._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -15389,7 +14762,7 @@ var _user$project$Components_Csv_Form$update = F3(
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$FileReader_FileReader$readFile(_p15._0)
+						_1: _asana$csvana$FileReader_FileReader$readFile(_p15._0)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -15404,23 +14777,23 @@ var _user$project$Components_Csv_Form$update = F3(
 				};
 		}
 	});
-var _user$project$Components_Csv_Form$Empty = {ctor: 'Empty'};
-var _user$project$Components_Csv_Form$init = function (_p16) {
-	var model = {csvData: _user$project$Components_Csv_Form$Empty, hasHeaderRow: true};
+var _asana$csvana$Components_Csv_Form$Empty = {ctor: 'Empty'};
+var _asana$csvana$Components_Csv_Form$init = function (_p16) {
+	var model = {csvData: _asana$csvana$Components_Csv_Form$Empty, hasHeaderRow: true};
 	return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_Csv_Form$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_Csv_Form$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_Csv_Form$init(props),
-			update: _user$project$Components_Csv_Form$update(props),
-			subscriptions: _user$project$Components_Csv_Form$subscriptions(props),
-			view: _user$project$Components_Csv_Form$view(props),
-			get: _user$project$Components_Csv_Form$get(props)
+			init: _asana$csvana$Components_Csv_Form$init(props),
+			update: _asana$csvana$Components_Csv_Form$update(props),
+			subscriptions: _asana$csvana$Components_Csv_Form$subscriptions(props),
+			view: _asana$csvana$Components_Csv_Form$view(props),
+			get: _asana$csvana$Components_Csv_Form$get(props)
 		});
 };
 
-var _user$project$Components_Csv_Summary$view = function (csvData) {
+var _asana$csvana$Components_Csv_Summary$view = function (csvData) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -15445,16 +14818,147 @@ var _user$project$Components_Csv_Summary$view = function (csvData) {
 				},
 				_elm_lang$core$Tuple$first(csvData))));
 };
-var _user$project$Components_Csv_Summary$create = function (_p0) {
+var _asana$csvana$Components_Csv_Summary$create = function (_p0) {
 	var _p1 = _p0;
-	return _user$project$Base$staticComponent(
-		_user$project$Components_Csv_Summary$view(_p1.csvData));
+	return _asana$csvana$Base$staticComponent(
+		_asana$csvana$Components_Csv_Summary$view(_p1.csvData));
 };
-var _user$project$Components_Csv_Summary$Props = function (a) {
+var _asana$csvana$Components_Csv_Summary$Props = function (a) {
 	return {csvData: a};
 };
 
-var _user$project$Components_TargetConfig$get = F2(
+var _elm_lang$core$Set$foldr = F3(
+	function (f, b, _p0) {
+		var _p1 = _p0;
+		return A3(
+			_elm_lang$core$Dict$foldr,
+			F3(
+				function (k, _p2, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p1._0);
+	});
+var _elm_lang$core$Set$foldl = F3(
+	function (f, b, _p3) {
+		var _p4 = _p3;
+		return A3(
+			_elm_lang$core$Dict$foldl,
+			F3(
+				function (k, _p5, b) {
+					return A2(f, k, b);
+				}),
+			b,
+			_p4._0);
+	});
+var _elm_lang$core$Set$toList = function (_p6) {
+	var _p7 = _p6;
+	return _elm_lang$core$Dict$keys(_p7._0);
+};
+var _elm_lang$core$Set$size = function (_p8) {
+	var _p9 = _p8;
+	return _elm_lang$core$Dict$size(_p9._0);
+};
+var _elm_lang$core$Set$member = F2(
+	function (k, _p10) {
+		var _p11 = _p10;
+		return A2(_elm_lang$core$Dict$member, k, _p11._0);
+	});
+var _elm_lang$core$Set$isEmpty = function (_p12) {
+	var _p13 = _p12;
+	return _elm_lang$core$Dict$isEmpty(_p13._0);
+};
+var _elm_lang$core$Set$Set_elm_builtin = function (a) {
+	return {ctor: 'Set_elm_builtin', _0: a};
+};
+var _elm_lang$core$Set$empty = _elm_lang$core$Set$Set_elm_builtin(_elm_lang$core$Dict$empty);
+var _elm_lang$core$Set$singleton = function (k) {
+	return _elm_lang$core$Set$Set_elm_builtin(
+		A2(
+			_elm_lang$core$Dict$singleton,
+			k,
+			{ctor: '_Tuple0'}));
+};
+var _elm_lang$core$Set$insert = F2(
+	function (k, _p14) {
+		var _p15 = _p14;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A3(
+				_elm_lang$core$Dict$insert,
+				k,
+				{ctor: '_Tuple0'},
+				_p15._0));
+	});
+var _elm_lang$core$Set$fromList = function (xs) {
+	return A3(_elm_lang$core$List$foldl, _elm_lang$core$Set$insert, _elm_lang$core$Set$empty, xs);
+};
+var _elm_lang$core$Set$map = F2(
+	function (f, s) {
+		return _elm_lang$core$Set$fromList(
+			A2(
+				_elm_lang$core$List$map,
+				f,
+				_elm_lang$core$Set$toList(s)));
+	});
+var _elm_lang$core$Set$remove = F2(
+	function (k, _p16) {
+		var _p17 = _p16;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$remove, k, _p17._0));
+	});
+var _elm_lang$core$Set$union = F2(
+	function (_p19, _p18) {
+		var _p20 = _p19;
+		var _p21 = _p18;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$union, _p20._0, _p21._0));
+	});
+var _elm_lang$core$Set$intersect = F2(
+	function (_p23, _p22) {
+		var _p24 = _p23;
+		var _p25 = _p22;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$intersect, _p24._0, _p25._0));
+	});
+var _elm_lang$core$Set$diff = F2(
+	function (_p27, _p26) {
+		var _p28 = _p27;
+		var _p29 = _p26;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(_elm_lang$core$Dict$diff, _p28._0, _p29._0));
+	});
+var _elm_lang$core$Set$filter = F2(
+	function (p, _p30) {
+		var _p31 = _p30;
+		return _elm_lang$core$Set$Set_elm_builtin(
+			A2(
+				_elm_lang$core$Dict$filter,
+				F2(
+					function (k, _p32) {
+						return p(k);
+					}),
+				_p31._0));
+	});
+var _elm_lang$core$Set$partition = F2(
+	function (p, _p33) {
+		var _p34 = _p33;
+		var _p35 = A2(
+			_elm_lang$core$Dict$partition,
+			F2(
+				function (k, _p36) {
+					return p(k);
+				}),
+			_p34._0);
+		var p1 = _p35._0;
+		var p2 = _p35._1;
+		return {
+			ctor: '_Tuple2',
+			_0: _elm_lang$core$Set$Set_elm_builtin(p1),
+			_1: _elm_lang$core$Set$Set_elm_builtin(p2)
+		};
+	});
+
+var _asana$csvana$Components_TargetConfig$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
 		var _p3 = _p0;
@@ -15472,7 +14976,7 @@ var _user$project$Components_TargetConfig$get = F2(
 			recordViewPairs,
 			function (_p4) {
 				var _p5 = _p4;
-				var _p6 = A2(_elm_lang$core$Maybe$andThen, _user$project$Base$get, _p5._1);
+				var _p6 = A2(_elm_lang$core$Maybe$andThen, _asana$csvana$Base$get, _p5._1);
 				if (_p6.ctor === 'Just') {
 					return _elm_lang$core$Maybe$Just(
 						{ctor: '_Tuple2', _0: _p5._0, _1: _p6._0});
@@ -15482,31 +14986,31 @@ var _user$project$Components_TargetConfig$get = F2(
 			});
 		return _elm_lang$core$Dict$fromList(validMappings);
 	});
-var _user$project$Components_TargetConfig$Props = F3(
+var _asana$csvana$Components_TargetConfig$Props = F3(
 	function (a, b, c) {
 		return {defaultMap: a, dataView: b, records: c};
 	});
-var _user$project$Components_TargetConfig$Model = F2(
+var _asana$csvana$Components_TargetConfig$Model = F2(
 	function (a, b) {
 		return {views: a, isOpen: b};
 	});
-var _user$project$Components_TargetConfig$NeedsWork = function (a) {
+var _asana$csvana$Components_TargetConfig$NeedsWork = function (a) {
 	return {ctor: 'NeedsWork', _0: a};
 };
-var _user$project$Components_TargetConfig$Value = function (a) {
+var _asana$csvana$Components_TargetConfig$Value = function (a) {
 	return {ctor: 'Value', _0: a};
 };
-var _user$project$Components_TargetConfig$ClosePopup = {ctor: 'ClosePopup'};
-var _user$project$Components_TargetConfig$OpenPopup = {ctor: 'OpenPopup'};
-var _user$project$Components_TargetConfig$WorkComplete = F2(
+var _asana$csvana$Components_TargetConfig$ClosePopup = {ctor: 'ClosePopup'};
+var _asana$csvana$Components_TargetConfig$OpenPopup = {ctor: 'OpenPopup'};
+var _asana$csvana$Components_TargetConfig$WorkComplete = F2(
 	function (a, b) {
 		return {ctor: 'WorkComplete', _0: a, _1: b};
 	});
-var _user$project$Components_TargetConfig$ChildMsg = F2(
+var _asana$csvana$Components_TargetConfig$ChildMsg = F2(
 	function (a, b) {
 		return {ctor: 'ChildMsg', _0: a, _1: b};
 	});
-var _user$project$Components_TargetConfig$init = function (_p7) {
+var _asana$csvana$Components_TargetConfig$init = function (_p7) {
 	var _p8 = _p7;
 	var mappedRecords = A2(
 		_elm_lang$core$List$map,
@@ -15522,10 +15026,10 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 					var _p10 = result;
 					if (_p10.ctor === 'Value') {
 						return A3(
-							_user$project$Util$mapPair,
+							_asana$csvana$Util$mapPair,
 							_elm_lang$core$Maybe$Just,
 							_elm_lang$core$Platform_Cmd$map(
-								_user$project$Components_TargetConfig$ChildMsg(index)),
+								_asana$csvana$Components_TargetConfig$ChildMsg(index)),
 							_p8.dataView(_p10._0));
 					} else {
 						return {
@@ -15533,7 +15037,7 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 							_0: _elm_lang$core$Maybe$Nothing,
 							_1: A2(
 								_elm_lang$core$Platform_Cmd$map,
-								_user$project$Components_TargetConfig$WorkComplete(index),
+								_asana$csvana$Components_TargetConfig$WorkComplete(index),
 								_p10._0)
 						};
 					}
@@ -15550,7 +15054,7 @@ var _user$project$Components_TargetConfig$init = function (_p7) {
 		_1: cmd
 	};
 };
-var _user$project$Components_TargetConfig$update = F3(
+var _asana$csvana$Components_TargetConfig$update = F3(
 	function (_p11, msg, model) {
 		var _p12 = _p11;
 		var _p13 = msg;
@@ -15561,8 +15065,8 @@ var _user$project$Components_TargetConfig$update = F3(
 				if (_p14.ctor === 'Just') {
 					if (_p14._0.ctor === 'Just') {
 						var _p15 = A3(
-							_user$project$Base$updateWith,
-							_user$project$Components_TargetConfig$ChildMsg(_p16),
+							_asana$csvana$Base$updateWith,
+							_asana$csvana$Components_TargetConfig$ChildMsg(_p16),
 							_p13._1,
 							_p14._0._0);
 						var child_ = _p15._0;
@@ -15611,7 +15115,7 @@ var _user$project$Components_TargetConfig$update = F3(
 						}),
 					_1: A2(
 						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_TargetConfig$ChildMsg(_p18),
+						_asana$csvana$Components_TargetConfig$ChildMsg(_p18),
 						cmd)
 				};
 			case 'OpenPopup':
@@ -15632,7 +15136,7 @@ var _user$project$Components_TargetConfig$update = F3(
 				};
 		}
 	});
-var _user$project$Components_TargetConfig$subscriptions = function (_p19) {
+var _asana$csvana$Components_TargetConfig$subscriptions = function (_p19) {
 	var _p20 = _p19;
 	return _elm_lang$core$Platform_Sub$batch(
 		A2(
@@ -15642,12 +15146,12 @@ var _user$project$Components_TargetConfig$subscriptions = function (_p19) {
 				_elm_lang$core$List$indexedMap,
 				function (_p21) {
 					return _elm_lang$core$Maybe$map(
-						_user$project$Base$subscriptionsWith(
-							_user$project$Components_TargetConfig$ChildMsg(_p21)));
+						_asana$csvana$Base$subscriptionsWith(
+							_asana$csvana$Components_TargetConfig$ChildMsg(_p21)));
 				},
 				_elm_lang$core$Array$toList(_p20.views))));
 };
-var _user$project$Components_TargetConfig$recordView = F3(
+var _asana$csvana$Components_TargetConfig$recordView = F3(
 	function (views, index, record) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -15686,11 +15190,11 @@ var _user$project$Components_TargetConfig$recordView = F3(
 								if (_p22.ctor === 'Just') {
 									if (_p22._0.ctor === 'Just') {
 										return A2(
-											_user$project$Base$viewWith,
-											_user$project$Components_TargetConfig$ChildMsg(index),
+											_asana$csvana$Base$viewWith,
+											_asana$csvana$Components_TargetConfig$ChildMsg(index),
 											_p22._0._0);
 									} else {
-										return _user$project$CommonViews$loadingIndicator;
+										return _asana$csvana$CommonViews$loadingIndicator;
 									}
 								} else {
 									return _elm_lang$core$Native_Utils.crashCase(
@@ -15708,12 +15212,12 @@ var _user$project$Components_TargetConfig$recordView = F3(
 				}
 			});
 	});
-var _user$project$Components_TargetConfig$popupView = F2(
+var _asana$csvana$Components_TargetConfig$popupView = F2(
 	function (records, views) {
 		return A3(
-			_user$project$CommonViews$popup,
+			_asana$csvana$CommonViews$popup,
 			'Configure Data Mapping',
-			_user$project$Components_TargetConfig$ClosePopup,
+			_asana$csvana$Components_TargetConfig$ClosePopup,
 			A2(
 				_elm_lang$html$Html$div,
 				{
@@ -15733,7 +15237,7 @@ var _user$project$Components_TargetConfig$popupView = F2(
 						A2(
 							_elm_lang$core$List$map,
 							_elm_lang$core$Basics$uncurry(
-								_user$project$Components_TargetConfig$recordView(views)),
+								_asana$csvana$Components_TargetConfig$recordView(views)),
 							A2(
 								_elm_lang$core$List$indexedMap,
 								F2(
@@ -15765,7 +15269,7 @@ var _user$project$Components_TargetConfig$popupView = F2(
 												_0: _elm_lang$html$Html_Attributes$value('Done'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_TargetConfig$ClosePopup),
+													_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_TargetConfig$ClosePopup),
 													_1: {ctor: '[]'}
 												}
 											}
@@ -15782,7 +15286,7 @@ var _user$project$Components_TargetConfig$popupView = F2(
 					}
 				}));
 	});
-var _user$project$Components_TargetConfig$view = F2(
+var _asana$csvana$Components_TargetConfig$view = F2(
 	function (_p25, _p24) {
 		var _p26 = _p25;
 		var _p27 = _p24;
@@ -15795,50 +15299,50 @@ var _user$project$Components_TargetConfig$view = F2(
 			},
 			_p27.isOpen ? {
 				ctor: '::',
-				_0: _user$project$CommonViews$configButton(_user$project$Components_TargetConfig$OpenPopup),
+				_0: _asana$csvana$CommonViews$configButton(_asana$csvana$Components_TargetConfig$OpenPopup),
 				_1: {
 					ctor: '::',
-					_0: A2(_user$project$Components_TargetConfig$popupView, _p26.records, _p27.views),
+					_0: A2(_asana$csvana$Components_TargetConfig$popupView, _p26.records, _p27.views),
 					_1: {ctor: '[]'}
 				}
 			} : {
 				ctor: '::',
-				_0: _user$project$CommonViews$configButton(_user$project$Components_TargetConfig$OpenPopup),
+				_0: _asana$csvana$CommonViews$configButton(_asana$csvana$Components_TargetConfig$OpenPopup),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Components_TargetConfig$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_TargetConfig$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_TargetConfig$init(props),
-			update: _user$project$Components_TargetConfig$update(props),
-			subscriptions: _user$project$Components_TargetConfig$subscriptions,
-			view: _user$project$Components_TargetConfig$view(props),
-			get: _user$project$Components_TargetConfig$get(props)
+			init: _asana$csvana$Components_TargetConfig$init(props),
+			update: _asana$csvana$Components_TargetConfig$update(props),
+			subscriptions: _asana$csvana$Components_TargetConfig$subscriptions,
+			view: _asana$csvana$Components_TargetConfig$view(props),
+			get: _asana$csvana$Components_TargetConfig$get(props)
 		});
 };
 
-var _user$project$Components_TargetSelector$formatCustomEnumName = function (name) {
+var _asana$csvana$Components_TargetSelector$formatCustomEnumName = function (name) {
 	return A2(_elm_lang$core$Basics_ops['++'], 'Custom Enum: ', name);
 };
-var _user$project$Components_TargetSelector$formatCustomNumberName = function (name) {
+var _asana$csvana$Components_TargetSelector$formatCustomNumberName = function (name) {
 	return A2(_elm_lang$core$Basics_ops['++'], 'Custom Number: ', name);
 };
-var _user$project$Components_TargetSelector$formatCustomTextName = function (name) {
+var _asana$csvana$Components_TargetSelector$formatCustomTextName = function (name) {
 	return A2(_elm_lang$core$Basics_ops['++'], 'Custom Text: ', name);
 };
-var _user$project$Components_TargetSelector$customFieldName = function (info) {
+var _asana$csvana$Components_TargetSelector$customFieldName = function (info) {
 	var _p0 = info;
 	switch (_p0.ctor) {
 		case 'CustomTextFieldInfo':
-			return _user$project$Components_TargetSelector$formatCustomTextName(_p0._1);
+			return _asana$csvana$Components_TargetSelector$formatCustomTextName(_p0._1);
 		case 'CustomNumberFieldInfo':
-			return _user$project$Components_TargetSelector$formatCustomNumberName(_p0._1);
+			return _asana$csvana$Components_TargetSelector$formatCustomNumberName(_p0._1);
 		default:
-			return _user$project$Components_TargetSelector$formatCustomEnumName(_p0._1);
+			return _asana$csvana$Components_TargetSelector$formatCustomEnumName(_p0._1);
 	}
 };
-var _user$project$Components_TargetSelector$targetStrings = function (customFields) {
+var _asana$csvana$Components_TargetSelector$targetStrings = function (customFields) {
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		{
@@ -15870,9 +15374,9 @@ var _user$project$Components_TargetSelector$targetStrings = function (customFiel
 				}
 			}
 		},
-		A2(_elm_lang$core$List$map, _user$project$Components_TargetSelector$customFieldName, customFields));
+		A2(_elm_lang$core$List$map, _asana$csvana$Components_TargetSelector$customFieldName, customFields));
 };
-var _user$project$Components_TargetSelector$matchCustomFieldName = function (str) {
+var _asana$csvana$Components_TargetSelector$matchCustomFieldName = function (str) {
 	return function (_p1) {
 		return _elm_lang$core$List$head(
 			A2(
@@ -15884,12 +15388,12 @@ var _user$project$Components_TargetSelector$matchCustomFieldName = function (str
 								return _elm_lang$core$Native_Utils.eq(x, y);
 							}),
 						str,
-						_user$project$Components_TargetSelector$customFieldName(_p2));
+						_asana$csvana$Components_TargetSelector$customFieldName(_p2));
 				},
 				_p1));
 	};
 };
-var _user$project$Components_TargetSelector$viewOption = function (name) {
+var _asana$csvana$Components_TargetSelector$viewOption = function (name) {
 	return A2(
 		_elm_lang$html$Html$option,
 		{
@@ -15903,73 +15407,73 @@ var _user$project$Components_TargetSelector$viewOption = function (name) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Components_TargetSelector$get = function (model) {
+var _asana$csvana$Components_TargetSelector$get = function (model) {
 	var _p3 = model;
 	switch (_p3.ctor) {
 		case 'None':
 			return _elm_lang$core$Maybe$Nothing;
 		case 'Name':
-			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Name);
+			return _elm_lang$core$Maybe$Just(_asana$csvana$Asana_Target$Name);
 		case 'Description':
-			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$Description);
+			return _elm_lang$core$Maybe$Just(_asana$csvana$Asana_Target$Description);
 		case 'Assignee':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Asana_Target$Assignee(
+				_asana$csvana$Asana_Target$Assignee(
 					A2(
 						_elm_lang$core$Dict$map,
 						_elm_lang$core$Basics$always(
 							function (_) {
 								return _.id;
 							}),
-						_user$project$Base$get(_p3._0))));
+						_asana$csvana$Base$get(_p3._0))));
 		case 'Completion':
 			return _elm_lang$core$Maybe$Just(
-				_user$project$Asana_Target$Completion(
-					_user$project$Base$get(_p3._0)));
+				_asana$csvana$Asana_Target$Completion(
+					_asana$csvana$Base$get(_p3._0)));
 		case 'DueDate':
-			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$DueDate);
+			return _elm_lang$core$Maybe$Just(_asana$csvana$Asana_Target$DueDate);
 		case 'DueDateWithTime':
-			return _elm_lang$core$Maybe$Just(_user$project$Asana_Target$DueTime);
+			return _elm_lang$core$Maybe$Just(_asana$csvana$Asana_Target$DueTime);
 		case 'CustomEnumField':
 			return _elm_lang$core$Maybe$Just(
 				A2(
-					_user$project$Asana_Target$CustomEnum,
+					_asana$csvana$Asana_Target$CustomEnum,
 					_p3._0,
-					_user$project$Base$get(_p3._3)));
+					_asana$csvana$Base$get(_p3._3)));
 		default:
 			var _p4 = _p3._0;
 			switch (_p4.ctor) {
 				case 'CustomTextFieldInfo':
 					return _elm_lang$core$Maybe$Just(
-						_user$project$Asana_Target$CustomText(_p4._0));
+						_asana$csvana$Asana_Target$CustomText(_p4._0));
 				case 'CustomNumberFieldInfo':
 					return _elm_lang$core$Maybe$Just(
-						_user$project$Asana_Target$CustomNumber(_p4._0));
+						_asana$csvana$Asana_Target$CustomNumber(_p4._0));
 				default:
 					return _elm_lang$core$Maybe$Nothing;
 			}
 	}
 };
-var _user$project$Components_TargetSelector$Props = F3(
+var _asana$csvana$Components_TargetSelector$Props = F3(
 	function (a, b, c) {
 		return {customFields: a, records: b, apiContext: c};
 	});
-var _user$project$Components_TargetSelector$EnumMsg = function (a) {
+var _asana$csvana$Components_TargetSelector$EnumMsg = function (a) {
 	return {ctor: 'EnumMsg', _0: a};
 };
-var _user$project$Components_TargetSelector$CompletionMsg = function (a) {
+var _asana$csvana$Components_TargetSelector$CompletionMsg = function (a) {
 	return {ctor: 'CompletionMsg', _0: a};
 };
-var _user$project$Components_TargetSelector$AssigneeMsg = function (a) {
+var _asana$csvana$Components_TargetSelector$AssigneeMsg = function (a) {
 	return {ctor: 'AssigneeMsg', _0: a};
 };
-var _user$project$Components_TargetSelector$Selection = function (a) {
+var _asana$csvana$Components_TargetSelector$Selection = function (a) {
 	return {ctor: 'Selection', _0: a};
 };
-var _user$project$Components_TargetSelector$onChange = function (customFields) {
+var _asana$csvana$Components_TargetSelector$onChange = function (customFields) {
 	return A2(
 		_elm_lang$core$Json_Decode$map,
-		_user$project$Components_TargetSelector$Selection,
+		_asana$csvana$Components_TargetSelector$Selection,
 		A2(
 			_elm_lang$core$Json_Decode$at,
 			{
@@ -15983,11 +15487,11 @@ var _user$project$Components_TargetSelector$onChange = function (customFields) {
 			},
 			_elm_lang$core$Json_Decode$string));
 };
-var _user$project$Components_TargetSelector$viewSelect = function (customFields) {
+var _asana$csvana$Components_TargetSelector$viewSelect = function (customFields) {
 	var options = A2(
 		_elm_lang$core$List$map,
-		_user$project$Components_TargetSelector$viewOption,
-		_user$project$Components_TargetSelector$targetStrings(customFields));
+		_asana$csvana$Components_TargetSelector$viewOption,
+		_asana$csvana$Components_TargetSelector$targetStrings(customFields));
 	return A2(
 		_elm_lang$html$Html$select,
 		{
@@ -15998,13 +15502,13 @@ var _user$project$Components_TargetSelector$viewSelect = function (customFields)
 				_0: A2(
 					_elm_lang$html$Html_Events$on,
 					'change',
-					_user$project$Components_TargetSelector$onChange(customFields)),
+					_asana$csvana$Components_TargetSelector$onChange(customFields)),
 				_1: {ctor: '[]'}
 			}
 		},
 		options);
 };
-var _user$project$Components_TargetSelector$withUnselect = function (inner) {
+var _asana$csvana$Components_TargetSelector$withUnselect = function (inner) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16025,21 +15529,21 @@ var _user$project$Components_TargetSelector$withUnselect = function (inner) {
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
-								_user$project$Components_TargetSelector$Selection('')),
+								_asana$csvana$Components_TargetSelector$Selection('')),
 							_1: {ctor: '[]'}
 						}
 					},
 					{
 						ctor: '::',
-						_0: _user$project$CommonViews$closeIcon,
+						_0: _asana$csvana$CommonViews$closeIcon,
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Components_TargetSelector$viewSimpleTarget = function (name) {
-	return _user$project$Components_TargetSelector$withUnselect(
+var _asana$csvana$Components_TargetSelector$viewSimpleTarget = function (name) {
+	return _asana$csvana$Components_TargetSelector$withUnselect(
 		A2(
 			_elm_lang$html$Html$div,
 			{
@@ -16064,9 +15568,9 @@ var _user$project$Components_TargetSelector$viewSimpleTarget = function (name) {
 				_1: {ctor: '[]'}
 			}));
 };
-var _user$project$Components_TargetSelector$viewWithConfig = F2(
+var _asana$csvana$Components_TargetSelector$viewWithConfig = F2(
 	function (name, config) {
-		return _user$project$Components_TargetSelector$withUnselect(
+		return _asana$csvana$Components_TargetSelector$withUnselect(
 			A2(
 				_elm_lang$html$Html$div,
 				{
@@ -16095,86 +15599,86 @@ var _user$project$Components_TargetSelector$viewWithConfig = F2(
 					}
 				}));
 	});
-var _user$project$Components_TargetSelector$view = F2(
+var _asana$csvana$Components_TargetSelector$view = F2(
 	function (props, model) {
 		var _p5 = model;
 		switch (_p5.ctor) {
 			case 'None':
-				return _user$project$Components_TargetSelector$viewSelect(props.customFields);
+				return _asana$csvana$Components_TargetSelector$viewSelect(props.customFields);
 			case 'Name':
-				return _user$project$Components_TargetSelector$viewSimpleTarget('Name');
+				return _asana$csvana$Components_TargetSelector$viewSimpleTarget('Name');
 			case 'Description':
-				return _user$project$Components_TargetSelector$viewSimpleTarget('Description');
+				return _asana$csvana$Components_TargetSelector$viewSimpleTarget('Description');
 			case 'Assignee':
 				return A2(
-					_user$project$Components_TargetSelector$viewWithConfig,
+					_asana$csvana$Components_TargetSelector$viewWithConfig,
 					'Assignee',
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$AssigneeMsg, _p5._0));
+					A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_TargetSelector$AssigneeMsg, _p5._0));
 			case 'Completion':
 				return A2(
-					_user$project$Components_TargetSelector$viewWithConfig,
+					_asana$csvana$Components_TargetSelector$viewWithConfig,
 					'Completion',
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$CompletionMsg, _p5._0));
+					A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_TargetSelector$CompletionMsg, _p5._0));
 			case 'DueDate':
-				return _user$project$Components_TargetSelector$viewSimpleTarget('Due Date');
+				return _asana$csvana$Components_TargetSelector$viewSimpleTarget('Due Date');
 			case 'DueDateWithTime':
-				return _user$project$Components_TargetSelector$viewSimpleTarget('Due Date With Time');
+				return _asana$csvana$Components_TargetSelector$viewSimpleTarget('Due Date With Time');
 			case 'CustomEnumField':
 				return A2(
-					_user$project$Components_TargetSelector$viewWithConfig,
-					_user$project$Components_TargetSelector$formatCustomEnumName(_p5._1),
-					A2(_user$project$Base$viewWith, _user$project$Components_TargetSelector$EnumMsg, _p5._3));
+					_asana$csvana$Components_TargetSelector$viewWithConfig,
+					_asana$csvana$Components_TargetSelector$formatCustomEnumName(_p5._1),
+					A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_TargetSelector$EnumMsg, _p5._3));
 			default:
-				return _user$project$Components_TargetSelector$viewSimpleTarget(
-					_user$project$Components_TargetSelector$customFieldName(_p5._0));
+				return _asana$csvana$Components_TargetSelector$viewSimpleTarget(
+					_asana$csvana$Components_TargetSelector$customFieldName(_p5._0));
 		}
 	});
-var _user$project$Components_TargetSelector$CustomField = function (a) {
+var _asana$csvana$Components_TargetSelector$CustomField = function (a) {
 	return {ctor: 'CustomField', _0: a};
 };
-var _user$project$Components_TargetSelector$CustomEnumField = F4(
+var _asana$csvana$Components_TargetSelector$CustomEnumField = F4(
 	function (a, b, c, d) {
 		return {ctor: 'CustomEnumField', _0: a, _1: b, _2: c, _3: d};
 	});
-var _user$project$Components_TargetSelector$DueDateWithTime = {ctor: 'DueDateWithTime'};
-var _user$project$Components_TargetSelector$DueDate = {ctor: 'DueDate'};
-var _user$project$Components_TargetSelector$Completion = function (a) {
+var _asana$csvana$Components_TargetSelector$DueDateWithTime = {ctor: 'DueDateWithTime'};
+var _asana$csvana$Components_TargetSelector$DueDate = {ctor: 'DueDate'};
+var _asana$csvana$Components_TargetSelector$Completion = function (a) {
 	return {ctor: 'Completion', _0: a};
 };
-var _user$project$Components_TargetSelector$Assignee = function (a) {
+var _asana$csvana$Components_TargetSelector$Assignee = function (a) {
 	return {ctor: 'Assignee', _0: a};
 };
-var _user$project$Components_TargetSelector$assigneeComponent = function (_p6) {
+var _asana$csvana$Components_TargetSelector$assigneeComponent = function (_p6) {
 	var _p7 = _p6;
 	var _p9 = _p7.apiContext;
 	var userConfig = function (mValue) {
-		return _user$project$Components_Configs_UserConfig$create(
+		return _asana$csvana$Components_Configs_UserConfig$create(
 			{selectedUser: mValue, apiContext: _p9});
 	};
 	var lookupUser = function (value) {
-		return _elm_lang$core$String$isEmpty(value) ? _user$project$Components_TargetConfig$Value(_elm_lang$core$Maybe$Nothing) : _user$project$Components_TargetConfig$NeedsWork(
+		return _elm_lang$core$String$isEmpty(value) ? _asana$csvana$Components_TargetConfig$Value(_elm_lang$core$Maybe$Nothing) : _asana$csvana$Components_TargetConfig$NeedsWork(
 			A2(
 				_elm_lang$core$Platform_Cmd$map,
 				_elm_lang$core$Result$toMaybe,
 				A2(
-					_user$project$Asana_Api$user,
-					_user$project$Asana_Api$Email(value),
+					_asana$csvana$Asana_Api$user,
+					_asana$csvana$Asana_Api$Email(value),
 					_p9.token)));
 	};
-	var _p8 = _user$project$Components_TargetConfig$create(
+	var _p8 = _asana$csvana$Components_TargetConfig$create(
 		{defaultMap: lookupUser, dataView: userConfig, records: _p7.records});
 	var target = _p8._0;
 	var targetMsg = _p8._1;
 	return {
 		ctor: '_Tuple2',
-		_0: _user$project$Components_TargetSelector$Assignee(target),
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_TargetSelector$AssigneeMsg, targetMsg)
+		_0: _asana$csvana$Components_TargetSelector$Assignee(target),
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_TargetSelector$AssigneeMsg, targetMsg)
 	};
 };
-var _user$project$Components_TargetSelector$Description = {ctor: 'Description'};
-var _user$project$Components_TargetSelector$Name = {ctor: 'Name'};
-var _user$project$Components_TargetSelector$None = {ctor: 'None'};
-var _user$project$Components_TargetSelector$updateModel = F3(
+var _asana$csvana$Components_TargetSelector$Description = {ctor: 'Description'};
+var _asana$csvana$Components_TargetSelector$Name = {ctor: 'Name'};
+var _asana$csvana$Components_TargetSelector$None = {ctor: 'None'};
+var _asana$csvana$Components_TargetSelector$updateModel = F3(
 	function (props, str, model) {
 		var _p10 = props;
 		var records = _p10.records;
@@ -16182,22 +15686,22 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 		var _p11 = str;
 		switch (_p11) {
 			case 'Name':
-				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Name, _1: _elm_lang$core$Platform_Cmd$none};
+				return {ctor: '_Tuple2', _0: _asana$csvana$Components_TargetSelector$Name, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Description':
-				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$Description, _1: _elm_lang$core$Platform_Cmd$none};
+				return {ctor: '_Tuple2', _0: _asana$csvana$Components_TargetSelector$Description, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Assignee':
-				return _user$project$Components_TargetSelector$assigneeComponent(props);
+				return _asana$csvana$Components_TargetSelector$assigneeComponent(props);
 			case 'Completion':
 				return A2(
-					_user$project$Util$mapCmd,
-					_user$project$Components_TargetSelector$CompletionMsg,
+					_asana$csvana$Util$mapCmd,
+					_asana$csvana$Components_TargetSelector$CompletionMsg,
 					A2(
-						_user$project$Util$mapComponent,
-						_user$project$Components_TargetSelector$Completion,
-						_user$project$Components_TargetConfig$create(
+						_asana$csvana$Util$mapComponent,
+						_asana$csvana$Components_TargetSelector$Completion,
+						_asana$csvana$Components_TargetConfig$create(
 							{
 								defaultMap: function (str) {
-									return _user$project$Components_TargetConfig$Value(
+									return _asana$csvana$Components_TargetConfig$Value(
 										_elm_lang$core$Maybe$Just(
 											_elm_lang$core$Native_Utils.eq(
 												_elm_lang$core$String$toLower(str),
@@ -16207,9 +15711,9 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 								},
 								dataView: function (mValue) {
 									return A2(
-										_user$project$Util$mapComponent,
-										_user$project$Base$mapOutput(_elm_lang$core$Maybe$Just),
-										_user$project$Components_Configs_CompletedConfig$create(
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Base$mapOutput(_elm_lang$core$Maybe$Just),
+										_asana$csvana$Components_Configs_CompletedConfig$create(
 											{
 												value: A2(_elm_lang$core$Maybe$withDefault, false, mValue)
 											}));
@@ -16217,25 +15721,25 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 								records: records
 							})));
 			case 'Due Date':
-				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDate, _1: _elm_lang$core$Platform_Cmd$none};
+				return {ctor: '_Tuple2', _0: _asana$csvana$Components_TargetSelector$DueDate, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Due Date With Time':
-				return {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$DueDateWithTime, _1: _elm_lang$core$Platform_Cmd$none};
+				return {ctor: '_Tuple2', _0: _asana$csvana$Components_TargetSelector$DueDateWithTime, _1: _elm_lang$core$Platform_Cmd$none};
 			default:
-				var _p12 = A2(_user$project$Components_TargetSelector$matchCustomFieldName, _p11, customFields);
+				var _p12 = A2(_asana$csvana$Components_TargetSelector$matchCustomFieldName, _p11, customFields);
 				if ((_p12.ctor === 'Just') && (_p12._0.ctor === 'CustomEnumFieldInfo')) {
 					var _p14 = _p12._0._2;
 					return A2(
-						_user$project$Util$mapCmd,
-						_user$project$Components_TargetSelector$EnumMsg,
+						_asana$csvana$Util$mapCmd,
+						_asana$csvana$Components_TargetSelector$EnumMsg,
 						A2(
-							_user$project$Util$mapComponent,
-							A3(_user$project$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
-							_user$project$Components_TargetConfig$create(
+							_asana$csvana$Util$mapComponent,
+							A3(_asana$csvana$Components_TargetSelector$CustomEnumField, _p12._0._0, _p12._0._1, _p14),
+							_asana$csvana$Components_TargetConfig$create(
 								{
 									defaultMap: function (str) {
-										return _user$project$Components_TargetConfig$Value(
+										return _asana$csvana$Components_TargetConfig$Value(
 											A2(
-												_user$project$Util$find,
+												_asana$csvana$Util$find,
 												function (_p13) {
 													return A2(
 														F2(
@@ -16250,7 +15754,7 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 												_p14));
 									},
 									dataView: function (value) {
-										return _user$project$Components_Configs_EnumConfig$create(
+										return _asana$csvana$Components_Configs_EnumConfig$create(
 											{selectedId: value, enumOptions: _p14});
 									},
 									records: records
@@ -16265,12 +15769,12 @@ var _user$project$Components_TargetSelector$updateModel = F3(
 						_elm_lang$core$Platform_Cmd$none,
 						A2(
 							_elm_lang$core$Maybe$withDefault,
-							_user$project$Components_TargetSelector$None,
-							A2(_elm_lang$core$Maybe$map, _user$project$Components_TargetSelector$CustomField, _p12)));
+							_asana$csvana$Components_TargetSelector$None,
+							A2(_elm_lang$core$Maybe$map, _asana$csvana$Components_TargetSelector$CustomField, _p12)));
 				}
 		}
 	});
-var _user$project$Components_TargetSelector$update = F3(
+var _asana$csvana$Components_TargetSelector$update = F3(
 	function (props, msg, model) {
 		var _p15 = {ctor: '_Tuple2', _0: msg, _1: model};
 		_v7_4:
@@ -16278,31 +15782,31 @@ var _user$project$Components_TargetSelector$update = F3(
 			if (_p15.ctor === '_Tuple2') {
 				switch (_p15._0.ctor) {
 					case 'Selection':
-						return A3(_user$project$Components_TargetSelector$updateModel, props, _p15._0._0, model);
+						return A3(_asana$csvana$Components_TargetSelector$updateModel, props, _p15._0._0, model);
 					case 'AssigneeMsg':
 						if (_p15._1.ctor === 'Assignee') {
 							return A2(
-								_user$project$Util$mapComponent,
-								_user$project$Components_TargetSelector$Assignee,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$AssigneeMsg, _p15._0._0, _p15._1._0));
+								_asana$csvana$Util$mapComponent,
+								_asana$csvana$Components_TargetSelector$Assignee,
+								A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_TargetSelector$AssigneeMsg, _p15._0._0, _p15._1._0));
 						} else {
 							break _v7_4;
 						}
 					case 'CompletionMsg':
 						if (_p15._1.ctor === 'Completion') {
 							return A2(
-								_user$project$Util$mapComponent,
-								_user$project$Components_TargetSelector$Completion,
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$CompletionMsg, _p15._0._0, _p15._1._0));
+								_asana$csvana$Util$mapComponent,
+								_asana$csvana$Components_TargetSelector$Completion,
+								A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_TargetSelector$CompletionMsg, _p15._0._0, _p15._1._0));
 						} else {
 							break _v7_4;
 						}
 					default:
 						if (_p15._1.ctor === 'CustomEnumField') {
 							return A2(
-								_user$project$Util$mapComponent,
-								A3(_user$project$Components_TargetSelector$CustomEnumField, _p15._1._0, _p15._1._1, _p15._1._2),
-								A3(_user$project$Base$updateWith, _user$project$Components_TargetSelector$EnumMsg, _p15._0._0, _p15._1._3));
+								_asana$csvana$Util$mapComponent,
+								A3(_asana$csvana$Components_TargetSelector$CustomEnumField, _p15._1._0, _p15._1._1, _p15._1._2),
+								A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_TargetSelector$EnumMsg, _p15._0._0, _p15._1._3));
 						} else {
 							break _v7_4;
 						}
@@ -16313,18 +15817,18 @@ var _user$project$Components_TargetSelector$update = F3(
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Components_TargetSelector$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_TargetSelector$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: {ctor: '_Tuple2', _0: _user$project$Components_TargetSelector$None, _1: _elm_lang$core$Platform_Cmd$none},
-			update: _user$project$Components_TargetSelector$update(props),
+			init: {ctor: '_Tuple2', _0: _asana$csvana$Components_TargetSelector$None, _1: _elm_lang$core$Platform_Cmd$none},
+			update: _asana$csvana$Components_TargetSelector$update(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			view: _user$project$Components_TargetSelector$view(props),
-			get: _user$project$Components_TargetSelector$get
+			view: _asana$csvana$Components_TargetSelector$view(props),
+			get: _asana$csvana$Components_TargetSelector$get
 		});
 };
 
-var _user$project$Components_FieldRow$sampleString = function (samples) {
+var _asana$csvana$Components_FieldRow$sampleString = function (samples) {
 	var validSamples = A2(
 		_elm_lang$core$List$filter,
 		function (_p0) {
@@ -16339,7 +15843,7 @@ var _user$project$Components_FieldRow$sampleString = function (samples) {
 		_elm_lang$core$List$length(validSamples),
 		3) > 0) ? A2(_elm_lang$core$Basics_ops['++'], shownSamples, '…') : shownSamples;
 };
-var _user$project$Components_FieldRow$view = F2(
+var _asana$csvana$Components_FieldRow$view = F2(
 	function (props, inst) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -16383,7 +15887,7 @@ var _user$project$Components_FieldRow$view = F2(
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html$text(
-										_user$project$Components_FieldRow$sampleString(
+										_asana$csvana$Components_FieldRow$sampleString(
 											_elm_lang$core$Set$toList(props.records))),
 									_1: {ctor: '[]'}
 								}),
@@ -16401,45 +15905,45 @@ var _user$project$Components_FieldRow$view = F2(
 						},
 						{
 							ctor: '::',
-							_0: _user$project$Base$view(inst),
+							_0: _asana$csvana$Base$view(inst),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Components_FieldRow$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_FieldRow$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_TargetSelector$create(
+			init: _asana$csvana$Components_TargetSelector$create(
 				{customFields: props.customFields, records: props.records, apiContext: props.apiContext}),
-			update: _user$project$Base$update,
-			subscriptions: _user$project$Base$subscriptions,
-			view: _user$project$Components_FieldRow$view(props),
-			get: _user$project$Base$get
+			update: _asana$csvana$Base$update,
+			subscriptions: _asana$csvana$Base$subscriptions,
+			view: _asana$csvana$Components_FieldRow$view(props),
+			get: _asana$csvana$Base$get
 		});
 };
-var _user$project$Components_FieldRow$Props = F4(
+var _asana$csvana$Components_FieldRow$Props = F4(
 	function (a, b, c, d) {
 		return {customFields: a, records: b, header: c, apiContext: d};
 	});
 
-var _user$project$Components_FieldOptions$Props = F5(
+var _asana$csvana$Components_FieldOptions$Props = F5(
 	function (a, b, c, d, e) {
 		return {customFields: a, numFields: b, headers: c, records: d, apiContext: e};
 	});
-var _user$project$Components_FieldOptions$ChildMsg = F2(
+var _asana$csvana$Components_FieldOptions$ChildMsg = F2(
 	function (a, b) {
 		return {ctor: 'ChildMsg', _0: a, _1: b};
 	});
-var _user$project$Components_FieldOptions$init = function (_p0) {
+var _asana$csvana$Components_FieldOptions$init = function (_p0) {
 	var _p1 = _p0;
-	var columns = _user$project$Util$transpose(_p1.records);
+	var columns = _asana$csvana$Util$transpose(_p1.records);
 	var fields = A2(
 		_elm_lang$core$List$map,
 		function (_p2) {
 			var _p3 = _p2;
-			return _user$project$Components_FieldRow$create(
+			return _asana$csvana$Components_FieldRow$create(
 				{
 					customFields: _p1.customFields,
 					records: _elm_lang$core$Set$fromList(_p3._1),
@@ -16464,21 +15968,21 @@ var _user$project$Components_FieldOptions$init = function (_p0) {
 				function (index, inst) {
 					return A2(
 						_elm_lang$core$Platform_Cmd$map,
-						_user$project$Components_FieldOptions$ChildMsg(index),
+						_asana$csvana$Components_FieldOptions$ChildMsg(index),
 						_elm_lang$core$Tuple$second(inst));
 				}),
 			fields));
 	return {ctor: '_Tuple2', _0: instances, _1: cmds};
 };
-var _user$project$Components_FieldOptions$update = F3(
+var _asana$csvana$Components_FieldOptions$update = F3(
 	function (props, msg, model) {
 		var _p4 = msg;
 		var _p7 = _p4._0;
 		var _p5 = A2(_elm_lang$core$Array$get, _p7, model);
 		if (_p5.ctor === 'Just') {
 			var _p6 = A3(
-				_user$project$Base$updateWith,
-				_user$project$Components_FieldOptions$ChildMsg(_p7),
+				_asana$csvana$Base$updateWith,
+				_asana$csvana$Components_FieldOptions$ChildMsg(_p7),
 				_p4._1,
 				_p5._0);
 			var inst_ = _p6._0;
@@ -16492,17 +15996,17 @@ var _user$project$Components_FieldOptions$update = F3(
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Components_FieldOptions$subscriptions = function (_p8) {
+var _asana$csvana$Components_FieldOptions$subscriptions = function (_p8) {
 	return _elm_lang$core$Platform_Sub$batch(
 		A2(
 			_elm_lang$core$List$indexedMap,
 			function (_p9) {
-				return _user$project$Base$subscriptionsWith(
-					_user$project$Components_FieldOptions$ChildMsg(_p9));
+				return _asana$csvana$Base$subscriptionsWith(
+					_asana$csvana$Components_FieldOptions$ChildMsg(_p9));
 			},
 			_elm_lang$core$Array$toList(_p8)));
 };
-var _user$project$Components_FieldOptions$viewSelector = F2(
+var _asana$csvana$Components_FieldOptions$viewSelector = F2(
 	function (index, selector) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -16514,13 +16018,13 @@ var _user$project$Components_FieldOptions$viewSelector = F2(
 			{
 				ctor: '::',
 				_0: A2(
-					_user$project$Base$viewWith,
-					_user$project$Components_FieldOptions$ChildMsg(index),
+					_asana$csvana$Base$viewWith,
+					_asana$csvana$Components_FieldOptions$ChildMsg(index),
 					selector),
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Components_FieldOptions$view = F2(
+var _asana$csvana$Components_FieldOptions$view = F2(
 	function (props, model) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -16530,28 +16034,28 @@ var _user$project$Components_FieldOptions$view = F2(
 				_1: {ctor: '[]'}
 			},
 			_elm_lang$core$Array$toList(
-				A2(_elm_lang$core$Array$indexedMap, _user$project$Components_FieldOptions$viewSelector, model)));
+				A2(_elm_lang$core$Array$indexedMap, _asana$csvana$Components_FieldOptions$viewSelector, model)));
 	});
-var _user$project$Components_FieldOptions$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_FieldOptions$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_FieldOptions$init(props),
-			update: _user$project$Components_FieldOptions$update(props),
-			view: _user$project$Components_FieldOptions$view(props),
-			subscriptions: _user$project$Components_FieldOptions$subscriptions,
+			init: _asana$csvana$Components_FieldOptions$init(props),
+			update: _asana$csvana$Components_FieldOptions$update(props),
+			view: _asana$csvana$Components_FieldOptions$view(props),
+			subscriptions: _asana$csvana$Components_FieldOptions$subscriptions,
 			get: function (_p10) {
 				return _elm_lang$core$Array$toList(
-					A2(_elm_lang$core$Array$map, _user$project$Base$get, _p10));
+					A2(_elm_lang$core$Array$map, _asana$csvana$Base$get, _p10));
 			}
 		});
 };
 
-var _user$project$Components_FieldMatcher$get = F2(
+var _asana$csvana$Components_FieldMatcher$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p0;
-		return _user$project$Base$get(_p2.fieldOptions);
+		return _asana$csvana$Base$get(_p2.fieldOptions);
 	});
-var _user$project$Components_FieldMatcher$renderHeader = function (header) {
+var _asana$csvana$Components_FieldMatcher$renderHeader = function (header) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16565,7 +16069,7 @@ var _user$project$Components_FieldMatcher$renderHeader = function (header) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Components_FieldMatcher$renderHeaders = function (headers) {
+var _asana$csvana$Components_FieldMatcher$renderHeaders = function (headers) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16573,22 +16077,22 @@ var _user$project$Components_FieldMatcher$renderHeaders = function (headers) {
 			_0: _elm_lang$html$Html_Attributes$class('CsvHeaders'),
 			_1: {ctor: '[]'}
 		},
-		A2(_elm_lang$core$List$map, _user$project$Components_FieldMatcher$renderHeader, headers));
+		A2(_elm_lang$core$List$map, _asana$csvana$Components_FieldMatcher$renderHeader, headers));
 };
-var _user$project$Components_FieldMatcher$Props = F5(
+var _asana$csvana$Components_FieldMatcher$Props = F5(
 	function (a, b, c, d, e) {
 		return {projectId: a, csvHeaders: b, csvRecords: c, customFields: d, apiContext: e};
 	});
-var _user$project$Components_FieldMatcher$Model = function (a) {
+var _asana$csvana$Components_FieldMatcher$Model = function (a) {
 	return {fieldOptions: a};
 };
-var _user$project$Components_FieldMatcher$FieldOptionsMsg = function (a) {
+var _asana$csvana$Components_FieldMatcher$FieldOptionsMsg = function (a) {
 	return {ctor: 'FieldOptionsMsg', _0: a};
 };
-var _user$project$Components_FieldMatcher$init = function (_p3) {
+var _asana$csvana$Components_FieldMatcher$init = function (_p3) {
 	var _p4 = _p3;
 	var _p6 = _p4.csvHeaders;
-	var _p5 = _user$project$Components_FieldOptions$create(
+	var _p5 = _asana$csvana$Components_FieldOptions$create(
 		{
 			customFields: _p4.customFields,
 			numFields: _elm_lang$core$List$length(_p6),
@@ -16602,13 +16106,13 @@ var _user$project$Components_FieldMatcher$init = function (_p3) {
 	return {
 		ctor: '_Tuple2',
 		_0: model,
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
 	};
 };
-var _user$project$Components_FieldMatcher$update = F3(
+var _asana$csvana$Components_FieldMatcher$update = F3(
 	function (props, msg, model) {
 		var _p7 = msg;
-		var _p8 = A2(_user$project$Base$update, _p7._0, model.fieldOptions);
+		var _p8 = A2(_asana$csvana$Base$update, _p7._0, model.fieldOptions);
 		var fieldOptions_ = _p8._0;
 		var fieldOptionsCmd = _p8._1;
 		return {
@@ -16616,10 +16120,10 @@ var _user$project$Components_FieldMatcher$update = F3(
 			_0: _elm_lang$core$Native_Utils.update(
 				model,
 				{fieldOptions: fieldOptions_}),
-			_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
+			_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_FieldMatcher$FieldOptionsMsg, fieldOptionsCmd)
 		};
 	});
-var _user$project$Components_FieldMatcher$view = F2(
+var _asana$csvana$Components_FieldMatcher$view = F2(
 	function (_p10, _p9) {
 		var _p11 = _p10;
 		var _p12 = _p9;
@@ -16650,7 +16154,7 @@ var _user$project$Components_FieldMatcher$view = F2(
 							},
 							{
 								ctor: '::',
-								_0: A2(_user$project$Base$viewWith, _user$project$Components_FieldMatcher$FieldOptionsMsg, _p12.fieldOptions),
+								_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FieldMatcher$FieldOptionsMsg, _p12.fieldOptions),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -16658,18 +16162,18 @@ var _user$project$Components_FieldMatcher$view = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Components_FieldMatcher$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_FieldMatcher$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_FieldMatcher$init(props),
-			update: _user$project$Components_FieldMatcher$update(props),
-			view: _user$project$Components_FieldMatcher$view(props),
+			init: _asana$csvana$Components_FieldMatcher$init(props),
+			update: _asana$csvana$Components_FieldMatcher$update(props),
+			view: _asana$csvana$Components_FieldMatcher$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_FieldMatcher$get(props)
+			get: _asana$csvana$Components_FieldMatcher$get(props)
 		});
 };
 
-var _user$project$Components_Fields_Summary$targetString = F2(
+var _asana$csvana$Components_Fields_Summary$targetString = F2(
 	function (_p0, target) {
 		var _p1 = _p0;
 		var _p9 = _p1.customFields;
@@ -16692,7 +16196,7 @@ var _user$project$Components_Fields_Summary$targetString = F2(
 					return 'Due Date With Time';
 				case 'CustomText':
 					var _p4 = A2(
-						_user$project$Util$find,
+						_asana$csvana$Util$find,
 						function (_p3) {
 							return A2(
 								F2(
@@ -16712,7 +16216,7 @@ var _user$project$Components_Fields_Summary$targetString = F2(
 					}
 				case 'CustomNumber':
 					var _p6 = A2(
-						_user$project$Util$find,
+						_asana$csvana$Util$find,
 						function (_p5) {
 							return A2(
 								F2(
@@ -16732,7 +16236,7 @@ var _user$project$Components_Fields_Summary$targetString = F2(
 					}
 				default:
 					var _p8 = A2(
-						_user$project$Util$find,
+						_asana$csvana$Util$find,
 						function (_p7) {
 							return A2(
 								F2(
@@ -16753,7 +16257,7 @@ var _user$project$Components_Fields_Summary$targetString = F2(
 			}
 		}
 	});
-var _user$project$Components_Fields_Summary$viewRow = F2(
+var _asana$csvana$Components_Fields_Summary$viewRow = F2(
 	function (props, _p10) {
 		var _p11 = _p10;
 		return A2(
@@ -16789,14 +16293,14 @@ var _user$project$Components_Fields_Summary$viewRow = F2(
 						{
 							ctor: '::',
 							_0: _elm_lang$html$Html$text(
-								A2(_user$project$Components_Fields_Summary$targetString, props, _p11._1)),
+								A2(_asana$csvana$Components_Fields_Summary$targetString, props, _p11._1)),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Components_Fields_Summary$view = function (props) {
+var _asana$csvana$Components_Fields_Summary$view = function (props) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16806,7 +16310,7 @@ var _user$project$Components_Fields_Summary$view = function (props) {
 		},
 		A2(
 			_elm_lang$core$List$map,
-			_user$project$Components_Fields_Summary$viewRow(props),
+			_asana$csvana$Components_Fields_Summary$viewRow(props),
 			A3(
 				_elm_lang$core$List$map2,
 				F2(
@@ -16816,16 +16320,16 @@ var _user$project$Components_Fields_Summary$view = function (props) {
 				props.headers,
 				props.targets)));
 };
-var _user$project$Components_Fields_Summary$create = function (props) {
-	return _user$project$Base$staticComponent(
-		_user$project$Components_Fields_Summary$view(props));
+var _asana$csvana$Components_Fields_Summary$create = function (props) {
+	return _asana$csvana$Base$staticComponent(
+		_asana$csvana$Components_Fields_Summary$view(props));
 };
-var _user$project$Components_Fields_Summary$Props = F3(
+var _asana$csvana$Components_Fields_Summary$Props = F3(
 	function (a, b, c) {
 		return {headers: a, customFields: b, targets: c};
 	});
 
-var _user$project$Components_FormSection$get = function (model) {
+var _asana$csvana$Components_FormSection$get = function (model) {
 	var _p0 = model;
 	switch (_p0.ctor) {
 		case 'Incomplete':
@@ -16836,17 +16340,17 @@ var _user$project$Components_FormSection$get = function (model) {
 			return _elm_lang$core$Maybe$Just(_p0._0);
 	}
 };
-var _user$project$Components_FormSection$Props = F3(
+var _asana$csvana$Components_FormSection$Props = F3(
 	function (a, b, c) {
 		return {incompleteChild: a, completeChild: b, value: c};
 	});
-var _user$project$Components_FormSection$Submit = {ctor: 'Submit'};
-var _user$project$Components_FormSection$Cancel = {ctor: 'Cancel'};
-var _user$project$Components_FormSection$Reconfigure = {ctor: 'Reconfigure'};
-var _user$project$Components_FormSection$CompleteMsg = function (a) {
+var _asana$csvana$Components_FormSection$Submit = {ctor: 'Submit'};
+var _asana$csvana$Components_FormSection$Cancel = {ctor: 'Cancel'};
+var _asana$csvana$Components_FormSection$Reconfigure = {ctor: 'Reconfigure'};
+var _asana$csvana$Components_FormSection$CompleteMsg = function (a) {
 	return {ctor: 'CompleteMsg', _0: a};
 };
-var _user$project$Components_FormSection$viewComplete = function (inst) {
+var _asana$csvana$Components_FormSection$viewComplete = function (inst) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16865,7 +16369,7 @@ var _user$project$Components_FormSection$viewComplete = function (inst) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$CompleteMsg, inst),
+					_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FormSection$CompleteMsg, inst),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -16880,7 +16384,7 @@ var _user$project$Components_FormSection$viewComplete = function (inst) {
 							_0: _elm_lang$html$Html_Attributes$class('button secondary'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Reconfigure),
+								_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_FormSection$Reconfigure),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -16894,10 +16398,10 @@ var _user$project$Components_FormSection$viewComplete = function (inst) {
 			}
 		});
 };
-var _user$project$Components_FormSection$ReconfigureMsg = function (a) {
+var _asana$csvana$Components_FormSection$ReconfigureMsg = function (a) {
 	return {ctor: 'ReconfigureMsg', _0: a};
 };
-var _user$project$Components_FormSection$viewReconfigure = function (inst) {
+var _asana$csvana$Components_FormSection$viewReconfigure = function (inst) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -16916,7 +16420,7 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$ReconfigureMsg, inst),
+					_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FormSection$ReconfigureMsg, inst),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -16928,7 +16432,7 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 						_0: _elm_lang$html$Html_Attributes$value('Submit'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Submit),
+							_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_FormSection$Submit),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Attributes$classList(
@@ -16943,8 +16447,8 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 												_0: {
 													ctor: '_Tuple2',
 													_0: 'disabled',
-													_1: _user$project$Util$isNothing(
-														_user$project$Base$get(inst))
+													_1: _asana$csvana$Util$isNothing(
+														_asana$csvana$Base$get(inst))
 												},
 												_1: {ctor: '[]'}
 											}
@@ -16953,8 +16457,8 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$disabled(
-										_user$project$Util$isNothing(
-											_user$project$Base$get(inst))),
+										_asana$csvana$Util$isNothing(
+											_asana$csvana$Base$get(inst))),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -16977,7 +16481,7 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 								_0: _elm_lang$html$Html_Attributes$class('button secondary'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Cancel),
+									_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_FormSection$Cancel),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -16992,10 +16496,10 @@ var _user$project$Components_FormSection$viewReconfigure = function (inst) {
 			}
 		});
 };
-var _user$project$Components_FormSection$IncompleteMsg = function (a) {
+var _asana$csvana$Components_FormSection$IncompleteMsg = function (a) {
 	return {ctor: 'IncompleteMsg', _0: a};
 };
-var _user$project$Components_FormSection$viewIncomplete = function (inst) {
+var _asana$csvana$Components_FormSection$viewIncomplete = function (inst) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -17014,7 +16518,7 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 				},
 				{
 					ctor: '::',
-					_0: A2(_user$project$Base$viewWith, _user$project$Components_FormSection$IncompleteMsg, inst),
+					_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FormSection$IncompleteMsg, inst),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -17026,7 +16530,7 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 						_0: _elm_lang$html$Html_Attributes$value('Next'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_FormSection$Submit),
+							_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_FormSection$Submit),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Attributes$classList(
@@ -17041,8 +16545,8 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 												_0: {
 													ctor: '_Tuple2',
 													_0: 'disabled',
-													_1: _user$project$Util$isNothing(
-														_user$project$Base$get(inst))
+													_1: _asana$csvana$Util$isNothing(
+														_asana$csvana$Base$get(inst))
 												},
 												_1: {ctor: '[]'}
 											}
@@ -17051,8 +16555,8 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$disabled(
-										_user$project$Util$isNothing(
-											_user$project$Base$get(inst))),
+										_asana$csvana$Util$isNothing(
+											_asana$csvana$Base$get(inst))),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -17067,64 +16571,64 @@ var _user$project$Components_FormSection$viewIncomplete = function (inst) {
 			}
 		});
 };
-var _user$project$Components_FormSection$view = F2(
+var _asana$csvana$Components_FormSection$view = F2(
 	function (_p1, model) {
 		var _p2 = model;
 		switch (_p2.ctor) {
 			case 'Incomplete':
-				return _user$project$Components_FormSection$viewIncomplete(_p2._0);
+				return _asana$csvana$Components_FormSection$viewIncomplete(_p2._0);
 			case 'Reconfiguring':
-				return _user$project$Components_FormSection$viewReconfigure(_p2._1);
+				return _asana$csvana$Components_FormSection$viewReconfigure(_p2._1);
 			default:
-				return _user$project$Components_FormSection$viewComplete(_p2._1);
+				return _asana$csvana$Components_FormSection$viewComplete(_p2._1);
 		}
 	});
-var _user$project$Components_FormSection$subscriptions = F2(
+var _asana$csvana$Components_FormSection$subscriptions = F2(
 	function (_p3, model) {
 		var _p4 = model;
 		switch (_p4.ctor) {
 			case 'Incomplete':
-				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$IncompleteMsg, _p4._0);
+				return A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_FormSection$IncompleteMsg, _p4._0);
 			case 'Reconfiguring':
-				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$ReconfigureMsg, _p4._1);
+				return A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_FormSection$ReconfigureMsg, _p4._1);
 			default:
-				return A2(_user$project$Base$subscriptionsWith, _user$project$Components_FormSection$CompleteMsg, _p4._1);
+				return A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_FormSection$CompleteMsg, _p4._1);
 		}
 	});
-var _user$project$Components_FormSection$Complete = F2(
+var _asana$csvana$Components_FormSection$Complete = F2(
 	function (a, b) {
 		return {ctor: 'Complete', _0: a, _1: b};
 	});
-var _user$project$Components_FormSection$Reconfiguring = F2(
+var _asana$csvana$Components_FormSection$Reconfiguring = F2(
 	function (a, b) {
 		return {ctor: 'Reconfiguring', _0: a, _1: b};
 	});
-var _user$project$Components_FormSection$Incomplete = function (a) {
+var _asana$csvana$Components_FormSection$Incomplete = function (a) {
 	return {ctor: 'Incomplete', _0: a};
 };
-var _user$project$Components_FormSection$init = function (_p5) {
+var _asana$csvana$Components_FormSection$init = function (_p5) {
 	var _p6 = _p5;
 	var _p7 = _p6.value;
 	if (_p7.ctor === 'Just') {
 		var _p8 = _p7._0;
 		return A2(
-			_user$project$Util$mapCmd,
-			_user$project$Components_FormSection$CompleteMsg,
+			_asana$csvana$Util$mapCmd,
+			_asana$csvana$Components_FormSection$CompleteMsg,
 			A2(
-				_user$project$Util$mapComponent,
-				_user$project$Components_FormSection$Complete(_p8),
+				_asana$csvana$Util$mapComponent,
+				_asana$csvana$Components_FormSection$Complete(_p8),
 				_p6.completeChild(_p8)));
 	} else {
 		return A2(
-			_user$project$Util$mapCmd,
-			_user$project$Components_FormSection$IncompleteMsg,
+			_asana$csvana$Util$mapCmd,
+			_asana$csvana$Components_FormSection$IncompleteMsg,
 			A2(
-				_user$project$Util$mapComponent,
-				_user$project$Components_FormSection$Incomplete,
+				_asana$csvana$Util$mapComponent,
+				_asana$csvana$Components_FormSection$Incomplete,
 				_p6.incompleteChild(_elm_lang$core$Maybe$Nothing)));
 	}
 };
-var _user$project$Components_FormSection$update = F3(
+var _asana$csvana$Components_FormSection$update = F3(
 	function (_p9, msg, model) {
 		var _p10 = _p9;
 		var _p18 = _p10.completeChild;
@@ -17137,22 +16641,22 @@ var _user$project$Components_FormSection$update = F3(
 						switch (_p11._0.ctor) {
 							case 'IncompleteMsg':
 								return A2(
-									_user$project$Util$mapCmd,
-									_user$project$Components_FormSection$IncompleteMsg,
+									_asana$csvana$Util$mapCmd,
+									_asana$csvana$Components_FormSection$IncompleteMsg,
 									A2(
-										_user$project$Util$mapComponent,
-										_user$project$Components_FormSection$Incomplete,
-										A2(_user$project$Base$update, _p11._0._0, _p11._1._0)));
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Components_FormSection$Incomplete,
+										A2(_asana$csvana$Base$update, _p11._0._0, _p11._1._0)));
 							case 'Submit':
-								var _p12 = _user$project$Base$get(_p11._1._0);
+								var _p12 = _asana$csvana$Base$get(_p11._1._0);
 								if (_p12.ctor === 'Just') {
 									var _p13 = _p12._0;
 									return A2(
-										_user$project$Util$mapCmd,
-										_user$project$Components_FormSection$CompleteMsg,
+										_asana$csvana$Util$mapCmd,
+										_asana$csvana$Components_FormSection$CompleteMsg,
 										A2(
-											_user$project$Util$mapComponent,
-											_user$project$Components_FormSection$Complete(_p13),
+											_asana$csvana$Util$mapComponent,
+											_asana$csvana$Components_FormSection$Complete(_p13),
 											_p18(_p13)));
 								} else {
 									return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -17164,22 +16668,22 @@ var _user$project$Components_FormSection$update = F3(
 						switch (_p11._0.ctor) {
 							case 'ReconfigureMsg':
 								return A2(
-									_user$project$Util$mapCmd,
-									_user$project$Components_FormSection$ReconfigureMsg,
+									_asana$csvana$Util$mapCmd,
+									_asana$csvana$Components_FormSection$ReconfigureMsg,
 									A2(
-										_user$project$Util$mapComponent,
-										_user$project$Components_FormSection$Reconfiguring(_p11._1._0),
-										A2(_user$project$Base$update, _p11._0._0, _p11._1._1)));
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Components_FormSection$Reconfiguring(_p11._1._0),
+										A2(_asana$csvana$Base$update, _p11._0._0, _p11._1._1)));
 							case 'Submit':
-								var _p14 = _user$project$Base$get(_p11._1._1);
+								var _p14 = _asana$csvana$Base$get(_p11._1._1);
 								if (_p14.ctor === 'Just') {
 									var _p15 = _p14._0;
 									return A2(
-										_user$project$Util$mapCmd,
-										_user$project$Components_FormSection$CompleteMsg,
+										_asana$csvana$Util$mapCmd,
+										_asana$csvana$Components_FormSection$CompleteMsg,
 										A2(
-											_user$project$Util$mapComponent,
-											_user$project$Components_FormSection$Complete(_p15),
+											_asana$csvana$Util$mapComponent,
+											_asana$csvana$Components_FormSection$Complete(_p15),
 											_p18(_p15)));
 								} else {
 									return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
@@ -17187,11 +16691,11 @@ var _user$project$Components_FormSection$update = F3(
 							case 'Cancel':
 								var _p16 = _p11._1._0;
 								return A2(
-									_user$project$Util$mapCmd,
-									_user$project$Components_FormSection$CompleteMsg,
+									_asana$csvana$Util$mapCmd,
+									_asana$csvana$Components_FormSection$CompleteMsg,
 									A2(
-										_user$project$Util$mapComponent,
-										_user$project$Components_FormSection$Complete(_p16),
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Components_FormSection$Complete(_p16),
 										_p18(_p16)));
 							default:
 								break _v6_7;
@@ -17200,20 +16704,20 @@ var _user$project$Components_FormSection$update = F3(
 						switch (_p11._0.ctor) {
 							case 'CompleteMsg':
 								return A2(
-									_user$project$Util$mapCmd,
-									_user$project$Components_FormSection$CompleteMsg,
+									_asana$csvana$Util$mapCmd,
+									_asana$csvana$Components_FormSection$CompleteMsg,
 									A2(
-										_user$project$Util$mapComponent,
-										_user$project$Components_FormSection$Complete(_p11._1._0),
-										A2(_user$project$Base$update, _p11._0._0, _p11._1._1)));
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Components_FormSection$Complete(_p11._1._0),
+										A2(_asana$csvana$Base$update, _p11._0._0, _p11._1._1)));
 							case 'Reconfigure':
 								var _p17 = _p11._1._0;
 								return A2(
-									_user$project$Util$mapCmd,
-									_user$project$Components_FormSection$ReconfigureMsg,
+									_asana$csvana$Util$mapCmd,
+									_asana$csvana$Components_FormSection$ReconfigureMsg,
 									A2(
-										_user$project$Util$mapComponent,
-										_user$project$Components_FormSection$Reconfiguring(_p17),
+										_asana$csvana$Util$mapComponent,
+										_asana$csvana$Components_FormSection$Reconfiguring(_p17),
 										_p10.incompleteChild(
 											_elm_lang$core$Maybe$Just(_p17))));
 							default:
@@ -17226,26 +16730,26 @@ var _user$project$Components_FormSection$update = F3(
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Components_FormSection$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_FormSection$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_FormSection$init(props),
-			update: _user$project$Components_FormSection$update(props),
-			view: _user$project$Components_FormSection$view(props),
-			subscriptions: _user$project$Components_FormSection$subscriptions(props),
-			get: _user$project$Components_FormSection$get
+			init: _asana$csvana$Components_FormSection$init(props),
+			update: _asana$csvana$Components_FormSection$update(props),
+			view: _asana$csvana$Components_FormSection$view(props),
+			subscriptions: _asana$csvana$Components_FormSection$subscriptions(props),
+			get: _asana$csvana$Components_FormSection$get
 		});
 };
 
-var _user$project$Components_MatcherSection$init = function (props) {
+var _asana$csvana$Components_MatcherSection$init = function (props) {
 	return A2(
-		_user$project$Util$mapComponent,
-		_user$project$Base$mapOutput(
+		_asana$csvana$Util$mapComponent,
+		_asana$csvana$Base$mapOutput(
 			_elm_lang$core$Maybe$andThen(_elm_lang$core$Basics$identity)),
-		_user$project$Components_ApiResource$create(
+		_asana$csvana$Components_ApiResource$create(
 			{
 				child: function (project) {
-					return _user$project$Components_FormSection$create(
+					return _asana$csvana$Components_FormSection$create(
 						{
 							value: _elm_lang$core$Maybe$Nothing,
 							incompleteChild: function (targets) {
@@ -17261,22 +16765,22 @@ var _user$project$Components_MatcherSection$init = function (props) {
 											}(_p0));
 									},
 									project.customFieldSettings);
-								return _user$project$Components_ApiParallelResource$create(
+								return _asana$csvana$Components_ApiParallelResource$create(
 									{
 										child: function (customFieldInfos) {
-											return _user$project$Components_FieldMatcher$create(
+											return _asana$csvana$Components_FieldMatcher$create(
 												{projectId: project.id, csvHeaders: props.headers, csvRecords: props.records, customFields: customFieldInfos, apiContext: props.apiContext});
 										},
 										fetches: A2(
 											_elm_lang$core$List$map,
-											A2(_elm_lang$core$Basics$flip, _user$project$Asana_Api$customField, props.apiContext.token),
+											A2(_elm_lang$core$Basics$flip, _asana$csvana$Asana_Api$customField, props.apiContext.token),
 											customFieldIds),
-										loadingView: _user$project$CommonViews$loadingIndicator,
-										errorView: _user$project$CommonViews$errorView
+										loadingView: _asana$csvana$CommonViews$loadingIndicator,
+										errorView: _asana$csvana$CommonViews$errorView
 									});
 							},
 							completeChild: function (targets) {
-								return _user$project$Components_Fields_Summary$create(
+								return _asana$csvana$Components_Fields_Summary$create(
 									{
 										headers: props.headers,
 										targets: targets,
@@ -17290,27 +16794,27 @@ var _user$project$Components_MatcherSection$init = function (props) {
 							}
 						});
 				},
-				fetch: A2(_user$project$Asana_Api$project, props.projectId, props.apiContext.token),
-				loadingView: _user$project$CommonViews$loadingIndicator,
-				errorView: _user$project$CommonViews$errorView
+				fetch: A2(_asana$csvana$Asana_Api$project, props.projectId, props.apiContext.token),
+				loadingView: _asana$csvana$CommonViews$loadingIndicator,
+				errorView: _asana$csvana$CommonViews$errorView
 			}));
 };
-var _user$project$Components_MatcherSection$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_MatcherSection$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_MatcherSection$init(props),
-			update: _user$project$Base$update,
-			subscriptions: _user$project$Base$subscriptions,
-			get: _user$project$Base$get,
-			view: _user$project$Base$view
+			init: _asana$csvana$Components_MatcherSection$init(props),
+			update: _asana$csvana$Base$update,
+			subscriptions: _asana$csvana$Base$subscriptions,
+			get: _asana$csvana$Base$get,
+			view: _asana$csvana$Base$view
 		});
 };
-var _user$project$Components_MatcherSection$Props = F4(
+var _asana$csvana$Components_MatcherSection$Props = F4(
 	function (a, b, c, d) {
 		return {projectId: a, headers: b, records: c, apiContext: d};
 	});
 
-var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) {
+var _asana$csvana$Components_WorkspaceSelector$workspaceOption = function (_p0) {
 	var _p1 = _p0;
 	return A2(
 		_elm_lang$html$Html$option,
@@ -17325,29 +16829,29 @@ var _user$project$Components_WorkspaceSelector$workspaceOption = function (_p0) 
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Components_WorkspaceSelector$get = _elm_lang$core$Basics$identity;
-var _user$project$Components_WorkspaceSelector$update = F2(
+var _asana$csvana$Components_WorkspaceSelector$get = _elm_lang$core$Basics$identity;
+var _asana$csvana$Components_WorkspaceSelector$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
 		return {ctor: '_Tuple2', _0: _p2._0, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Components_WorkspaceSelector$init = function (_p3) {
+var _asana$csvana$Components_WorkspaceSelector$init = function (_p3) {
 	var _p4 = _p3;
 	return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_WorkspaceSelector$Props = function (a) {
+var _asana$csvana$Components_WorkspaceSelector$Props = function (a) {
 	return {workspaces: a};
 };
-var _user$project$Components_WorkspaceSelector$Selected = function (a) {
+var _asana$csvana$Components_WorkspaceSelector$Selected = function (a) {
 	return {ctor: 'Selected', _0: a};
 };
-var _user$project$Components_WorkspaceSelector$onChange = function () {
+var _asana$csvana$Components_WorkspaceSelector$onChange = function () {
 	var strToMaybe = function (str) {
 		return _elm_lang$core$Native_Utils.eq(str, '') ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(str);
 	};
 	return A2(
 		_elm_lang$core$Json_Decode$map,
-		_user$project$Components_WorkspaceSelector$Selected,
+		_asana$csvana$Components_WorkspaceSelector$Selected,
 		A2(
 			_elm_lang$core$Json_Decode$map,
 			strToMaybe,
@@ -17364,7 +16868,7 @@ var _user$project$Components_WorkspaceSelector$onChange = function () {
 				},
 				_elm_lang$core$Json_Decode$string)));
 }();
-var _user$project$Components_WorkspaceSelector$view = F2(
+var _asana$csvana$Components_WorkspaceSelector$view = F2(
 	function (_p5, selected) {
 		var _p6 = _p5;
 		var options = {
@@ -17377,34 +16881,34 @@ var _user$project$Components_WorkspaceSelector$view = F2(
 					_1: {ctor: '[]'}
 				},
 				{ctor: '[]'}),
-			_1: A2(_elm_lang$core$List$map, _user$project$Components_WorkspaceSelector$workspaceOption, _p6.workspaces)
+			_1: A2(_elm_lang$core$List$map, _asana$csvana$Components_WorkspaceSelector$workspaceOption, _p6.workspaces)
 		};
 		var attrs = {
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('WorkspaceSelector'),
 			_1: {
 				ctor: '::',
-				_0: A2(_elm_lang$html$Html_Events$on, 'change', _user$project$Components_WorkspaceSelector$onChange),
+				_0: A2(_elm_lang$html$Html_Events$on, 'change', _asana$csvana$Components_WorkspaceSelector$onChange),
 				_1: {ctor: '[]'}
 			}
 		};
 		return A2(_elm_lang$html$Html$select, attrs, options);
 	});
-var _user$project$Components_WorkspaceSelector$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_WorkspaceSelector$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_WorkspaceSelector$init(props),
-			update: _user$project$Components_WorkspaceSelector$update,
-			view: _user$project$Components_WorkspaceSelector$view(props),
+			init: _asana$csvana$Components_WorkspaceSelector$init(props),
+			update: _asana$csvana$Components_WorkspaceSelector$update,
+			view: _asana$csvana$Components_WorkspaceSelector$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_WorkspaceSelector$get
+			get: _asana$csvana$Components_WorkspaceSelector$get
 		});
 };
 
-var _user$project$Components_Project_Form$get = function (_p0) {
+var _asana$csvana$Components_Project_Form$get = function (_p0) {
 	var _p1 = _p0;
 	var _p2 = _p1.workspaceSelector;
-	var workspace = _user$project$Base$get(_p2);
+	var workspace = _asana$csvana$Base$get(_p2);
 	return A2(
 		_elm_lang$core$Maybe$andThen,
 		function (workspace) {
@@ -17414,27 +16918,27 @@ var _user$project$Components_Project_Form$get = function (_p0) {
 					function (v0, v1) {
 						return {ctor: '_Tuple2', _0: v0, _1: v1};
 					})(workspace),
-				A2(_elm_lang$core$Maybe$andThen, _user$project$Base$get, _p1.projectTypeahead));
+				A2(_elm_lang$core$Maybe$andThen, _asana$csvana$Base$get, _p1.projectTypeahead));
 		},
-		_user$project$Base$get(_p2));
+		_asana$csvana$Base$get(_p2));
 };
-var _user$project$Components_Project_Form$Props = F2(
+var _asana$csvana$Components_Project_Form$Props = F2(
 	function (a, b) {
 		return {token: a, user: b};
 	});
-var _user$project$Components_Project_Form$Model = F2(
+var _asana$csvana$Components_Project_Form$Model = F2(
 	function (a, b) {
 		return {workspaceSelector: a, projectTypeahead: b};
 	});
-var _user$project$Components_Project_Form$ProjectTypeaheadMsg = function (a) {
+var _asana$csvana$Components_Project_Form$ProjectTypeaheadMsg = function (a) {
 	return {ctor: 'ProjectTypeaheadMsg', _0: a};
 };
-var _user$project$Components_Project_Form$updateProject = F3(
+var _asana$csvana$Components_Project_Form$updateProject = F3(
 	function (_p3, msg, model) {
 		var _p4 = _p3;
 		var _p5 = model.projectTypeahead;
 		if (_p5.ctor === 'Just') {
-			var _p6 = A3(_user$project$Base$updateWith, _user$project$Components_Project_Form$ProjectTypeaheadMsg, msg, _p5._0);
+			var _p6 = A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Project_Form$ProjectTypeaheadMsg, msg, _p5._0);
 			var typeahead_ = _p6._0;
 			var cmd = _p6._1;
 			return {
@@ -17450,12 +16954,12 @@ var _user$project$Components_Project_Form$updateProject = F3(
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Components_Project_Form$WorkspaceSelectorMsg = function (a) {
+var _asana$csvana$Components_Project_Form$WorkspaceSelectorMsg = function (a) {
 	return {ctor: 'WorkspaceSelectorMsg', _0: a};
 };
-var _user$project$Components_Project_Form$init = function (_p7) {
+var _asana$csvana$Components_Project_Form$init = function (_p7) {
 	var _p8 = _p7;
-	var _p9 = _user$project$Components_WorkspaceSelector$create(
+	var _p9 = _asana$csvana$Components_WorkspaceSelector$create(
 		{
 			workspaces: A2(
 				_elm_lang$core$Maybe$withDefault,
@@ -17468,30 +16972,30 @@ var _user$project$Components_Project_Form$init = function (_p7) {
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
 		{
 			ctor: '::',
-			_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_Project_Form$WorkspaceSelectorMsg, wsscmd),
+			_0: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_Project_Form$WorkspaceSelectorMsg, wsscmd),
 			_1: {ctor: '[]'}
 		});
 	return {ctor: '_Tuple2', _0: model, _1: cmd};
 };
-var _user$project$Components_Project_Form$updateWorkspace = F3(
+var _asana$csvana$Components_Project_Form$updateWorkspace = F3(
 	function (_p10, msg, model) {
 		var _p11 = _p10;
-		var _p12 = A3(_user$project$Base$updateWith, _user$project$Components_Project_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
+		var _p12 = A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Project_Form$WorkspaceSelectorMsg, msg, model.workspaceSelector);
 		var wss_ = _p12._0;
 		var wsscmd = _p12._1;
 		var _p13 = function () {
-			var _p14 = _user$project$Base$get(wss_);
+			var _p14 = _asana$csvana$Base$get(wss_);
 			if (_p14.ctor === 'Just') {
 				return A2(
-					_user$project$Util$mapCmd,
-					_user$project$Components_Project_Form$ProjectTypeaheadMsg,
+					_asana$csvana$Util$mapCmd,
+					_asana$csvana$Components_Project_Form$ProjectTypeaheadMsg,
 					A2(
-						_user$project$Util$mapComponent,
+						_asana$csvana$Util$mapComponent,
 						_elm_lang$core$Maybe$Just,
-						_user$project$Components_Typeahead$create(
+						_asana$csvana$Components_Typeahead$create(
 							{
 								fetcher: function (fragment) {
-									return A3(_user$project$Asana_Api$projectTypeahead, _p14._0, fragment, _p11.token);
+									return A3(_asana$csvana$Asana_Api$projectTypeahead, _p14._0, fragment, _p11.token);
 								}
 							})));
 			} else {
@@ -17518,21 +17022,21 @@ var _user$project$Components_Project_Form$updateWorkspace = F3(
 			_1: cmd
 		};
 	});
-var _user$project$Components_Project_Form$update = F3(
+var _asana$csvana$Components_Project_Form$update = F3(
 	function (props, msg, model) {
 		var _p15 = msg;
 		if (_p15.ctor === 'WorkspaceSelectorMsg') {
-			return A3(_user$project$Components_Project_Form$updateWorkspace, props, _p15._0, model);
+			return A3(_asana$csvana$Components_Project_Form$updateWorkspace, props, _p15._0, model);
 		} else {
-			return A3(_user$project$Components_Project_Form$updateProject, props, _p15._0, model);
+			return A3(_asana$csvana$Components_Project_Form$updateProject, props, _p15._0, model);
 		}
 	});
-var _user$project$Components_Project_Form$view = F2(
+var _asana$csvana$Components_Project_Form$view = F2(
 	function (_p16, model) {
 		var projects = function () {
 			var _p17 = model.projectTypeahead;
 			if (_p17.ctor === 'Just') {
-				return A2(_user$project$Base$viewWith, _user$project$Components_Project_Form$ProjectTypeaheadMsg, _p17._0);
+				return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Project_Form$ProjectTypeaheadMsg, _p17._0);
 			} else {
 				return A2(
 					_elm_lang$html$Html$div,
@@ -17559,7 +17063,7 @@ var _user$project$Components_Project_Form$view = F2(
 					});
 			}
 		}();
-		var workspaces = A2(_user$project$Base$viewWith, _user$project$Components_Project_Form$WorkspaceSelectorMsg, model.workspaceSelector);
+		var workspaces = A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Project_Form$WorkspaceSelectorMsg, model.workspaceSelector);
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -17629,18 +17133,18 @@ var _user$project$Components_Project_Form$view = F2(
 				}
 			});
 	});
-var _user$project$Components_Project_Form$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_Project_Form$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_Project_Form$init(props),
-			update: _user$project$Components_Project_Form$update(props),
-			view: _user$project$Components_Project_Form$view(props),
+			init: _asana$csvana$Components_Project_Form$init(props),
+			update: _asana$csvana$Components_Project_Form$update(props),
+			view: _asana$csvana$Components_Project_Form$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_Project_Form$get
+			get: _asana$csvana$Components_Project_Form$get
 		});
 };
 
-var _user$project$Components_Project_Summary$view = function (_p0) {
+var _asana$csvana$Components_Project_Summary$view = function (_p0) {
 	var _p1 = _p0;
 	return A2(
 		_elm_lang$html$Html$div,
@@ -17655,16 +17159,16 @@ var _user$project$Components_Project_Summary$view = function (_p0) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$Components_Project_Summary$create = function (_p2) {
+var _asana$csvana$Components_Project_Summary$create = function (_p2) {
 	var _p3 = _p2;
-	return _user$project$Base$staticComponent(
-		_user$project$Components_Project_Summary$view(_p3.project));
+	return _asana$csvana$Base$staticComponent(
+		_asana$csvana$Components_Project_Summary$view(_p3.project));
 };
-var _user$project$Components_Project_Summary$Props = function (a) {
+var _asana$csvana$Components_Project_Summary$Props = function (a) {
 	return {project: a};
 };
 
-var _user$project$Components_Uploader_Uploader$get = F2(
+var _asana$csvana$Components_Uploader_Uploader$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
 		var _p3 = _p0;
@@ -17674,7 +17178,7 @@ var _user$project$Components_Uploader_Uploader$get = F2(
 			errors: _p3.errors
 		};
 	});
-var _user$project$Components_Uploader_Uploader$viewError = function (error) {
+var _asana$csvana$Components_Uploader_Uploader$viewError = function (error) {
 	var _p4 = error;
 	if (_p4.ctor === 'ParseError') {
 		return A2(
@@ -17724,7 +17228,7 @@ var _user$project$Components_Uploader_Uploader$viewError = function (error) {
 			});
 	}
 };
-var _user$project$Components_Uploader_Uploader$viewProgress = F2(
+var _asana$csvana$Components_Uploader_Uploader$viewProgress = F2(
 	function (_p6, _p5) {
 		var _p7 = _p6;
 		var _p8 = _p5;
@@ -17756,7 +17260,7 @@ var _user$project$Components_Uploader_Uploader$viewProgress = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$Components_Uploader_Uploader$viewComplete = function (_p9) {
+var _asana$csvana$Components_Uploader_Uploader$viewComplete = function (_p9) {
 	var _p10 = _p9;
 	return A2(
 		_elm_lang$html$Html$div,
@@ -17775,7 +17279,7 @@ var _user$project$Components_Uploader_Uploader$viewComplete = function (_p9) {
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$href(
-							_user$project$Asana_Urls$project(_p10.projectId)),
+							_asana$csvana$Asana_Urls$project(_p10.projectId)),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -17791,7 +17295,7 @@ var _user$project$Components_Uploader_Uploader$viewComplete = function (_p9) {
 			}
 		});
 };
-var _user$project$Components_Uploader_Uploader$view = F2(
+var _asana$csvana$Components_Uploader_Uploader$view = F2(
 	function (props, model) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -17804,7 +17308,7 @@ var _user$project$Components_Uploader_Uploader$view = F2(
 				ctor: '::',
 				_0: _elm_lang$core$Native_Utils.eq(
 					model.recordsProcessed,
-					_elm_lang$core$List$length(props.records)) ? _user$project$Components_Uploader_Uploader$viewComplete(props) : A2(_user$project$Components_Uploader_Uploader$viewProgress, props, model),
+					_elm_lang$core$List$length(props.records)) ? _asana$csvana$Components_Uploader_Uploader$viewComplete(props) : A2(_asana$csvana$Components_Uploader_Uploader$viewProgress, props, model),
 				_1: {
 					ctor: '::',
 					_0: A2(
@@ -17814,31 +17318,31 @@ var _user$project$Components_Uploader_Uploader$view = F2(
 							_0: _elm_lang$html$Html_Attributes$class('Uploader-errors'),
 							_1: {ctor: '[]'}
 						},
-						A2(_elm_lang$core$List$map, _user$project$Components_Uploader_Uploader$viewError, model.errors)),
+						A2(_elm_lang$core$List$map, _asana$csvana$Components_Uploader_Uploader$viewError, model.errors)),
 					_1: {ctor: '[]'}
 				}
 			});
 	});
-var _user$project$Components_Uploader_Uploader$Props = F4(
+var _asana$csvana$Components_Uploader_Uploader$Props = F4(
 	function (a, b, c, d) {
 		return {token: a, projectId: b, records: c, fieldTargets: d};
 	});
-var _user$project$Components_Uploader_Uploader$Data = F3(
+var _asana$csvana$Components_Uploader_Uploader$Data = F3(
 	function (a, b, c) {
 		return {totalRecords: a, recordsProcessed: b, errors: c};
 	});
-var _user$project$Components_Uploader_Uploader$Model = F2(
+var _asana$csvana$Components_Uploader_Uploader$Model = F2(
 	function (a, b) {
 		return {recordsProcessed: a, errors: b};
 	});
-var _user$project$Components_Uploader_Uploader$RecordProcessed = F2(
+var _asana$csvana$Components_Uploader_Uploader$RecordProcessed = F2(
 	function (a, b) {
 		return {ctor: 'RecordProcessed', _0: a, _1: b};
 	});
-var _user$project$Components_Uploader_Uploader$UploadError = function (a) {
+var _asana$csvana$Components_Uploader_Uploader$UploadError = function (a) {
 	return {ctor: 'UploadError', _0: a};
 };
-var _user$project$Components_Uploader_Uploader$update = F3(
+var _asana$csvana$Components_Uploader_Uploader$update = F3(
 	function (props, msg, model) {
 		var _p11 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
 		if (_p11._1.ctor === 'Ok') {
@@ -17857,7 +17361,7 @@ var _user$project$Components_Uploader_Uploader$update = F3(
 					{
 						errors: {
 							ctor: '::',
-							_0: _user$project$Components_Uploader_Uploader$UploadError(
+							_0: _asana$csvana$Components_Uploader_Uploader$UploadError(
 								{
 									msg: _elm_lang$core$Basics$toString(_p11._1._0),
 									row: _p11._0
@@ -17869,10 +17373,10 @@ var _user$project$Components_Uploader_Uploader$update = F3(
 			};
 		}
 	});
-var _user$project$Components_Uploader_Uploader$ParseError = function (a) {
+var _asana$csvana$Components_Uploader_Uploader$ParseError = function (a) {
 	return {ctor: 'ParseError', _0: a};
 };
-var _user$project$Components_Uploader_Uploader$updateTask = F3(
+var _asana$csvana$Components_Uploader_Uploader$updateTask = F3(
 	function (row, _p13, _p12) {
 		var _p14 = _p13;
 		var _p15 = _p12;
@@ -17880,7 +17384,7 @@ var _user$project$Components_Uploader_Uploader$updateTask = F3(
 		var _p18 = _p15._1;
 		var _p16 = _p14._1;
 		if (_p16.ctor === 'Just') {
-			var _p17 = A3(_user$project$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
+			var _p17 = A3(_asana$csvana$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
 			if (_p17.ctor === 'Ok') {
 				return {ctor: '_Tuple2', _0: _p17._0, _1: _p18};
 			} else {
@@ -17889,7 +17393,7 @@ var _user$project$Components_Uploader_Uploader$updateTask = F3(
 					_0: _p19,
 					_1: {
 						ctor: '::',
-						_0: _user$project$Components_Uploader_Uploader$ParseError(
+						_0: _asana$csvana$Components_Uploader_Uploader$ParseError(
 							{msg: _p17._0, row: row, col: _p14._0}),
 						_1: _p18
 					}
@@ -17899,7 +17403,7 @@ var _user$project$Components_Uploader_Uploader$updateTask = F3(
 			return {ctor: '_Tuple2', _0: _p19, _1: _p18};
 		}
 	});
-var _user$project$Components_Uploader_Uploader$uploadRecord = F4(
+var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
 	function (props, row, record, model) {
 		var fieldDefs = A2(
 			_elm_lang$core$List$indexedMap,
@@ -17918,10 +17422,10 @@ var _user$project$Components_Uploader_Uploader$uploadRecord = F4(
 				record));
 		var _p22 = A3(
 			_elm_lang$core$List$foldr,
-			_user$project$Components_Uploader_Uploader$updateTask(row),
+			_asana$csvana$Components_Uploader_Uploader$updateTask(row),
 			{
 				ctor: '_Tuple2',
-				_0: _user$project$Asana_Target$emptyTask(props.projectId),
+				_0: _asana$csvana$Asana_Target$emptyTask(props.projectId),
 				_1: {ctor: '[]'}
 			},
 			fieldDefs);
@@ -17934,11 +17438,11 @@ var _user$project$Components_Uploader_Uploader$uploadRecord = F4(
 			});
 		var cmd = A2(
 			_elm_lang$core$Platform_Cmd$map,
-			_user$project$Components_Uploader_Uploader$RecordProcessed(row),
-			A2(_user$project$Asana_Api$createTask, newTask, props.token));
+			_asana$csvana$Components_Uploader_Uploader$RecordProcessed(row),
+			A2(_asana$csvana$Asana_Api$createTask, newTask, props.token));
 		return {ctor: '_Tuple2', _0: model_, _1: cmd};
 	});
-var _user$project$Components_Uploader_Uploader$init = function (props) {
+var _asana$csvana$Components_Uploader_Uploader$init = function (props) {
 	var model = {
 		recordsProcessed: 0,
 		errors: {ctor: '[]'}
@@ -17949,7 +17453,7 @@ var _user$project$Components_Uploader_Uploader$init = function (props) {
 			function (_p25, _p24) {
 				var _p26 = _p25;
 				var _p27 = _p24;
-				var _p28 = A4(_user$project$Components_Uploader_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
+				var _p28 = A4(_asana$csvana$Components_Uploader_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
 				var model_ = _p28._0;
 				var cmd = _p28._1;
 				return {
@@ -17975,57 +17479,57 @@ var _user$project$Components_Uploader_Uploader$init = function (props) {
 	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
 	return {ctor: '_Tuple2', _0: model_, _1: cmd};
 };
-var _user$project$Components_Uploader_Uploader$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_Uploader_Uploader$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_Uploader_Uploader$init(props),
-			update: _user$project$Components_Uploader_Uploader$update(props),
-			view: _user$project$Components_Uploader_Uploader$view(props),
+			init: _asana$csvana$Components_Uploader_Uploader$init(props),
+			update: _asana$csvana$Components_Uploader_Uploader$update(props),
+			view: _asana$csvana$Components_Uploader_Uploader$view(props),
 			subscriptions: _elm_lang$core$Basics$always(_elm_lang$core$Platform_Sub$none),
-			get: _user$project$Components_Uploader_Uploader$get(props)
+			get: _asana$csvana$Components_Uploader_Uploader$get(props)
 		});
 };
 
-var _user$project$Components_Uploader_Form$init = function (_p0) {
+var _asana$csvana$Components_Uploader_Form$init = function (_p0) {
 	return {ctor: '_Tuple2', _0: _elm_lang$core$Maybe$Nothing, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$Components_Uploader_Form$Props = F4(
+var _asana$csvana$Components_Uploader_Form$Props = F4(
 	function (a, b, c, d) {
 		return {projectId: a, records: b, fieldTargets: c, apiContext: d};
 	});
-var _user$project$Components_Uploader_Form$StartUpload = {ctor: 'StartUpload'};
-var _user$project$Components_Uploader_Form$UploaderMsg = function (a) {
+var _asana$csvana$Components_Uploader_Form$StartUpload = {ctor: 'StartUpload'};
+var _asana$csvana$Components_Uploader_Form$UploaderMsg = function (a) {
 	return {ctor: 'UploaderMsg', _0: a};
 };
-var _user$project$Components_Uploader_Form$update = F3(
+var _asana$csvana$Components_Uploader_Form$update = F3(
 	function (props, msg, model) {
 		var _p1 = msg;
 		if (_p1.ctor === 'UploaderMsg') {
 			var _p2 = model;
 			if (_p2.ctor === 'Just') {
 				return A2(
-					_user$project$Util$mapComponent,
+					_asana$csvana$Util$mapComponent,
 					_elm_lang$core$Maybe$Just,
-					A3(_user$project$Base$updateWith, _user$project$Components_Uploader_Form$UploaderMsg, _p1._0, _p2._0));
+					A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Uploader_Form$UploaderMsg, _p1._0, _p2._0));
 			} else {
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			}
 		} else {
 			return A2(
-				_user$project$Util$mapCmd,
-				_user$project$Components_Uploader_Form$UploaderMsg,
+				_asana$csvana$Util$mapCmd,
+				_asana$csvana$Components_Uploader_Form$UploaderMsg,
 				A2(
-					_user$project$Util$mapComponent,
+					_asana$csvana$Util$mapComponent,
 					_elm_lang$core$Maybe$Just,
-					_user$project$Components_Uploader_Uploader$create(
+					_asana$csvana$Components_Uploader_Uploader$create(
 						{token: props.apiContext.token, projectId: props.projectId, records: props.records, fieldTargets: props.fieldTargets})));
 		}
 	});
-var _user$project$Components_Uploader_Form$view = F2(
+var _asana$csvana$Components_Uploader_Form$view = F2(
 	function (_p3, model) {
 		var _p4 = model;
 		if (_p4.ctor === 'Just') {
-			return A2(_user$project$Base$viewWith, _user$project$Components_Uploader_Form$UploaderMsg, _p4._0);
+			return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Uploader_Form$UploaderMsg, _p4._0);
 		} else {
 			return A2(
 				_elm_lang$html$Html$div,
@@ -18040,7 +17544,7 @@ var _user$project$Components_Uploader_Form$view = F2(
 						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_Uploader_Form$StartUpload),
+							_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_Uploader_Form$StartUpload),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Attributes$class('button large primary'),
@@ -18056,56 +17560,56 @@ var _user$project$Components_Uploader_Form$view = F2(
 				});
 		}
 	});
-var _user$project$Components_Uploader_Form$subscriptions = F2(
+var _asana$csvana$Components_Uploader_Form$subscriptions = F2(
 	function (_p5, model) {
 		return A2(
 			_elm_lang$core$Maybe$withDefault,
 			_elm_lang$core$Platform_Sub$none,
 			A2(
 				_elm_lang$core$Maybe$map,
-				_user$project$Base$subscriptionsWith(_user$project$Components_Uploader_Form$UploaderMsg),
+				_asana$csvana$Base$subscriptionsWith(_asana$csvana$Components_Uploader_Form$UploaderMsg),
 				model));
 	});
-var _user$project$Components_Uploader_Form$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_Uploader_Form$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_Uploader_Form$init(props),
-			update: _user$project$Components_Uploader_Form$update(props),
-			view: _user$project$Components_Uploader_Form$view(props),
-			subscriptions: _user$project$Components_Uploader_Form$subscriptions(props),
+			init: _asana$csvana$Components_Uploader_Form$init(props),
+			update: _asana$csvana$Components_Uploader_Form$update(props),
+			view: _asana$csvana$Components_Uploader_Form$view(props),
+			subscriptions: _asana$csvana$Components_Uploader_Form$subscriptions(props),
 			get: _elm_lang$core$Basics$always(
 				{ctor: '_Tuple0'})
 		});
 };
 
-var _user$project$Components_Form$projectAndCsvSelected = function (_p0) {
+var _asana$csvana$Components_Form$projectAndCsvSelected = function (_p0) {
 	var _p1 = _p0;
-	return _user$project$Util$isJust(
-		_user$project$Base$get(_p1.csv)) && _user$project$Util$isJust(
-		_user$project$Base$get(_p1.project));
+	return _asana$csvana$Util$isJust(
+		_asana$csvana$Base$get(_p1.csv)) && _asana$csvana$Util$isJust(
+		_asana$csvana$Base$get(_p1.project));
 };
-var _user$project$Components_Form$csvSelected = function (_p2) {
+var _asana$csvana$Components_Form$csvSelected = function (_p2) {
 	var _p3 = _p2;
-	return _user$project$Util$isJust(
-		_user$project$Base$get(_p3.csv));
+	return _asana$csvana$Util$isJust(
+		_asana$csvana$Base$get(_p3.csv));
 };
-var _user$project$Components_Form$Props = function (a) {
+var _asana$csvana$Components_Form$Props = function (a) {
 	return {token: a};
 };
-var _user$project$Components_Form$Model = F4(
+var _asana$csvana$Components_Form$Model = F4(
 	function (a, b, c, d) {
 		return {csv: a, project: b, matcher: c, uploader: d};
 	});
-var _user$project$Components_Form$UploaderMsg = function (a) {
+var _asana$csvana$Components_Form$UploaderMsg = function (a) {
 	return {ctor: 'UploaderMsg', _0: a};
 };
-var _user$project$Components_Form$createUploader = function (_p4) {
+var _asana$csvana$Components_Form$createUploader = function (_p4) {
 	return A2(
-		_user$project$Util$mapCmd,
-		_user$project$Components_Form$UploaderMsg,
-		_user$project$Components_Uploader_Form$create(_p4));
+		_asana$csvana$Util$mapCmd,
+		_asana$csvana$Components_Form$UploaderMsg,
+		_asana$csvana$Components_Uploader_Form$create(_p4));
 };
-var _user$project$Components_Form$viewUploader = function (model) {
+var _asana$csvana$Components_Form$viewUploader = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -18119,7 +17623,7 @@ var _user$project$Components_Form$viewUploader = function (model) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'Form-section--disabled',
-							_1: !_user$project$Components_Form$projectAndCsvSelected(model)
+							_1: !_asana$csvana$Components_Form$projectAndCsvSelected(model)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -18150,7 +17654,7 @@ var _user$project$Components_Form$viewUploader = function (model) {
 							},
 							{
 								ctor: '::',
-								_0: A2(_user$project$Base$viewWith, _user$project$Components_Form$UploaderMsg, _p5._0),
+								_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Form$UploaderMsg, _p5._0),
 								_1: {ctor: '[]'}
 							});
 					} else {
@@ -18168,30 +17672,30 @@ var _user$project$Components_Form$viewUploader = function (model) {
 			}
 		});
 };
-var _user$project$Components_Form$FieldMatcherMsg = function (a) {
+var _asana$csvana$Components_Form$FieldMatcherMsg = function (a) {
 	return {ctor: 'FieldMatcherMsg', _0: a};
 };
-var _user$project$Components_Form$createMatcher = function (_p6) {
+var _asana$csvana$Components_Form$createMatcher = function (_p6) {
 	return A2(
-		_user$project$Util$mapCmd,
-		_user$project$Components_Form$FieldMatcherMsg,
-		_user$project$Components_MatcherSection$create(_p6));
+		_asana$csvana$Util$mapCmd,
+		_asana$csvana$Components_Form$FieldMatcherMsg,
+		_asana$csvana$Components_MatcherSection$create(_p6));
 };
-var _user$project$Components_Form$updateState = F2(
+var _asana$csvana$Components_Form$updateState = F2(
 	function (props, model) {
-		var targets = A2(_elm_lang$core$Maybe$andThen, _user$project$Base$get, model.matcher);
+		var targets = A2(_elm_lang$core$Maybe$andThen, _asana$csvana$Base$get, model.matcher);
 		var project = A2(
 			_elm_lang$core$Maybe$andThen,
 			_elm_lang$core$Basics$identity,
-			_user$project$Base$get(model.project));
-		var csv = _user$project$Base$get(model.csv);
+			_asana$csvana$Base$get(model.project));
+		var csv = _asana$csvana$Base$get(model.csv);
 		var _p7 = {ctor: '_Tuple5', _0: csv, _1: project, _2: model.matcher, _3: targets, _4: model.uploader};
 		_v3_2:
 		do {
 			if (((((_p7.ctor === '_Tuple5') && (_p7._0.ctor === 'Just')) && (_p7._0._0.ctor === '_Tuple2')) && (_p7._1.ctor === 'Just')) && (_p7._1._0.ctor === '_Tuple2')) {
 				if (_p7._2.ctor === 'Nothing') {
 					return A2(
-						_user$project$Util$mapComponent,
+						_asana$csvana$Util$mapComponent,
 						function (matcher) {
 							return _elm_lang$core$Native_Utils.update(
 								model,
@@ -18199,7 +17703,7 @@ var _user$project$Components_Form$updateState = F2(
 									matcher: _elm_lang$core$Maybe$Just(matcher)
 								});
 						},
-						_user$project$Components_Form$createMatcher(
+						_asana$csvana$Components_Form$createMatcher(
 							{
 								apiContext: {token: props.token, workspaceId: _p7._1._0._0},
 								projectId: _p7._1._0._1.id,
@@ -18209,7 +17713,7 @@ var _user$project$Components_Form$updateState = F2(
 				} else {
 					if ((_p7._3.ctor === 'Just') && (_p7._4.ctor === 'Nothing')) {
 						return A2(
-							_user$project$Util$mapComponent,
+							_asana$csvana$Util$mapComponent,
 							function (uploader) {
 								return _elm_lang$core$Native_Utils.update(
 									model,
@@ -18217,7 +17721,7 @@ var _user$project$Components_Form$updateState = F2(
 										uploader: _elm_lang$core$Maybe$Just(uploader)
 									});
 							},
-							_user$project$Components_Form$createUploader(
+							_asana$csvana$Components_Form$createUploader(
 								{
 									apiContext: {workspaceId: _p7._1._0._0, token: props.token},
 									projectId: _p7._1._0._1.id,
@@ -18234,7 +17738,7 @@ var _user$project$Components_Form$updateState = F2(
 		} while(false);
 		return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 	});
-var _user$project$Components_Form$viewMatcher = function (model) {
+var _asana$csvana$Components_Form$viewMatcher = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -18248,7 +17752,7 @@ var _user$project$Components_Form$viewMatcher = function (model) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'Form-section--disabled',
-							_1: !_user$project$Components_Form$projectAndCsvSelected(model)
+							_1: !_asana$csvana$Components_Form$projectAndCsvSelected(model)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -18270,7 +17774,7 @@ var _user$project$Components_Form$viewMatcher = function (model) {
 				_0: function () {
 					var _p8 = model.matcher;
 					if (_p8.ctor === 'Just') {
-						return A2(_user$project$Base$viewWith, _user$project$Components_Form$FieldMatcherMsg, _p8._0);
+						return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Form$FieldMatcherMsg, _p8._0);
 					} else {
 						return _elm_lang$html$Html$text('');
 					}
@@ -18279,37 +17783,37 @@ var _user$project$Components_Form$viewMatcher = function (model) {
 			}
 		});
 };
-var _user$project$Components_Form$ProjectMsg = function (a) {
+var _asana$csvana$Components_Form$ProjectMsg = function (a) {
 	return {ctor: 'ProjectMsg', _0: a};
 };
-var _user$project$Components_Form$createProjectForm = function (_p9) {
+var _asana$csvana$Components_Form$createProjectForm = function (_p9) {
 	var _p10 = _p9;
 	var _p11 = _p10.token;
 	return A2(
-		_user$project$Util$mapCmd,
-		_user$project$Components_Form$ProjectMsg,
-		_user$project$Components_ApiResource$create(
+		_asana$csvana$Util$mapCmd,
+		_asana$csvana$Components_Form$ProjectMsg,
+		_asana$csvana$Components_ApiResource$create(
 			{
 				child: function (user) {
-					return _user$project$Components_FormSection$create(
+					return _asana$csvana$Components_FormSection$create(
 						{
 							incompleteChild: function (maybeProject) {
-								return _user$project$Components_Project_Form$create(
+								return _asana$csvana$Components_Project_Form$create(
 									{token: _p11, user: user});
 							},
 							completeChild: function (project) {
-								return _user$project$Components_Project_Summary$create(
+								return _asana$csvana$Components_Project_Summary$create(
 									{project: project});
 							},
 							value: _elm_lang$core$Maybe$Nothing
 						});
 				},
-				fetch: _user$project$Asana_Api$me(_p11),
-				loadingView: _user$project$CommonViews$loadingIndicator,
-				errorView: _user$project$CommonViews$errorView
+				fetch: _asana$csvana$Asana_Api$me(_p11),
+				loadingView: _asana$csvana$CommonViews$loadingIndicator,
+				errorView: _asana$csvana$CommonViews$errorView
 			}));
 };
-var _user$project$Components_Form$viewProject = function (model) {
+var _asana$csvana$Components_Form$viewProject = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -18323,7 +17827,7 @@ var _user$project$Components_Form$viewProject = function (model) {
 						_0: {
 							ctor: '_Tuple2',
 							_0: 'Form-section--disabled',
-							_1: !_user$project$Components_Form$csvSelected(model)
+							_1: !_asana$csvana$Components_Form$csvSelected(model)
 						},
 						_1: {ctor: '[]'}
 					}
@@ -18342,36 +17846,36 @@ var _user$project$Components_Form$viewProject = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: _user$project$Components_Form$csvSelected(model) ? A2(_user$project$Base$viewWith, _user$project$Components_Form$ProjectMsg, model.project) : _elm_lang$html$Html$text(''),
+				_0: _asana$csvana$Components_Form$csvSelected(model) ? A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Form$ProjectMsg, model.project) : _elm_lang$html$Html$text(''),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Components_Form$CsvMsg = function (a) {
+var _asana$csvana$Components_Form$CsvMsg = function (a) {
 	return {ctor: 'CsvMsg', _0: a};
 };
-var _user$project$Components_Form$createCsvForm = function (_p12) {
+var _asana$csvana$Components_Form$createCsvForm = function (_p12) {
 	return A2(
-		_user$project$Util$mapCmd,
-		_user$project$Components_Form$CsvMsg,
-		_user$project$Components_FormSection$create(
+		_asana$csvana$Util$mapCmd,
+		_asana$csvana$Components_Form$CsvMsg,
+		_asana$csvana$Components_FormSection$create(
 			{
 				incompleteChild: function (maybeCsv) {
-					return _user$project$Components_Csv_Form$create(
+					return _asana$csvana$Components_Csv_Form$create(
 						{});
 				},
 				completeChild: function (csvData) {
-					return _user$project$Components_Csv_Summary$create(
+					return _asana$csvana$Components_Csv_Summary$create(
 						{csvData: csvData});
 				},
 				value: _elm_lang$core$Maybe$Nothing
 			}));
 };
-var _user$project$Components_Form$init = function (props) {
-	var _p13 = _user$project$Components_Form$createCsvForm(props);
+var _asana$csvana$Components_Form$init = function (props) {
+	var _p13 = _asana$csvana$Components_Form$createCsvForm(props);
 	var csv = _p13._0;
 	var csvCmd = _p13._1;
-	var _p14 = _user$project$Components_Form$createProjectForm(props);
+	var _p14 = _asana$csvana$Components_Form$createProjectForm(props);
 	var project = _p14._0;
 	var projectCmd = _p14._1;
 	var cmd = _elm_lang$core$Platform_Cmd$batch(
@@ -18390,7 +17894,7 @@ var _user$project$Components_Form$init = function (props) {
 		_1: cmd
 	};
 };
-var _user$project$Components_Form$subscriptions = F2(
+var _asana$csvana$Components_Form$subscriptions = F2(
 	function (_p16, _p15) {
 		var _p17 = _p15;
 		var matcherSubs = A2(
@@ -18398,10 +17902,10 @@ var _user$project$Components_Form$subscriptions = F2(
 			_elm_lang$core$Platform_Sub$none,
 			A2(
 				_elm_lang$core$Maybe$map,
-				_user$project$Base$subscriptionsWith(_user$project$Components_Form$FieldMatcherMsg),
+				_asana$csvana$Base$subscriptionsWith(_asana$csvana$Components_Form$FieldMatcherMsg),
 				_p17.matcher));
-		var projectSubs = A2(_user$project$Base$subscriptionsWith, _user$project$Components_Form$ProjectMsg, _p17.project);
-		var csvSubs = A2(_user$project$Base$subscriptionsWith, _user$project$Components_Form$CsvMsg, _p17.csv);
+		var projectSubs = A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_Form$ProjectMsg, _p17.project);
+		var csvSubs = A2(_asana$csvana$Base$subscriptionsWith, _asana$csvana$Components_Form$CsvMsg, _p17.csv);
 		return _elm_lang$core$Platform_Sub$batch(
 			{
 				ctor: '::',
@@ -18417,33 +17921,33 @@ var _user$project$Components_Form$subscriptions = F2(
 				}
 			});
 	});
-var _user$project$Components_Form$processMsg = F3(
+var _asana$csvana$Components_Form$processMsg = F3(
 	function (props, msg, model) {
 		var _p18 = msg;
 		switch (_p18.ctor) {
 			case 'CsvMsg':
 				return A2(
-					_user$project$Util$mapComponent,
+					_asana$csvana$Util$mapComponent,
 					function (csv) {
 						return _elm_lang$core$Native_Utils.update(
 							model,
 							{csv: csv});
 					},
-					A3(_user$project$Base$updateWith, _user$project$Components_Form$CsvMsg, _p18._0, model.csv));
+					A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Form$CsvMsg, _p18._0, model.csv));
 			case 'ProjectMsg':
 				return A2(
-					_user$project$Util$mapComponent,
+					_asana$csvana$Util$mapComponent,
 					function (project) {
 						return _elm_lang$core$Native_Utils.update(
 							model,
 							{project: project});
 					},
-					A3(_user$project$Base$updateWith, _user$project$Components_Form$ProjectMsg, _p18._0, model.project));
+					A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Form$ProjectMsg, _p18._0, model.project));
 			case 'FieldMatcherMsg':
 				var _p19 = model.matcher;
 				if (_p19.ctor === 'Just') {
 					return A2(
-						_user$project$Util$mapComponent,
+						_asana$csvana$Util$mapComponent,
 						function (matcher) {
 							return _elm_lang$core$Native_Utils.update(
 								model,
@@ -18451,7 +17955,7 @@ var _user$project$Components_Form$processMsg = F3(
 									matcher: _elm_lang$core$Maybe$Just(matcher)
 								});
 						},
-						A3(_user$project$Base$updateWith, _user$project$Components_Form$FieldMatcherMsg, _p18._0, _p19._0));
+						A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Form$FieldMatcherMsg, _p18._0, _p19._0));
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
@@ -18459,7 +17963,7 @@ var _user$project$Components_Form$processMsg = F3(
 				var _p20 = model.uploader;
 				if (_p20.ctor === 'Just') {
 					return A2(
-						_user$project$Util$mapComponent,
+						_asana$csvana$Util$mapComponent,
 						function (uploader) {
 							return _elm_lang$core$Native_Utils.update(
 								model,
@@ -18467,18 +17971,18 @@ var _user$project$Components_Form$processMsg = F3(
 									uploader: _elm_lang$core$Maybe$Just(uploader)
 								});
 						},
-						A3(_user$project$Base$updateWith, _user$project$Components_Form$UploaderMsg, _p18._0, _p20._0));
+						A3(_asana$csvana$Base$updateWith, _asana$csvana$Components_Form$UploaderMsg, _p18._0, _p20._0));
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 		}
 	});
-var _user$project$Components_Form$update = F3(
+var _asana$csvana$Components_Form$update = F3(
 	function (props, msg, model0) {
-		var _p21 = A3(_user$project$Components_Form$processMsg, props, msg, model0);
+		var _p21 = A3(_asana$csvana$Components_Form$processMsg, props, msg, model0);
 		var model1 = _p21._0;
 		var cmd1 = _p21._1;
-		var _p22 = A2(_user$project$Components_Form$updateState, props, model1);
+		var _p22 = A2(_asana$csvana$Components_Form$updateState, props, model1);
 		var model2 = _p22._0;
 		var cmd2 = _p22._1;
 		return {
@@ -18496,7 +18000,7 @@ var _user$project$Components_Form$update = F3(
 				})
 		};
 	});
-var _user$project$Components_Form$viewCsv = function (model) {
+var _asana$csvana$Components_Form$viewCsv = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -18516,12 +18020,12 @@ var _user$project$Components_Form$viewCsv = function (model) {
 				}),
 			_1: {
 				ctor: '::',
-				_0: A2(_user$project$Base$viewWith, _user$project$Components_Form$CsvMsg, model.csv),
+				_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_Form$CsvMsg, model.csv),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Components_Form$view = F2(
+var _asana$csvana$Components_Form$view = F2(
 	function (props, model) {
 		return A2(
 			_elm_lang$html$Html$div,
@@ -18532,35 +18036,35 @@ var _user$project$Components_Form$view = F2(
 			},
 			{
 				ctor: '::',
-				_0: _user$project$Components_Form$viewCsv(model),
+				_0: _asana$csvana$Components_Form$viewCsv(model),
 				_1: {
 					ctor: '::',
-					_0: _user$project$Components_Form$viewProject(model),
+					_0: _asana$csvana$Components_Form$viewProject(model),
 					_1: {
 						ctor: '::',
-						_0: _user$project$Components_Form$viewMatcher(model),
+						_0: _asana$csvana$Components_Form$viewMatcher(model),
 						_1: {
 							ctor: '::',
-							_0: _user$project$Components_Form$viewUploader(model),
+							_0: _asana$csvana$Components_Form$viewUploader(model),
 							_1: {ctor: '[]'}
 						}
 					}
 				}
 			});
 	});
-var _user$project$Components_Form$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_Form$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_Form$init(props),
-			update: _user$project$Components_Form$update(props),
-			view: _user$project$Components_Form$view(props),
-			subscriptions: _user$project$Components_Form$subscriptions(props),
+			init: _asana$csvana$Components_Form$init(props),
+			update: _asana$csvana$Components_Form$update(props),
+			view: _asana$csvana$Components_Form$view(props),
+			subscriptions: _asana$csvana$Components_Form$subscriptions(props),
 			get: _elm_lang$core$Basics$always(
 				{ctor: '_Tuple0'})
 		});
 };
 
-var _user$project$OAuth_OAuth$buildAuthUrl = function (_p0) {
+var _asana$csvana$OAuth_OAuth$buildAuthUrl = function (_p0) {
 	var _p1 = _p0;
 	var query = A2(
 		_elm_lang$core$String$join,
@@ -18620,7 +18124,7 @@ var _user$project$OAuth_OAuth$buildAuthUrl = function (_p0) {
 			}
 		});
 };
-var _user$project$OAuth_OAuth$getToken = function (_p2) {
+var _asana$csvana$OAuth_OAuth$getToken = function (_p2) {
 	var _p3 = _p2;
 	var _p4 = _p3.state;
 	if (_p4.ctor === 'Success') {
@@ -18629,21 +18133,21 @@ var _user$project$OAuth_OAuth$getToken = function (_p2) {
 		return _elm_lang$core$Maybe$Nothing;
 	}
 };
-var _user$project$OAuth_OAuth$getState = function (_) {
+var _asana$csvana$OAuth_OAuth$getState = function (_) {
 	return _.state;
 };
-var _user$project$OAuth_OAuth$initAuth = _elm_lang$core$Native_Platform.outgoingPort(
+var _asana$csvana$OAuth_OAuth$initAuth = _elm_lang$core$Native_Platform.outgoingPort(
 	'initAuth',
 	function (v) {
 		return null;
 	});
-var _user$project$OAuth_OAuth$initialized = _elm_lang$core$Native_Platform.incomingPort('initialized', _elm_lang$core$Json_Decode$bool);
-var _user$project$OAuth_OAuth$startAuth = _elm_lang$core$Native_Platform.outgoingPort(
+var _asana$csvana$OAuth_OAuth$initialized = _elm_lang$core$Native_Platform.incomingPort('initialized', _elm_lang$core$Json_Decode$bool);
+var _asana$csvana$OAuth_OAuth$startAuth = _elm_lang$core$Native_Platform.outgoingPort(
 	'startAuth',
 	function (v) {
 		return v;
 	});
-var _user$project$OAuth_OAuth$authComplete = _elm_lang$core$Native_Platform.incomingPort(
+var _asana$csvana$OAuth_OAuth$authComplete = _elm_lang$core$Native_Platform.incomingPort(
 	'authComplete',
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
@@ -18657,40 +18161,40 @@ var _user$project$OAuth_OAuth$authComplete = _elm_lang$core$Native_Platform.inco
 				A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$string));
 		},
 		A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$bool)));
-var _user$project$OAuth_OAuth$Model = F4(
+var _asana$csvana$OAuth_OAuth$Model = F4(
 	function (a, b, c, d) {
 		return {baseAuthUrl: a, clientId: b, redirectUrl: c, state: d};
 	});
-var _user$project$OAuth_OAuth$OAuthInitialized = {ctor: 'OAuthInitialized'};
-var _user$project$OAuth_OAuth$OAuthError = function (a) {
+var _asana$csvana$OAuth_OAuth$OAuthInitialized = {ctor: 'OAuthInitialized'};
+var _asana$csvana$OAuth_OAuth$OAuthError = function (a) {
 	return {ctor: 'OAuthError', _0: a};
 };
-var _user$project$OAuth_OAuth$OAuthToken = function (a) {
+var _asana$csvana$OAuth_OAuth$OAuthToken = function (a) {
 	return {ctor: 'OAuthToken', _0: a};
 };
-var _user$project$OAuth_OAuth$resultToMsg = function (_p5) {
+var _asana$csvana$OAuth_OAuth$resultToMsg = function (_p5) {
 	var _p6 = _p5;
 	var _p7 = _p6._1;
-	return _p6._0 ? _user$project$OAuth_OAuth$OAuthToken(_p7) : _user$project$OAuth_OAuth$OAuthError(_p7);
+	return _p6._0 ? _asana$csvana$OAuth_OAuth$OAuthToken(_p7) : _asana$csvana$OAuth_OAuth$OAuthError(_p7);
 };
-var _user$project$OAuth_OAuth$subscriptions = function (_p8) {
+var _asana$csvana$OAuth_OAuth$subscriptions = function (_p8) {
 	var _p9 = _p8;
 	var _p10 = _p9.state;
 	switch (_p10.ctor) {
 		case 'InProgress':
-			return _user$project$OAuth_OAuth$authComplete(_user$project$OAuth_OAuth$resultToMsg);
+			return _asana$csvana$OAuth_OAuth$authComplete(_asana$csvana$OAuth_OAuth$resultToMsg);
 		case 'Uninitialized':
-			return _user$project$OAuth_OAuth$initialized(
-				_elm_lang$core$Basics$always(_user$project$OAuth_OAuth$OAuthInitialized));
+			return _asana$csvana$OAuth_OAuth$initialized(
+				_elm_lang$core$Basics$always(_asana$csvana$OAuth_OAuth$OAuthInitialized));
 		default:
 			return _elm_lang$core$Platform_Sub$none;
 	}
 };
-var _user$project$OAuth_OAuth$Failure = function (a) {
+var _asana$csvana$OAuth_OAuth$Failure = function (a) {
 	return {ctor: 'Failure', _0: a};
 };
-var _user$project$OAuth_OAuth$Uninitialized = {ctor: 'Uninitialized'};
-var _user$project$OAuth_OAuth$init = F3(
+var _asana$csvana$OAuth_OAuth$Uninitialized = {ctor: 'Uninitialized'};
+var _asana$csvana$OAuth_OAuth$init = F3(
 	function (baseAuthUrl, clientId, baseUrl) {
 		var redirectUrl = _elm_lang$core$String$concat(
 			{
@@ -18706,31 +18210,31 @@ var _user$project$OAuth_OAuth$init = F3(
 					}
 				}
 			});
-		var model = {baseAuthUrl: baseAuthUrl, redirectUrl: redirectUrl, clientId: clientId, state: _user$project$OAuth_OAuth$Uninitialized};
+		var model = {baseAuthUrl: baseAuthUrl, redirectUrl: redirectUrl, clientId: clientId, state: _asana$csvana$OAuth_OAuth$Uninitialized};
 		return {
 			ctor: '_Tuple2',
 			_0: model,
-			_1: _user$project$OAuth_OAuth$initAuth(
+			_1: _asana$csvana$OAuth_OAuth$initAuth(
 				{ctor: '_Tuple0'})
 		};
 	});
-var _user$project$OAuth_OAuth$Ready = {ctor: 'Ready'};
-var _user$project$OAuth_OAuth$InProgress = {ctor: 'InProgress'};
-var _user$project$OAuth_OAuth$authenticate = function (model) {
-	var url = _user$project$OAuth_OAuth$buildAuthUrl(model);
+var _asana$csvana$OAuth_OAuth$Ready = {ctor: 'Ready'};
+var _asana$csvana$OAuth_OAuth$InProgress = {ctor: 'InProgress'};
+var _asana$csvana$OAuth_OAuth$authenticate = function (model) {
+	var url = _asana$csvana$OAuth_OAuth$buildAuthUrl(model);
 	var model_ = _elm_lang$core$Native_Utils.update(
 		model,
-		{state: _user$project$OAuth_OAuth$InProgress});
-	return _elm_lang$core$Native_Utils.eq(model.state, _user$project$OAuth_OAuth$Ready) ? {
+		{state: _asana$csvana$OAuth_OAuth$InProgress});
+	return _elm_lang$core$Native_Utils.eq(model.state, _asana$csvana$OAuth_OAuth$Ready) ? {
 		ctor: '_Tuple2',
 		_0: model_,
-		_1: _user$project$OAuth_OAuth$startAuth(url)
+		_1: _asana$csvana$OAuth_OAuth$startAuth(url)
 	} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _user$project$OAuth_OAuth$Success = function (a) {
+var _asana$csvana$OAuth_OAuth$Success = function (a) {
 	return {ctor: 'Success', _0: a};
 };
-var _user$project$OAuth_OAuth$update = F2(
+var _asana$csvana$OAuth_OAuth$update = F2(
 	function (msg, model) {
 		var _p11 = msg;
 		switch (_p11.ctor) {
@@ -18739,7 +18243,7 @@ var _user$project$OAuth_OAuth$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{state: _user$project$OAuth_OAuth$Ready}),
+						{state: _asana$csvana$OAuth_OAuth$Ready}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'OAuthToken':
@@ -18748,7 +18252,7 @@ var _user$project$OAuth_OAuth$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							state: _user$project$OAuth_OAuth$Success(_p11._0)
+							state: _asana$csvana$OAuth_OAuth$Success(_p11._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -18758,37 +18262,37 @@ var _user$project$OAuth_OAuth$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							state: _user$project$OAuth_OAuth$Failure(_p11._0)
+							state: _asana$csvana$OAuth_OAuth$Failure(_p11._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 		}
 	});
 
-var _user$project$Components_OAuthBoundary$get = F2(
+var _asana$csvana$Components_OAuthBoundary$get = F2(
 	function (_p1, _p0) {
 		var _p2 = _p0;
-		return A2(_elm_lang$core$Maybe$map, _user$project$Base$get, _p2.child);
+		return A2(_elm_lang$core$Maybe$map, _asana$csvana$Base$get, _p2.child);
 	});
-var _user$project$Components_OAuthBoundary$Props = F4(
+var _asana$csvana$Components_OAuthBoundary$Props = F4(
 	function (a, b, c, d) {
 		return {baseAuthUrl: a, clientId: b, baseRedirectUrl: c, child: d};
 	});
-var _user$project$Components_OAuthBoundary$Model = F2(
+var _asana$csvana$Components_OAuthBoundary$Model = F2(
 	function (a, b) {
 		return {child: a, oauth: b};
 	});
-var _user$project$Components_OAuthBoundary$ChildMsg = function (a) {
+var _asana$csvana$Components_OAuthBoundary$ChildMsg = function (a) {
 	return {ctor: 'ChildMsg', _0: a};
 };
-var _user$project$Components_OAuthBoundary$updateChild = F2(
+var _asana$csvana$Components_OAuthBoundary$updateChild = F2(
 	function (msg, model) {
 		var _p3 = model.child;
 		if (_p3.ctor === 'Just') {
 			var _p4 = A2(
-				_user$project$Util$mapCmd,
-				_user$project$Components_OAuthBoundary$ChildMsg,
-				A2(_user$project$Base$update, msg, _p3._0));
+				_asana$csvana$Util$mapCmd,
+				_asana$csvana$Components_OAuthBoundary$ChildMsg,
+				A2(_asana$csvana$Base$update, msg, _p3._0));
 			var child_ = _p4._0;
 			var childCmd = _p4._1;
 			return {
@@ -18804,8 +18308,8 @@ var _user$project$Components_OAuthBoundary$updateChild = F2(
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Components_OAuthBoundary$StartAuth = {ctor: 'StartAuth'};
-var _user$project$Components_OAuthBoundary$unauthenticatedView = A2(
+var _asana$csvana$Components_OAuthBoundary$StartAuth = {ctor: 'StartAuth'};
+var _asana$csvana$Components_OAuthBoundary$unauthenticatedView = A2(
 	_elm_lang$html$Html$div,
 	{
 		ctor: '::',
@@ -18824,7 +18328,7 @@ var _user$project$Components_OAuthBoundary$unauthenticatedView = A2(
 					_0: _elm_lang$html$Html_Attributes$class('OAuthBoundary-authenticateButton button primary large'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_OAuthBoundary$StartAuth),
+						_0: _elm_lang$html$Html_Events$onClick(_asana$csvana$Components_OAuthBoundary$StartAuth),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Attributes$value('Connect to Asana'),
@@ -18840,43 +18344,43 @@ var _user$project$Components_OAuthBoundary$unauthenticatedView = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$Components_OAuthBoundary$view = F2(
+var _asana$csvana$Components_OAuthBoundary$view = F2(
 	function (_p5, model) {
 		var _p6 = model.child;
 		if (_p6.ctor === 'Just') {
-			return A2(_user$project$Base$viewWith, _user$project$Components_OAuthBoundary$ChildMsg, _p6._0);
+			return A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_OAuthBoundary$ChildMsg, _p6._0);
 		} else {
-			return _user$project$Components_OAuthBoundary$unauthenticatedView;
+			return _asana$csvana$Components_OAuthBoundary$unauthenticatedView;
 		}
 	});
-var _user$project$Components_OAuthBoundary$OAuthMsg = function (a) {
+var _asana$csvana$Components_OAuthBoundary$OAuthMsg = function (a) {
 	return {ctor: 'OAuthMsg', _0: a};
 };
-var _user$project$Components_OAuthBoundary$init = function (_p7) {
+var _asana$csvana$Components_OAuthBoundary$init = function (_p7) {
 	var _p8 = _p7;
-	var _p9 = A3(_user$project$OAuth_OAuth$init, _p8.baseAuthUrl, _p8.clientId, _p8.baseRedirectUrl);
+	var _p9 = A3(_asana$csvana$OAuth_OAuth$init, _p8.baseAuthUrl, _p8.clientId, _p8.baseRedirectUrl);
 	var oauthModel = _p9._0;
 	var oauthCmd = _p9._1;
 	var model = {child: _elm_lang$core$Maybe$Nothing, oauth: oauthModel};
 	return {
 		ctor: '_Tuple2',
 		_0: model,
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$Components_OAuthBoundary$OAuthMsg, oauthCmd)
+		_1: A2(_elm_lang$core$Platform_Cmd$map, _asana$csvana$Components_OAuthBoundary$OAuthMsg, oauthCmd)
 	};
 };
-var _user$project$Components_OAuthBoundary$updateOAuth = F3(
+var _asana$csvana$Components_OAuthBoundary$updateOAuth = F3(
 	function (props, msg, model) {
 		var _p10 = A2(
-			_user$project$Util$mapCmd,
-			_user$project$Components_OAuthBoundary$OAuthMsg,
-			A2(_user$project$OAuth_OAuth$update, msg, model.oauth));
+			_asana$csvana$Util$mapCmd,
+			_asana$csvana$Components_OAuthBoundary$OAuthMsg,
+			A2(_asana$csvana$OAuth_OAuth$update, msg, model.oauth));
 		var oauth_ = _p10._0;
 		var oauthCmd1 = _p10._1;
-		var _p11 = _user$project$OAuth_OAuth$getToken(oauth_);
+		var _p11 = _asana$csvana$OAuth_OAuth$getToken(oauth_);
 		if (_p11.ctor === 'Just') {
 			var _p12 = A2(
-				_user$project$Util$mapCmd,
-				_user$project$Components_OAuthBoundary$ChildMsg,
+				_asana$csvana$Util$mapCmd,
+				_asana$csvana$Components_OAuthBoundary$ChildMsg,
 				props.child(_p11._0));
 			var child = _p12._0;
 			var childCmd = _p12._1;
@@ -18910,17 +18414,17 @@ var _user$project$Components_OAuthBoundary$updateOAuth = F3(
 			};
 		}
 	});
-var _user$project$Components_OAuthBoundary$update = F3(
+var _asana$csvana$Components_OAuthBoundary$update = F3(
 	function (props, msg, model) {
 		var _p13 = msg;
 		switch (_p13.ctor) {
 			case 'StartAuth':
-				var _p14 = _user$project$OAuth_OAuth$getState(model.oauth);
+				var _p14 = _asana$csvana$OAuth_OAuth$getState(model.oauth);
 				if (_p14.ctor === 'Ready') {
 					var _p15 = A2(
-						_user$project$Util$mapCmd,
-						_user$project$Components_OAuthBoundary$OAuthMsg,
-						_user$project$OAuth_OAuth$authenticate(model.oauth));
+						_asana$csvana$Util$mapCmd,
+						_asana$csvana$Components_OAuthBoundary$OAuthMsg,
+						_asana$csvana$OAuth_OAuth$authenticate(model.oauth));
 					var oauth_ = _p15._0;
 					var oauthCmd = _p15._1;
 					return {
@@ -18934,12 +18438,12 @@ var _user$project$Components_OAuthBoundary$update = F3(
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
 			case 'OAuthMsg':
-				return A3(_user$project$Components_OAuthBoundary$updateOAuth, props, _p13._0, model);
+				return A3(_asana$csvana$Components_OAuthBoundary$updateOAuth, props, _p13._0, model);
 			default:
-				return A2(_user$project$Components_OAuthBoundary$updateChild, _p13._0, model);
+				return A2(_asana$csvana$Components_OAuthBoundary$updateChild, _p13._0, model);
 		}
 	});
-var _user$project$Components_OAuthBoundary$subscriptions = F2(
+var _asana$csvana$Components_OAuthBoundary$subscriptions = F2(
 	function (_p17, _p16) {
 		var _p18 = _p16;
 		var childSubs = function () {
@@ -18947,16 +18451,16 @@ var _user$project$Components_OAuthBoundary$subscriptions = F2(
 			if (_p19.ctor === 'Just') {
 				return A2(
 					_elm_lang$core$Platform_Sub$map,
-					_user$project$Components_OAuthBoundary$ChildMsg,
-					_user$project$Base$subscriptions(_p19._0));
+					_asana$csvana$Components_OAuthBoundary$ChildMsg,
+					_asana$csvana$Base$subscriptions(_p19._0));
 			} else {
 				return _elm_lang$core$Platform_Sub$none;
 			}
 		}();
 		var oauthSubs = A2(
 			_elm_lang$core$Platform_Sub$map,
-			_user$project$Components_OAuthBoundary$OAuthMsg,
-			_user$project$OAuth_OAuth$subscriptions(_p18.oauth));
+			_asana$csvana$Components_OAuthBoundary$OAuthMsg,
+			_asana$csvana$OAuth_OAuth$subscriptions(_p18.oauth));
 		return _elm_lang$core$Platform_Sub$batch(
 			{
 				ctor: '::',
@@ -18968,24 +18472,520 @@ var _user$project$Components_OAuthBoundary$subscriptions = F2(
 				}
 			});
 	});
-var _user$project$Components_OAuthBoundary$create = function (props) {
-	return _user$project$Base$create(
+var _asana$csvana$Components_OAuthBoundary$create = function (props) {
+	return _asana$csvana$Base$create(
 		{
-			init: _user$project$Components_OAuthBoundary$init(props),
-			update: _user$project$Components_OAuthBoundary$update(props),
-			view: _user$project$Components_OAuthBoundary$view(props),
-			subscriptions: _user$project$Components_OAuthBoundary$subscriptions(props),
-			get: _user$project$Components_OAuthBoundary$get(props)
+			init: _asana$csvana$Components_OAuthBoundary$init(props),
+			update: _asana$csvana$Components_OAuthBoundary$update(props),
+			view: _asana$csvana$Components_OAuthBoundary$view(props),
+			subscriptions: _asana$csvana$Components_OAuthBoundary$subscriptions(props),
+			get: _asana$csvana$Components_OAuthBoundary$get(props)
 		});
 };
 
-var _user$project$Main$LocationChange = function (a) {
+var _elm_lang$dom$Native_Dom = function() {
+
+var fakeNode = {
+	addEventListener: function() {},
+	removeEventListener: function() {}
+};
+
+var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
+var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(onDocument),
+	onWindow: F3(onWindow),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom_LowLevel$onWindow = _elm_lang$dom$Native_Dom.onWindow;
+var _elm_lang$dom$Dom_LowLevel$onDocument = _elm_lang$dom$Native_Dom.onDocument;
+
+var _elm_lang$navigation$Native_Navigation = function() {
+
+function go(n)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		if (n !== 0)
+		{
+			history.go(n);
+		}
+		callback(_elm_lang$core$Native_Scheduler.succeed(_elm_lang$core$Native_Utils.Tuple0));
+	});
+}
+
+function pushState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.pushState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function replaceState(url)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		history.replaceState({}, '', url);
+		callback(_elm_lang$core$Native_Scheduler.succeed(getLocation()));
+	});
+}
+
+function getLocation()
+{
+	var location = document.location;
+
+	return {
+		href: location.href,
+		host: location.host,
+		hostname: location.hostname,
+		protocol: location.protocol,
+		origin: location.origin,
+		port_: location.port,
+		pathname: location.pathname,
+		search: location.search,
+		hash: location.hash,
+		username: location.username,
+		password: location.password
+	};
+}
+
+
+return {
+	go: go,
+	pushState: pushState,
+	replaceState: replaceState,
+	getLocation: getLocation
+};
+
+}();
+
+var _elm_lang$core$Process$kill = _elm_lang$core$Native_Scheduler.kill;
+var _elm_lang$core$Process$sleep = _elm_lang$core$Native_Scheduler.sleep;
+var _elm_lang$core$Process$spawn = _elm_lang$core$Native_Scheduler.spawn;
+
+var _elm_lang$navigation$Navigation$replaceState = _elm_lang$navigation$Native_Navigation.replaceState;
+var _elm_lang$navigation$Navigation$pushState = _elm_lang$navigation$Native_Navigation.pushState;
+var _elm_lang$navigation$Navigation$go = _elm_lang$navigation$Native_Navigation.go;
+var _elm_lang$navigation$Navigation$spawnPopState = function (router) {
+	return _elm_lang$core$Process$spawn(
+		A3(
+			_elm_lang$dom$Dom_LowLevel$onWindow,
+			'popstate',
+			_elm_lang$core$Json_Decode$value,
+			function (_p0) {
+				return A2(
+					_elm_lang$core$Platform$sendToSelf,
+					router,
+					_elm_lang$navigation$Native_Navigation.getLocation(
+						{ctor: '_Tuple0'}));
+			}));
+};
+var _elm_lang$navigation$Navigation_ops = _elm_lang$navigation$Navigation_ops || {};
+_elm_lang$navigation$Navigation_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p1) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$navigation$Navigation$notify = F3(
+	function (router, subs, location) {
+		var send = function (_p2) {
+			var _p3 = _p2;
+			return A2(
+				_elm_lang$core$Platform$sendToApp,
+				router,
+				_p3._0(location));
+		};
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(_elm_lang$core$List$map, send, subs)),
+			_elm_lang$core$Task$succeed(
+				{ctor: '_Tuple0'}));
+	});
+var _elm_lang$navigation$Navigation$onSelfMsg = F3(
+	function (router, location, state) {
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			A3(_elm_lang$navigation$Navigation$notify, router, state.subs, location),
+			_elm_lang$core$Task$succeed(state));
+	});
+var _elm_lang$navigation$Navigation$cmdHelp = F3(
+	function (router, subs, cmd) {
+		var _p4 = cmd;
+		switch (_p4.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$go(_p4._0);
+			case 'New':
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$pushState(_p4._0));
+			default:
+				return A2(
+					_elm_lang$core$Task$andThen,
+					A2(_elm_lang$navigation$Navigation$notify, router, subs),
+					_elm_lang$navigation$Navigation$replaceState(_p4._0));
+		}
+	});
+var _elm_lang$navigation$Navigation$subscription = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$command = _elm_lang$core$Native_Platform.leaf('Navigation');
+var _elm_lang$navigation$Navigation$Location = function (a) {
+	return function (b) {
+		return function (c) {
+			return function (d) {
+				return function (e) {
+					return function (f) {
+						return function (g) {
+							return function (h) {
+								return function (i) {
+									return function (j) {
+										return function (k) {
+											return {href: a, host: b, hostname: c, protocol: d, origin: e, port_: f, pathname: g, search: h, hash: i, username: j, password: k};
+										};
+									};
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+	};
+};
+var _elm_lang$navigation$Navigation$State = F2(
+	function (a, b) {
+		return {subs: a, process: b};
+	});
+var _elm_lang$navigation$Navigation$init = _elm_lang$core$Task$succeed(
+	A2(
+		_elm_lang$navigation$Navigation$State,
+		{ctor: '[]'},
+		_elm_lang$core$Maybe$Nothing));
+var _elm_lang$navigation$Navigation$onEffects = F4(
+	function (router, cmds, subs, _p5) {
+		var _p6 = _p5;
+		var _p9 = _p6.process;
+		var stepState = function () {
+			var _p7 = {ctor: '_Tuple2', _0: subs, _1: _p9};
+			_v3_2:
+			do {
+				if (_p7._0.ctor === '[]') {
+					if (_p7._1.ctor === 'Just') {
+						return A2(
+							_elm_lang$navigation$Navigation_ops['&>'],
+							_elm_lang$core$Process$kill(_p7._1._0),
+							_elm_lang$core$Task$succeed(
+								A2(_elm_lang$navigation$Navigation$State, subs, _elm_lang$core$Maybe$Nothing)));
+					} else {
+						break _v3_2;
+					}
+				} else {
+					if (_p7._1.ctor === 'Nothing') {
+						return A2(
+							_elm_lang$core$Task$map,
+							function (_p8) {
+								return A2(
+									_elm_lang$navigation$Navigation$State,
+									subs,
+									_elm_lang$core$Maybe$Just(_p8));
+							},
+							_elm_lang$navigation$Navigation$spawnPopState(router));
+					} else {
+						break _v3_2;
+					}
+				}
+			} while(false);
+			return _elm_lang$core$Task$succeed(
+				A2(_elm_lang$navigation$Navigation$State, subs, _p9));
+		}();
+		return A2(
+			_elm_lang$navigation$Navigation_ops['&>'],
+			_elm_lang$core$Task$sequence(
+				A2(
+					_elm_lang$core$List$map,
+					A2(_elm_lang$navigation$Navigation$cmdHelp, router, subs),
+					cmds)),
+			stepState);
+	});
+var _elm_lang$navigation$Navigation$Modify = function (a) {
+	return {ctor: 'Modify', _0: a};
+};
+var _elm_lang$navigation$Navigation$modifyUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Modify(url));
+};
+var _elm_lang$navigation$Navigation$New = function (a) {
+	return {ctor: 'New', _0: a};
+};
+var _elm_lang$navigation$Navigation$newUrl = function (url) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$New(url));
+};
+var _elm_lang$navigation$Navigation$Jump = function (a) {
+	return {ctor: 'Jump', _0: a};
+};
+var _elm_lang$navigation$Navigation$back = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(0 - n));
+};
+var _elm_lang$navigation$Navigation$forward = function (n) {
+	return _elm_lang$navigation$Navigation$command(
+		_elm_lang$navigation$Navigation$Jump(n));
+};
+var _elm_lang$navigation$Navigation$cmdMap = F2(
+	function (_p10, myCmd) {
+		var _p11 = myCmd;
+		switch (_p11.ctor) {
+			case 'Jump':
+				return _elm_lang$navigation$Navigation$Jump(_p11._0);
+			case 'New':
+				return _elm_lang$navigation$Navigation$New(_p11._0);
+			default:
+				return _elm_lang$navigation$Navigation$Modify(_p11._0);
+		}
+	});
+var _elm_lang$navigation$Navigation$Monitor = function (a) {
+	return {ctor: 'Monitor', _0: a};
+};
+var _elm_lang$navigation$Navigation$program = F2(
+	function (locationToMessage, stuff) {
+		var init = stuff.init(
+			_elm_lang$navigation$Native_Navigation.getLocation(
+				{ctor: '_Tuple0'}));
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$program(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$programWithFlags = F2(
+	function (locationToMessage, stuff) {
+		var init = function (flags) {
+			return A2(
+				stuff.init,
+				flags,
+				_elm_lang$navigation$Native_Navigation.getLocation(
+					{ctor: '_Tuple0'}));
+		};
+		var subs = function (model) {
+			return _elm_lang$core$Platform_Sub$batch(
+				{
+					ctor: '::',
+					_0: _elm_lang$navigation$Navigation$subscription(
+						_elm_lang$navigation$Navigation$Monitor(locationToMessage)),
+					_1: {
+						ctor: '::',
+						_0: stuff.subscriptions(model),
+						_1: {ctor: '[]'}
+					}
+				});
+		};
+		return _elm_lang$html$Html$programWithFlags(
+			{init: init, view: stuff.view, update: stuff.update, subscriptions: subs});
+	});
+var _elm_lang$navigation$Navigation$subMap = F2(
+	function (func, _p12) {
+		var _p13 = _p12;
+		return _elm_lang$navigation$Navigation$Monitor(
+			function (_p14) {
+				return func(
+					_p13._0(_p14));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Navigation'] = {pkg: 'elm-lang/navigation', init: _elm_lang$navigation$Navigation$init, onEffects: _elm_lang$navigation$Navigation$onEffects, onSelfMsg: _elm_lang$navigation$Navigation$onSelfMsg, tag: 'fx', cmdMap: _elm_lang$navigation$Navigation$cmdMap, subMap: _elm_lang$navigation$Navigation$subMap};
+
+var _asana$csvana$Main$LocationChange = function (a) {
 	return {ctor: 'LocationChange', _0: a};
 };
-var _user$project$Main$OAuthMsg = function (a) {
+var _asana$csvana$Main$OAuthMsg = function (a) {
 	return {ctor: 'OAuthMsg', _0: a};
 };
-var _user$project$Main$init = function (location) {
+var _asana$csvana$Main$init = function (location) {
 	var _p0 = A2(
 		_elm_lang$core$Maybe$withDefault,
 		{ctor: '_Tuple2', _0: '', _1: ''},
@@ -19018,26 +19018,26 @@ var _user$project$Main$init = function (location) {
 		clientId: clientId,
 		baseRedirectUrl: baseRedirectUrl,
 		child: function (token) {
-			return _user$project$Components_Form$create(
+			return _asana$csvana$Components_Form$create(
 				{token: token});
 		}
 	};
 	return A2(
-		_user$project$Util$mapCmd,
-		_user$project$Main$OAuthMsg,
-		_user$project$Components_OAuthBoundary$create(oauthProps));
+		_asana$csvana$Util$mapCmd,
+		_asana$csvana$Main$OAuthMsg,
+		_asana$csvana$Components_OAuthBoundary$create(oauthProps));
 };
-var _user$project$Main$update = F2(
+var _asana$csvana$Main$update = F2(
 	function (msg, model) {
 		var _p2 = msg;
 		if (_p2.ctor === 'OAuthMsg') {
-			return A3(_user$project$Base$updateWith, _user$project$Main$OAuthMsg, _p2._0, model);
+			return A3(_asana$csvana$Base$updateWith, _asana$csvana$Main$OAuthMsg, _p2._0, model);
 		} else {
 			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
-var _user$project$Main$subscriptions = _user$project$Base$subscriptionsWith(_user$project$Main$OAuthMsg);
-var _user$project$Main$view = function (model) {
+var _asana$csvana$Main$subscriptions = _asana$csvana$Base$subscriptionsWith(_asana$csvana$Main$OAuthMsg);
+var _asana$csvana$Main$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -19077,22 +19077,22 @@ var _user$project$Main$view = function (model) {
 					},
 					{
 						ctor: '::',
-						_0: A2(_user$project$Base$viewWith, _user$project$Main$OAuthMsg, model),
+						_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Main$OAuthMsg, model),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Main$main = A2(
+var _asana$csvana$Main$main = A2(
 	_elm_lang$navigation$Navigation$program,
-	_user$project$Main$LocationChange,
-	{init: _user$project$Main$init, update: _user$project$Main$update, subscriptions: _user$project$Main$subscriptions, view: _user$project$Main$view})();
+	_asana$csvana$Main$LocationChange,
+	{init: _asana$csvana$Main$init, update: _asana$csvana$Main$update, subscriptions: _asana$csvana$Main$subscriptions, view: _asana$csvana$Main$view})();
 
 var Elm = {};
 Elm['Main'] = Elm['Main'] || {};
-if (typeof _user$project$Main$main !== 'undefined') {
-    _user$project$Main$main(Elm['Main'], 'Main', undefined);
+if (typeof _asana$csvana$Main$main !== 'undefined') {
+    _asana$csvana$Main$main(Elm['Main'], 'Main', undefined);
 }
 
 if (typeof define === "function" && define['amd'])
