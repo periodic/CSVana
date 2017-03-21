@@ -1,3 +1,4 @@
+
 module Components.Uploader.Uploader exposing (Props, Msg, Data, Instance, create)
 
 import Html exposing (..)
@@ -57,30 +58,28 @@ create props =
 
 type alias Model =
     { recordsProcessed : Int
+    , recordsRemaining : List Record
     , errors : List Error
     }
 
 init : Props -> (Model, Cmd Msg)
 init props =
-    let
-        model =
-            { recordsProcessed = 0
-            , errors = []
-            }
-        (model_, cmds) =
-            List.foldr
-                (\(row, record) (model, cmds) ->
-                    let
-                        (model_, cmd) = uploadRecord props row record model
-                    in
-                        (model_, cmd :: cmds))
-                (model, [])
-                (List.indexedMap (,) props.records)
-        cmd =
-            Cmd.batch cmds
-    in
-        (model_, cmd)
+    -- Note: Reverse the list to create tasks in the right order because new tasks are at the top.
+    case List.reverse props.records of
+        [] ->
+            ({ recordsProcessed = 0, recordsRemaining = [], errors = [] }, Cmd.none)
+        (record::records) ->
+            let
+                model =
+                    { recordsProcessed = 0
+                    , recordsRemaining = records
+                    , errors = []
+                    }
+            in
+                uploadRecord props 1 record model
 
+-- | Uploads the record.  If an error is encountered during preprocessing the
+-- errors are accumulated though the API request still occurs.
 uploadRecord : Props -> Int -> Record -> Model -> (Model, Cmd Msg)
 uploadRecord props row record model =
     let
@@ -91,14 +90,7 @@ uploadRecord props row record model =
     in
         (model_, cmd)
 
-update : Props -> Msg -> Model -> (Model, Cmd Msg)
-update props msg model =
-    case Debug.log "Updater msg" msg of
-        RecordProcessed row (Ok _) ->
-            ({ model | recordsProcessed = model.recordsProcessed + 1 }, Cmd.none)
-        RecordProcessed row (Err httpErr) ->
-            ({ model | errors = UploadError { msg = toString httpErr, row = row } :: model.errors }, Cmd.none)
-
+-- | Builds up the new task from the target specifiers and the record.
 updateTask : Int -> (Int, Maybe Target.Target, String) -> (Asana.NewTask, List Error) -> (Asana.NewTask, List Error)
 updateTask row (col, mTarget, value) (task, errors) =
     case mTarget of
@@ -110,6 +102,31 @@ updateTask row (col, mTarget, value) (task, errors) =
                     (task, ParseError { msg = msg, row = row, col = col } :: errors)
         Nothing ->
             (task, errors)
+
+update : Props -> Msg -> Model -> (Model, Cmd Msg)
+update props msg =
+    processMessage props msg >> uploadNextRecord props
+
+processMessage : Props -> Msg -> Model -> Model
+processMessage props msg model =
+    case msg of
+        RecordProcessed row (Ok _) ->
+            { model | recordsProcessed = row }
+        RecordProcessed row (Err httpErr) ->
+            { model
+            | recordsProcessed = row
+            , errors = UploadError { msg = toString httpErr, row = row } :: model.errors }
+
+uploadNextRecord : Props -> Model -> (Model, Cmd Msg)
+uploadNextRecord props model =
+    case model.recordsRemaining of
+        [] ->
+            (model, Cmd.none)
+        (record::records) ->
+            let
+                model_ = { model | recordsRemaining = records }
+            in
+                uploadRecord props (model.recordsProcessed + 1) record model_
 
 view : Props -> Model -> Html Msg
 view props model =

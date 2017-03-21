@@ -17331,9 +17331,9 @@ var _asana$csvana$Components_Uploader_Uploader$Data = F3(
 	function (a, b, c) {
 		return {totalRecords: a, recordsProcessed: b, errors: c};
 	});
-var _asana$csvana$Components_Uploader_Uploader$Model = F2(
-	function (a, b) {
-		return {recordsProcessed: a, errors: b};
+var _asana$csvana$Components_Uploader_Uploader$Model = F3(
+	function (a, b, c) {
+		return {recordsProcessed: a, recordsRemaining: b, errors: c};
 	});
 var _asana$csvana$Components_Uploader_Uploader$RecordProcessed = F2(
 	function (a, b) {
@@ -17342,65 +17342,59 @@ var _asana$csvana$Components_Uploader_Uploader$RecordProcessed = F2(
 var _asana$csvana$Components_Uploader_Uploader$UploadError = function (a) {
 	return {ctor: 'UploadError', _0: a};
 };
-var _asana$csvana$Components_Uploader_Uploader$update = F3(
+var _asana$csvana$Components_Uploader_Uploader$processMessage = F3(
 	function (props, msg, model) {
-		var _p11 = A2(_elm_lang$core$Debug$log, 'Updater msg', msg);
+		var _p11 = msg;
 		if (_p11._1.ctor === 'Ok') {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{recordsProcessed: model.recordsProcessed + 1}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{recordsProcessed: _p11._0});
 		} else {
-			return {
-				ctor: '_Tuple2',
-				_0: _elm_lang$core$Native_Utils.update(
-					model,
-					{
-						errors: {
-							ctor: '::',
-							_0: _asana$csvana$Components_Uploader_Uploader$UploadError(
-								{
-									msg: _elm_lang$core$Basics$toString(_p11._1._0),
-									row: _p11._0
-								}),
-							_1: model.errors
-						}
-					}),
-				_1: _elm_lang$core$Platform_Cmd$none
-			};
+			var _p12 = _p11._0;
+			return _elm_lang$core$Native_Utils.update(
+				model,
+				{
+					recordsProcessed: _p12,
+					errors: {
+						ctor: '::',
+						_0: _asana$csvana$Components_Uploader_Uploader$UploadError(
+							{
+								msg: _elm_lang$core$Basics$toString(_p11._1._0),
+								row: _p12
+							}),
+						_1: model.errors
+					}
+				});
 		}
 	});
 var _asana$csvana$Components_Uploader_Uploader$ParseError = function (a) {
 	return {ctor: 'ParseError', _0: a};
 };
 var _asana$csvana$Components_Uploader_Uploader$updateTask = F3(
-	function (row, _p13, _p12) {
-		var _p14 = _p13;
-		var _p15 = _p12;
-		var _p19 = _p15._0;
-		var _p18 = _p15._1;
-		var _p16 = _p14._1;
-		if (_p16.ctor === 'Just') {
-			var _p17 = A3(_asana$csvana$Asana_Target$updateTask, _p16._0, _p14._2, _p19);
-			if (_p17.ctor === 'Ok') {
-				return {ctor: '_Tuple2', _0: _p17._0, _1: _p18};
+	function (row, _p14, _p13) {
+		var _p15 = _p14;
+		var _p16 = _p13;
+		var _p20 = _p16._0;
+		var _p19 = _p16._1;
+		var _p17 = _p15._1;
+		if (_p17.ctor === 'Just') {
+			var _p18 = A3(_asana$csvana$Asana_Target$updateTask, _p17._0, _p15._2, _p20);
+			if (_p18.ctor === 'Ok') {
+				return {ctor: '_Tuple2', _0: _p18._0, _1: _p19};
 			} else {
 				return {
 					ctor: '_Tuple2',
-					_0: _p19,
+					_0: _p20,
 					_1: {
 						ctor: '::',
 						_0: _asana$csvana$Components_Uploader_Uploader$ParseError(
-							{msg: _p17._0, row: row, col: _p14._0}),
-						_1: _p18
+							{msg: _p18._0, row: row, col: _p15._0}),
+						_1: _p19
 					}
 				};
 			}
 		} else {
-			return {ctor: '_Tuple2', _0: _p19, _1: _p18};
+			return {ctor: '_Tuple2', _0: _p20, _1: _p19};
 		}
 	});
 var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
@@ -17408,9 +17402,9 @@ var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
 		var fieldDefs = A2(
 			_elm_lang$core$List$indexedMap,
 			F2(
-				function (i, _p20) {
-					var _p21 = _p20;
-					return {ctor: '_Tuple3', _0: i, _1: _p21._0, _2: _p21._1};
+				function (i, _p21) {
+					var _p22 = _p21;
+					return {ctor: '_Tuple3', _0: i, _1: _p22._0, _2: _p22._1};
 				}),
 			A3(
 				_elm_lang$core$List$map2,
@@ -17420,7 +17414,7 @@ var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
 					}),
 				props.fieldTargets,
 				record));
-		var _p22 = A3(
+		var _p23 = A3(
 			_elm_lang$core$List$foldr,
 			_asana$csvana$Components_Uploader_Uploader$updateTask(row),
 			{
@@ -17429,8 +17423,8 @@ var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
 				_1: {ctor: '[]'}
 			},
 			fieldDefs);
-		var newTask = _p22._0;
-		var errs = _p22._1;
+		var newTask = _p23._0;
+		var errs = _p23._1;
 		var model_ = _elm_lang$core$Native_Utils.update(
 			model,
 			{
@@ -17443,42 +17437,47 @@ var _asana$csvana$Components_Uploader_Uploader$uploadRecord = F4(
 		return {ctor: '_Tuple2', _0: model_, _1: cmd};
 	});
 var _asana$csvana$Components_Uploader_Uploader$init = function (props) {
-	var model = {
-		recordsProcessed: 0,
-		errors: {ctor: '[]'}
-	};
-	var _p23 = A3(
-		_elm_lang$core$List$foldr,
-		F2(
-			function (_p25, _p24) {
-				var _p26 = _p25;
-				var _p27 = _p24;
-				var _p28 = A4(_asana$csvana$Components_Uploader_Uploader$uploadRecord, props, _p26._0, _p26._1, _p27._0);
-				var model_ = _p28._0;
-				var cmd = _p28._1;
-				return {
-					ctor: '_Tuple2',
-					_0: model_,
-					_1: {ctor: '::', _0: cmd, _1: _p27._1}
-				};
-			}),
-		{
+	var _p24 = _elm_lang$core$List$reverse(props.records);
+	if (_p24.ctor === '[]') {
+		return {
 			ctor: '_Tuple2',
-			_0: model,
-			_1: {ctor: '[]'}
-		},
-		A2(
-			_elm_lang$core$List$indexedMap,
-			F2(
-				function (v0, v1) {
-					return {ctor: '_Tuple2', _0: v0, _1: v1};
-				}),
-			props.records));
-	var model_ = _p23._0;
-	var cmds = _p23._1;
-	var cmd = _elm_lang$core$Platform_Cmd$batch(cmds);
-	return {ctor: '_Tuple2', _0: model_, _1: cmd};
+			_0: {
+				recordsProcessed: 0,
+				recordsRemaining: {ctor: '[]'},
+				errors: {ctor: '[]'}
+			},
+			_1: _elm_lang$core$Platform_Cmd$none
+		};
+	} else {
+		var model = {
+			recordsProcessed: 0,
+			recordsRemaining: _p24._1,
+			errors: {ctor: '[]'}
+		};
+		return A4(_asana$csvana$Components_Uploader_Uploader$uploadRecord, props, 1, _p24._0, model);
+	}
 };
+var _asana$csvana$Components_Uploader_Uploader$uploadNextRecord = F2(
+	function (props, model) {
+		var _p25 = model.recordsRemaining;
+		if (_p25.ctor === '[]') {
+			return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+		} else {
+			var model_ = _elm_lang$core$Native_Utils.update(
+				model,
+				{recordsRemaining: _p25._1});
+			return A4(_asana$csvana$Components_Uploader_Uploader$uploadRecord, props, model.recordsProcessed + 1, _p25._0, model_);
+		}
+	});
+var _asana$csvana$Components_Uploader_Uploader$update = F2(
+	function (props, msg) {
+		return function (_p26) {
+			return A2(
+				_asana$csvana$Components_Uploader_Uploader$uploadNextRecord,
+				props,
+				A3(_asana$csvana$Components_Uploader_Uploader$processMessage, props, msg, _p26));
+		};
+	});
 var _asana$csvana$Components_Uploader_Uploader$create = function (props) {
 	return _asana$csvana$Base$create(
 		{
