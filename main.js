@@ -9103,10 +9103,11 @@ var _asana$csvana$Asana_Decoder$projectDecoder = A4(
 		'id',
 		A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Basics$toString, _elm_lang$core$Json_Decode$int)),
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
-	A2(
-		_elm_lang$core$Json_Decode$field,
-		'custom_field_settings',
-		_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$customFieldSettingDecoder)));
+	_elm_lang$core$Json_Decode$maybe(
+		A2(
+			_elm_lang$core$Json_Decode$field,
+			'custom_field_settings',
+			_elm_lang$core$Json_Decode$list(_asana$csvana$Asana_Decoder$customFieldSettingDecoder))));
 var _asana$csvana$Asana_Decoder$workspaceDecoder = A3(
 	_elm_lang$core$Json_Decode$map2,
 	_asana$csvana$Asana_Model$Workspace,
@@ -16079,6 +16080,15 @@ var _asana$csvana$Components_FieldMatcher$renderHeaders = function (headers) {
 		},
 		A2(_elm_lang$core$List$map, _asana$csvana$Components_FieldMatcher$renderHeader, headers));
 };
+var _asana$csvana$Components_FieldMatcher$customFieldsErrorMessage = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4.customFields;
+	if (_p5.ctor === 'Just') {
+		return '';
+	} else {
+		return 'Note: You do not have access to custom fieldson this project.';
+	}
+};
 var _asana$csvana$Components_FieldMatcher$Props = F5(
 	function (a, b, c, d, e) {
 		return {projectId: a, csvHeaders: b, csvRecords: c, customFields: d, apiContext: e};
@@ -16089,19 +16099,22 @@ var _asana$csvana$Components_FieldMatcher$Model = function (a) {
 var _asana$csvana$Components_FieldMatcher$FieldOptionsMsg = function (a) {
 	return {ctor: 'FieldOptionsMsg', _0: a};
 };
-var _asana$csvana$Components_FieldMatcher$init = function (_p3) {
-	var _p4 = _p3;
-	var _p6 = _p4.csvHeaders;
-	var _p5 = _asana$csvana$Components_FieldOptions$create(
+var _asana$csvana$Components_FieldMatcher$init = function (_p6) {
+	var _p7 = _p6;
+	var _p9 = _p7.csvHeaders;
+	var _p8 = _asana$csvana$Components_FieldOptions$create(
 		{
-			customFields: _p4.customFields,
-			numFields: _elm_lang$core$List$length(_p6),
-			records: _p4.csvRecords,
-			headers: _p6,
-			apiContext: _p4.apiContext
+			customFields: A2(
+				_elm_lang$core$Maybe$withDefault,
+				{ctor: '[]'},
+				_p7.customFields),
+			numFields: _elm_lang$core$List$length(_p9),
+			records: _p7.csvRecords,
+			headers: _p9,
+			apiContext: _p7.apiContext
 		});
-	var fieldOptions = _p5._0;
-	var fieldOptionsCmd = _p5._1;
+	var fieldOptions = _p8._0;
+	var fieldOptionsCmd = _p8._1;
 	var model = {fieldOptions: fieldOptions};
 	return {
 		ctor: '_Tuple2',
@@ -16111,10 +16124,10 @@ var _asana$csvana$Components_FieldMatcher$init = function (_p3) {
 };
 var _asana$csvana$Components_FieldMatcher$update = F3(
 	function (props, msg, model) {
-		var _p7 = msg;
-		var _p8 = A2(_asana$csvana$Base$update, _p7._0, model.fieldOptions);
-		var fieldOptions_ = _p8._0;
-		var fieldOptionsCmd = _p8._1;
+		var _p10 = msg;
+		var _p11 = A2(_asana$csvana$Base$update, _p10._0, model.fieldOptions);
+		var fieldOptions_ = _p11._0;
+		var fieldOptionsCmd = _p11._1;
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
@@ -16124,9 +16137,8 @@ var _asana$csvana$Components_FieldMatcher$update = F3(
 		};
 	});
 var _asana$csvana$Components_FieldMatcher$view = F2(
-	function (_p10, _p9) {
-		var _p11 = _p10;
-		var _p12 = _p9;
+	function (props, _p12) {
+		var _p13 = _p12;
 		return A2(
 			_elm_lang$html$Html$div,
 			{
@@ -16140,26 +16152,42 @@ var _asana$csvana$Components_FieldMatcher$view = F2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-fields'),
+						_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-customFieldsErrorMessage'),
 						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-options'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FieldMatcher$FieldOptionsMsg, _p12.fieldOptions),
-								_1: {ctor: '[]'}
-							}),
+						_0: _elm_lang$html$Html$text(
+							_asana$csvana$Components_FieldMatcher$customFieldsErrorMessage(props)),
 						_1: {ctor: '[]'}
 					}),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-fields'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('FieldMatcher-options'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(_asana$csvana$Base$viewWith, _asana$csvana$Components_FieldMatcher$FieldOptionsMsg, _p13.fieldOptions),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _asana$csvana$Components_FieldMatcher$create = function (props) {
@@ -16764,12 +16792,24 @@ var _asana$csvana$Components_MatcherSection$init = function (props) {
 												return _.customField;
 											}(_p0));
 									},
-									project.customFieldSettings);
+									A2(
+										_elm_lang$core$Maybe$withDefault,
+										{ctor: '[]'},
+										project.customFieldSettings));
 								return _asana$csvana$Components_ApiParallelResource$create(
 									{
 										child: function (customFieldInfos) {
 											return _asana$csvana$Components_FieldMatcher$create(
-												{projectId: project.id, csvHeaders: props.headers, csvRecords: props.records, customFields: customFieldInfos, apiContext: props.apiContext});
+												{
+													projectId: project.id,
+													csvHeaders: props.headers,
+													csvRecords: props.records,
+													customFields: A2(
+														_elm_lang$core$Maybe$map,
+														_elm_lang$core$Basics$always(customFieldInfos),
+														project.customFieldSettings),
+													apiContext: props.apiContext
+												});
 										},
 										fetches: A2(
 											_elm_lang$core$List$map,
@@ -16789,7 +16829,10 @@ var _asana$csvana$Components_MatcherSection$init = function (props) {
 											function (setting) {
 												return {id: setting.customField.id, name: setting.customField.name};
 											},
-											project.customFieldSettings)
+											A2(
+												_elm_lang$core$Maybe$withDefault,
+												{ctor: '[]'},
+												project.customFieldSettings))
 									});
 							}
 						});

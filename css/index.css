@@ -240,6 +240,12 @@ h3 {
     margin-top: 5px;
 }
 
+.FieldMatcher-customFieldsErrorMessage {
+    margin: 10px 0;
+    text-align: center;
+    color: red;
+}
+
 .FieldOptions {
     display: flex;
     flex-direction: column;

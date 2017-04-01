@@ -44,7 +44,7 @@ type alias ProjectResource = Resource
 type alias Project =
     { id : Id
     , name : String
-    , customFieldSettings : List CustomFieldSetting
+    , customFieldSettings : Maybe (List CustomFieldSetting)
     }
 
 type alias CustomFieldSettingId = Id

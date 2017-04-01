@@ -13,7 +13,7 @@ type alias Props =
     { projectId : Asana.ProjectId
     , csvHeaders : List String
     , csvRecords : List (List String)
-    , customFields : List Asana.CustomFieldInfo
+    , customFields : Maybe (List Asana.CustomFieldInfo)
     , apiContext : Api.Context
     }
 
@@ -45,7 +45,7 @@ init {csvHeaders, csvRecords, customFields, apiContext} =
     let
         (fieldOptions, fieldOptionsCmd) =
             FieldOptions.create
-                { customFields = customFields
+                { customFields = Maybe.withDefault [] customFields
                 , numFields = List.length csvHeaders
                 , records = csvRecords
                 , headers = csvHeaders
@@ -67,13 +67,23 @@ update props msg model =
                 ({ model | fieldOptions = fieldOptions_ }, Cmd.map FieldOptionsMsg fieldOptionsCmd)
 
 view : Props -> Model -> Html Msg
-view { csvHeaders} { fieldOptions } =
+view props { fieldOptions } =
     div [ class "FieldMatcher" ]
-        [ div [ class "FieldMatcher-fields" ]
+        [ div [ class "FieldMatcher-customFieldsErrorMessage" ]
+            [ text <| customFieldsErrorMessage props ]
+        , div [ class "FieldMatcher-fields" ]
             [ div [ class "FieldMatcher-options" ]
                 [ Base.viewWith FieldOptionsMsg fieldOptions ]
             ]
         ]
+
+customFieldsErrorMessage : Props -> String
+customFieldsErrorMessage { customFields } =
+    case customFields of
+        Just _ ->
+            ""
+        Nothing ->
+            "Note: You do not have access to custom fieldson this project."
 
 renderHeaders : List String -> Html Msg
 renderHeaders headers =

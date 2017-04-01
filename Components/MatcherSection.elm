@@ -71,7 +71,10 @@ init props =
                 { value = Nothing
                 , incompleteChild = \targets ->
                     let
-                        customFieldIds = List.map (.customField >> .id) project.customFieldSettings
+                        customFieldIds =
+                            project.customFieldSettings
+                                |> Maybe.withDefault []
+                                |> List.map (.customField >> .id)
                         numFields = List.length props.headers
                     in
                         ApiParallelResource.create
@@ -80,10 +83,13 @@ init props =
                                     { projectId = project.id
                                     , csvHeaders = props.headers
                                     , csvRecords = props.records
-                                    , customFields = customFieldInfos
+                                    , customFields =
+                                        -- Make this map the maybe-ness of customFieldSettings
+                                        Maybe.map (always customFieldInfos) project.customFieldSettings
                                     , apiContext = props.apiContext
                                     }
-                            , fetches = List.map (flip Api.customField props.apiContext.token) customFieldIds
+                            , fetches =
+                                List.map (flip Api.customField props.apiContext.token) customFieldIds
                             , loadingView = CommonViews.loadingIndicator
                             , errorView = CommonViews.errorView
                             }
@@ -92,9 +98,10 @@ init props =
                         { headers = props.headers
                         , targets = targets
                         , customFields =
-                            List.map
-                                (\setting -> { id = setting.customField.id, name = setting.customField.name })
-                                project.customFieldSettings
+                            project.customFieldSettings
+                                |> Maybe.withDefault []
+                                |> List.map (\setting ->
+                                    { id = setting.customField.id, name = setting.customField.name })
                         }
                 }
         , fetch = Api.project props.projectId props.apiContext.token

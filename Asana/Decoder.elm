@@ -62,7 +62,7 @@ projectDecoder : Decoder Asana.Project
 projectDecoder = map3 Asana.Project
   (field "id" <| map toString int)
   (field "name" string)
-  (field "custom_field_settings" <| list customFieldSettingDecoder)
+  (maybe <| field "custom_field_settings" <| list customFieldSettingDecoder)
 
 
 customFieldSettingDecoder : Decoder Asana.CustomFieldSetting
