@@ -6,3 +6,5 @@ main.js
 test.txt
 # Generated files for tests.
 *_test.js
+# Node stuff.
+node_modules/
