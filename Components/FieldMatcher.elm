@@ -83,7 +83,7 @@ customFieldsErrorMessage { customFields } =
         Just _ ->
             ""
         Nothing ->
-            "Note: You do not have access to custom fieldson this project."
+            "Note: You do not have access to custom fields for this project."
 
 renderHeaders : List String -> Html Msg
 renderHeaders headers =
