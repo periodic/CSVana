@@ -16,30 +16,32 @@
                 margin-top: 16px;
                 line-height: 2;
             }
-            h1 {
-                margin-bottom: 32px;
-            }
+
             body {
                 display: flex;
                 flex-direction: column;
                 align-items: center
             }
-            #container {
-                width: 500px;
-                margin: 32px;
+
+            .content {
+                margin: 16px;
             }
         </style>
     </head>
 
     <body>
-        <div id="container">
-            <h1>CSVana has been deprecated</h1>
+        <div class="Main">
+            <header class="header">
+                <h1 class="Main-header">CSVana has been deprecated</h1>
+            </header>
 
-            <p>We've come up with an improved importer for CSV files for Asana!</p>
-            
-            <p class="cta">You can find out all about it <a href="https://asana.com/guide/help/api/csv-importer">on the Guide</a>.</p>
+            <div class="content">
+                <p>We've come up with an improved importer for CSV files for Asana!</p>
+                
+                <p class="cta">You can find out all about it <a href="https://asana.com/guide/help/api/csv-importer">on the Guide</a>.</p>
 
-            <p>If you preferred this application for any reason, please let us know!  Feel free to send feedback to <a href="mailto:drewhaven@asana.com">drewhaven@asana.com</a>.</p>
+                <p>If you preferred this application for any reason, please let us know!  Feel free to send feedback to <a href="mailto:drewhaven@asana.com">drewhaven@asana.com</a>.</p>
+            </div>
         </div>
     </body>
 </html>
