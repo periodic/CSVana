@@ -3,20 +3,43 @@
     <head>
         <meta charset="UTF-8">
         <title>CSVana</title>
-        <script src="OAuth/oauth.js"></script>
-        <script src="FileReader/file_reader.js"></script>
-        <script src="main.js"></script>
         <link rel="stylesheet" href="css/html5reset-1.6.1.css" />
         <link rel="stylesheet" href="css/grd.css" />
         <link rel="stylesheet" href="css/index.css" />
+        <style>
+            .cta {
+                font-size: 120%;
+                font-weight: bold;
+            }
+            
+            p {
+                margin-top: 16px;
+                line-height: 2;
+            }
+            h1 {
+                margin-bottom: 32px;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center
+            }
+            #container {
+                width: 500px;
+                margin: 32px;
+            }
+        </style>
     </head>
 
     <body>
-        <script>
-var app = Elm.Main.fullscreen();
+        <div id="container">
+            <h1>CSVana has been deprecated</h1>
 
-initFileReaderPorts(app);
-initOAuthPorts(app);
-        </script>
+            <p>We've come up with an improved importer for CSV files for Asana!</p>
+            
+            <p class="cta">You can find out all about it <a href="https://asana.com/guide/help/api/csv-importer">on the Guide</a>.</p>
+
+            <p>If you preferred this application for any reason, please let us know!  Feel free to send feedback to <a href="mailto:drewhaven@asana.com">drewhaven@asana.com</a>.</p>
+        </div>
     </body>
 </html>
